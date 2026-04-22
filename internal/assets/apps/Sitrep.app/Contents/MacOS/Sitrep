@@ -1,0 +1,40 @@
+#!/bin/bash
+# Sitrep.app — Camp Leatherneck observation post
+# Opens lt feed (real-time TUI with agent tree + convoy panel + event stream)
+# in a dedicated Terminal window. Navy + gold palette to distinguish from
+# the LT chat window.
+
+set -e
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$HOME/go/bin:$PATH"
+cd "$HOME/lt"
+
+osascript <<'APPLESCRIPT'
+tell application "Terminal"
+    activate
+    set newTab to do script "export PATH=\"/opt/homebrew/bin:$HOME/.local/bin:$HOME/go/bin:$PATH\"; cd \"$HOME/lt\"; clear; printf '\\033[1;33mCAMP LEATHERNECK — OBSERVATION POST\\033[0m\\n'; printf '\\033[1;94mj/k to scroll · tab to switch panels · p for problems view · q to exit\\033[0m\\n\\n'; sleep 0.5; lt feed"
+    delay 0.3
+
+    -- Navy observation-post palette (distinguishes from LT's scarlet window)
+    try
+        -- Deep navy background (#0A122C)
+        set background color of front window to {2570, 4625, 11308}
+        -- Gold normal text (#D4AA33)
+        set normal text color of front window to {54484, 43690, 13107}
+        -- Sky blue bold (#93C5FD)
+        set bold text color of front window to {37779, 50629, 65021}
+        -- Gold cursor
+        set cursor color of front window to {54484, 43690, 13107}
+    end try
+
+    -- Position this window on the right side of the screen, taller than wide
+    -- So it can sit alongside the Devil Dog window
+    try
+        set bounds of front window to {1000, 80, 1680, 1000}
+    end try
+
+    try
+        set custom title of front window to "Sitrep — Observation Post"
+    end try
+end tell
+APPLESCRIPT

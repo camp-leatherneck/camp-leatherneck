@@ -13,6 +13,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/spf13/cobra"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/assets"
 	"github.com/camp-leatherneck/camp-leatherneck/internal/cli"
 	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
 	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
@@ -43,6 +44,8 @@ var (
 	installWrappers   bool
 	installSupervisor bool
 	installDoltPort   int
+	installAssetsDryRun     bool
+	installNoAssets   bool
 )
 
 var installCmd = &cobra.Command{
@@ -89,6 +92,8 @@ func init() {
 	installCmd.Flags().BoolVar(&installWrappers, "wrappers", false, "Install gt-codex/gt-gemini/gt-opencode wrapper scripts to ~/bin/")
 	installCmd.Flags().BoolVar(&installSupervisor, "supervisor", false, "Configure launchd/systemd for daemon auto-restart")
 	installCmd.Flags().IntVar(&installDoltPort, "dolt-port", 0, "Dolt SQL server port (default 3307; set when another instance owns the default port)")
+	installCmd.Flags().BoolVar(&installAssetsDryRun, "dry-run", false, "Preview Camp Leatherneck asset provisioning (directives, RTO script, launchd plist, Sitrep.app) without writing files; other install steps still run unless combined with --no-assets")
+	installCmd.Flags().BoolVar(&installNoAssets, "no-assets", false, "Skip provisioning embedded Camp Leatherneck assets (directives, RTO script, launchd plist, Sitrep.app)")
 	rootCmd.AddCommand(installCmd)
 }
 
@@ -117,6 +122,42 @@ func runInstall(cmd *cobra.Command, args []string) error {
 	townName := installName
 	if townName == "" {
 		townName = filepath.Base(absPath)
+	}
+
+	// --dry-run short-circuits: preview the Camp Leatherneck asset
+	// provisioning plan (directives, RTO script, launchd plist, Sitrep.app)
+	// without touching the filesystem or running any other install steps.
+	// This lets operators inspect what `lt install` would deposit on a
+	// fresh machine before committing.
+	if installAssetsDryRun {
+		home, herr := os.UserHomeDir()
+		if herr != nil {
+			return fmt.Errorf("getting home directory: %w", herr)
+		}
+		fmt.Printf("%s Dry-run: Camp Leatherneck asset provisioning plan\n\n",
+			style.Bold.Render("🔍"))
+		plan, aerr := assets.Install(assets.Options{
+			Home:   home,
+			DryRun: true,
+			Out:    os.Stdout,
+		})
+		if aerr != nil {
+			return fmt.Errorf("asset dry-run failed: %w", aerr)
+		}
+		writes := 0
+		skips := 0
+		for _, a := range plan.Actions {
+			switch a.Kind {
+			case assets.ActionWriteFile:
+				writes++
+			case assets.ActionSkipExists:
+				skips++
+			}
+		}
+		fmt.Printf("\n%s Dry-run complete: %d file(s) would be written, %d already identical.\n",
+			style.Bold.Render("✓"), writes, skips)
+		fmt.Println("Re-run without --dry-run to apply.")
+		return nil
 	}
 
 	// Check if already a workspace
@@ -478,6 +519,36 @@ func runInstall(cmd *cobra.Command, args []string) error {
 			fmt.Printf("   %s Could not configure supervisor: %v\n", style.Dim.Render("⚠"), err)
 		} else {
 			fmt.Printf("   ✓ %s\n", msg)
+		}
+	}
+
+	// Provision embedded Camp Leatherneck assets into ~/lt/, ~/Library/LaunchAgents/,
+	// and ~/Applications/. This is the Marine overlay payload: 20 role directives,
+	// the RTO sitrep generator, the launchd plist that schedules it every 2 minutes,
+	// and the Sitrep.app observation-post bundle.
+	if !installNoAssets {
+		home, herr := os.UserHomeDir()
+		if herr != nil {
+			fmt.Printf("   %s Could not determine home directory, skipping asset provisioning: %v\n",
+				style.Dim.Render("⚠"), herr)
+		} else {
+			plan, aerr := assets.Install(assets.Options{Home: home})
+			if aerr != nil {
+				fmt.Printf("   %s Asset provisioning failed: %v\n", style.Dim.Render("⚠"), aerr)
+			} else {
+				writes := 0
+				skips := 0
+				for _, a := range plan.Actions {
+					switch a.Kind {
+					case assets.ActionWriteFile:
+						writes++
+					case assets.ActionSkipExists:
+						skips++
+					}
+				}
+				fmt.Printf("   ✓ Provisioned Camp Leatherneck assets (%d written, %d already current)\n",
+					writes, skips)
+			}
 		}
 	}
 
