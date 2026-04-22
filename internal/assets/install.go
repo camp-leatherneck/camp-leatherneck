@@ -25,11 +25,6 @@ type Options struct {
 	// Defaults to filepath.Join(Home, "Library/LaunchAgents") when empty.
 	LaunchAgentDir string
 
-	// ApplicationsDir is where Sitrep.app is copied. User-scoped by default
-	// (filepath.Join(Home, "Applications")) — we deliberately do NOT write
-	// to /Applications because that path requires sudo.
-	ApplicationsDir string
-
 	// DryRun: when true, compute the plan and return it without writing.
 	DryRun bool
 
@@ -80,9 +75,6 @@ func Install(opts Options) (*Plan, error) {
 	if opts.LaunchAgentDir == "" {
 		opts.LaunchAgentDir = filepath.Join(opts.Home, "Library", "LaunchAgents")
 	}
-	if opts.ApplicationsDir == "" {
-		opts.ApplicationsDir = filepath.Join(opts.Home, "Applications")
-	}
 
 	plan := &Plan{}
 
@@ -112,12 +104,6 @@ func Install(opts Options) (*Plan, error) {
 		return outName, out
 	}
 	if err := writeEmbedTree(plan, opts, LaunchAgentsFS, "launchagents", opts.LaunchAgentDir, 0644, transform); err != nil {
-		return plan, err
-	}
-
-	// 5. Sitrep.app bundle -> $ApplicationsDir/Sitrep.app
-	appTarget := filepath.Join(opts.ApplicationsDir, "Sitrep.app")
-	if err := writeAppBundle(plan, opts, SitrepAppFS, "apps/Sitrep.app", appTarget); err != nil {
 		return plan, err
 	}
 
@@ -165,41 +151,6 @@ func writeEmbedTree(
 		}
 	}
 	return nil
-}
-
-// writeAppBundle materializes a .app bundle from the embedded FS, preserving
-// directory structure. Files under Contents/MacOS/ are written with 0755 so
-// the launcher is executable; everything else gets 0644.
-func writeAppBundle(
-	plan *Plan,
-	opts Options,
-	efs fs.FS,
-	srcRoot string,
-	targetRoot string,
-) error {
-	return fs.WalkDir(efs, srcRoot, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		rel := strings.TrimPrefix(path, srcRoot)
-		rel = strings.TrimPrefix(rel, "/")
-		out := targetRoot
-		if rel != "" {
-			out = filepath.Join(targetRoot, rel)
-		}
-		if d.IsDir() {
-			return ensureDir(plan, opts, out)
-		}
-		data, err := fs.ReadFile(efs, path)
-		if err != nil {
-			return fmt.Errorf("reading %s: %w", path, err)
-		}
-		mode := os.FileMode(0644)
-		if strings.Contains(rel, "Contents/MacOS/") {
-			mode = 0755
-		}
-		return writeFile(plan, opts, out, data, mode)
-	})
 }
 
 // ensureDir records + (unless DryRun) creates a directory.

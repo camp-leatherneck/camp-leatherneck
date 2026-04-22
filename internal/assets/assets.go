@@ -1,18 +1,22 @@
 // Package assets embeds the Camp Leatherneck overlay runtime assets —
-// Marine-flavored role directives, the RTO sitrep script, the launchd plist
-// template for scheduling RTO, and the Sitrep.app observation-post bundle —
-// into the lt binary so `lt install` can bootstrap a fresh machine's ~/lt/
-// tree without requiring network access or a separate asset download.
+// Marine-flavored role directives, the RTO sitrep script, and the launchd
+// plist template for scheduling RTO — into the lt binary so `lt install`
+// can bootstrap a fresh machine's ~/lt/ tree without requiring network
+// access or a separate asset download.
 //
 // Source layout (siblings of this file):
 //
 //	internal/assets/directives/*.md                20 role directives
 //	internal/assets/scripts/rto.sh                 RTO sitrep generator
 //	internal/assets/launchagents/*.tmpl            launchd plist template(s)
-//	internal/assets/apps/Sitrep.app/...            .app bundle
 //
 // Paths inside the plist template use the literal placeholder {{HOME}};
 // callers are expected to substitute the current user's $HOME before writing.
+//
+// Sitrep.app bundle is intentionally NOT bundled — it lives on the
+// installing user's Desktop as a local artifact. Future bead hq-3a8 (and
+// related work) will address first-class app distribution once a code-
+// signing identity is available.
 package assets
 
 import "embed"
@@ -32,11 +36,3 @@ var ScriptsFS embed.FS
 //
 //go:embed launchagents/*.tmpl
 var LaunchAgentsFS embed.FS
-
-// SitrepAppFS holds the Sitrep.app bundle, including nested
-// Contents/MacOS/Sitrep and Contents/Resources/AppIcon.icns. The embed
-// directive with `all:` ensures files beginning with `_` or `.` (none
-// expected today, but future-proofing) are still embedded.
-//
-//go:embed all:apps/Sitrep.app
-var SitrepAppFS embed.FS
