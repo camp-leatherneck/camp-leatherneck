@@ -1,5 +1,25 @@
 name: Release
 
+# Camp Leatherneck release workflow.
+#
+# Trigger: push of a tag matching `v*` (e.g. v0.1.0, v0.1.0-pre.1).
+# Action:  goreleaser builds cross-platform `lt` binaries, publishes a
+#          GitHub Release on this repo, and pushes an updated Formula
+#          to camp-leatherneck/homebrew-tap.
+#
+# Required secrets:
+#   GITHUB_TOKEN      — provided automatically by GitHub Actions. Used
+#                       to publish the release on THIS repo.
+#   TAP_GITHUB_TOKEN  — MUST be set manually by a human with admin on
+#                       this repo. Fine-grained PAT scoped to
+#                       camp-leatherneck/homebrew-tap with
+#                       Contents: Read and write. Goreleaser uses this
+#                       to push the updated Formula/lt.rb.
+#                       Set with:
+#                         gh secret set TAP_GITHUB_TOKEN \
+#                           --repo camp-leatherneck/camp-leatherneck
+#                       See .github/RELEASING.md for full instructions.
+
 on:
   push:
     tags:
@@ -12,75 +32,41 @@ concurrency:
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
-  goreleaser:
+  release:
+    name: GoReleaser
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # goreleaser needs full tag history
 
       - name: Set up Go
         uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
         with:
-          go-version: '1.26'
-
-      - name: Install cross-compilation toolchains
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-mingw-w64-x86-64 gcc-aarch64-linux-gnu
+          go-version: '1.25.x'
+          cache: true
 
       - name: Reject replace directives in go.mod
         run: |
-          if grep -qE '^replace\s' go.mod; then
+          if grep -qE '^replace[[:space:]]' go.mod; then
             echo "ERROR: go.mod contains replace directives — aborting release."
             echo "Replace directives break 'go install ...@latest'."
-            echo "See: https://github.com/steveyegge/gastown/issues/2230"
             grep -n '^replace' go.mod
             exit 1
           fi
-
-      - name: Verify tag matches Version constant
-        run: make check-version-tag
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7
         with:
           distribution: goreleaser
           version: '~> v2'
-          args: >
-            release --clean
-            ${{ github.repository != 'steveyegge/gastown' && '--skip=publish --skip=announce' || '' }}
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-npm:
-    runs-on: ubuntu-latest
-    needs: goreleaser
-    if: ${{ github.repository == 'steveyegge/gastown' }}
-    # npm publish is best-effort — don't fail the release if npm is down or
-    # the @gastown org isn't set up yet. GoReleaser + Homebrew are the primary
-    # distribution channels.
-    continue-on-error: true
-    permissions:
-      contents: read
-      id-token: write  # OIDC token for npm trusted publishing (no NPM_TOKEN needed)
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Set up Node.js
-        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
-        with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Update npm for provenance support
-        run: npm install -g npm@latest
-
-      - name: Publish to npm
-        run: |
-          cd npm-package
-          npm publish --access public --provenance
+          # Fine-grained PAT scoped to camp-leatherneck/homebrew-tap.
+          # See .github/RELEASING.md for rotation and setup procedure.
+          TAP_GITHUB_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
