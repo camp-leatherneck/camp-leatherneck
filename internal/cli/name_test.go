@@ -5,15 +5,15 @@ import (
 	"testing"
 )
 
-func TestName_DefaultIsGt(t *testing.T) {
+func TestName_DefaultIsLt(t *testing.T) {
 	// Reset singleton for test isolation
 	nameOnce = sync.Once{}
 	name = ""
 	t.Setenv("GT_COMMAND", "")
 
 	got := Name()
-	if got != "gt" {
-		t.Errorf("Name() = %q, want %q", got, "gt")
+	if got != "lt" {
+		t.Errorf("Name() = %q, want %q", got, "lt")
 	}
 }
 

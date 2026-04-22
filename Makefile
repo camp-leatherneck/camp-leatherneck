@@ -1,7 +1,7 @@
 .PHONY: build desktop-build desktop-run install safe-install check-forward-only check-version-tag clean test test-e2e-container check-up-to-date
 
-BINARY := gt
-BINARY_DESKTOP := gt-desktop
+BINARY := lt
+BINARY_DESKTOP := lt-desktop
 BUILD_DIR := .
 INSTALL_DIR := $(HOME)/.local/bin
 E2E_IMAGE ?= gastown-test
@@ -35,7 +35,7 @@ endif
 build:
 	go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY)-proxy-server ./cmd/gt-proxy-server
 	go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY)-proxy-client ./cmd/gt-proxy-client
-	go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY) ./cmd/gt
+	go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY) ./cmd/lt
 
 desktop-build:
 	go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY_DESKTOP) ./cmd/gt-desktop
@@ -111,7 +111,7 @@ install: check-up-to-date build
 		sleep 1; \
 		$(INSTALL_DIR)/$(BINARY) daemon start >/dev/null 2>&1 && \
 			echo "Daemon restarted." || \
-			echo "Warning: daemon restart failed (start manually with: gt daemon start)"; \
+			echo "Warning: daemon restart failed (start manually with: lt daemon start)"; \
 	fi
 	@# Sync plugins from build repo to town runtime directories.
 	@# Prevents drift when plugin fixes merge but runtime dirs are stale.

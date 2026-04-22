@@ -927,8 +927,8 @@ func TestCompactResumeReminder_PolecatGetsGtDone(t *testing.T) {
 		runPrimeCompactResume(ctx)
 	})
 
-	if !strings.Contains(output, "gt done") {
-		t.Fatalf("compact/resume for polecat must remind about gt done, got:\n%s", output)
+	if !strings.Contains(output, "lt done") {
+		t.Fatalf("compact/resume for polecat must remind about lt done, got:\n%s", output)
 	}
 }
 
@@ -943,8 +943,8 @@ func TestCompactResumeReminder_NonPolecatNoGtDone(t *testing.T) {
 		runPrimeCompactResume(ctx)
 	})
 
-	if strings.Contains(output, "gt done") {
-		t.Fatalf("compact/resume for non-polecat should NOT mention gt done, got:\n%s", output)
+	if strings.Contains(output, "lt done") {
+		t.Fatalf("compact/resume for non-polecat should NOT mention lt done, got:\n%s", output)
 	}
 }
 
@@ -971,8 +971,8 @@ func TestOutputRalphLoopDirective_NoSlashCommand(t *testing.T) {
 	if !strings.Contains(output, "RALPH LOOP MODE") {
 		t.Fatalf("expected 'RALPH LOOP MODE' header, got:\n%s", output)
 	}
-	if !strings.Contains(output, "gt done") {
-		t.Fatalf("expected 'gt done' instruction for completion, got:\n%s", output)
+	if !strings.Contains(output, "lt done") {
+		t.Fatalf("expected 'lt done' instruction for completion, got:\n%s", output)
 	}
 	if !strings.Contains(output, "Commit frequently") {
 		t.Fatalf("expected commit guidance, got:\n%s", output)

@@ -33,18 +33,18 @@ var deaconCmd = &cobra.Command{
 	Use:     "deacon",
 	Aliases: []string{"dea"},
 	GroupID: GroupAgents,
-	Short:   "Manage the Deacon (town-level watchdog)",
+	Short:   "Manage Top (camp-level watchdog)",
 	RunE:    requireSubcommand,
-	Long: `Manage the Deacon - the town-level watchdog for Gas Town.
+	Long: `Manage Top - the camp-level watchdog for Camp Leatherneck.
 
-The Deacon ("daemon beacon") is the only agent that receives mechanical
-heartbeats from the daemon. It monitors system health across all rigs:
-  - Watches all Witnesses (are they alive? stuck? responsive?)
+Top ("daemon beacon") is the only agent that receives mechanical
+heartbeats from the daemon. Top monitors system health across all rigs:
+  - Watches all Sarges (are they alive? stuck? responsive?)
   - Manages Dogs for cross-rig infrastructure work
   - Handles lifecycle requests (respawns, restarts)
   - Receives heartbeat pokes and decides what needs attention
 
-The Deacon patrols the town; Witnesses patrol their rigs; Polecats work.
+Top patrols the camp; Sarges patrol their rigs; Polecats work.
 
 Role shortcuts: "deacon" in mail/nudge addresses resolves to this agent.`,
 }
@@ -52,18 +52,18 @@ Role shortcuts: "deacon" in mail/nudge addresses resolves to this agent.`,
 var deaconStartCmd = &cobra.Command{
 	Use:     "start",
 	Aliases: []string{"spawn"},
-	Short:   "Start the Deacon session",
-	Long: `Start the Deacon tmux session.
+	Short:   "Start the Top session",
+	Long: `Start the Top tmux session.
 
-Creates a new detached tmux session for the Deacon and launches Claude.
+Creates a new detached tmux session for Top and launches Claude.
 The session runs in the workspace root directory.`,
 	RunE: runDeaconStart,
 }
 
 var deaconStopCmd = &cobra.Command{
 	Use:   "stop",
-	Short: "Stop the Deacon session",
-	Long: `Stop the Deacon tmux session.
+	Short: "Stop the Top session",
+	Long: `Stop the Top tmux session.
 
 Attempts graceful shutdown first (Ctrl-C), then kills the tmux session.`,
 	RunE: runDeaconStop,
@@ -72,10 +72,10 @@ Attempts graceful shutdown first (Ctrl-C), then kills the tmux session.`,
 var deaconAttachCmd = &cobra.Command{
 	Use:     "attach",
 	Aliases: []string{"at"},
-	Short:   "Attach to the Deacon session",
-	Long: `Attach to the running Deacon tmux session.
+	Short:   "Attach to the Top session",
+	Long: `Attach to the running Top tmux session.
 
-Attaches the current terminal to the Deacon's tmux session.
+Attaches the current terminal to Top's tmux session.
 Detach with Ctrl-B D.`,
 	RunE: runDeaconAttach,
 }

@@ -27,19 +27,19 @@ var (
 var bootCmd = &cobra.Command{
 	Use:     "boot",
 	GroupID: GroupAgents,
-	Short:   "Manage Boot (Deacon watchdog)",
-	Long: `Manage Boot - the daemon's watchdog for Deacon triage.
+	Short:   "Manage Fire Watch (Top watchdog)",
+	Long: `Manage Fire Watch - the daemon's watchdog for Top triage.
 
-Boot is a special dog that runs fresh on each daemon tick. It observes
-the system state and decides whether to start/wake/nudge/interrupt the
-Deacon, or do nothing. This centralizes the "when to wake" decision in
-an agent that can reason about it.
+Fire Watch is a special dog that runs fresh on each daemon tick. It observes
+the system state and decides whether to start/wake/nudge/interrupt Top,
+or do nothing. This centralizes the "when to wake" decision in an agent
+that can reason about it.
 
-Boot lifecycle:
-  1. Daemon tick spawns Boot (fresh each time)
-  2. Boot runs triage: observe, decide, act
-  3. Boot cleans inbox (discards stale handoffs)
-  4. Boot exits (or handoffs in non-degraded mode)
+Fire Watch lifecycle:
+  1. Daemon tick spawns Fire Watch (fresh each time)
+  2. Fire Watch runs triage: observe, decide, act
+  3. Fire Watch cleans inbox (discards stale handoffs)
+  4. Fire Watch exits (or handoffs in non-degraded mode)
 
 Location: ~/gt/deacon/dogs/boot/
 Session: gt-boot`,

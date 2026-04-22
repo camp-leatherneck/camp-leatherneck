@@ -259,18 +259,18 @@ const (
 )
 
 // Role emojis - centralized for easy customization.
-// These match the Gas Town visual identity (see ~/Desktop/Gas Town/ prompts).
+// Camp Leatherneck visual identity (Marine overlay on the underlying framework).
 const (
-	// EmojiMayor is the mayor emoji (fox conductor).
-	EmojiMayor = "🎩"
+	// EmojiMayor is the LT emoji (officer's medal).
+	EmojiMayor = "🎖️"
 
-	// EmojiDeacon is the deacon emoji (wolf in the engine room).
+	// EmojiDeacon is the Top emoji (wolf in the engine room, legacy icon).
 	EmojiDeacon = "🐺"
 
-	// EmojiWitness is the witness emoji (watchful owl).
+	// EmojiWitness is the Sarge emoji (watchful owl, legacy icon).
 	EmojiWitness = "🦉"
 
-	// EmojiRefinery is the refinery emoji (industrial).
+	// EmojiRefinery is the Gunny emoji (industrial, legacy icon).
 	EmojiRefinery = "🏭"
 
 	// EmojiCrew is the crew emoji (established worker).
@@ -279,7 +279,7 @@ const (
 	// EmojiPolecat is the polecat emoji (transient worker).
 	EmojiPolecat = "😺"
 
-	// EmojiBoot is the boot watchdog emoji (dog).
+	// EmojiBoot is the Fire Watch emoji (paw prints).
 	EmojiBoot = "🐾"
 )
 

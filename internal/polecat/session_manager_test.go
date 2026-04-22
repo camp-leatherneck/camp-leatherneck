@@ -628,8 +628,8 @@ func TestPromptlessFallbackIncludesPrimeAndWorkInstructions(t *testing.T) {
 
 	prompt := session.BuildStartupPrompt(beaconConfig, gtruntime.StartupNudgeContent())
 
-	if !strings.Contains(prompt, "Run `gt prime`") {
-		t.Fatalf("prompt missing gt prime instruction: %q", prompt)
+	if !strings.Contains(prompt, "Run `lt prime`") {
+		t.Fatalf("prompt missing lt prime instruction: %q", prompt)
 	}
 	if !strings.Contains(prompt, gtruntime.StartupNudgeContent()) {
 		t.Fatalf("prompt missing startup nudge content: %q", prompt)

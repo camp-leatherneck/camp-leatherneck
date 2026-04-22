@@ -404,8 +404,8 @@ func TestStartupNudgeContent(t *testing.T) {
 	if content == "" {
 		t.Error("StartupNudgeContent should return non-empty string")
 	}
-	if !contains(content, "gt hook") {
-		t.Error("StartupNudgeContent should mention gt hook")
+	if !contains(content, "lt hook") {
+		t.Error("StartupNudgeContent should mention lt hook")
 	}
 }
 

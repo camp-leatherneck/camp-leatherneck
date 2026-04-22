@@ -10,8 +10,8 @@ before:
 
 builds:
   - id: gt-linux-amd64
-    main: ./cmd/gt
-    binary: gt
+    main: ./cmd/lt
+    binary: lt
     env:
       - CGO_ENABLED=1
     goos:
@@ -26,8 +26,8 @@ builds:
       - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Branch={{.Branch}}
 
   - id: gt-linux-arm64
-    main: ./cmd/gt
-    binary: gt
+    main: ./cmd/lt
+    binary: lt
     env:
       - CGO_ENABLED=1
       - CC=aarch64-linux-gnu-gcc
@@ -44,8 +44,8 @@ builds:
       - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Branch={{.Branch}}
 
   - id: gt-darwin-amd64
-    main: ./cmd/gt
-    binary: gt
+    main: ./cmd/lt
+    binary: lt
     env:
       - CGO_ENABLED=1
     goos:
@@ -60,8 +60,8 @@ builds:
       - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Branch={{.Branch}}
 
   - id: gt-darwin-arm64
-    main: ./cmd/gt
-    binary: gt
+    main: ./cmd/lt
+    binary: lt
     env:
       - CGO_ENABLED=1
     goos:
@@ -76,8 +76,8 @@ builds:
       - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Branch={{.Branch}}
 
   - id: gt-windows-amd64
-    main: ./cmd/gt
-    binary: gt
+    main: ./cmd/lt
+    binary: lt
     env:
       - CGO_ENABLED=1
       - CC=x86_64-w64-mingw32-gcc
@@ -95,8 +95,8 @@ builds:
       - -buildmode=exe
 
   - id: gt-freebsd-amd64
-    main: ./cmd/gt
-    binary: gt
+    main: ./cmd/lt
+    binary: lt
     env:
       - CGO_ENABLED=0
     goos:

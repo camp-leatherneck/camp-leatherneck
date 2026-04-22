@@ -23,18 +23,18 @@ var mayorCmd = &cobra.Command{
 	Use:     "mayor",
 	Aliases: []string{"may"},
 	GroupID: GroupAgents,
-	Short:   "Manage the Mayor (Chief of Staff for cross-rig coordination)",
+	Short:   "Manage the LT (Chief of Staff for cross-rig coordination)",
 	RunE:    requireSubcommand,
-	Long: `Manage the Mayor - the Overseer's Chief of Staff.
+	Long: `Manage the LT - the Overseer's Chief of Staff.
 
-The Mayor is the global coordinator for Gas Town:
-  - Receives escalations from Witnesses and Deacon
+The LT is the global coordinator for Camp Leatherneck:
+  - Receives escalations from Sarges and Top
   - Coordinates work across multiple rigs
   - Handles human communication when needed
   - Routes strategic decisions and cross-project issues
 
-The Mayor is the primary interface between the human Overseer and the
-automated agents. When in doubt, escalate to the Mayor.
+The LT is the primary interface between the human Overseer and the
+automated agents. When in doubt, escalate to the LT.
 
 Role shortcuts: "mayor" in mail/nudge addresses resolves to this agent.`,
 }
@@ -46,18 +46,18 @@ var (
 
 var mayorStartCmd = &cobra.Command{
 	Use:   "start",
-	Short: "Start the Mayor session",
-	Long: `Start the Mayor tmux session.
+	Short: "Start the LT session",
+	Long: `Start the LT tmux session.
 
-Creates a new detached tmux session for the Mayor and launches Claude.
+Creates a new detached tmux session for the LT and launches Claude.
 The session runs in the workspace root directory.`,
 	RunE: runMayorStart,
 }
 
 var mayorStopCmd = &cobra.Command{
 	Use:   "stop",
-	Short: "Stop the Mayor session",
-	Long: `Stop the Mayor tmux session.
+	Short: "Stop the LT session",
+	Long: `Stop the LT tmux session.
 
 Attempts graceful shutdown first (Ctrl-C), then kills the tmux session.`,
 	RunE: runMayorStop,

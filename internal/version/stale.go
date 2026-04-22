@@ -151,7 +151,7 @@ func CheckStaleBinary(repoDir string) *StaleBinaryInfo {
 
 // GetRepoRoot returns the git repository root for the gt source code.
 // The canonical source is the gastown repo itself ($GT_ROOT/gastown).
-// Crew rigs also contain cmd/gt/main.go but have different HEADs,
+// Crew rigs also contain cmd/lt/main.go but have different HEADs,
 // so we prefer the gastown repo over CWD-based git toplevel detection.
 func GetRepoRoot() (string, error) {
 	// Check if GT_ROOT environment variable is set (agents always have this)
@@ -207,9 +207,9 @@ func isGitRepo(dir string) bool {
 }
 
 // hasGtSource checks if a directory contains the gt source code.
-// We look for cmd/gt/main.go as the definitive marker.
+// We look for cmd/lt/main.go as the definitive marker.
 func hasGtSource(dir string) bool {
-	_, err := os.Stat(dir + "/cmd/gt/main.go")
+	_, err := os.Stat(dir + "/cmd/lt/main.go")
 	return err == nil
 }
 

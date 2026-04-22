@@ -1,4 +1,4 @@
-// Package cmd provides CLI commands for the gt tool.
+// Package cmd provides CLI commands for the lt tool.
 package cmd
 
 import (
@@ -23,8 +23,8 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "gt", // Updated in init() based on GT_COMMAND
-	Short:   "Gas Town - Multi-agent workspace manager",
+	Use:     "lt", // Updated in init() based on GT_COMMAND
+	Short:   "Camp Leatherneck - Multi-agent workspace manager",
 	Version: Version,
 	Long:    "", // Updated in init() based on GT_COMMAND
 	PersistentPreRunE: persistentPreRun,
@@ -34,7 +34,7 @@ func init() {
 	// Update command name based on GT_COMMAND env var
 	cmdName := cli.Name()
 	rootCmd.Use = cmdName
-	rootCmd.Long = fmt.Sprintf(`Gas Town (%s) manages multi-agent workspaces called rigs.
+	rootCmd.Long = fmt.Sprintf(`Camp Leatherneck (%s) manages multi-agent workspaces called rigs.
 
 It coordinates agent spawning, work distribution, and communication
 across distributed teams of AI agents working on shared codebases.`, cmdName)

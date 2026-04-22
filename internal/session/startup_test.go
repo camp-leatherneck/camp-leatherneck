@@ -236,7 +236,7 @@ func TestFormatStartupBeacon(t *testing.T) {
 				"crew gus (rig: gastown)",
 				"<- deacon",
 				"assigned:gt-abc12",
-				"gt prime --hook",
+				"lt prime --hook",
 				"begin work",
 			},
 			wantNot: []string{
@@ -256,8 +256,8 @@ func TestFormatStartupBeacon(t *testing.T) {
 				"<- mayor",
 				"cold-start",
 				"Check your hook and mail",
-				"gt hook",
-				"gt mail inbox",
+				"lt hook",
+				"lt mail inbox",
 			},
 		},
 		{
@@ -273,8 +273,8 @@ func TestFormatStartupBeacon(t *testing.T) {
 				"<- self",
 				"handoff",
 				"Check your hook and mail",
-				"gt hook",
-				"gt mail inbox",
+				"lt hook",
+				"lt mail inbox",
 			},
 			wantNot: []string{
 				"gastown/witness",
@@ -322,7 +322,7 @@ func TestFormatStartupBeacon(t *testing.T) {
 				"start",
 			},
 			wantNot: []string{
-				"gt prime",
+				"lt prime",
 				"beads/crew/fang",
 			},
 		},
@@ -339,7 +339,7 @@ func TestFormatStartupBeacon(t *testing.T) {
 				"restart",
 			},
 			wantNot: []string{
-				"gt prime",
+				"lt prime",
 				"gastown/crew/george",
 			},
 		},
@@ -354,7 +354,7 @@ func TestFormatStartupBeacon(t *testing.T) {
 			wantSub: []string{
 				"[GAS TOWN]",
 				"polecat ruby (rig: myrig)",
-				"gt prime",
+				"lt prime",
 			},
 			wantNot: []string{
 				"begin work", // excluded when IncludePrimeInstruction is set
@@ -371,8 +371,8 @@ func TestFormatStartupBeacon(t *testing.T) {
 				"[GAS TOWN]",
 				"mayor",
 				"attach",
-				"gt hook",
-				"gt mail inbox",
+				"lt hook",
+				"lt mail inbox",
 			},
 		},
 	}

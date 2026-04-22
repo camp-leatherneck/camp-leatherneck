@@ -24,34 +24,34 @@
       in
       {
         packages = {
-          gt = pkgs.buildGoModule {
-            pname = "gt";
+          lt = pkgs.buildGoModule {
+            pname = "lt";
             version = "1.0.0";
             src = ./.;
             vendorHash = "sha256-mJzpsl4XnIm3ZSg7fFn0MOdQQW1bdOkAJ+TikiLMXJM=";
 
             ldflags = [
-              "-X github.com/gastownhall/gastown/internal/cmd.Build=nix"
+              "-X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Build=nix"
               "-X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.BuiltProperly=1"
             ];
 
-            subPackages = [ "cmd/gt" ];
+            subPackages = [ "cmd/lt" ];
 
             meta = with pkgs.lib; {
               description = "Multi-agent orchestration system for Claude Code with persistent work tracking";
-              homepage = "https://github.com/gastownhall/gastown";
+              homepage = "https://github.com/camp-leatherneck/camp-leatherneck";
               license = licenses.mit;
-              mainProgram = "gt";
+              mainProgram = "lt";
             };
           };
-          default = self.packages.${system}.gt;
+          default = self.packages.${system}.lt;
         };
 
         apps = {
-          gt = flake-utils.lib.mkApp {
-            drv = self.packages.${system}.gt;
+          lt = flake-utils.lib.mkApp {
+            drv = self.packages.${system}.lt;
           };
-          default = self.apps.${system}.gt;
+          default = self.apps.${system}.lt;
         };
 
         devShells.default = pkgs.mkShell {

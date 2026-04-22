@@ -29,30 +29,30 @@ var refineryCmd = &cobra.Command{
 	Use:     "refinery",
 	Aliases: []string{"ref"},
 	GroupID: GroupAgents,
-	Short:   "Manage the Refinery (merge queue processor)",
+	Short:   "Manage the Gunny (merge queue processor)",
 	RunE:    requireSubcommand,
-	Long: `Manage the Refinery - the per-rig merge queue processor.
+	Long: `Manage the Gunny - the per-rig merge queue processor.
 
-The Refinery serializes all merges to main for a rig:
+The Gunny serializes all merges to main for a rig:
   - Receives MRs submitted by polecats (via gt done)
   - Rebases work branches onto latest main
   - Runs validation (tests, builds, checks)
   - Merges to main when clear
   - If conflict: spawns FRESH polecat to re-implement (original is gone)
 
-Work flows: Polecat completes → gt done → MR in queue → Refinery merges.
-The polecat is already nuked by the time the Refinery processes.
+Work flows: Polecat completes → gt done → MR in queue → Gunny merges.
+The polecat is already nuked by the time the Gunny processes.
 
-One Refinery per rig. Persistent agent that processes work as it arrives.
+One Gunny per rig. Persistent agent that processes work as it arrives.
 
-Role shortcuts: "refinery" in mail/nudge addresses resolves to this rig's Refinery.`,
+Role shortcuts: "refinery" in mail/nudge addresses resolves to this rig's Gunny.`,
 }
 
 var refineryStartCmd = &cobra.Command{
 	Use:     "start [rig]",
 	Aliases: []string{"spawn"},
-	Short:   "Start the refinery",
-	Long: `Start the Refinery for a rig.
+	Short:   "Start the Gunny",
+	Long: `Start the Gunny for a rig.
 
 Launches the merge queue processor which monitors for polecat work branches
 and merges them to the appropriate target branches.
@@ -60,19 +60,19 @@ and merges them to the appropriate target branches.
 If rig is not specified, infers it from the current directory.
 
 Examples:
-  gt refinery start greenplace
-  gt refinery start greenplace --foreground
-  gt refinery start              # infer rig from cwd`,
+  lt refinery start greenplace
+  lt refinery start greenplace --foreground
+  lt refinery start              # infer rig from cwd`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runRefineryStart,
 }
 
 var refineryStopCmd = &cobra.Command{
 	Use:   "stop [rig]",
-	Short: "Stop the refinery",
-	Long: `Stop a running Refinery.
+	Short: "Stop the Gunny",
+	Long: `Stop a running Gunny.
 
-Gracefully stops the refinery, completing any in-progress merge first.
+Gracefully stops the Gunny, completing any in-progress merge first.
 If rig is not specified, infers it from the current directory.`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runRefineryStop,

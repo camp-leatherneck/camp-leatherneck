@@ -48,14 +48,14 @@ var (
 var installCmd = &cobra.Command{
 	Use:     "install [path]",
 	GroupID: GroupWorkspace,
-	Short:   "Create a new Gas Town HQ (workspace)",
-	Long: `Create a new Gas Town HQ at the specified path.
+	Short:   "Create a new Camp Leatherneck HQ (workspace)",
+	Long: `Create a new Camp Leatherneck HQ at the specified path.
 
-The HQ (headquarters) is the top-level directory where Gas Town is installed -
+The HQ (headquarters) is the top-level directory where Camp Leatherneck is installed -
 the root of your workspace where all rigs and agents live. It contains:
-  - CLAUDE.md            Mayor role context (Mayor runs from HQ root)
-  - mayor/               Mayor config, state, and rig registry
-  - .beads/              Town-level beads DB (hq-* prefix for mayor mail)
+  - CLAUDE.md            LT role context (LT runs from HQ root)
+  - mayor/               LT config, state, and rig registry
+  - .beads/              Town-level beads DB (hq-* prefix for LT mail)
 
 If path is omitted, uses the current directory.
 

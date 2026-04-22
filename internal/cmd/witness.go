@@ -24,53 +24,53 @@ var (
 var witnessCmd = &cobra.Command{
 	Use:     "witness",
 	GroupID: GroupAgents,
-	Short:   "Manage the Witness (per-rig polecat health monitor)",
+	Short:   "Manage the Sarge (per-rig polecat health monitor)",
 	RunE:    requireSubcommand,
-	Long: `Manage the Witness - the per-rig polecat health monitor.
+	Long: `Manage the Sarge - the per-rig polecat health monitor.
 
-The Witness patrols a single rig, watching over its polecats:
+The Sarge patrols a single rig, watching over its polecats:
   - Detects stalled polecats (crashed or stuck mid-work)
   - Nudges unresponsive sessions back to life
   - Cleans up zombie polecats (finished but failed to exit)
-  - Nukes sandboxes when polecats complete via 'gt done'
+  - Nukes sandboxes when polecats complete via 'lt done'
 
-The Witness does NOT force session cycles or interrupt working polecats.
-Polecats manage their own sessions (via gt handoff). The Witness handles
+The Sarge does NOT force session cycles or interrupt working polecats.
+Polecats manage their own sessions (via lt handoff). The Sarge handles
 failures and edge cases only.
 
-One Witness per rig. The Deacon monitors all Witnesses.
+One Sarge per rig. Top monitors all Sarges.
 
-Role shortcuts: "witness" in mail/nudge addresses resolves to this rig's Witness.`,
+Role shortcuts: "witness" in mail/nudge addresses resolves to this rig's Sarge.`,
 }
 
 var witnessStartCmd = &cobra.Command{
 	Use:     "start <rig>",
 	Aliases: []string{"spawn"},
-	Short:   "Start the witness",
-	Long: `Start the Witness for a rig.
+	Short:   "Start the Sarge",
+	Long: `Start the Sarge for a rig.
 
 Launches the monitoring agent which watches for stuck polecats and orphaned
 sandboxes, taking action to keep work flowing.
 
-Self-Cleaning Model: Polecats nuke themselves after work. The Witness handles
+Self-Cleaning Model: Polecats nuke themselves after work. The Sarge handles
 crash recovery (restart with hooked work) and orphan cleanup (nuke abandoned
 sandboxes). There is no "idle" state - polecats either have work or don't exist.
 
 Examples:
-  gt witness start greenplace
-  gt witness start greenplace --agent codex
-  gt witness start greenplace --env ANTHROPIC_MODEL=claude-3-haiku
-  gt witness start greenplace --foreground`,
+  lt witness start greenplace
+  lt witness start greenplace --agent codex
+  lt witness start greenplace --env ANTHROPIC_MODEL=claude-3-haiku
+  lt witness start greenplace --foreground`,
 	Args: cobra.ExactArgs(1),
 	RunE: runWitnessStart,
 }
 
 var witnessStopCmd = &cobra.Command{
 	Use:   "stop <rig>",
-	Short: "Stop the witness",
-	Long: `Stop a running Witness.
+	Short: "Stop the Sarge",
+	Long: `Stop a running Sarge.
 
-Gracefully stops the witness monitoring agent.`,
+Gracefully stops the Sarge monitoring agent.`,
 	Args: cobra.ExactArgs(1),
 	RunE: runWitnessStop,
 }
