@@ -70,3 +70,8 @@ jobs:
           # Fine-grained PAT scoped to camp-leatherneck/homebrew-tap.
           # See .github/RELEASING.md for rotation and setup procedure.
           TAP_GITHUB_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
+          # Force goreleaser to use the dispatched/pushed ref as the release
+          # version. Without this, when multiple tags point at the same commit
+          # (e.g. v0.1.0-pre.1 and v0.1.0), goreleaser's tag autodetect can
+          # pick the wrong one and build artifacts under the stale name.
+          GORELEASER_CURRENT_TAG: ${{ github.ref_name }}
