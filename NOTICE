@@ -1,0 +1,21 @@
+Camp Leatherneck
+Copyright (c) 2026 Camp Leatherneck contributors
+
+This product is derived from Gas Town:
+  https://github.com/steveyegge/gastown
+  Copyright (c) 2025 Steve Yegge
+  Licensed under the MIT License
+
+Gas Town provides the core engine (rigs, polecats, beads, merge queue,
+Dolt integration, tmux orchestration, session management, the gt CLI
+framework, and the underlying role architecture). Camp Leatherneck adds
+a Marine-themed persona overlay, standing roles (Fire Watch, RTO), the
+Self-Correction Loop doctrine, Diagnostic Discipline rules, a Sitrep
+generator, and an installable distribution.
+
+Both Gas Town and Camp Leatherneck are licensed under the MIT License.
+See LICENSE for the full text.
+
+Attribution requirement: any redistribution of this software or
+substantial portions thereof must preserve the MIT copyright notices
+above and include this NOTICE file.
