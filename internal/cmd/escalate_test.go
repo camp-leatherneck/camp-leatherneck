@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
 )
 
 func TestGetNextSeverity(t *testing.T) {

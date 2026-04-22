@@ -3,7 +3,7 @@ package doctor
 import (
 	"fmt"
 
-	"github.com/steveyegge/gastown/internal/deps"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/deps"
 )
 
 // ClaudeBinaryCheck verifies that the Claude Code CLI is installed and meets

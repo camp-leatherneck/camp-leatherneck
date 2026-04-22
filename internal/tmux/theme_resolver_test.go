@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
 )
 
 func TestResolveSessionTheme_AutoRigTheme(t *testing.T) {

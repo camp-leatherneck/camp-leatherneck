@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/constants"
-	"github.com/steveyegge/gastown/internal/formula"
-	"github.com/steveyegge/gastown/internal/plugin"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/formula"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/plugin"
 )
 
 // PatrolMoleculesExistCheck verifies that patrol formulas are accessible.

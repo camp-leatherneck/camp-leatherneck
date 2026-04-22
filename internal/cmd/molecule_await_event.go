@@ -11,10 +11,10 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/channelevents"
-	"github.com/steveyegge/gastown/internal/style"
-	"github.com/steveyegge/gastown/internal/workspace"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/channelevents"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/style"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
 var (

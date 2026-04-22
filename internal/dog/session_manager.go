@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/cli"
-	"github.com/steveyegge/gastown/internal/constants"
-	"github.com/steveyegge/gastown/internal/session"
-	"github.com/steveyegge/gastown/internal/tmux"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/cli"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/session"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/tmux"
 )
 
 // Session errors

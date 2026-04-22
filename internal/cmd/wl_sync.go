@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/gastown/internal/style"
-	"github.com/steveyegge/gastown/internal/wasteland"
-	"github.com/steveyegge/gastown/internal/workspace"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/style"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/wasteland"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
 var wlSyncDryRun bool

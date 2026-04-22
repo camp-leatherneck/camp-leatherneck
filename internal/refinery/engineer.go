@@ -17,13 +17,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/crew"
-	"github.com/steveyegge/gastown/internal/events"
-	"github.com/steveyegge/gastown/internal/git"
-	"github.com/steveyegge/gastown/internal/mail"
-	"github.com/steveyegge/gastown/internal/rig"
-	"github.com/steveyegge/gastown/internal/util"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/crew"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/events"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/git"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/mail"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/rig"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
 )
 
 func stripEnvKey(env []string, key string) []string {

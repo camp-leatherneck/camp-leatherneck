@@ -13,8 +13,8 @@ import (
 	"time"
 
 	beadsdk "github.com/steveyegge/beads"
-	"github.com/steveyegge/gastown/internal/deacon"
-	"github.com/steveyegge/gastown/internal/tmux"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/deacon"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/tmux"
 )
 
 // searchStorage is a minimal Storage stub for hasActiveWork tests.

@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/krc"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/krc"
 )
 
 // KRCPruner manages automatic pruning of expired ephemeral records.

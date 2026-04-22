@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/gastown/internal/mail"
-	"github.com/steveyegge/gastown/internal/session"
-	"github.com/steveyegge/gastown/internal/style"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/mail"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/session"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/style"
 )
 
 // getMailbox returns the mailbox for the given address.

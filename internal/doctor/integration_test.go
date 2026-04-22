@@ -18,9 +18,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/session"
-	"github.com/steveyegge/gastown/internal/tmux"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/session"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/tmux"
 )
 
 // TestIntegrationTownSetup verifies that a fresh town setup passes all doctor checks.

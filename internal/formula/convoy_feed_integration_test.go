@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/constants"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
 )
 
 // TestConvoyFeedWorkflow_Integration is a high-level integration test that verifies

@@ -16,9 +16,9 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/constants"
-	"github.com/steveyegge/gastown/internal/util"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
 )
 
 // convoyIDPattern validates convoy IDs.

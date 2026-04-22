@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/doltserver"
-	"github.com/steveyegge/gastown/internal/rig"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/doltserver"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/rig"
 )
 
 // RigConfigSyncCheck verifies that all registered rigs have a config.json file,

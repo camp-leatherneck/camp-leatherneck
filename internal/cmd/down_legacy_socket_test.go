@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/session"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/session"
 )
 
 type mockLegacyTmux struct {

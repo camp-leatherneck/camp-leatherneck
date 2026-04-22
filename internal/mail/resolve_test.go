@@ -3,7 +3,7 @@ package mail
 import (
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
 )
 
 func TestMatchPattern(t *testing.T) {

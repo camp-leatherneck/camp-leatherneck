@@ -5,13 +5,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/constants"
-	"github.com/steveyegge/gastown/internal/git"
-	"github.com/steveyegge/gastown/internal/rig"
-	"github.com/steveyegge/gastown/internal/wisp"
-	"github.com/steveyegge/gastown/internal/workspace"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/git"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/rig"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/wisp"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
 // checkRigNotParkedOrDocked checks if a rig is parked or docked and returns

@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/util"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
 )
 
 // GitError contains raw output from a git command for agent observation.

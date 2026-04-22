@@ -5,11 +5,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/dog"
-	"github.com/steveyegge/gastown/internal/style"
-	"github.com/steveyegge/gastown/internal/tmux"
-	"github.com/steveyegge/gastown/internal/workspace"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/dog"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/style"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/tmux"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
 // maxDogPoolSize is the maximum number of dogs allowed in the pool.

@@ -8,7 +8,7 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/steveyegge/gastown/internal/util"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
 )
 
 // These variables are set at build time via ldflags in cmd package.

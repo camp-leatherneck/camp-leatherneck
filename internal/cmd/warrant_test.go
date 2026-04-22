@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/session"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/session"
 )
 
 func setupWarrantTestRegistry(t *testing.T) {

@@ -11,15 +11,15 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/gastown/internal/cli"
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/polecat"
-	"github.com/steveyegge/gastown/internal/session"
-	"github.com/steveyegge/gastown/internal/style"
-	"github.com/steveyegge/gastown/internal/telemetry"
-	"github.com/steveyegge/gastown/internal/ui"
-	"github.com/steveyegge/gastown/internal/version"
-	"github.com/steveyegge/gastown/internal/workspace"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/cli"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/polecat"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/session"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/style"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/telemetry"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/ui"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/version"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
 var rootCmd = &cobra.Command{

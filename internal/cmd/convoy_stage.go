@@ -11,9 +11,9 @@ import (
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/convoy"
-	"github.com/steveyegge/gastown/internal/workspace"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/convoy"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
 // convoyStageJSON controls whether output is machine-readable JSON.

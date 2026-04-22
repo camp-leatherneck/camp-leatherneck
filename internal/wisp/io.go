@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/steveyegge/gastown/internal/atomicfile"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/atomicfile"
 )
 
 // EnsureDir ensures the .beads directory exists in the given root.

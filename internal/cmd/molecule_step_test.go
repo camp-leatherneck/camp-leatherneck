@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
 )
 
 func TestExtractMoleculeIDFromStep(t *testing.T) {

@@ -11,12 +11,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/git"
-	"github.com/steveyegge/gastown/internal/rig"
-	gtruntime "github.com/steveyegge/gastown/internal/runtime"
-	"github.com/steveyegge/gastown/internal/session"
-	"github.com/steveyegge/gastown/internal/tmux"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/git"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/rig"
+	gtruntime "github.com/camp-leatherneck/camp-leatherneck/internal/runtime"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/session"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/tmux"
 )
 
 func setupTestRegistryForSession(t *testing.T) {

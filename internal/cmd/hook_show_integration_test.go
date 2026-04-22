@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
 )
 
 type hookShowJSON struct {

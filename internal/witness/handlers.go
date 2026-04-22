@@ -12,19 +12,19 @@ import (
 	"sync"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/channelevents"
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/constants"
-	"github.com/steveyegge/gastown/internal/git"
-	"github.com/steveyegge/gastown/internal/mail"
-	"github.com/steveyegge/gastown/internal/mayor"
-	"github.com/steveyegge/gastown/internal/polecat"
-	"github.com/steveyegge/gastown/internal/rig"
-	"github.com/steveyegge/gastown/internal/session"
-	"github.com/steveyegge/gastown/internal/tmux"
-	"github.com/steveyegge/gastown/internal/util"
-	"github.com/steveyegge/gastown/internal/workspace"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/channelevents"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/git"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/mail"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/mayor"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/polecat"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/rig"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/session"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/tmux"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
 // HungSessionThresholdMinutes is the number of minutes of tmux inactivity
@@ -2312,7 +2312,7 @@ type DetectOrphanedMoleculesResult struct {
 // by scanning FROM beads. Once a polecat is nuked and its directory removed,
 // DetectZombiePolecats can't see it — but the orphaned molecules remain.
 //
-// See: https://github.com/steveyegge/gastown/issues/1381
+// See: https://github.com/camp-leatherneck/camp-leatherneck/issues/1381
 func DetectOrphanedMolecules(bd *BdCli, workDir, rigName string, router *mail.Router) *DetectOrphanedMoleculesResult {
 	result := &DetectOrphanedMoleculesResult{}
 

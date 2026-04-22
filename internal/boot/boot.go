@@ -4,7 +4,7 @@
 package boot
 
 import (
-	"github.com/steveyegge/gastown/internal/cli"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/cli"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -13,10 +13,10 @@ import (
 	"time"
 
 	"github.com/gofrs/flock"
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/session"
-	"github.com/steveyegge/gastown/internal/tmux"
-	"github.com/steveyegge/gastown/internal/util"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/session"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/tmux"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
 )
 
 // MarkerFileName is the lock file for Boot startup coordination.

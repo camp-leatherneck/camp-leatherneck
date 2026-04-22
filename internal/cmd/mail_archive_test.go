@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/mail"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/mail"
 )
 
 func TestStaleMessagesForSession(t *testing.T) {

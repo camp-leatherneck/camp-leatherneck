@@ -11,16 +11,16 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/constants"
-	"github.com/steveyegge/gastown/internal/nudge"
-	"github.com/steveyegge/gastown/internal/rig"
-	"github.com/steveyegge/gastown/internal/runtime"
-	"github.com/steveyegge/gastown/internal/session"
-	"github.com/steveyegge/gastown/internal/style"
-	"github.com/steveyegge/gastown/internal/tmux"
-	"github.com/steveyegge/gastown/internal/workspace"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/nudge"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/rig"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/runtime"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/session"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/style"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/tmux"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
 // Common errors
@@ -221,7 +221,7 @@ func (m *Manager) Start(foreground bool, agentOverride string, envOverrides []st
 	// Apply role config env vars if present (non-fatal).
 	// Skip keys already set by AgentEnv to prevent TOML env overriding
 	// the canonical qualified GT_ROLE (e.g., "gastown/witness" not "witness").
-	// See: https://github.com/steveyegge/gastown/issues/2492
+	// See: https://github.com/camp-leatherneck/camp-leatherneck/issues/2492
 	for key, value := range roleConfigEnvVars(roleConfig, townRoot, m.rig.Name) {
 		if _, alreadySet := envVars[key]; alreadySet {
 			continue

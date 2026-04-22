@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/steveyegge/gastown/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
 )
 
 // TownBeadsConfigCheck verifies town-level .beads/config.yaml exists when

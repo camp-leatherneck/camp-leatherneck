@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/steveyegge/gastown/internal/util"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
 )
 
 // Integration branch template constants

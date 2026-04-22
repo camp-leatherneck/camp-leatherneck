@@ -9,9 +9,9 @@ import (
 	"sync"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/mail"
-	"github.com/steveyegge/gastown/internal/workspace"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/mail"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
 // stopHookResponse is the JSON response for Claude Code's Stop hook.

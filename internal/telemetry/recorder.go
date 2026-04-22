@@ -72,7 +72,7 @@ type MailMessageInfo struct {
 }
 
 const (
-	meterRecorderName = "github.com/steveyegge/gastown"
+	meterRecorderName = "github.com/camp-leatherneck/camp-leatherneck"
 	loggerName        = "gastown"
 )
 

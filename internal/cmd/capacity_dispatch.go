@@ -9,12 +9,12 @@ import (
 	"sort"
 
 	"github.com/gofrs/flock"
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/doltserver"
-	"github.com/steveyegge/gastown/internal/events"
-	"github.com/steveyegge/gastown/internal/scheduler/capacity"
-	"github.com/steveyegge/gastown/internal/style"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/doltserver"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/events"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/scheduler/capacity"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/style"
 )
 
 // maxDispatchFailures is the maximum number of consecutive dispatch failures

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/witness"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/witness"
 )
 
 func TestPatrolScanOutputJSON(t *testing.T) {

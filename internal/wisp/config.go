@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/steveyegge/gastown/internal/atomicfile"
-	"github.com/steveyegge/gastown/internal/util"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/atomicfile"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
 )
 
 // WispConfigDir is the directory for wisp config storage (never synced via git).

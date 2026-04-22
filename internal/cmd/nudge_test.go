@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/nudge"
-	"github.com/steveyegge/gastown/internal/session"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/nudge"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/session"
 )
 
 func setupNudgeTestRegistry(t *testing.T) {

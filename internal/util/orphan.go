@@ -13,8 +13,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/lock"
-	"github.com/steveyegge/gastown/internal/tmux"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/lock"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/tmux"
 )
 
 // minOrphanAge is the minimum age (in seconds) a process must be before

@@ -11,13 +11,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/constants"
-	"github.com/steveyegge/gastown/internal/rig"
-	"github.com/steveyegge/gastown/internal/session"
-	"github.com/steveyegge/gastown/internal/tmux"
-	"github.com/steveyegge/gastown/internal/util"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/rig"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/session"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/tmux"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
 )
 
 // BeadsMessage represents a message from gt mail inbox --json.
@@ -588,7 +588,7 @@ func (d *Daemon) setSessionEnvironment(sessionName string, roleConfig *beads.Rol
 
 	// Set any custom env vars from role config.
 	// Skip keys already set by AgentEnv to prevent TOML [env] from clobbering
-	// canonical qualified values (e.g., GT_ROLE). See: https://github.com/steveyegge/gastown/issues/2492
+	// canonical qualified values (e.g., GT_ROLE). See: https://github.com/camp-leatherneck/camp-leatherneck/issues/2492
 	if roleConfig != nil {
 		for k, v := range roleConfig.EnvVars {
 			if _, alreadySet := envVars[k]; alreadySet {

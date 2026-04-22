@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/constants"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
 )
 
 func installMockBDRecorder(t *testing.T) string {

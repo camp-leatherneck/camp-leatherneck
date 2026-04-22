@@ -9,9 +9,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/nudge"
-	"github.com/steveyegge/gastown/internal/style"
-	"github.com/steveyegge/gastown/internal/townlog"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/nudge"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/style"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/townlog"
 )
 
 // acpDebugLogger provides file-based debug logging for ACP when GT_ACP_DEBUG=1.

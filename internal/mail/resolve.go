@@ -14,10 +14,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/steveyegge/gastown/internal/constants"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
 
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
 )
 
 // ErrUnknownRecipient indicates the address does not match any known agent.
@@ -112,7 +112,7 @@ func (r *Resolver) resolveAgentAddress(address string) ([]Recipient, error) {
 	// Validate that the address refers to a known agent before accepting.
 	// Without this check, typos like "laser/mayor" (instead of "mayor/")
 	// silently deliver to a dead inbox with no error.
-	// See: https://github.com/steveyegge/gastown/issues/2038
+	// See: https://github.com/camp-leatherneck/camp-leatherneck/issues/2038
 	if err := r.validateAgentAddress(address); err != nil {
 		return nil, err
 	}

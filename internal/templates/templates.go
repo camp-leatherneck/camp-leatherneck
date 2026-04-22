@@ -13,7 +13,7 @@ import (
 	"sync"
 	"text/template"
 
-	"github.com/steveyegge/gastown/internal/templates/commands"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/templates/commands"
 )
 
 var (

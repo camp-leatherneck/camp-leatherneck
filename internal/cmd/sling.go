@@ -11,15 +11,15 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/events"
-	"github.com/steveyegge/gastown/internal/lock"
-	"github.com/steveyegge/gastown/internal/mail"
-	"github.com/steveyegge/gastown/internal/nudge"
-	"github.com/steveyegge/gastown/internal/style"
-	"github.com/steveyegge/gastown/internal/telemetry"
-	"github.com/steveyegge/gastown/internal/witness"
-	"github.com/steveyegge/gastown/internal/workspace"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/events"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/lock"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/mail"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/nudge"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/style"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/telemetry"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/witness"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
 var slingCmd = &cobra.Command{
@@ -904,7 +904,7 @@ func runSling(cmd *cobra.Command, args []string) (retErr error) {
 	}
 
 	// Hook the bead with retry and verification.
-	// See: https://github.com/steveyegge/gastown/issues/148
+	// See: https://github.com/camp-leatherneck/camp-leatherneck/issues/148
 	//
 	// Acquire a per-assignee lock before writing hook_bead to serialize concurrent slings
 	// targeting the same polecat. Without this, multiple concurrent slings race on the
@@ -1116,7 +1116,7 @@ func tryAcquireSlingBeadLock(townRoot, beadID string) (func(), error) {
 // the same assignee's hook_bead field in Dolt. This lock is held only during
 // hookBeadWithRetry. Uses non-blocking try-acquire with retry and timeout to avoid
 // indefinite blocking if a sling gets stuck.
-// See: https://github.com/steveyegge/gastown/issues/3114
+// See: https://github.com/camp-leatherneck/camp-leatherneck/issues/3114
 func tryAcquireSlingAssigneeLock(townRoot, targetAgent string) (func(), error) {
 	lockDir := filepath.Join(townRoot, ".runtime", "locks", "sling")
 	if err := os.MkdirAll(lockDir, 0755); err != nil {

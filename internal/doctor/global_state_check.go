@@ -9,8 +9,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/steveyegge/gastown/internal/shell"
-	"github.com/steveyegge/gastown/internal/state"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/shell"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/state"
 )
 
 type GlobalStateCheck struct {

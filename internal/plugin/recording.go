@@ -9,8 +9,8 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/constants"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
 )
 
 // RunResult represents the outcome of a plugin execution.

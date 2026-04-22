@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/deps"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/deps"
 )
 
 func TestClaudeBinaryCheck_Metadata(t *testing.T) {

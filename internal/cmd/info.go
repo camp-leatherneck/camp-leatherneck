@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/gastown/internal/version"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/version"
 )
 
 var infoCmd = &cobra.Command{

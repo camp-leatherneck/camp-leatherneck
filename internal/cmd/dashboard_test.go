@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/gastown/internal/doltserver"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/doltserver"
 )
 
 func TestDashboardCmd_FlagsExist(t *testing.T) {

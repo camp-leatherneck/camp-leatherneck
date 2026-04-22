@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
 )
 
 //go:embed static

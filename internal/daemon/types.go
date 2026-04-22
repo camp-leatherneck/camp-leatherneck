@@ -15,8 +15,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/atomicfile"
-	"github.com/steveyegge/gastown/internal/constants"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/atomicfile"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
 )
 
 // Config holds daemon configuration.

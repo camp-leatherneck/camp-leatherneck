@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/steveyegge/gastown/internal/git"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/git"
 )
 
 // SparseCheckoutCheck detects legacy sparse checkout configurations that should be removed.

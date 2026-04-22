@@ -14,7 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/steveyegge/gastown/internal/hookutil"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/hookutil"
 )
 
 //go:embed templates/*

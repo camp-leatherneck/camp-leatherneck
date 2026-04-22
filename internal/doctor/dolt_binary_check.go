@@ -3,7 +3,7 @@ package doctor
 import (
 	"fmt"
 
-	"github.com/steveyegge/gastown/internal/deps"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/deps"
 )
 
 // DoltBinaryCheck verifies that the dolt binary is installed, accessible in PATH,

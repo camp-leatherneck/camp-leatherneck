@@ -1,4 +1,4 @@
-module github.com/steveyegge/gastown/plugins/dolt-snapshots
+module github.com/camp-leatherneck/camp-leatherneck/plugins/dolt-snapshots
 
 go 1.23
 

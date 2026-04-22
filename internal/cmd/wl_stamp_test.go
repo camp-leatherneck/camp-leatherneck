@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/doltserver"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/doltserver"
 )
 
 func TestValidateStampInputs_Valid(t *testing.T) {

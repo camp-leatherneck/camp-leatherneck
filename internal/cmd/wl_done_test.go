@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/doltserver"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/doltserver"
 )
 
 func TestGenerateCompletionID_Format(t *testing.T) {

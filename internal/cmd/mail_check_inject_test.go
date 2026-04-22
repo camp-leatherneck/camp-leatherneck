@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/mail"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/mail"
 )
 
 func TestFormatInjectOutput(t *testing.T) {

@@ -3,7 +3,7 @@ package quota
 import (
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
 )
 
 func TestPlanRotation_NoLimitedSessions(t *testing.T) {

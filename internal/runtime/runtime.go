@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/cli"
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/hooks"
-	"github.com/steveyegge/gastown/internal/hookutil"
-	"github.com/steveyegge/gastown/internal/templates/commands"
-	"github.com/steveyegge/gastown/internal/tmux"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/cli"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/hooks"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/hookutil"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/templates/commands"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/tmux"
 )
 
 // EnsureSettingsForRole provisions all agent-specific configuration for a role.

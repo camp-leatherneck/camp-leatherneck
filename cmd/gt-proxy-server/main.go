@@ -15,8 +15,8 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/steveyegge/gastown/internal/proxy"
-	"github.com/steveyegge/gastown/internal/util"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/proxy"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
 )
 
 // defaultAllowedSubcmds lists the safe subcommands for gt and bd.

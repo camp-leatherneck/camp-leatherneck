@@ -6,7 +6,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/ui"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/ui"
 )
 
 // Category constants for grouping checks

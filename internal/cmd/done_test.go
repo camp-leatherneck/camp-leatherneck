@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/beads"
-	gitpkg "github.com/steveyegge/gastown/internal/git"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
+	gitpkg "github.com/camp-leatherneck/camp-leatherneck/internal/git"
 )
 
 // TestDoneUsesResolveBeadsDir verifies that the done command correctly uses

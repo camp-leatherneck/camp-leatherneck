@@ -7,7 +7,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/wisp"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/wisp"
 )
 
 // Regression test for gt-arz:

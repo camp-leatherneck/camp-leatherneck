@@ -32,7 +32,7 @@
 
             ldflags = [
               "-X github.com/gastownhall/gastown/internal/cmd.Build=nix"
-              "-X github.com/steveyegge/gastown/internal/cmd.BuiltProperly=1"
+              "-X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.BuiltProperly=1"
             ];
 
             subPackages = [ "cmd/gt" ];

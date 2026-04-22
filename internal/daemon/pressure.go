@@ -6,8 +6,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/steveyegge/gastown/internal/constants"
-	"github.com/steveyegge/gastown/internal/tmux"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/tmux"
 )
 
 // PressureResult holds the outcome of a pressure check.
