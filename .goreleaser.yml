@@ -1,108 +1,35 @@
-# GoReleaser configuration for Gas Town (gt)
+# GoReleaser configuration for Camp Leatherneck (lt)
 # See https://goreleaser.com for documentation
+#
+# This config builds the `lt` binary for macOS and Linux (arm64 + amd64),
+# produces .tar.gz archives with checksums, and auto-publishes a Homebrew
+# Formula update to the camp-leatherneck/homebrew-tap repo on release.
+#
+# The GitHub Actions workflow that invokes `goreleaser release` on tag push
+# is tracked separately (hq-07z). The TAP_GITHUB_TOKEN env var must be set
+# in that workflow environment — it's a PAT with repo-write access to the
+# camp-leatherneck/homebrew-tap repo.
 
 version: 2
 
+project_name: camp-leatherneck
+
 before:
   hooks:
-    # Ensure dependencies are up to date
     - go mod tidy
 
 builds:
-  - id: gt-linux-amd64
-    main: ./cmd/lt
-    binary: lt
-    env:
-      - CGO_ENABLED=1
-    goos:
-      - linux
-    goarch:
-      - amd64
-    ldflags:
-      - -s -w
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Version={{.Version}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Build={{.ShortCommit}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Commit={{.Commit}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Branch={{.Branch}}
-
-  - id: gt-linux-arm64
-    main: ./cmd/lt
-    binary: lt
-    env:
-      - CGO_ENABLED=1
-      - CC=aarch64-linux-gnu-gcc
-      - CXX=aarch64-linux-gnu-g++
-    goos:
-      - linux
-    goarch:
-      - arm64
-    ldflags:
-      - -s -w
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Version={{.Version}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Build={{.ShortCommit}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Commit={{.Commit}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Branch={{.Branch}}
-
-  - id: gt-darwin-amd64
-    main: ./cmd/lt
-    binary: lt
-    env:
-      - CGO_ENABLED=1
-    goos:
-      - darwin
-    goarch:
-      - amd64
-    ldflags:
-      - -s -w
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Version={{.Version}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Build={{.ShortCommit}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Commit={{.Commit}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Branch={{.Branch}}
-
-  - id: gt-darwin-arm64
-    main: ./cmd/lt
-    binary: lt
-    env:
-      - CGO_ENABLED=1
-    goos:
-      - darwin
-    goarch:
-      - arm64
-    ldflags:
-      - -s -w
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Version={{.Version}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Build={{.ShortCommit}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Commit={{.Commit}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Branch={{.Branch}}
-
-  - id: gt-windows-amd64
-    main: ./cmd/lt
-    binary: lt
-    env:
-      - CGO_ENABLED=1
-      - CC=x86_64-w64-mingw32-gcc
-      - CXX=x86_64-w64-mingw32-g++
-    goos:
-      - windows
-    goarch:
-      - amd64
-    ldflags:
-      - -s -w
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Version={{.Version}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Build={{.ShortCommit}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Commit={{.Commit}}
-      - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Branch={{.Branch}}
-      - -buildmode=exe
-
-  - id: gt-freebsd-amd64
+  - id: lt
     main: ./cmd/lt
     binary: lt
     env:
       - CGO_ENABLED=0
     goos:
-      - freebsd
+      - darwin
+      - linux
     goarch:
       - amd64
+      - arm64
     ldflags:
       - -s -w
       - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Version={{.Version}}
@@ -110,16 +37,15 @@ builds:
       - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Commit={{.Commit}}
       - -X github.com/camp-leatherneck/camp-leatherneck/internal/cmd.Branch={{.Branch}}
 
-
 archives:
-  - id: gt-archive
-    format: tar.gz
+  - id: lt-archive
+    ids:
+      - lt
+    formats: [tar.gz]
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
     files:
       - LICENSE
+      - NOTICE
       - README.md
 
 checksum:
@@ -148,33 +74,56 @@ changelog:
     - title: "Others"
       order: 999
 
+brews:
+  - name: lt
+    ids:
+      - lt-archive
+    repository:
+      owner: camp-leatherneck
+      name: homebrew-tap
+      branch: main
+      token: "{{ .Env.TAP_GITHUB_TOKEN }}"
+    directory: Formula
+    homepage: "https://github.com/camp-leatherneck/camp-leatherneck"
+    description: "Marine-themed multi-agent workspace manager (Camp Leatherneck — fork of Gas Town)"
+    license: "MIT"
+    commit_author:
+      name: camp-leatherneck-bot
+      email: jdeleon@jcmdsolutions.com
+    commit_msg_template: "lt: release {{ .Tag }}"
+    install: |
+      bin.install "lt"
+    test: |
+      system "#{bin}/lt", "--version"
+
 release:
   github:
-    owner: steveyegge
-    name: gastown
+    owner: camp-leatherneck
+    name: camp-leatherneck
   draft: false
   prerelease: auto
   name_template: "v{{.Version}}"
   header: |
-    ## Gas Town v{{.Version}}
+    ## Camp Leatherneck v{{.Version}}
 
-    Pre-compiled binaries for Linux, macOS (Intel & Apple Silicon), and Windows.
+    Pre-compiled `lt` binaries for macOS and Linux (arm64 + amd64).
 
     ### Installation
 
     **Homebrew (macOS/Linux):**
     ```bash
-    brew install gastown
+    brew tap camp-leatherneck/tap
+    brew install lt
     ```
 
-    **npm (Node.js):**
+    **curl | bash (fallback):**
     ```bash
-    npm install -g @gastown/gt
+    curl -fsSL https://raw.githubusercontent.com/camp-leatherneck/camp-leatherneck/main/install.sh | bash
     ```
 
-    **Manual Install:**
-    Download the appropriate binary for your platform below, extract it, and place it in your PATH.
+    **Manual:**
+    Download the archive for your platform below, extract, and place `lt` on your `PATH`.
+    Then run `lt install` to bootstrap your `~/lt/` workspace.
 
-# Announce the release
 announce:
-  skip: false
+  skip: true
