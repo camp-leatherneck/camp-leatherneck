@@ -7,7 +7,7 @@ author: Scribe
 
 # Personas
 
-Camp Leatherneck defines 23 personas. Each is a Marine-themed identity mapped onto a Gas Town framework role. Personas set voice, scope, and duties; the underlying role-slot (e.g., `mayor`, `deacon`, `refinery`) determines how the engine invokes the agent.
+Camp Leatherneck defines 23 personas. Each is a Marine-themed identity mapped onto a Camp Leatherneck framework role. Personas set voice, scope, and duties; the underlying role-slot (e.g., `mayor`, `deacon`, `refinery`) determines how the engine invokes the agent.
 
 Per-role doctrine lives in [`directives/*.md`](../directives/) in this repo. This file is the roster and the tier model.
 
@@ -54,9 +54,9 @@ The concurrency rule: one LT, one Top, one Fire Watch, one RTO per town; one Gun
 
 ## Role-slot ↔ persona mapping
 
-Gas Town's engine invokes roles by their framework role name. The voice and doctrine the user sees is the Camp Leatherneck persona bound to that slot:
+Camp Leatherneck's engine invokes roles by their framework role name. The voice and doctrine the user sees is the Camp Leatherneck persona bound to that slot:
 
-| Gas Town role-slot | Camp Leatherneck persona |
+| Camp Leatherneck role-slot | Camp Leatherneck persona |
 |---|---|
 | `mayor` | LT |
 | `deacon` | Top |
@@ -81,7 +81,7 @@ Polecats are a hybrid: standing CV, ephemeral session. You can have many polecat
 
 Every persona with a directive file has it at `directives/<name>.md` in this repo. Read the directive at mission time before spawning, not from memory. The directive carries voice, output format, effort caps, and anti-patterns specific to that role.
 
-Fire Watch and Dog have no directive file — they are narrow binary-level roles whose behavior is fully defined by the Gas Town engine. LT and Top dispatch everything else.
+Fire Watch and Dog have no directive file — they are narrow binary-level roles whose behavior is fully defined by the Camp Leatherneck engine. LT and Top dispatch everything else.
 
 ## See also
 

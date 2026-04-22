@@ -1,4 +1,4 @@
-// Package events provides event logging for the gt activity feed.
+// Package events provides event logging for the lt activity feed.
 //
 // Events are written to ~/gt/.events.jsonl (raw audit log) and later
 // curated by the feed daemon into ~/.feed.jsonl (user-facing).
@@ -15,7 +15,7 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
-// Event represents an activity event in Gas Town.
+// Event represents an activity event in Camp Leatherneck.
 type Event struct {
 	Timestamp  string                 `json:"ts"`
 	Source     string                 `json:"source"`
@@ -32,7 +32,7 @@ const (
 	VisibilityBoth  = "both"  // Both audit and feed
 )
 
-// Common event types for gt commands.
+// Common event types for lt commands.
 const (
 	TypeSling   = "sling"
 	TypeHook    = "hook"
@@ -106,12 +106,12 @@ func LogAudit(eventType, actor string, payload map[string]interface{}) error {
 
 // write appends an event to the events file.
 // Uses flock for cross-process synchronization — sync.Mutex only protects
-// intra-process goroutines, but multiple gt processes write concurrently.
+// intra-process goroutines, but multiple lt processes write concurrently.
 func write(event Event) error {
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil || townRoot == "" {
-		// Silently ignore - we're not in a Gas Town workspace
+		// Silently ignore - we're not in a Camp Leatherneck workspace
 		return nil
 	}
 
@@ -294,9 +294,9 @@ func HaltPayload(services []string) map[string]interface{} {
 
 // SessionDeathPayload creates a payload for session death events.
 // session: tmux session name that died
-// agent: Gas Town agent identity (e.g., "gastown/polecats/Toast")
+// agent: Camp Leatherneck agent identity (e.g., "gastown/polecats/Toast")
 // reason: why the session was killed (e.g., "zombie cleanup", "user request", "doctor fix")
-// caller: what initiated the kill (e.g., "daemon", "doctor", "gt down")
+// caller: what initiated the kill (e.g., "daemon", "doctor", "lt down")
 func SessionDeathPayload(session, agent, reason, caller string) map[string]interface{} {
 	return map[string]interface{}{
 		"session": session,
@@ -325,7 +325,7 @@ func MassDeathPayload(count int, window string, sessions []string, possibleCause
 
 // SessionPayload creates a payload for session start/end events.
 // sessionID: Claude Code session UUID
-// role: Gas Town role (e.g., "gastown/crew/joe", "deacon")
+// role: Camp Leatherneck role (e.g., "gastown/crew/joe", "deacon")
 // topic: What the session is working on
 // cwd: Working directory
 func SessionPayload(sessionID, role, topic, cwd string) map[string]interface{} {

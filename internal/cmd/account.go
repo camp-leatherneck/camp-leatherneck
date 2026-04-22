@@ -26,16 +26,16 @@ var accountCmd = &cobra.Command{
 	GroupID: GroupConfig,
 	Short:   "Manage Claude Code accounts",
 	RunE:    requireSubcommand,
-	Long: `Manage multiple Claude Code accounts for Gas Town.
+	Long: `Manage multiple Claude Code accounts for Camp Leatherneck.
 
 This enables switching between accounts (e.g., personal vs work) with
 easy account selection per spawn or globally.
 
 Commands:
-  gt account list              List registered accounts
-  gt account add <handle>      Add a new account
-  gt account default <handle>  Set the default account
-  gt account status            Show current account info`,
+  lt account list              List registered accounts
+  lt account add <handle>      Add a new account
+  lt account default <handle>  Set the default account
+  lt account status            Show current account info`,
 }
 
 var accountListCmd = &cobra.Command{
@@ -46,8 +46,8 @@ var accountListCmd = &cobra.Command{
 Shows account handles, emails, and which is the default.
 
 Examples:
-  gt account list           # Text output
-  gt account list --json    # JSON output`,
+  lt account list           # Text output
+  lt account list --json    # JSON output`,
 	RunE: runAccountList,
 }
 
@@ -61,9 +61,9 @@ the account. You'll need to run 'claude' with CLAUDE_CONFIG_DIR set to
 that directory to complete the login.
 
 Examples:
-  gt account add work
-  gt account add work --email steve@company.com
-  gt account add work --email steve@company.com --desc "Work account"`,
+  lt account add work
+  lt account add work --email steve@company.com
+  lt account add work --email steve@company.com --desc "Work account"`,
 	Args: cobra.ExactArgs(1),
 	RunE: runAccountAdd,
 }
@@ -77,8 +77,8 @@ The default account is used when no --account flag or GT_ACCOUNT env var
 is specified during spawn or attach.
 
 Examples:
-  gt account default work
-  gt account default personal`,
+  lt account default work
+  lt account default personal`,
 	Args: cobra.ExactArgs(1),
 	RunE: runAccountDefault,
 }
@@ -95,7 +95,7 @@ type AccountListItem struct {
 func runAccountList(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	accountsPath := constants.MayorAccountsPath(townRoot)
@@ -104,14 +104,14 @@ func runAccountList(cmd *cobra.Command, args []string) error {
 		// If file doesn't exist, show empty message
 		fmt.Println("No accounts configured.")
 		fmt.Println("\nTo add an account:")
-		fmt.Println("  gt account add <handle>")
+		fmt.Println("  lt account add <handle>")
 		return nil
 	}
 
 	if len(cfg.Accounts) == 0 {
 		fmt.Println("No accounts configured.")
 		fmt.Println("\nTo add an account:")
-		fmt.Println("  gt account add <handle>")
+		fmt.Println("  lt account add <handle>")
 		return nil
 	}
 
@@ -168,7 +168,7 @@ func runAccountAdd(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	accountsPath := constants.MayorAccountsPath(townRoot)
@@ -234,7 +234,7 @@ func runAccountDefault(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	accountsPath := constants.MayorAccountsPath(townRoot)
@@ -270,8 +270,8 @@ Displays the currently resolved account based on:
 2. Default account from config
 
 Examples:
-  gt account status           # Show current account
-  GT_ACCOUNT=work gt account status  # Show with env override`,
+  lt account status           # Show current account
+  GT_ACCOUNT=work lt account status  # Show with env override`,
 	RunE: runAccountStatus,
 }
 
@@ -288,8 +288,8 @@ This command:
 After switching, you must restart Claude Code for the change to take effect.
 
 Examples:
-  gt account switch work       # Switch to work account
-  gt account switch personal   # Switch to personal account`,
+  lt account switch work       # Switch to work account
+  lt account switch personal   # Switch to personal account`,
 	Args: cobra.ExactArgs(1),
 	RunE: runAccountSwitch,
 }
@@ -297,7 +297,7 @@ Examples:
 func runAccountStatus(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	accountsPath := constants.MayorAccountsPath(townRoot)
@@ -311,7 +311,7 @@ func runAccountStatus(cmd *cobra.Command, args []string) error {
 	if handle == "" {
 		fmt.Println("No account configured.")
 		fmt.Println("\nTo add an account:")
-		fmt.Println("  gt account add <handle>")
+		fmt.Println("  lt account add <handle>")
 		return nil
 	}
 
@@ -353,7 +353,7 @@ func runAccountSwitch(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	accountsPath := constants.MayorAccountsPath(townRoot)
@@ -435,7 +435,7 @@ func runAccountSwitch(cmd *cobra.Command, args []string) error {
 				}
 			}
 		} else {
-			return fmt.Errorf("~/.claude is a directory but no default account is set. Please set a default account first with 'gt account default <handle>'")
+			return fmt.Errorf("~/.claude is a directory but no default account is set. Please set a default account first with 'lt account default <handle>'")
 		}
 	} else if err == nil && fileInfo.Mode()&os.ModeSymlink != 0 {
 		// It's a symlink - remove it so we can create a new one

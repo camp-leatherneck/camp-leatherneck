@@ -16,7 +16,7 @@ var shellCmd = &cobra.Command{
 	Use:     "shell",
 	GroupID: GroupConfig,
 	Short:   "Manage shell integration",
-	Long: `Manage the Gas Town shell integration hook.
+	Long: `Manage the Camp Leatherneck shell integration hook.
 
 The shell integration adds a cd hook to your shell RC file that automatically
 sets GT_TOWN_ROOT and GT_RIG environment variables when you enter a rig directory.
@@ -28,22 +28,22 @@ Subcommands: install, remove, status.`,
 var shellInstallCmd = &cobra.Command{
 	Use:   "install",
 	Short: "Install or update shell integration",
-	Long: `Install or update the Gas Town shell integration.
+	Long: `Install or update the Camp Leatherneck shell integration.
 
 This adds a hook to your shell RC file that:
-  - Sets GT_TOWN_ROOT and GT_RIG when you cd into a Gas Town rig
-  - Offers to add new git repos to Gas Town on first visit
+  - Sets GT_TOWN_ROOT and GT_RIG when you cd into a Camp Leatherneck rig
+  - Offers to add new git repos to Camp Leatherneck on first visit
 
-Run this after upgrading gt to get the latest shell hook features.`,
+Run this after upgrading lt to get the latest shell hook features.`,
 	RunE: runShellInstall,
 }
 
 var shellRemoveCmd = &cobra.Command{
 	Use:   "remove",
 	Short: "Remove shell integration",
-	Long: `Remove the Gas Town shell integration from your shell RC file.
+	Long: `Remove the Camp Leatherneck shell integration from your shell RC file.
 
-Removes the hook that was added by 'gt shell install'. You may need
+Removes the hook that was added by 'lt shell install'. You may need
 to restart your shell or source the RC file for the change to take effect.`,
 	RunE: runShellRemove,
 }
@@ -51,7 +51,7 @@ to restart your shell or source the RC file for the change to take effect.`,
 var shellStatusCmd = &cobra.Command{
 	Use:   "status",
 	Short: "Show shell integration status",
-	Long: `Show whether Gas Town is enabled and whether shell integration is installed.
+	Long: `Show whether Camp Leatherneck is enabled and whether shell integration is installed.
 
 Displays the current state and which shell RC file contains the integration hook.`,
 	RunE: runShellStatus,
@@ -70,7 +70,7 @@ func runShellInstall(cmd *cobra.Command, args []string) error {
 	}
 
 	if err := state.Enable(Version); err != nil {
-		fmt.Printf("%s Could not enable Gas Town: %v\n", style.Dim.Render("⚠"), err)
+		fmt.Printf("%s Could not enable Camp Leatherneck: %v\n", style.Dim.Render("⚠"), err)
 	}
 
 	rcPath := shell.RCFilePath(shell.DetectShell())
@@ -92,15 +92,15 @@ func runShellRemove(cmd *cobra.Command, args []string) error {
 func runShellStatus(cmd *cobra.Command, args []string) error {
 	s, err := state.Load()
 	if err != nil {
-		fmt.Println("Gas Town: not configured")
+		fmt.Println("Camp Leatherneck: not configured")
 		fmt.Println("Shell integration: not installed")
 		return nil
 	}
 
 	if s.Enabled {
-		fmt.Println("Gas Town: enabled")
+		fmt.Println("Camp Leatherneck: enabled")
 	} else {
-		fmt.Println("Gas Town: disabled")
+		fmt.Println("Camp Leatherneck: disabled")
 	}
 
 	if s.ShellIntegration != "" {

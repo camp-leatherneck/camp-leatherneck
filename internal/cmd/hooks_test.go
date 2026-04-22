@@ -24,7 +24,7 @@ func TestParseHooksFile(t *testing.T) {
 				{
 					Matcher: "",
 					Hooks: []hooks.Hook{
-						{Type: "command", Command: "gt prime"},
+						{Type: "command", Command: "lt prime"},
 					},
 				},
 			},
@@ -78,7 +78,7 @@ func TestParseHooksFile(t *testing.T) {
 	if sessionStart.Agent != "test/agent" {
 		t.Errorf("expected agent 'test/agent', got %q", sessionStart.Agent)
 	}
-	if len(sessionStart.Commands) != 1 || sessionStart.Commands[0] != "gt prime" {
+	if len(sessionStart.Commands) != 1 || sessionStart.Commands[0] != "lt prime" {
 		t.Errorf("unexpected SessionStart commands: %v", sessionStart.Commands)
 	}
 
@@ -178,7 +178,7 @@ func TestParseHooksFileEmptyHooks(t *testing.T) {
 }
 
 func TestDiscoverHooksCrewLevel(t *testing.T) {
-	// Create a temp directory structure simulating a Gas Town workspace
+	// Create a temp directory structure simulating a Camp Leatherneck workspace
 	tmpDir := t.TempDir()
 
 	// Create rig structure with shared crew and polecats settings at the parent level.
@@ -302,7 +302,7 @@ func TestResolveSettingsTarget(t *testing.T) {
 			expected: "/home/user/gt/deacon",
 		},
 		{
-			name:     "town root stays at cwd",
+			name:     "HQ root stays at cwd",
 			cwd:      "/home/user/gt",
 			expected: "/home/user/gt",
 		},

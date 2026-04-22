@@ -134,7 +134,7 @@ func TestIssueDetailsIsBlocked(t *testing.T) {
 }
 
 func TestIsSlingableBead(t *testing.T) {
-	// Set up a fake town root with routes.jsonl
+	// Set up a fake HQ root with routes.jsonl
 	townRoot := t.TempDir()
 	beadsDir := filepath.Join(townRoot, ".beads")
 	if err := os.MkdirAll(beadsDir, 0755); err != nil {

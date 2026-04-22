@@ -194,7 +194,7 @@ func TestACPAttachedMayorEscalationPath_MetadataAndUrgencyEndToEnd(t *testing.T)
 	townRoot := t.TempDir()
 	if err := nudge.Enqueue(townRoot, "hq-mayor", nudge.QueuedNudge{
 		Sender:   "gastown/witness",
-		Message:  "Escalation mail from gastown/witness. ID: hq-esc-end2end. Severity: critical. Run 'gt mail read hq-esc-end2end' or 'gt escalate ack hq-esc-end2end'.",
+		Message:  "Escalation mail from gastown/witness. ID: hq-esc-end2end. Severity: critical. Run 'lt mail read hq-esc-end2end' or 'lt escalate ack hq-esc-end2end'.",
 		Priority: nudge.PriorityUrgent,
 		Kind:     "escalation",
 		ThreadID: "hq-esc-end2end",

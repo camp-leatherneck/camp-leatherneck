@@ -1,10 +1,10 @@
-# Gas Town Escalation Protocol
+# Camp Leatherneck Escalation Protocol
 
-> Reference for the unified escalation system in Gas Town.
+> Reference for the unified escalation system in Camp Leatherneck.
 
 ## Overview
 
-Gas Town agents escalate issues when automated resolution is not possible.
+Camp Leatherneck agents escalate issues when automated resolution is not possible.
 Escalations are severity-routed, tracked as beads, and support stale detection
 with automatic re-escalation.
 

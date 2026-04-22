@@ -33,7 +33,7 @@ func TestFindWLCommonsFork_InParent(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Town root is a subdirectory
+	// HQ root is a subdirectory
 	townRoot := filepath.Join(tmpDir, "mytown")
 	if err := os.MkdirAll(townRoot, 0755); err != nil {
 		t.Fatal(err)

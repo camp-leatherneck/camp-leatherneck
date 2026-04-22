@@ -49,7 +49,7 @@ func wrapCloneError(err error, gitURL string) error {
 			// Try to suggest the SSH equivalent
 			sshURL := convertToSSH(gitURL)
 			if sshURL != "" {
-				return fmt.Errorf("creating bare repo: %w\n\nHint: GitHub no longer supports password authentication.\nTry using SSH instead:\n  gt rig add <name> %s", err, sshURL)
+				return fmt.Errorf("creating bare repo: %w\n\nHint: GitHub no longer supports password authentication.\nTry using SSH instead:\n  lt rig add <name> %s", err, sshURL)
 			}
 			return fmt.Errorf("creating bare repo: %w\n\nHint: GitHub no longer supports password authentication.\nTry using an SSH URL (git@github.com:owner/repo.git) or a personal access token.", err)
 		}
@@ -341,7 +341,7 @@ func (m *Manager) AddRig(opts AddRigOptions) (*Rig, error) {
 		if running, _, err := doltserver.IsRunning(m.townRoot); err != nil {
 			return nil, fmt.Errorf("checking Dolt server: %w", err)
 		} else if !running {
-			return nil, fmt.Errorf("Dolt server is not running (required for beads init); start it with 'gt up' or 'gt dolt start'")
+			return nil, fmt.Errorf("Dolt server is not running (required for beads init); start it with 'lt up' or 'lt dolt start'")
 		}
 	}
 
@@ -349,7 +349,7 @@ func (m *Manager) AddRig(opts AddRigOptions) (*Rig, error) {
 
 	// Check if directory already exists
 	if _, err := os.Stat(rigPath); err == nil {
-		return nil, fmt.Errorf("directory already exists: %s\n\nTo adopt an existing directory, use --adopt:\n  gt rig add %s --adopt", rigPath, opts.Name)
+		return nil, fmt.Errorf("directory already exists: %s\n\nTo adopt an existing directory, use --adopt:\n  lt rig add %s --adopt", rigPath, opts.Name)
 	}
 
 	// Track whether user explicitly provided --prefix (before deriving)
@@ -622,8 +622,8 @@ func (m *Manager) AddRig(opts AddRigOptions) (*Rig, error) {
 	}
 
 	// NOTE: No per-directory CLAUDE.md/AGENTS.md is created for any agent.
-	// Only ~/gt/CLAUDE.md (town-root identity anchor) exists on disk.
-	// Full context is injected ephemerally by `gt prime` at session start.
+	// Only ~/gt/CLAUDE.md (HQ identity anchor) exists on disk.
+	// Full context is injected ephemerally by `lt prime` at session start.
 
 	// Create server-side database for this rig BEFORE initializing beads.
 	// InitBeads runs bd init --server which writes metadata.json, but the actual
@@ -651,9 +651,9 @@ func (m *Manager) AddRig(opts AddRigOptions) (*Rig, error) {
 	// the correct server-side database (rigName, not beads_<prefix>).
 	if err := doltserver.EnsureMetadata(m.townRoot, opts.Name); err != nil {
 		// Non-fatal: daemon's EnsureAllMetadata self-heals on next startup,
-		// or user can run gt doctor --fix to repair manually.
+		// or user can run lt doctor --fix to repair manually.
 		fmt.Printf("  Warning: Could not set Dolt server metadata: %v\n", err)
-		fmt.Printf("  Run 'gt doctor --fix' to repair, or it will self-heal on next daemon start.\n")
+		fmt.Printf("  Run 'lt doctor --fix' to repair, or it will self-heal on next daemon start.\n")
 	}
 
 	// Safety-net: drop orphaned beads_<prefix> database if it differs from rigName (gt-sv1h).
@@ -690,16 +690,16 @@ func (m *Manager) AddRig(opts AddRigOptions) (*Rig, error) {
 			fmt.Printf("  Setting up DoltHub remote for %s/%s...\n", org, doltserver.DoltHubRepoName(dbName))
 			if err := doltserver.SetupDoltHubRemote(dbDir, org, dbName, token); err != nil {
 				fmt.Printf("  Warning: DoltHub remote setup failed: %v\n", err)
-				fmt.Printf("  You can set up the remote manually later with 'gt dolt sync'.\n")
+				fmt.Printf("  You can set up the remote manually later with 'lt dolt sync'.\n")
 			} else {
 				fmt.Printf("   ✓ DoltHub remote configured and initial push complete\n")
 			}
 		}
 	}
 
-	// Provision PRIME.md with Gas Town context for all workers in this rig.
+	// Provision PRIME.md with Camp Leatherneck context for all workers in this rig.
 	// This is the fallback if SessionStart hook fails - ensures ALL workers
-	// (crew, polecats, refinery, witness) have GUPP and essential Gas Town context.
+	// (crew, polecats, refinery, witness) have GUPP and essential Camp Leatherneck context.
 	// PRIME.md is read by bd prime and output to the agent.
 	// Use ResolveBeadsDir to follow redirect (writes to mayor/rig/.beads/ if tracked).
 	resolvedBeadsPath := beads.ResolveBeadsDir(rigPath)
@@ -738,7 +738,7 @@ func (m *Manager) AddRig(opts AddRigOptions) (*Rig, error) {
 	// Claude Code does NOT traverse parent directories for settings.json.
 	// See: https://github.com/anthropics/claude-code/issues/12962
 
-	// Create empty crew directory with README (crew members added via gt crew add)
+	// Create empty crew directory with README (crew members added via lt crew add)
 	crewPath := filepath.Join(rigPath, "crew")
 	if err := os.MkdirAll(crewPath, 0755); err != nil {
 		return nil, fmt.Errorf("creating crew dir: %w", err)
@@ -752,7 +752,7 @@ This directory contains crew worker workspaces.
 ## Adding a Crew Member
 
 ` + "```bash" + `
-gt crew add <name>    # Creates crew/<name>/ with a git clone
+lt crew add <name>    # Creates crew/<name>/ with a git clone
 ` + "```" + `
 
 ## Crew vs Polecats
@@ -823,7 +823,7 @@ Use crew for your own workspace. Polecats are for batch work dispatch.
 		}
 	}
 
-	// Create rig-level settings directory (used by gt config for rig overrides)
+	// Create rig-level settings directory (used by lt config for rig overrides)
 	rigSettingsPath := filepath.Join(rigPath, constants.DirSettings)
 	if err := os.MkdirAll(rigSettingsPath, 0755); err != nil {
 		return nil, fmt.Errorf("creating settings dir: %w", err)
@@ -836,7 +836,7 @@ Use crew for your own workspace. Polecats are for batch work dispatch.
 	// any future repo-side updates.
 
 	// Create rig-level agent beads (witness, refinery) in rig beads.
-	// Town-level agents (mayor, deacon) are created by gt install in town beads.
+	// HQ-level agents (mayor, deacon) are created by lt install in town beads.
 	if err := m.initAgentBeads(rigPath, opts.Name, opts.BeadsPrefix); err != nil {
 		// Non-fatal: log warning but continue
 		fmt.Fprintf(os.Stderr, "  Warning: Could not create agent beads: %v\n", err)
@@ -871,9 +871,9 @@ Use crew for your own workspace. Polecats are for batch work dispatch.
 	// writing the wrong database name, before the rig is considered ready.
 	if err := m.verifyRigIdentity(rigPath, opts.Name); err != nil {
 		// Non-fatal but loud: the rig was created, but identity may be wrong.
-		// gt doctor --fix can repair this.
+		// lt doctor --fix can repair this.
 		fmt.Fprintf(os.Stderr, "  ⚠ Identity verification warning: %v\n", err)
-		fmt.Fprintf(os.Stderr, "  Run 'gt doctor --fix' to repair if needed.\n")
+		fmt.Fprintf(os.Stderr, "  Run 'lt doctor --fix' to repair if needed.\n")
 	}
 
 	// Persist rigs.json atomically before marking success.
@@ -961,7 +961,7 @@ func LoadRigConfig(rigPath string) (*RigConfig, error) {
 // warnDeprecatedRigConfigKeys detects merge_queue keys in rig root config.json
 // that are silently ignored by json.Unmarshal (RigConfig has no merge_queue field).
 // Without this warning, users can set merge_queue.target_branch believing it
-// controls MR targets, while gt mq submit / gt done actually use default_branch.
+// controls MR targets, while lt mq submit / lt done actually use default_branch.
 func warnDeprecatedRigConfigKeys(data []byte, path string) {
 	var raw map[string]json.RawMessage
 	if err := json.Unmarshal(data, &raw); err != nil {
@@ -1072,7 +1072,7 @@ func (m *Manager) InitBeads(rigPath, prefix, rigName string) error {
 	} else {
 		// bd init succeeded - configure the Dolt database
 
-		// Configure custom types for Gas Town (agent, role, rig, convoy).
+		// Configure custom types for Camp Leatherneck (agent, role, rig, convoy).
 		// These were extracted from beads core in v0.46.0 and now require explicit config.
 		configCmd := exec.Command("bd", "config", "set", "types.custom", constants.BeadsCustomTypes)
 		configCmd.Dir = rigPath
@@ -1081,7 +1081,7 @@ func (m *Manager) InitBeads(rigPath, prefix, rigName string) error {
 		_, _ = configCmd.CombinedOutput()
 
 		// Explicitly set issue_prefix config (bd init --prefix may not persist it in newer versions).
-		// Without this, bd create and gt sling fail with "issue_prefix config is missing".
+		// Without this, bd create and lt sling fail with "issue_prefix config is missing".
 		prefixSetCmd := exec.Command("bd", "config", "set", "issue_prefix", prefix)
 		prefixSetCmd.Dir = rigPath
 		prefixSetCmd.Env = filteredEnv
@@ -1115,7 +1115,7 @@ func (m *Manager) InitBeads(rigPath, prefix, rigName string) error {
 	_, _ = migrateCmd.CombinedOutput()
 
 	// NOTE: We intentionally do NOT create routes.jsonl in rig beads.
-	// bd's routing walks up to find town root (via mayor/town.json) and uses
+	// bd's routing walks up to find HQ root (via mayor/town.json) and uses
 	// town-level routes.jsonl for prefix-based routing. Rig-level routes.jsonl
 	// would prevent this walk-up and break cross-rig routing.
 
@@ -1125,8 +1125,8 @@ func (m *Manager) InitBeads(rigPath, prefix, rigName string) error {
 // initAgentBeads creates rig-level agent beads for Witness and Refinery.
 // These agents use the rig's beads prefix and are stored in rig beads.
 //
-// Town-level agents (Mayor, Deacon) are created by gt install in town beads.
-// Role beads are also created by gt install with hq- prefix.
+// HQ-level agents (Mayor, Deacon) are created by lt install in town beads.
+// Role beads are also created by lt install with hq- prefix.
 //
 // Rig-level agents (Witness, Refinery) are created here in rig beads with rig prefix.
 // Format: <prefix>-<rig>-<role> (e.g., pi-pixelforge-witness)
@@ -1134,7 +1134,7 @@ func (m *Manager) InitBeads(rigPath, prefix, rigName string) error {
 // Agent beads track lifecycle state for ZFC compliance (gt-h3hak, gt-pinkq).
 func (m *Manager) initAgentBeads(rigPath, rigName, prefix string) error {
 	// Rig-level agents go in rig beads with rig prefix (per docs/architecture.md).
-	// Town-level agents (Mayor, Deacon) are created by gt install in town beads.
+	// HQ-level agents (Mayor, Deacon) are created by lt install in town beads.
 	// Use ResolveBeadsDir to follow redirect files for tracked beads.
 	rigBeadsDir := beads.ResolveBeadsDir(rigPath)
 	bd := beads.NewWithBeadsDir(rigPath, rigBeadsDir)
@@ -1164,7 +1164,7 @@ func (m *Manager) initAgentBeads(rigPath, rigName, prefix string) error {
 		},
 	}
 
-	// Note: Mayor and Deacon are now created by gt install in town beads.
+	// Note: Mayor and Deacon are now created by lt install in town beads.
 
 	for _, agent := range agents {
 		// Check if already exists
@@ -1370,10 +1370,10 @@ func bdDatabaseExists(beadsDir string) bool {
 	// metadata.json may be tracked in git from another workspace where
 	// the Dolt server had this database, but this is a fresh server.
 	if meta.DoltMode == "server" && meta.DoltDatabase != "" {
-		// Walk up from beadsDir to find the town root (.dolt-data lives there).
+		// Walk up from beadsDir to find the HQ root (.dolt-data lives there).
 		townRoot := beads.FindTownRoot(filepath.Dir(beadsDir))
 		if townRoot == "" {
-			return true // Can't find town root — assume it exists
+			return true // Can't find HQ root — assume it exists
 		}
 		dbDir := filepath.Join(townRoot, ".dolt-data", meta.DoltDatabase)
 		if _, err := os.Stat(dbDir); os.IsNotExist(err) {
@@ -1751,7 +1751,7 @@ func (m *Manager) seedPatrolMoleculesManually(rigPath string) error {
 // - ~/gt/plugins/ (town-level, shared across all rigs)
 // - <rig>/plugins/ (rig-level, rig-specific plugins)
 func (m *Manager) createPluginDirectories(rigPath string) error {
-	// Town-level plugins directory
+	// HQ-level plugins directory
 	townPluginsDir := filepath.Join(m.townRoot, "plugins")
 	if err := os.MkdirAll(townPluginsDir, 0755); err != nil {
 		return fmt.Errorf("creating town plugins directory: %w", err)
@@ -1760,7 +1760,7 @@ func (m *Manager) createPluginDirectories(rigPath string) error {
 	// Create a README in town plugins if it doesn't exist
 	townReadme := filepath.Join(townPluginsDir, "README.md")
 	if _, err := os.Stat(townReadme); os.IsNotExist(err) {
-		content := `# Gas Town Plugins
+		content := `# Camp Leatherneck Plugins
 
 This directory contains town-level plugins that run during Deacon patrol cycles.
 
@@ -1790,7 +1790,7 @@ See docs/deacon-plugins.md for full documentation.
 		return fmt.Errorf("creating rig plugins directory: %w", err)
 	}
 
-	// Add Gas Town directories and config files to rig .gitignore so they
+	// Add Camp Leatherneck directories and config files to rig .gitignore so they
 	// don't pollute the project repo. The rig container is not a git repo
 	// itself, but this is a defensive measure against accidental git init
 	// or future architecture changes.

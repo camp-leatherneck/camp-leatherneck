@@ -114,7 +114,7 @@ func (g *Git) run(args ...string) (string, error) {
 }
 
 // pushTimeout is the maximum time a git push is allowed to run before being
-// killed. This prevents gt done from hanging indefinitely when the remote
+// killed. This prevents lt done from hanging indefinitely when the remote
 // (e.g. GitLab) is unreachable or slow.
 const pushTimeout = 60 * time.Second
 
@@ -303,7 +303,7 @@ func (g *Git) cloneInternal(url, dest string, opts cloneOptions) error {
 		// fetching all branches (which would defeat the purpose of --single-branch).
 		return configureRefspec(dest, opts.singleBranch)
 	}
-	// Configure hooks path for Gas Town clones
+	// Configure hooks path for Camp Leatherneck clones
 	if err := configureHooksPath(dest); err != nil {
 		return err
 	}
@@ -379,7 +379,7 @@ func (g *Git) CloneBranchPartial(url, dest, branch, filter string) error {
 }
 
 // configureHooksPath sets core.hooksPath to use the repo's .githooks directory
-// if it exists. This ensures Gas Town agents use the pre-push hook that blocks
+// if it exists. This ensures Camp Leatherneck agents use the pre-push hook that blocks
 // pushes to non-main branches (internal PRs are not allowed).
 func configureHooksPath(repoPath string) error {
 	hooksDir := filepath.Join(repoPath, ".githooks")
@@ -581,7 +581,7 @@ func (g *Git) Push(remote, branch string, force bool) error {
 }
 
 // PushWithEnv pushes with additional environment variables.
-// Used by gt mq integration land to set GT_INTEGRATION_LAND=1, which the
+// Used by lt mq integration land to set GT_INTEGRATION_LAND=1, which the
 // pre-push hook checks to allow integration branch content landing on main.
 func (g *Git) PushWithEnv(remote, branch string, force bool, env []string) error {
 	args := []string{"push", remote, branch}
@@ -696,7 +696,7 @@ func (g *Git) Status() (*GitStatus, error) {
 
 	// Get skip-worktree files once (sparse checkout). These appear as 'D' in
 	// --porcelain output but are not real deletions — they are hidden by the
-	// sparse-checkout cone. Filtering them prevents gt done from blocking on
+	// sparse-checkout cone. Filtering them prevents lt done from blocking on
 	// 897+ phantom deletions in polecat sparse worktrees.
 	skipWorktree := g.skipWorktreeFiles()
 
@@ -1907,8 +1907,8 @@ func isBeadsPath(path string) bool {
 	return strings.Contains(path, ".beads/") || strings.Contains(path, ".beads\\")
 }
 
-// isGasTownRuntimePath returns true if the path is a Gas Town or Cursor runtime
-// artifact that should not block gt done. These paths are managed by the toolchain,
+// isGasTownRuntimePath returns true if the path is a Camp Leatherneck or Cursor runtime
+// artifact that should not block lt done. These paths are managed by the toolchain,
 // not by the developer, and are normally gitignored via EnsureGitignorePatterns.
 func isGasTownRuntimePath(path string) bool {
 	prefixes := []string{
@@ -1930,7 +1930,7 @@ func isGasTownRuntimePath(path string) bool {
 			return true
 		}
 	}
-	// CLAUDE.local.md is a Gas Town overlay file written by CreatePolecatCLAUDEmd.
+	// CLAUDE.local.md is a Camp Leatherneck overlay file written by CreatePolecatCLAUDEmd.
 	// It must not be staged by the auto-commit safety net or committed to the repo.
 	if bare == "CLAUDE.local.md" {
 		return true
@@ -1938,9 +1938,9 @@ func isGasTownRuntimePath(path string) bool {
 	return false
 }
 
-// CleanExcludingRuntime returns true if the only uncommitted changes are Gas Town
+// CleanExcludingRuntime returns true if the only uncommitted changes are Camp Leatherneck
 // runtime artifacts (.beads/, .claude/, .runtime/, .logs/, __pycache__/).
-// Used by gt done to avoid blocking completion on toolchain-managed files.
+// Used by lt done to avoid blocking completion on toolchain-managed files.
 //
 // Note: UnpushedCommits and StashCount are intentionally NOT checked here. This
 // function only evaluates whether uncommitted *file* changes are runtime artifacts.
@@ -2061,7 +2061,7 @@ func (g *Git) BranchPushedToRemote(localBranch, remote string) (bool, int, error
 
 	// In worktrees, the fetch may not update refs/remotes/origin/<branch> due to
 	// missing refspecs. If the remote ref doesn't exist locally, create it from FETCH_HEAD.
-	// See: gt-cehl8 (gt done fails in worktrees due to missing origin tracking ref)
+	// See: gt-cehl8 (lt done fails in worktrees due to missing origin tracking ref)
 	remoteRef := "refs/remotes/" + remoteBranch
 	if _, err := g.run("rev-parse", "--verify", remoteRef); err != nil {
 		// Remote ref doesn't exist locally - update it from FETCH_HEAD if fetch succeeded.
@@ -2076,7 +2076,7 @@ func (g *Git) BranchPushedToRemote(localBranch, remote string) (bool, int, error
 	if err != nil {
 		// Fallback: If we can't use the tracking ref (possibly missing remote.origin.fetch),
 		// use the SHA from the ls-remote call above instead of hitting the network again.
-		// See: gt-0eh3r (gt done fails in worktree with missing remote.origin.fetch config)
+		// See: gt-0eh3r (lt done fails in worktree with missing remote.origin.fetch config)
 		parts := strings.Fields(strings.TrimSpace(lsOut))
 		if len(parts) == 0 {
 			return false, 0, fmt.Errorf("counting unpushed commits: %w (invalid ls-remote output)", err)

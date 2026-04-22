@@ -1,4 +1,4 @@
-// ABOUTME: Shell integration installation and removal for Gas Town.
+// ABOUTME: Shell integration installation and removal for Camp Leatherneck.
 // ABOUTME: Manages the shell hook in RC files with safe block markers.
 
 package shell
@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	markerStart = "# --- Gas Town Integration (managed by gt) ---"
-	markerEnd   = "# --- End Gas Town ---"
+	markerStart = "# --- Camp Leatherneck Integration (managed by gt) ---"
+	markerEnd   = "# --- End Camp Leatherneck ---"
 )
 
 func hookSourceLine() string {
@@ -141,7 +141,7 @@ func updateRCFile(path, content string) error {
 	startIdx := strings.Index(content, markerStart)
 	endIdx := strings.Index(content[startIdx:], markerEnd)
 	if endIdx == -1 {
-		return fmt.Errorf("malformed Gas Town block in %s", path)
+		return fmt.Errorf("malformed Camp Leatherneck block in %s", path)
 	}
 	endIdx += startIdx + len(markerEnd)
 
@@ -152,8 +152,8 @@ func updateRCFile(path, content string) error {
 }
 
 var shellHookScript = `#!/bin/zsh
-# Gas Town Shell Integration
-# Installed by: gt install --shell
+# Camp Leatherneck Shell Integration
+# Installed by: lt install --shell
 # Location: ~/.config/gastown/shell-hook.sh
 
 _gastown_enabled() {
@@ -197,16 +197,16 @@ _gastown_offer_add() {
     repo_name=$(basename "$repo_root")
 
     echo ""
-    echo -n "Add '$repo_name' to Gas Town? [y/N/never] "
+    echo -n "Add '$repo_name' to Camp Leatherneck? [y/N/never] "
     read -r response </dev/tty
 
     _gastown_mark_asked "$repo_root"
 
     case "$response" in
         y|Y|yes)
-            echo "Adding to Gas Town..."
+            echo "Adding to Camp Leatherneck..."
             local output
-            output=$(gt rig quick-add "$repo_root" --yes 2>&1)
+            output=$(lt rig quick-add "$repo_root" --yes 2>&1)
             local exit_code=$?
             echo "$output"
 
@@ -227,7 +227,7 @@ _gastown_offer_add() {
             echo "Created .gastown-ignore - won't ask again for this repo."
             ;;
         *)
-            echo "Skipped. Run 'gt rig quick-add' later to add manually."
+            echo "Skipped. Run 'lt rig quick-add' later to add manually."
             ;;
     esac
 }
@@ -268,11 +268,11 @@ _gastown_hook() {
 
     if command -v gt &>/dev/null; then
         local detect_output
-        detect_output=$(gt rig detect "$repo_root" 2>/dev/null)
+        detect_output=$(lt rig detect "$repo_root" 2>/dev/null)
         eval "$detect_output"
 
         if [[ -n "$GT_TOWN_ROOT" ]]; then
-            (gt rig detect --cache "$repo_root" &>/dev/null &)
+            (lt rig detect --cache "$repo_root" &>/dev/null &)
         elif [[ -n "$_GASTOWN_OFFER_ADD" ]]; then
             _gastown_offer_add "$repo_root"
             unset _GASTOWN_OFFER_ADD

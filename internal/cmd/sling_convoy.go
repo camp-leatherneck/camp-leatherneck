@@ -195,7 +195,7 @@ func getConvoyInfoForIssue(issueID string) *ConvoyInfo {
 }
 
 // getConvoyInfoFromIssue reads convoy info directly from the issue's attachment fields.
-// This is the primary lookup method (gt-7b6wf fix): gt sling stores convoy_id and
+// This is the primary lookup method (gt-7b6wf fix): lt sling stores convoy_id and
 // merge_strategy on the issue when dispatching, avoiding unreliable cross-rig dep
 // resolution. Returns nil if the issue has no convoy fields in its description.
 func getConvoyInfoFromIssue(issueID, cwd string) *ConvoyInfo {
@@ -285,15 +285,15 @@ func printConvoyConflict(beadID, convoyID string) {
 
 	fmt.Printf("\n  Options:\n")
 	fmt.Printf("    1. Remove the bead from this batch:\n")
-	fmt.Printf("         gt sling <other-beads...> <rig>   (without %s)\n", beadID)
+	fmt.Printf("         lt sling <other-beads...> <rig>   (without %s)\n", beadID)
 	fmt.Printf("    2. Move the bead to the new batch (remove from existing convoy first):\n")
 	fmt.Printf("         bd dep remove %s %s --type=tracks\n", convoyID, beadID)
-	fmt.Printf("         gt sling <all-beads...> <rig>\n")
+	fmt.Printf("         lt sling <all-beads...> <rig>\n")
 	fmt.Printf("    3. Close the existing convoy and re-sling all beads together:\n")
-	fmt.Printf("         gt convoy close %s --reason \"re-batching\"\n", convoyID)
-	fmt.Printf("         gt sling <all-beads...> <rig>\n")
+	fmt.Printf("         lt convoy close %s --reason \"re-batching\"\n", convoyID)
+	fmt.Printf("         lt sling <all-beads...> <rig>\n")
 	fmt.Printf("    4. Add the other beads to the existing convoy instead:\n")
-	fmt.Printf("         gt convoy add %s <other-beads...>\n", convoyID)
+	fmt.Printf("         lt convoy add %s <other-beads...>\n", convoyID)
 	fmt.Println()
 }
 
@@ -310,7 +310,7 @@ func createBatchConvoy(beadIDs []string, rigName string, owned bool, mergeStrate
 
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return "", nil, fmt.Errorf("finding town root: %w", err)
+		return "", nil, fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	townBeads := filepath.Join(townRoot, ".beads")
@@ -339,7 +339,7 @@ func createBatchConvoy(beadIDs []string, rigName string, owned bool, mergeStrate
 	}
 
 	// Use BdCmd with WithAutoCommit to ensure convoy is persisted even when
-	// gt sling has set BD_DOLT_AUTO_COMMIT=off globally (gt-9xum2 root cause fix).
+	// lt sling has set BD_DOLT_AUTO_COMMIT=off globally (gt-9xum2 root cause fix).
 	if out, err := BdCmd(createArgs...).Dir(townBeads).WithAutoCommit().CombinedOutput(); err != nil {
 		return "", nil, fmt.Errorf("creating batch convoy: %w\noutput: %s", err, out)
 	}
@@ -372,13 +372,13 @@ func createAutoConvoy(beadID, beadTitle string, owned bool, mergeStrategy, baseB
 
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return "", fmt.Errorf("finding town root: %w", err)
+		return "", fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	townBeads := filepath.Join(townRoot, ".beads")
 
 	// Generate convoy ID with hq-cv- prefix for visual distinction
-	// The hq-cv- prefix is registered in routes during gt install
+	// The hq-cv- prefix is registered in routes during lt install
 	convoyID := fmt.Sprintf("hq-cv-%s", slingGenerateShortID())
 
 	// Create convoy with title "Work: <issue-title>"
@@ -404,7 +404,7 @@ func createAutoConvoy(beadID, beadTitle string, owned bool, mergeStrategy, baseB
 	}
 
 	// Use BdCmd with WithAutoCommit to ensure convoy is persisted even when
-	// gt sling has set BD_DOLT_AUTO_COMMIT=off globally (gt-9xum2 root cause fix).
+	// lt sling has set BD_DOLT_AUTO_COMMIT=off globally (gt-9xum2 root cause fix).
 	if out, err := BdCmd(createArgs...).Dir(townBeads).WithAutoCommit().CombinedOutput(); err != nil {
 		return "", fmt.Errorf("creating convoy: %w\noutput: %s", err, out)
 	}

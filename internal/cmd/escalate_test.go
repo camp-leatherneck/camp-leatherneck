@@ -270,8 +270,8 @@ func TestFormatEscalationMailBody(t *testing.T) {
 				"From: gastown/witness",
 				"Reason:",
 				"Build failing",
-				"gt escalate ack hq-abc123",
-				"gt escalate close hq-abc123",
+				"lt escalate ack hq-abc123",
+				"lt escalate close hq-abc123",
 			},
 			notIn: []string{"Related:"},
 		},
@@ -338,8 +338,8 @@ func TestFormatReescalationMailBody(t *testing.T) {
 		"Reescalation #2",
 		"Reescalated by: gastown/patrol",
 		"stale threshold",
-		"gt escalate ack hq-esc123",
-		"gt escalate close hq-esc123",
+		"lt escalate ack hq-esc123",
+		"lt escalate close hq-esc123",
 	}
 
 	for _, s := range wantIn {

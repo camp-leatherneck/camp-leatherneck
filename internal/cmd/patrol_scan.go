@@ -33,7 +33,7 @@ Detections:
   - Zombies: Dead sessions with active agent state, dead agent processes,
     stuck done-intent, closed beads with live sessions
   - Stalls: Agents stuck at startup prompts
-  - Completions: Agent bead metadata indicating gt done was called
+  - Completions: Agent bead metadata indicating lt done was called
 
 Actions taken automatically:
   - Zombie restart: Sessions are restarted (not nuked) to preserve worktrees
@@ -43,10 +43,10 @@ Actions taken automatically:
 Use --notify to send mail when zombies with active work are detected.
 
 Examples:
-  gt patrol scan                    # Scan current rig
-  gt patrol scan --rig gastown      # Scan specific rig
-  gt patrol scan --json             # Machine-readable output
-  gt patrol scan --notify           # Send mail on zombie detection`,
+  lt patrol scan                    # Scan current rig
+  lt patrol scan --rig gastown      # Scan specific rig
+  lt patrol scan --json             # Machine-readable output
+  lt patrol scan --notify           # Send mail on zombie detection`,
 	RunE: runPatrolScan,
 }
 
@@ -126,7 +126,7 @@ type PatrolScanCompleteItem struct {
 func runPatrolScan(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Determine rig name
@@ -219,7 +219,7 @@ func sendZombieNotification(router *mail.Router, rigName string, result *witness
 	// The mayor needs to know so work can be reslung.
 	mayorBody := strings.Join(lines, "\n") +
 		"\n\nResling instructions:\n" +
-		"  gt sling <bead-id> <rig> --create --force"
+		"  lt sling <bead-id> <rig> --create --force"
 	mayorMsg := &mail.Message{
 		From:    fmt.Sprintf("%s/witness", rigName),
 		To:      "mayor/",

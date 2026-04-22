@@ -15,7 +15,7 @@ type tmuxRenamer interface {
 	RenameSession(from, to string) error
 }
 
-// MalformedSessionNameCheck detects Gas Town tmux sessions whose names use the
+// MalformedSessionNameCheck detects Camp Leatherneck tmux sessions whose names use the
 // legacy naming scheme (e.g., "gt-whatsapp_automation-witness") rather than the
 // current short-prefix format (e.g., "wa-witness").
 //
@@ -29,7 +29,7 @@ type tmuxRenamer interface {
 //	{any_prefix}-{registered_rig_name}-{role_suffix}
 //
 // where {registered_rig_name} is a known rig (e.g., "whatsapp_automation") and
-// {role_suffix} is a valid Gas Town role ("witness", "refinery", "crew-{name}").
+// {role_suffix} is a valid Camp Leatherneck role ("witness", "refinery", "crew-{name}").
 // The canonical name is then: {rig_short_prefix}-{role_suffix}.
 type MalformedSessionNameCheck struct {
 	FixableCheck
@@ -51,7 +51,7 @@ func NewMalformedSessionNameCheck() *MalformedSessionNameCheck {
 		FixableCheck: FixableCheck{
 			BaseCheck: BaseCheck{
 				CheckName:        "session-name-format",
-				CheckDescription: "Detect sessions with outdated Gas Town naming format",
+				CheckDescription: "Detect sessions with outdated Camp Leatherneck naming format",
 				CheckCategory:    CategoryCleanup,
 			},
 		},
@@ -87,7 +87,7 @@ func (c *MalformedSessionNameCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: "All Gas Town sessions use current naming format",
+			Message: "All Camp Leatherneck sessions use current naming format",
 		}
 	}
 
@@ -109,11 +109,11 @@ func (c *MalformedSessionNameCheck) Run(ctx *CheckContext) *CheckResult {
 		details = append(details, fmt.Sprintf("Outdated: %s → should be %s (crew session — manual rename required)", r.oldName, r.newName))
 	}
 
-	fixHint := "Run 'gt doctor --fix' to rename sessions to current format"
+	fixHint := "Run 'lt doctor --fix' to rename sessions to current format"
 	if len(autoFixable) == 0 && len(needsManual) > 0 {
 		fixHint = "Crew sessions must be renamed manually: tmux rename-session -t OLD NEW"
 	} else if len(needsManual) > 0 {
-		fixHint = "Run 'gt doctor --fix' for patrol sessions; crew sessions must be renamed manually"
+		fixHint = "Run 'lt doctor --fix' for patrol sessions; crew sessions must be renamed manually"
 	}
 
 	return &CheckResult{
@@ -177,7 +177,7 @@ func (c *MalformedSessionNameCheck) Fix(ctx *CheckContext) error {
 }
 
 // knownRoleSuffixes are the simple role keywords that appear at the end of a
-// Gas Town session name (after the rig prefix).
+// Camp Leatherneck session name (after the rig prefix).
 var knownRoleSuffixes = []string{"witness", "refinery"}
 
 // detectLegacySessionNames scans sessions for the legacy
@@ -253,7 +253,7 @@ func matchLegacyName(sess string, rigs map[string]string, knownPrefixes map[stri
 			continue
 		}
 
-		// Validate: must be a known Gas Town role suffix.
+		// Validate: must be a known Camp Leatherneck role suffix.
 		if !isValidRoleSuffix(roleSuffix) {
 			continue
 		}
@@ -270,7 +270,7 @@ func matchLegacyName(sess string, rigs map[string]string, knownPrefixes map[stri
 	return sessionRename{}, false
 }
 
-// isValidRoleSuffix returns true if suffix is a known Gas Town role identifier.
+// isValidRoleSuffix returns true if suffix is a known Camp Leatherneck role identifier.
 func isValidRoleSuffix(suffix string) bool {
 	for _, role := range knownRoleSuffixes {
 		if suffix == role {

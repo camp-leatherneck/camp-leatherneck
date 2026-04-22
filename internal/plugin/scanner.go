@@ -24,7 +24,7 @@ func NewScanner(townRoot string, rigNames []string) *Scanner {
 }
 
 // DiscoverAll scans all plugin locations and returns discovered plugins.
-// Town-level plugins are scanned first, then rig-level plugins.
+// HQ-level plugins are scanned first, then rig-level plugins.
 // Plugins are deduplicated by name (rig-level overrides town-level).
 func (s *Scanner) DiscoverAll() ([]*Plugin, error) {
 	pluginMap := make(map[string]*Plugin)

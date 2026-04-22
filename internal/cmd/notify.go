@@ -24,12 +24,12 @@ Notification levels:
 Without arguments, shows the current notification level.
 
 Examples:
-  gt notify           # Show current level
-  gt notify verbose   # Enable all notifications
-  gt notify normal    # Default notification level
-  gt notify muted     # Enable DND mode
+  lt notify           # Show current level
+  lt notify verbose   # Enable all notifications
+  lt notify normal    # Default notification level
+  lt notify muted     # Enable DND mode
 
-Related: gt dnd - quick toggle for DND mode`,
+Related: lt dnd - quick toggle for DND mode`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runNotify,
 }
@@ -47,7 +47,7 @@ func runNotify(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	roleInfo, err := GetRoleWithContext(cwd, townRoot)

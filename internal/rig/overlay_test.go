@@ -297,8 +297,8 @@ func TestEnsureGitignorePatterns_AppendsToExisting(t *testing.T) {
 	}
 
 	// Should add header
-	if !containsLine(string(content), "# Gas Town (added by gt)") {
-		t.Error("Missing Gas Town header comment")
+	if !containsLine(string(content), "# Camp Leatherneck (added by gt)") {
+		t.Error("Missing Camp Leatherneck header comment")
 	}
 
 	// Should add required patterns (.beads/ intentionally excluded — see overlay.go)
@@ -313,7 +313,7 @@ func TestEnsureGitignorePatterns_AppendsToExisting(t *testing.T) {
 func TestEnsureGitignorePatterns_SkipsExistingPatterns(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	// Create existing .gitignore with some Gas Town patterns already.
+	// Create existing .gitignore with some Camp Leatherneck patterns already.
 	// The broader ".claude/" covers ".claude/commands/", so it should
 	// not add the narrower pattern.
 	existing := ".runtime/\n.claude/\n"
@@ -416,7 +416,7 @@ func TestEnsureGitignorePatterns_AllPatternsPresent(t *testing.T) {
 	}
 
 	// File should be unchanged (no header added)
-	if containsLine(string(content), "# Gas Town") {
+	if containsLine(string(content), "# Camp Leatherneck") {
 		t.Error("Should not add header when all patterns already present")
 	}
 
@@ -486,10 +486,10 @@ func TestEnsureGitignorePatterns_OldNarrowClaudeUpgraded(t *testing.T) {
 func TestEnsureGitignorePatterns_UpgradePreservesBroadPattern(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	// Simulate an existing installation that has .claude/ plus other Gas Town
+	// Simulate an existing installation that has .claude/ plus other Camp Leatherneck
 	// patterns but is missing __pycache__/ (added later). After upgrade,
 	// __pycache__/ should be appended.
-	existing := "# Gas Town (added by gt)\n.runtime/\n.claude/\n.logs/\n"
+	existing := "# Camp Leatherneck (added by gt)\n.runtime/\n.claude/\n.logs/\n"
 	if err := os.WriteFile(filepath.Join(tmpDir, ".gitignore"), []byte(existing), 0644); err != nil {
 		t.Fatalf("Failed to create .gitignore: %v", err)
 	}

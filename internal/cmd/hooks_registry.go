@@ -42,8 +42,8 @@ The registry is at ~/gt/hooks/registry.toml and defines hooks that can be
 installed for different roles (crew, polecat, witness, etc.).
 
 Examples:
-  gt hooks registry           # Show enabled hooks
-  gt hooks registry --all     # Show all hooks including disabled`,
+  lt hooks registry           # Show enabled hooks
+  lt hooks registry --all     # Show all hooks including disabled`,
 	RunE: runHooksRegistry,
 }
 
@@ -76,7 +76,7 @@ func LoadRegistry(townRoot string) (*HookRegistry, error) {
 func runHooksRegistry(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	registry, err := LoadRegistry(townRoot)

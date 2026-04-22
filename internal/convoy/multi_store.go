@@ -10,7 +10,7 @@ import (
 )
 
 // StoreResolver resolves beads issues across multiple stores using prefix-based
-// routing. In multi-rig Gas Town setups, each rig has its own Dolt database.
+// routing. In multi-rig Camp Leatherneck setups, each rig has its own Dolt database.
 // Convoys live in the HQ store but may track issues in rig stores (e.g., ds-*
 // in dashboard). Without cross-store resolution, convoy tracking sees 0/0 for
 // cross-database dependencies. See GH #2624.
@@ -18,7 +18,7 @@ type StoreResolver struct {
 	// stores maps store names ("hq", "dashboard", etc.) to beads stores.
 	stores map[string]beadsdk.Storage
 
-	// townRoot is the path to the town root, used for prefix → rig name lookup.
+	// townRoot is the path to the HQ root, used for prefix → rig name lookup.
 	townRoot string
 }
 
@@ -111,7 +111,7 @@ func (r *StoreResolver) storeForID(id string) string {
 
 	rigName := beads.GetRigNameForPrefix(r.townRoot, prefix)
 	if rigName == "" {
-		// Town-level prefix (e.g., "hq-") or unknown → use hq store
+		// HQ-level prefix (e.g., "hq-") or unknown → use hq store
 		return "hq"
 	}
 	return rigName

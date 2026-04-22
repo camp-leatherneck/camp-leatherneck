@@ -113,7 +113,7 @@ const (
 	DefaultWitnessDoneIntentRecentGrace  = 30 * time.Second
 )
 
-// LoadOperationalConfig loads operational config from a town root.
+// LoadOperationalConfig loads operational config from a HQ root.
 // Returns a valid (possibly empty) config — never nil, never errors.
 // Callers can use accessor methods that return defaults for nil sub-configs.
 func LoadOperationalConfig(townRoot string) *OperationalConfig {
@@ -312,7 +312,7 @@ func (d *DaemonThresholds) DogIdleSessionTimeoutD() time.Duration {
 // PolecatIdleSessionTimeoutD returns the configured or default polecat idle session timeout.
 // Polecats that have been idle (no hooked work, heartbeat state=idle) longer than this
 // threshold are auto-killed to prevent API slot burn. Default 15 minutes — long enough
-// for polecats to run gt done after completing work, short enough to prevent hour-long burns.
+// for polecats to run lt done after completing work, short enough to prevent hour-long burns.
 func (d *DaemonThresholds) PolecatIdleSessionTimeoutD() time.Duration {
 	if d != nil {
 		return ParseDurationOrDefault(d.PolecatIdleSessionTimeout, DefaultPolecatIdleSessionTimeout)

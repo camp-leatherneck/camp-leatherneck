@@ -20,7 +20,7 @@ var cleanupCmd = &cobra.Command{
 	Long: `Clean up orphaned Claude processes that survived session termination.
 
 This command finds and kills Claude processes that are not associated with
-any active Gas Town tmux session. These orphans can accumulate when:
+any active Camp Leatherneck tmux session. These orphans can accumulate when:
 - Polecat sessions are killed without proper cleanup
 - Claude spawns subagent processes that outlive their parent
 - Network or system issues interrupt normal shutdown
@@ -29,9 +29,9 @@ Uses aggressive tmux session verification to detect ALL orphaned processes,
 not just those with PPID=1.
 
 Examples:
-  gt cleanup              # Clean up orphans with confirmation
-  gt cleanup --dry-run    # Show what would be killed
-  gt cleanup --force      # Kill without confirmation`,
+  lt cleanup              # Clean up orphans with confirmation
+  lt cleanup --dry-run    # Show what would be killed
+  lt cleanup --force      # Kill without confirmation`,
 	RunE: runCleanup,
 }
 

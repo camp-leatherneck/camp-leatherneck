@@ -10,7 +10,7 @@
 
 ## 1. Problem Statement
 
-Gas Town has all the pieces for autonomous epic execution:
+Camp Leatherneck has all the pieces for autonomous epic execution:
 - ConvoyManager feeds ready issues as blocking deps close (event-driven, 5s)
 - Stranded scan catches missed feeding (periodic, 30s)
 - Stage-launch validates DAGs and computes waves (Kahn's algorithm)
@@ -47,7 +47,7 @@ The Mountain-Eater sidesteps this entirely:
 - **Dogs bring fresh context every time.** Zero hysteresis by construction.
 - **The label triggers patrol behavior.** No persistent coordinator needed.
 
-This aligns with core Gas Town principles:
+This aligns with core Camp Leatherneck principles:
 - **ZFC**: Agents decide, Go transports. ConvoyManager is transport; Dogs make judgment calls.
 - **NDI**: Any Dog can check any mountain. Different agents, same outcome.
 - **Discover, Don't Track**: `bd ready --epic=X` and convoy status derive state.

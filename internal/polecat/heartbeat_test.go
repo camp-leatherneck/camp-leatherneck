@@ -39,7 +39,7 @@ func TestTouchAndReadSessionHeartbeat(t *testing.T) {
 func TestTouchSessionHeartbeatWithState(t *testing.T) {
 	townRoot := t.TempDir()
 
-	TouchSessionHeartbeatWithState(townRoot, "gt-test-state", HeartbeatExiting, "gt done", "gt-abc123")
+	TouchSessionHeartbeatWithState(townRoot, "gt-test-state", HeartbeatExiting, "lt done", "gt-abc123")
 
 	hb := ReadSessionHeartbeat(townRoot, "gt-test-state")
 	if hb == nil {
@@ -49,8 +49,8 @@ func TestTouchSessionHeartbeatWithState(t *testing.T) {
 	if hb.State != HeartbeatExiting {
 		t.Errorf("state = %q, want %q", hb.State, HeartbeatExiting)
 	}
-	if hb.Context != "gt done" {
-		t.Errorf("context = %q, want %q", hb.Context, "gt done")
+	if hb.Context != "lt done" {
+		t.Errorf("context = %q, want %q", hb.Context, "lt done")
 	}
 	if hb.Bead != "gt-abc123" {
 		t.Errorf("bead = %q, want %q", hb.Bead, "gt-abc123")

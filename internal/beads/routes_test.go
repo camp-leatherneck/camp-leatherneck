@@ -502,7 +502,7 @@ func TestAgentBeadIDsWithPrefix(t *testing.T) {
 
 // TestValidateRigPrefix verifies the post-creation prefix guard (gt-gpy).
 func TestValidateRigPrefix(t *testing.T) {
-	// Set up a town root with routes.jsonl.
+	// Set up a HQ root with routes.jsonl.
 	tmpDir := t.TempDir()
 	beadsDir := filepath.Join(tmpDir, ".beads")
 	if err := os.MkdirAll(beadsDir, 0755); err != nil {

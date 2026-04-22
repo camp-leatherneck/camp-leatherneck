@@ -1,4 +1,4 @@
-// ABOUTME: Command to disable Gas Town system-wide.
+// ABOUTME: Command to disable Camp Leatherneck system-wide.
 // ABOUTME: Sets the global state to disabled so tools work vanilla.
 
 package cmd
@@ -17,15 +17,15 @@ var disableClean bool
 var disableCmd = &cobra.Command{
 	Use:     "disable",
 	GroupID: GroupConfig,
-	Short:   "Disable Gas Town system-wide",
-	Long: `Disable Gas Town for all agentic coding tools.
+	Short:   "Disable Camp Leatherneck system-wide",
+	Long: `Disable Camp Leatherneck for all agentic coding tools.
 
 When disabled:
   - Shell hooks become no-ops
-  - Claude Code SessionStart hooks skip 'gt prime'
-  - Tools work 100% vanilla (no Gas Town behavior)
+  - Claude Code SessionStart hooks skip 'lt prime'
+  - Tools work 100% vanilla (no Camp Leatherneck behavior)
 
-The workspace (~/gt) is preserved. Use 'gt enable' to re-enable.
+The workspace (~/gt) is preserved. Use 'lt enable' to re-enable.
 
 Flags:
   --clean  Also remove shell integration from ~/.zshrc/~/.bashrc
@@ -43,7 +43,7 @@ func init() {
 
 func runDisable(cmd *cobra.Command, args []string) error {
 	if err := state.Disable(); err != nil {
-		return fmt.Errorf("disabling Gas Town: %w", err)
+		return fmt.Errorf("disabling Camp Leatherneck: %w", err)
 	}
 
 	if disableClean {
@@ -55,14 +55,14 @@ func runDisable(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	fmt.Printf("%s Gas Town disabled\n", style.Success.Render("✓"))
+	fmt.Printf("%s Camp Leatherneck disabled\n", style.Success.Render("✓"))
 	fmt.Println()
 	fmt.Println("All agentic coding tools now work vanilla.")
 	if !disableClean {
 		fmt.Printf("Use %s to also remove shell hooks\n",
-			style.Dim.Render("gt disable --clean"))
+			style.Dim.Render("lt disable --clean"))
 	}
-	fmt.Printf("Use %s to re-enable\n", style.Dim.Render("gt enable"))
+	fmt.Printf("Use %s to re-enable\n", style.Dim.Render("lt enable"))
 
 	return nil
 }

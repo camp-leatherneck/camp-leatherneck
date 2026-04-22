@@ -197,7 +197,7 @@ func (m *DoltServerManager) doSleep(d time.Duration) {
 
 // pidFile returns the path to the Dolt server PID file.
 // Production (port 3307) uses the canonical "dolt.pid" for compatibility with
-// gt dolt start/stop. Other ports get a port-specific name to avoid collisions.
+// lt dolt start/stop. Other ports get a port-specific name to avoid collisions.
 func (m *DoltServerManager) pidFile() string {
 	if m.config.Port == 3307 {
 		return filepath.Join(m.townRoot, "daemon", "dolt.pid")
@@ -808,7 +808,7 @@ func writeDaemonDoltConfig(cfg *DoltServerConfig, configPath string) error {
 	if cfg.Host != "" {
 		hostLine = fmt.Sprintf("\n  host: %s", cfg.Host)
 	}
-	content := fmt.Sprintf(`# Dolt SQL server configuration — managed by Gas Town daemon
+	content := fmt.Sprintf(`# Dolt SQL server configuration — managed by Camp Leatherneck daemon
 # Do not edit manually; overwritten on each daemon-managed server start.
 
 log_level: info
@@ -965,7 +965,7 @@ func (m *DoltServerManager) captureGoroutineDump() {
 	}
 	// Give the server a moment to write the dump to its log file.
 	time.Sleep(500 * time.Millisecond)
-	m.logger("Goroutine dump written to server log. View with: gt dolt logs -n 200")
+	m.logger("Goroutine dump written to server log. View with: lt dolt logs -n 200")
 }
 
 func (m *DoltServerManager) stopLocked() {

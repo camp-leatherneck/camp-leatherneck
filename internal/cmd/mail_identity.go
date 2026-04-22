@@ -11,10 +11,10 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
-// findMailWorkDir returns the town root for all mail operations.
+// findMailWorkDir returns the HQ root for all mail operations.
 //
 // Two-level beads architecture:
-// - Town beads (~/gt/.beads/): ALL mail and coordination
+// - HQ beads (~/gt/.beads/): ALL mail and coordination
 // - Clone beads (<rig>/crew/*/.beads/): Project issues only
 //
 // Mail ALWAYS uses town beads, regardless of sender or recipient address.
@@ -23,7 +23,7 @@ import (
 // GT_TOWN_ROOT is preferred over workspace detection because workspace.Find
 // stops at the first mayor/town.json when not in a worktree path. Rigs that
 // have their own mayor/town.json (e.g., gastown/) would be misidentified as
-// the town root when running from the rig directory.
+// the HQ root when running from the rig directory.
 func findMailWorkDir() (string, error) {
 	for _, envName := range []string{"GT_TOWN_ROOT", "GT_ROOT"} {
 		if townRoot := os.Getenv(envName); townRoot != "" {
@@ -82,7 +82,7 @@ func findLocalBeadsDir() (string, error) {
 //  2. No GT_ROLE → try cwd-based detection (witness/refinery/polecat/crew directories)
 //  3. No match → return "overseer" (human at terminal)
 //
-// All Gas Town agents run in tmux sessions with GT_ROLE set at spawn.
+// All Camp Leatherneck agents run in tmux sessions with GT_ROLE set at spawn.
 // However, cwd-based detection is also tried to support running commands
 // from agent directories without GT_ROLE set (e.g., debugging sessions).
 func detectSender() string {

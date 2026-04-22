@@ -1,4 +1,4 @@
-// Package feed provides a TUI for the Gas Town activity feed.
+// Package feed provides a TUI for the Camp Leatherneck activity feed.
 // This file implements stuck detection for agents using structured beads data.
 // Previous approach used tmux pane scraping with regex patterns, which produced
 // false positives (HTML `>`, compiler output matching `error:`). This version

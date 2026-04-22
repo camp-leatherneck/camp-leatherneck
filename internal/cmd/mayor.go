@@ -101,7 +101,7 @@ logic and runs directly in the current terminal.
 
 Environment variable overrides:
   GT_RIG          - Override rig name
-  GT_TOWN_ROOT    - Override town root directory
+  GT_TOWN_ROOT    - Override HQ root directory
   GT_ROLE         - Override role (default: mayor)
 
 The agent reads prompts from stdin and outputs to stdout. This enables
@@ -130,7 +130,7 @@ func init() {
 	mayorRestartCmd.Flags().StringVar(&mayorAgentOverride, "agent", "", "Agent alias to run the Mayor with (overrides town default)")
 
 	mayorAcpCmd.Flags().StringVar(&acpRigOverride, "rig", "", "Rig name (overrides GT_RIG env)")
-	mayorAcpCmd.Flags().StringVar(&acpTownRootOverride, "town", "", "Town root directory (overrides GT_TOWN_ROOT env)")
+	mayorAcpCmd.Flags().StringVar(&acpTownRootOverride, "town", "", "HQ root directory (overrides GT_TOWN_ROOT env)")
 	mayorAcpCmd.Flags().StringVar(&mayorAgentOverride, "agent", "", "Agent alias to run (overrides town default)")
 
 	rootCmd.AddCommand(mayorCmd)
@@ -140,7 +140,7 @@ func init() {
 func getMayorManager() (*mayor.Manager, error) {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return nil, fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return nil, fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 	return mayor.NewManager(townRoot), nil
 }
@@ -159,14 +159,14 @@ func runMayorStart(cmd *cobra.Command, args []string) error {
 	fmt.Println("Starting Mayor session...")
 	if err := mgr.Start(mayorAgentOverride); err != nil {
 		if err == mayor.ErrAlreadyRunning {
-			return fmt.Errorf("Mayor session already running. Attach with: gt mayor attach")
+			return fmt.Errorf("Mayor session already running. Attach with: lt mayor attach")
 		}
 		return err
 	}
 
 	fmt.Printf("%s Mayor session started. Attach with: %s\n",
 		style.Bold.Render("✓"),
-		style.Dim.Render("gt mayor attach"))
+		style.Dim.Render("lt mayor attach"))
 
 	return nil
 }
@@ -201,7 +201,7 @@ func runMayorAttach(cmd *cobra.Command, args []string) error {
 	}
 
 	// Check if ACP is active and gracefully shut it down before switching to tmux.
-	// Only 'gt mayor attach' is allowed to transition from ACP to tmux mode.
+	// Only 'lt mayor attach' is allowed to transition from ACP to tmux mode.
 	if mayor.IsACPActive(townRoot) {
 		fmt.Fprintf(os.Stderr, "ACP Mayor is active. Switching to tmux mode...\n")
 		if err := gracefullyShutdownACP(townRoot); err != nil {
@@ -241,7 +241,7 @@ func runMayorAttach(cmd *cobra.Command, args []string) error {
 				return fmt.Errorf("getting pane ID: %w", err)
 			}
 
-			// Build startup beacon for context (like gt handoff does)
+			// Build startup beacon for context (like lt handoff does)
 			beacon := session.FormatStartupBeacon(session.BeaconConfig{
 				Recipient: "mayor",
 				Sender:    "human",
@@ -354,7 +354,7 @@ func runMayorStatus(cmd *cobra.Command, args []string) error {
 		fmt.Printf("%s Mayor session is %s\n",
 			style.Dim.Render("○"),
 			"not running")
-		fmt.Printf("\nStart with: %s\n", style.Dim.Render("gt mayor start"))
+		fmt.Printf("\nStart with: %s\n", style.Dim.Render("lt mayor start"))
 		return nil
 	}
 
@@ -378,9 +378,9 @@ func runMayorStatus(cmd *cobra.Command, args []string) error {
 	}
 
 	if status.Tmux != nil {
-		fmt.Printf("\nAttach with: %s\n", style.Dim.Render("gt mayor attach"))
+		fmt.Printf("\nAttach with: %s\n", style.Dim.Render("lt mayor attach"))
 	} else if status.ACPPid != 0 {
-		fmt.Printf("\nAttach with: %s\n", style.Dim.Render("gt mayor acp"))
+		fmt.Printf("\nAttach with: %s\n", style.Dim.Render("lt mayor acp"))
 	}
 
 	return nil
@@ -443,7 +443,7 @@ func ensureMayorInfra(townRoot string) error {
 						}
 					}
 					if freePort := doltserver.FindFreePort(doltCfg.Port + 1); freePort > 0 {
-						msg += fmt.Sprintf("\n\nConfigure a free port for this town, then retry:\n  gt config set dolt.port %d && gt mayor at", freePort)
+						msg += fmt.Sprintf("\n\nConfigure a free port for this town, then retry:\n  lt config set dolt.port %d && lt mayor at", freePort)
 					}
 					return fmt.Errorf("%s", msg)
 				}
@@ -469,7 +469,7 @@ func runMayorAcp(cmd *cobra.Command, args []string) error {
 		var err error
 		townRoot, err = workspace.FindFromCwdOrError()
 		if err != nil {
-			return fmt.Errorf("not in a Gas Town workspace: %w", err)
+			return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 		}
 	}
 

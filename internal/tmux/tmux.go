@@ -190,7 +190,7 @@ type Tmux struct {
 const noTownSocket = "gt-no-town-socket"
 
 // EnvAgentReady is the tmux session environment variable set by the agent's
-// SessionStart hook (gt prime --hook) to signal that the agent has started.
+// SessionStart hook (lt prime --hook) to signal that the agent has started.
 // Used by WaitForCommand as a ZFC-compliant fallback for detecting wrapped
 // agents (where pane_current_command remains a shell). See gt-sk5u.
 const EnvAgentReady = "GT_AGENT_READY"
@@ -202,7 +202,7 @@ func NewTmux() *Tmux {
 	sock := GetDefaultSocket()
 	if sock == "" {
 		// GT_TOWN_SOCKET is embedded in tmux bindings created by EnsureBindingsOnSocket
-		// so that "gt agents menu" / "gt feed" invoked from a personal terminal still
+		// so that "lt agents menu" / "lt feed" invoked from a personal terminal still
 		// target the correct town server even when InitRegistry was not called.
 		sock = os.Getenv("GT_TOWN_SOCKET")
 	}
@@ -666,7 +666,7 @@ func (t *Tmux) KillSessionWithProcesses(name string) error {
 
 // KillSessionWithProcessesExcluding is like KillSessionWithProcesses but excludes
 // specified PIDs from being killed. This is essential for self-kill scenarios where
-// the calling process (e.g., gt done) is running inside the session it's terminating.
+// the calling process (e.g., lt done) is running inside the session it's terminating.
 // Without exclusion, the caller would be killed before completing the cleanup.
 func (t *Tmux) KillSessionWithProcessesExcluding(name string, excludePIDs []string) error {
 	// Disarm auto-respawn BEFORE killing anything (same as KillSessionWithProcesses).
@@ -894,7 +894,7 @@ func (t *Tmux) KillPaneProcesses(pane string) error {
 
 // KillPaneProcessesExcluding is like KillPaneProcesses but excludes specified PIDs
 // from being killed. This is essential for self-handoff scenarios where the calling
-// process (e.g., gt handoff running inside Claude Code) needs to survive long enough
+// process (e.g., lt handoff running inside Claude Code) needs to survive long enough
 // to call RespawnPane. Without exclusion, the caller would be killed before completing.
 //
 // The excluded PIDs should include the calling process and any ancestors that must
@@ -975,7 +975,7 @@ func (t *Tmux) KillServer() error {
 // When on (default), the server exits when there are no sessions.
 // When off, the server stays running even with no sessions.
 // This is useful during shutdown to prevent the server from exiting
-// when all Gas Town sessions are killed but the user has no other sessions.
+// when all Camp Leatherneck sessions are killed but the user has no other sessions.
 func (t *Tmux) SetExitEmpty(on bool) error {
 	value := "on"
 	if !on {
@@ -1610,7 +1610,7 @@ type NudgeOpts struct {
 	SkipEscape bool
 
 	// TownRoot, if set, enables flock-based cross-process serialization of
-	// nudge delivery. Each `gt nudge` CLI invocation is a separate OS process,
+	// nudge delivery. Each `lt nudge` CLI invocation is a separate OS process,
 	// so the in-process channel semaphore alone cannot prevent interleaving.
 	// When TownRoot is provided, a filesystem lock is acquired at
 	// <townRoot>/.runtime/nudge_queue/<session>/.lock before delivery.
@@ -1641,7 +1641,7 @@ func (t *Tmux) canonicalPaneTarget(session, pane string) string {
 // See NudgeOpts for available options.
 func (t *Tmux) NudgeSessionWithOpts(session, message string, opts NudgeOpts) error {
 	// Cross-process lock: serialize nudges across OS processes via flock(2).
-	// Each `gt nudge` CLI invocation is a separate process, so the in-process
+	// Each `lt nudge` CLI invocation is a separate process, so the in-process
 	// channel semaphore below provides no cross-process protection. Without
 	// this, concurrent nudges interleave send-keys/Enter and produce garbled
 	// or empty input. (GH#gt-ukl8)
@@ -2526,7 +2526,7 @@ func (t *Tmux) SendNotificationBanner(session, from, subject string) error {
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📬 NEW MAIL from %s
 Subject: %s
-Run: gt mail inbox
+Run: lt mail inbox
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 '`, from, subject)
 
@@ -2725,13 +2725,13 @@ func (t *Tmux) resolveSessionProcessNames(session string) []string {
 // Returns nil when a non-excluded command is detected, or error on timeout.
 //
 // ZFC fallback: when the pane command IS a shell (e.g., bash), checks for the
-// GT_AGENT_READY env var set by the agent's SessionStart hook (gt prime --hook).
+// GT_AGENT_READY env var set by the agent's SessionStart hook (lt prime --hook).
 // This handles agents wrapped in shell scripts (e.g., c2claude wrapping
 // claude-original) where exec env does not replace the shell as the pane
 // foreground process. Replaces process-tree probing (IsAgentAlive) per gt-sk5u.
 func (t *Tmux) WaitForCommand(session string, excludeCommands []string, timeout time.Duration) error {
 	// ZFC: Clear agent-ready sentinel to prevent stale values from previous
-	// agent runs. The agent's SessionStart hook (gt prime --hook) sets this
+	// agent runs. The agent's SessionStart hook (lt prime --hook) sets this
 	// to "1" once the agent is running. Unsetting here ensures we only detect
 	// the NEW agent, not a leftover from a previous run.
 	_, _ = t.run("set-environment", "-u", "-t", session, EnvAgentReady)
@@ -2803,8 +2803,8 @@ func (t *Tmux) WaitForShellReady(session string, timeout time.Duration) error {
 //
 //	Once any AI agent is running, observation should be AI-to-AI:
 //	- Deacon monitoring polecats → use patrol formula + AI analysis
-//	- Deacon restarting → Mayor watches via 'gt peek'
-//	- Mayor restarting → Deacon watches via 'gt peek'
+//	- Deacon restarting → Mayor watches via 'lt peek'
+//	- Mayor restarting → Deacon watches via 'lt peek'
 
 // matchesPromptPrefix reports whether a captured pane line matches the
 // configured ready-prompt prefix. It normalizes non-breaking spaces
@@ -3071,7 +3071,7 @@ func (t *Tmux) ApplyTheme(session string, theme Theme) error {
 	return err
 }
 
-// ClearTheme removes Gas Town tmux styling from a session.
+// ClearTheme removes Camp Leatherneck tmux styling from a session.
 func (t *Tmux) ClearTheme(session string) error {
 	if _, err := t.run("set-option", "-t", session, "-u", "status-style"); err != nil {
 		return err
@@ -3119,7 +3119,7 @@ func (t *Tmux) SetStatusFormat(session, rig, worker, role string) error {
 	// Polecat: 😺 gastown/Toast
 	var left string
 	if rig == "" {
-		// Town-level agent (Mayor, Deacon) - keep as-is
+		// HQ-level agent (Mayor, Deacon) - keep as-is
 		left = fmt.Sprintf("%s %s ", icon, worker)
 	} else {
 		// Rig agents - use session name (already in prefix format: gt-crew-gus)
@@ -3141,7 +3141,7 @@ func (t *Tmux) SetDynamicStatus(session string) error {
 	}
 
 	// tmux calls this command every status-interval seconds
-	// gt status-line reads env vars and mail to build the status
+	// lt status-line reads env vars and mail to build the status
 	//
 	// On Windows, tmux #() spawns a visible cmd.exe + conhost.exe window on
 	// every invocation, causing rapid screen flashing. Fall back to a static
@@ -3150,7 +3150,7 @@ func (t *Tmux) SetDynamicStatus(session string) error {
 	if runtime.GOOS == "windows" {
 		right = `%H:%M`
 	} else {
-		right = fmt.Sprintf(`#(gt status-line --session=%s 2>/dev/null) %%H:%%M`, session)
+		right = fmt.Sprintf(`#(lt status-line --session=%s 2>/dev/null) %%H:%%M`, session)
 	}
 
 	if _, err := t.run("set-option", "-t", session, "status-right-length", "80"); err != nil {
@@ -3164,7 +3164,7 @@ func (t *Tmux) SetDynamicStatus(session string) error {
 	return err
 }
 
-// ConfigureGasTownSession applies Gas Town status configuration to a session.
+// ConfigureGasTownSession applies Camp Leatherneck status configuration to a session.
 // A nil theme disables tmux styling while still applying status/bindings.
 //
 // Window background is controlled by theme.Window:
@@ -3242,7 +3242,7 @@ func IsInsideTmux() bool {
 // SetMailClickBinding configures left-click on status-right to show mail preview.
 // This creates a popup showing the first unread message when clicking the mail icon area.
 //
-// The binding is conditional: it only activates in Gas Town sessions (those matching
+// The binding is conditional: it only activates in Camp Leatherneck sessions (those matching
 // a registered rig prefix or "hq-"). In non-GT sessions, the user's original
 // MouseDown1StatusRight binding (if any) is preserved.
 // See: https://github.com/camp-leatherneck/camp-leatherneck/issues/1548
@@ -3259,7 +3259,7 @@ func (t *Tmux) SetMailClickBinding(session string) error {
 	}
 	_, err := t.run("bind-key", "-T", "root", "MouseDown1StatusRight",
 		"if-shell", ifShell,
-		"display-popup -E -w 60 -h 15 'gt mail peek || echo No unread mail'",
+		"display-popup -E -w 60 -h 15 'lt mail peek || echo No unread mail'",
 		fallback)
 	return err
 }
@@ -3357,28 +3357,28 @@ func (t *Tmux) SetTownCycleBindings(session string) error {
 	return t.SetCycleBindings(session)
 }
 
-// isGTBinding checks if the given key already has a Gas Town binding.
+// isGTBinding checks if the given key already has a Camp Leatherneck binding.
 // Used to skip redundant re-binding on repeated ConfigureGasTownSession /
 // EnsureBindingsOnSocket calls, preserving the user's original fallback.
 //
 // Two forms are recognized:
 //  1. Guarded form (set by SetAgentsBinding/SetFeedBinding): uses if-shell
-//     with a "gt " command — detects both old and new guarded bindings.
+//     with a "lt " command — detects both old and new guarded bindings.
 //  2. Unguarded form (set by EnsureBindingsOnSocket): direct run-shell
-//     invoking "gt agents menu" or "gt feed --window".
+//     invoking "lt agents menu" or "lt feed --window".
 func (t *Tmux) isGTBinding(table, key string) bool {
 	output, err := t.run("list-keys", "-T", table, key)
 	if err != nil || output == "" {
 		return false
 	}
-	// Guarded form: if-shell + "gt ".
-	if strings.Contains(output, "if-shell") && strings.Contains(output, "gt ") {
+	// Guarded form: if-shell + "lt ".
+	if strings.Contains(output, "if-shell") && strings.Contains(output, "lt ") {
 		return true
 	}
 	// Unguarded form: direct GT commands set by EnsureBindingsOnSocket.
-	return strings.Contains(output, "gt agents menu") ||
-		strings.Contains(output, "gt feed --window") ||
-		strings.Contains(output, "gt rig menu")
+	return strings.Contains(output, "lt agents menu") ||
+		strings.Contains(output, "lt feed --window") ||
+		strings.Contains(output, "lt rig menu")
 }
 
 // isGTBindingWithClient checks if the given key has a GT binding that includes
@@ -3389,13 +3389,13 @@ func (t *Tmux) isGTBindingWithClient(table, key string) bool {
 	if err != nil || output == "" {
 		return false
 	}
-	return strings.Contains(output, "if-shell") && strings.Contains(output, "gt ") &&
+	return strings.Contains(output, "if-shell") && strings.Contains(output, "lt ") &&
 		strings.Contains(output, "--client")
 }
 
 // isGTBindingCurrent checks whether the existing GT cycle binding has the
 // current prefix pattern. Returns false if the binding is stale (e.g., after
-// gt rig add introduces a new prefix not yet in the grep pattern).
+// lt rig add introduces a new prefix not yet in the grep pattern).
 func (t *Tmux) isGTBindingCurrent(table, key, currentPattern string) bool {
 	output, err := t.run("list-keys", "-T", table, key)
 	if err != nil || output == "" {
@@ -3412,12 +3412,12 @@ func (t *Tmux) isGTBindingCurrent(table, key, currentPattern string) bool {
 // The returned string is a tmux command (e.g., "next-window", "run-shell 'lazygit'")
 // suitable for use as a command argument to bind-key or if-shell.
 //
-// If the existing binding is already a Gas Town if-shell binding (detected by
-// the presence of both "if-shell" and "gt " in the output), it is treated as
+// If the existing binding is already a Camp Leatherneck if-shell binding (detected by
+// the presence of both "if-shell" and "lt " in the output), it is treated as
 // no prior binding to avoid recursive wrapping on repeated calls.
 func (t *Tmux) getKeyBinding(table, key string) string {
 	// tmux list-keys -T <table> <key> outputs a line like:
-	//   bind-key -T prefix g if-shell "..." "run-shell 'gt agents menu'" ":"
+	//   bind-key -T prefix g if-shell "..." "run-shell 'lt agents menu'" ":"
 	// We need to extract just the command portion.
 	//
 	// Assumed format (tested with tmux 3.3+):
@@ -3432,11 +3432,11 @@ func (t *Tmux) getKeyBinding(table, key string) string {
 	// Don't capture existing GT bindings as "user bindings to preserve" —
 	// that would wrap our own command in another layer.
 	// Check both guarded (if-shell) and unguarded (direct run-shell) forms.
-	if strings.Contains(output, "if-shell") && strings.Contains(output, "gt ") {
+	if strings.Contains(output, "if-shell") && strings.Contains(output, "lt ") {
 		return ""
 	}
-	if strings.Contains(output, "gt agents menu") ||
-		strings.Contains(output, "gt feed --window") {
+	if strings.Contains(output, "lt agents menu") ||
+		strings.Contains(output, "lt feed --window") {
 		return ""
 	}
 
@@ -3479,7 +3479,7 @@ func (t *Tmux) getKeyBinding(table, key string) string {
 var safePrefixRe = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9-]{0,19}$`)
 
 // sessionPrefixPattern returns a grep -Eq pattern that matches any registered
-// Gas Town session name.  The pattern is built dynamically from rigs.json
+// Camp Leatherneck session name.  The pattern is built dynamically from rigs.json
 // (via config.AllRigPrefixes) so that rigs beyond gastown/hq are recognized.
 // "hq" is always included because it lives outside the rig registry
 // (town-level services).
@@ -3507,14 +3507,14 @@ func sessionPrefixPattern() string {
 }
 
 // SetCycleBindings sets up C-b n/p to cycle through related sessions.
-// The gt cycle command automatically detects the session type and cycles
+// The lt cycle command automatically detects the session type and cycles
 // within the appropriate group:
 // - Town sessions: Mayor ↔ Deacon
 // - Crew sessions: All crew members in the same rig
 // - Rig ops sessions: Witness + Refinery + Polecats in the same rig
 //
-// IMPORTANT: These bindings are conditional - they only run gt cycle for
-// Gas Town sessions (those matching a registered rig prefix or "hq-").
+// IMPORTANT: These bindings are conditional - they only run lt cycle for
+// Camp Leatherneck sessions (those matching a registered rig prefix or "hq-").
 // For non-GT sessions, the user's original binding is preserved. If no
 // prior binding existed, the tmux defaults (next-window/previous-window)
 // are used.
@@ -3527,7 +3527,7 @@ func sessionPrefixPattern() string {
 func (t *Tmux) SetCycleBindings(session string) error {
 	// Skip if already correctly configured:
 	// 1. Has --client for multi-client support
-	// 2. Has the current prefix pattern (not stale from before a gt rig add)
+	// 2. Has the current prefix pattern (not stale from before a lt rig add)
 	// We must re-bind if an older GT binding exists without --client, or if the
 	// prefix pattern is stale (missing newly added rig prefixes).
 	// See: https://github.com/camp-leatherneck/camp-leatherneck/issues/2299
@@ -3547,19 +3547,19 @@ func (t *Tmux) SetCycleBindings(session string) error {
 		prevFallback = "previous-window"
 	}
 
-	// C-b n → gt cycle next for Gas Town sessions, original binding otherwise
+	// C-b n → lt cycle next for Camp Leatherneck sessions, original binding otherwise
 	// Pass --client #{client_tty} so switch-client targets the correct client
 	// when multiple tmux clients are attached (e.g., gastown + beads rigs).
 	if _, err := t.run("bind-key", "-T", "prefix", "n",
 		"if-shell", ifShell,
-		"run-shell 'gt cycle next --session #{session_name} --client #{client_tty}'",
+		"run-shell 'lt cycle next --session #{session_name} --client #{client_tty}'",
 		nextFallback); err != nil {
 		return err
 	}
-	// C-b p → gt cycle prev for Gas Town sessions, original binding otherwise
+	// C-b p → lt cycle prev for Camp Leatherneck sessions, original binding otherwise
 	if _, err := t.run("bind-key", "-T", "prefix", "p",
 		"if-shell", ifShell,
-		"run-shell 'gt cycle prev --session #{session_name} --client #{client_tty}'",
+		"run-shell 'lt cycle prev --session #{session_name} --client #{client_tty}'",
 		prevFallback); err != nil {
 		return err
 	}
@@ -3568,9 +3568,9 @@ func (t *Tmux) SetCycleBindings(session string) error {
 
 // SetFeedBinding configures C-b a to jump to the activity feed window.
 // This creates the feed window if it doesn't exist, or switches to it if it does.
-// Uses `gt feed --window` which handles both creation and switching.
+// Uses `lt feed --window` which handles both creation and switching.
 //
-// IMPORTANT: This binding is conditional - it only runs for Gas Town sessions
+// IMPORTANT: This binding is conditional - it only runs for Camp Leatherneck sessions
 // (those matching a registered rig prefix or "hq-"). For non-GT sessions, the
 // user's original binding is preserved. If no prior binding existed, the key
 // press is silently ignored.
@@ -3579,7 +3579,7 @@ func (t *Tmux) SetCycleBindings(session string) error {
 func (t *Tmux) SetFeedBinding(session string) error {
 	pattern := sessionPrefixPattern()
 	// Skip if already configured with the current rig prefix pattern.
-	// Must re-bind if the pattern is stale (e.g., after gt rig add adds a new prefix).
+	// Must re-bind if the pattern is stale (e.g., after lt rig add adds a new prefix).
 	if t.isGTBinding("prefix", "a") && t.isGTBindingCurrent("prefix", "a", pattern) {
 		return nil
 	}
@@ -3591,15 +3591,15 @@ func (t *Tmux) SetFeedBinding(session string) error {
 	}
 	_, err := t.run("bind-key", "-T", "prefix", "a",
 		"if-shell", ifShell,
-		"run-shell 'gt feed --window'",
+		"run-shell 'lt feed --window'",
 		fallback)
 	return err
 }
 
 // SetAgentsBinding configures C-b g to open the agent switcher popup menu.
-// This runs `gt agents menu` which displays a tmux popup with all Gas Town agents.
+// This runs `lt agents menu` which displays a tmux popup with all Camp Leatherneck agents.
 //
-// IMPORTANT: This binding is conditional - it only runs for Gas Town sessions
+// IMPORTANT: This binding is conditional - it only runs for Camp Leatherneck sessions
 // (those matching a registered rig prefix or "hq-"). For non-GT sessions, the
 // user's original binding is preserved. If no prior binding existed, the key
 // press is silently ignored.
@@ -3607,7 +3607,7 @@ func (t *Tmux) SetFeedBinding(session string) error {
 func (t *Tmux) SetAgentsBinding(session string) error {
 	pattern := sessionPrefixPattern()
 	// Skip if already configured with the current rig prefix pattern.
-	// Must re-bind if the pattern is stale (e.g., after gt rig add adds a new prefix).
+	// Must re-bind if the pattern is stale (e.g., after lt rig add adds a new prefix).
 	if t.isGTBinding("prefix", "g") && t.isGTBindingCurrent("prefix", "g", pattern) {
 		return nil
 	}
@@ -3619,13 +3619,13 @@ func (t *Tmux) SetAgentsBinding(session string) error {
 	}
 	_, err := t.run("bind-key", "-T", "prefix", "g",
 		"if-shell", ifShell,
-		"run-shell 'gt agents menu'",
+		"run-shell 'lt agents menu'",
 		fallback)
 	return err
 }
 
 // SetRigMenuBinding configures C-b r to open the rig menu popup.
-// This runs `gt rig menu` which displays a tmux display-menu with all rigs
+// This runs `lt rig menu` which displays a tmux display-menu with all rigs
 // and per-rig actions (start, stop, park, etc.).
 func (t *Tmux) SetRigMenuBinding(session string) error {
 	if t.isGTBinding("prefix", "r") {
@@ -3638,23 +3638,23 @@ func (t *Tmux) SetRigMenuBinding(session string) error {
 	}
 	_, err := t.run("bind-key", "-T", "prefix", "r",
 		"if-shell", ifShell,
-		"run-shell 'gt rig menu'",
+		"run-shell 'lt rig menu'",
 		fallback)
 	return err
 }
 
-// EnsureBindingsOnSocket sets the gt agents menu and feed keybindings on a
-// specific tmux socket. This is used during gt up to ensure the bindings work
+// EnsureBindingsOnSocket sets the lt agents menu and feed keybindings on a
+// specific tmux socket. This is used during lt up to ensure the bindings work
 // even when the user is on a different socket than the town socket.
 //
 // townSocket is the socket name where GT agents live (e.g. "gt-a1b2c3"). When
 // non-empty it is embedded in the binding command as GT_TOWN_SOCKET=<name>
-// so that gt agents menu can locate agent sessions even when invoked from a
-// directory outside the town root (e.g. a personal tmux session where
+// so that lt agents menu can locate agent sessions even when invoked from a
+// directory outside the HQ root (e.g. a personal tmux session where
 // workspace.FindFromCwd fails and InitRegistry is never called).
 // Pass "" for test-socket use where InitRegistry is already called.
 //
-// Unlike SetAgentsBinding/SetFeedBinding (called during gt prime), this method:
+// Unlike SetAgentsBinding/SetFeedBinding (called during lt prime), this method:
 //   - Targets a specific socket regardless of the Tmux instance's default
 //   - Skips the session-name guard when there is no pre-existing user binding,
 //     since the user may be in a personal session (not matching GT prefixes)
@@ -3665,13 +3665,13 @@ func EnsureBindingsOnSocket(socket, townSocket string) error {
 	t := NewTmuxWithSocket(socket)
 
 	// Build the command strings, optionally prefixed with GT_TOWN_SOCKET so
-	// gt agents menu / gt feed can find the right tmux server even when called
+	// lt agents menu / lt feed can find the right tmux server even when called
 	// from a non-town directory.
-	agentsCmd := "gt agents menu"
-	feedCmd := "gt feed --window"
+	agentsCmd := "lt agents menu"
+	feedCmd := "lt feed --window"
 	if townSocket != "" {
-		agentsCmd = fmt.Sprintf("GT_TOWN_SOCKET=%s gt agents menu", townSocket)
-		feedCmd = fmt.Sprintf("GT_TOWN_SOCKET=%s gt feed --window", townSocket)
+		agentsCmd = fmt.Sprintf("GT_TOWN_SOCKET=%s lt agents menu", townSocket)
+		feedCmd = fmt.Sprintf("GT_TOWN_SOCKET=%s lt feed --window", townSocket)
 	}
 
 	// Agents binding (prefix + g)
@@ -3710,9 +3710,9 @@ func EnsureBindingsOnSocket(socket, townSocket string) error {
 	}
 
 	// Rig menu binding (prefix + r)
-	rigMenuCmd := "gt rig menu"
+	rigMenuCmd := "lt rig menu"
 	if townSocket != "" {
-		rigMenuCmd = fmt.Sprintf("GT_TOWN_SOCKET=%s gt rig menu", townSocket)
+		rigMenuCmd = fmt.Sprintf("GT_TOWN_SOCKET=%s lt rig menu", townSocket)
 	}
 	if !t.isGTBinding("prefix", "r") {
 		ifShell := fmt.Sprintf("echo '#{session_name}' | grep -Eq '%s'", sessionPrefixPattern())
@@ -3777,11 +3777,11 @@ func CurrentSessionName() string {
 	return strings.TrimSpace(string(out))
 }
 
-// CleanupOrphanedSessions scans for zombie Gas Town sessions and kills them.
+// CleanupOrphanedSessions scans for zombie Camp Leatherneck sessions and kills them.
 // A zombie session is one where tmux is alive but the Claude process has died.
-// This runs at `gt start` time to prevent session name conflicts and resource accumulation.
+// This runs at `lt start` time to prevent session name conflicts and resource accumulation.
 //
-// The isGTSession predicate identifies Gas Town sessions (e.g. session.IsKnownSession).
+// The isGTSession predicate identifies Camp Leatherneck sessions (e.g. session.IsKnownSession).
 // It is passed as a parameter to avoid a circular import from tmux → session.
 //
 // Returns:
@@ -3794,7 +3794,7 @@ func (t *Tmux) CleanupOrphanedSessions(isGTSession func(string) bool) (cleaned i
 	}
 
 	for _, sess := range sessions {
-		// Only process Gas Town sessions
+		// Only process Camp Leatherneck sessions
 		if !isGTSession(sess) {
 			continue
 		}
@@ -3827,8 +3827,8 @@ func (t *Tmux) SetPaneDiedHook(session, agentID string) error {
 
 	// Hook command logs the crash with exit status
 	// #{pane_dead_status} is the exit code of the process that died
-	// We run gt log crash which records to the town log
-	hookCmd := fmt.Sprintf(`run-shell "gt log crash --agent '%s' --session '%s' --exit-code #{pane_dead_status}"`,
+	// We run lt log crash which records to the town log
+	hookCmd := fmt.Sprintf(`run-shell "lt log crash --agent '%s' --session '%s' --exit-code #{pane_dead_status}"`,
 		agentID, session)
 
 	// Set the hook on this specific session

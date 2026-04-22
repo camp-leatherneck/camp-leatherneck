@@ -35,10 +35,10 @@ formula. They execute SQL operations but leave eligibility decisions to the
 Dog agent or daemon orchestrator.
 
 When run by a Dog:
-  gt reaper scan --db=gastown          # Discover candidates
-  gt reaper reap --db=gastown          # Close stale wisps
-  gt reaper purge --db=gastown         # Delete old closed wisps + mail
-  gt reaper auto-close --db=gastown    # Close stale issues`,
+  lt reaper scan --db=gastown          # Discover candidates
+  lt reaper reap --db=gastown          # Close stale wisps
+  lt reaper purge --db=gastown         # Delete old closed wisps + mail
+  lt reaper auto-close --db=gastown    # Close stale issues`,
 	RunE: requireSubcommand,
 }
 

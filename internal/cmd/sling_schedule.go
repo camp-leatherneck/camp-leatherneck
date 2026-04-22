@@ -29,7 +29,7 @@ func shouldDeferDispatch() (bool, error) {
 	settingsPath := config.TownSettingsPath(townRoot)
 	settings, err := config.LoadOrCreateTownSettings(settingsPath)
 	if err != nil {
-		return false, fmt.Errorf("loading town settings: %w (dispatch blocked — fix config or use gt config set scheduler.max_polecats -1)", err)
+		return false, fmt.Errorf("loading town settings: %w (dispatch blocked — fix config or use lt config set scheduler.max_polecats -1)", err)
 	}
 
 	schedulerCfg := settings.Scheduler
@@ -269,8 +269,8 @@ func resolveRigForBead(townRoot, beadID string) string {
 //
 // The property layers are the primary mechanism, supporting:
 //
-//	gt rig config set <rig> default_formula mol-evolve         # wisp layer
-//	gt rig config set <rig> default_formula mol-evolve --global # bead layer
+//	lt rig config set <rig> default_formula mol-evolve         # wisp layer
+//	lt rig config set <rig> default_formula mol-evolve --global # bead layer
 func resolveFormula(explicit string, hookRawBead bool, townRoot, rigName string) string {
 	if hookRawBead {
 		return ""
@@ -320,7 +320,7 @@ func areScheduled(beadIDs []string) map[string]bool {
 
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil || townRoot == "" {
-		// Can't determine town root — fail closed (treat all as scheduled)
+		// Can't determine HQ root — fail closed (treat all as scheduled)
 		for _, id := range beadIDs {
 			result[id] = true
 		}

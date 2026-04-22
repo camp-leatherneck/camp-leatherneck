@@ -1,12 +1,12 @@
 # Factory Worker API
 
-Design for the API boundary between Gas Town and AI agent runtimes.
+Design for the API boundary between Camp Leatherneck and AI agent runtimes.
 
 Ref: gt-5zs8
 
 ## Problem
 
-Gas Town has no stable interface with AI agents. Every integration is a hack:
+Camp Leatherneck has no stable interface with AI agents. Every integration is a hack:
 
 - **Prompt delivery**: tmux send-keys with 512-byte chunking, ESC+600ms readline
   dance, Enter retries, SIGWINCH wake

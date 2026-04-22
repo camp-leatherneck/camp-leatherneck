@@ -1,6 +1,6 @@
 # Why These Features?
 
-> Gas Town's architecture explained through enterprise AI challenges
+> Camp Leatherneck's architecture explained through enterprise AI challenges
 
 ## The Problem
 
@@ -19,7 +19,7 @@ nuanced reality of who actually did what, and how well.
 
 ## The Solution: A Work Ledger
 
-Gas Town treats work as structured data. Every action is recorded. Every agent
+Camp Leatherneck treats work as structured data. Every action is recorded. Every agent
 has a track record. Every piece of work has provenance.
 
 This isn't about surveillance. It's about **visibility** - the same visibility
@@ -33,7 +33,7 @@ you'd expect from any serious engineering system.
 a critical bug. Which one? Traditional git blame shows a generic "AI Assistant"
 or worse, the human's name.
 
-**The solution:** Every Gas Town agent has a distinct identity. Every action is
+**The solution:** Every Camp Leatherneck agent has a distinct identity. Every action is
 attributed:
 
 ```
@@ -152,7 +152,7 @@ depends_on:
 
 ## Feature: Federation
 
-> **Status: Planned** — Federation via the Highway Operations Protocol (HOP) is designed but not yet implemented. Gas Town currently operates as a single-town system.
+> **Status: Planned** — Federation via the Highway Operations Protocol (HOP) is designed but not yet implemented. Camp Leatherneck currently operates as a single-town system.
 
 **The problem:** Enterprise projects span multiple repositories, multiple teams,
 sometimes multiple organizations (contractors, partners). Visibility is fragmented.
@@ -227,7 +227,7 @@ bd activity --follow
 
 ## The Enterprise Value Proposition
 
-Gas Town is a developer tool - like an IDE, but for AI orchestration. However,
+Camp Leatherneck is a developer tool - like an IDE, but for AI orchestration. However,
 the architecture provides enterprise-grade foundations:
 
 | Capability | Developer Benefit | Enterprise Benefit |
@@ -260,5 +260,5 @@ These features aren't bolted on. They're foundational:
 4. **Scale is assumed.** Multi-repo, multi-agent, multi-org from day one.
 5. **Verification over trust.** Quality gates are first-class primitives.
 
-Gas Town is built to answer the questions enterprises will ask as AI agents
+Camp Leatherneck is built to answer the questions enterprises will ask as AI agents
 become central to their engineering workflows.

@@ -13,7 +13,7 @@ import (
 // RigRoutesJSONLCheck detects and fixes routes.jsonl files in rig .beads directories.
 //
 // Rig-level routes.jsonl files are problematic because:
-// 1. bd's routing walks up to find town root (via mayor/town.json) and uses town-level routes.jsonl
+// 1. bd's routing walks up to find HQ root (via mayor/town.json) and uses town-level routes.jsonl
 // 2. If a rig has its own routes.jsonl, bd uses it and never finds town routes, breaking cross-rig routing
 // 3. These files often exist due to a bug where bd's auto-export wrote issue data to routes.jsonl
 //
@@ -94,7 +94,7 @@ func (c *RigRoutesJSONLCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:   StatusWarning,
 		Message:  fmt.Sprintf("%d rig(s) have routes.jsonl (breaks routing)", len(c.affectedRigs)),
 		Details:  problems,
-		FixHint:  "Run 'gt doctor --fix' to delete these files",
+		FixHint:  "Run 'lt doctor --fix' to delete these files",
 		Category: c.Category(),
 	}
 }
@@ -142,7 +142,7 @@ func (c *RigRoutesJSONLCheck) findRigDirectories(townRoot string) []string {
 	if routes, err := beads.LoadRoutes(townBeadsDir); err == nil {
 		for _, route := range routes {
 			if route.Path == "." || route.Path == "" {
-				continue // Skip town root
+				continue // Skip HQ root
 			}
 			// Extract rig name (first path component)
 			parts := strings.Split(route.Path, "/")
@@ -173,7 +173,7 @@ func (c *RigRoutesJSONLCheck) findRigDirectories(townRoot string) []string {
 			if err != nil {
 				continue // .beads doesn't exist
 			}
-			// Skip if this dir's .beads resolves to the town root .beads
+			// Skip if this dir's .beads resolves to the HQ root .beads
 			// (e.g. deacon uses a symlinked .beads dir pointing to town beads)
 			if townBeadsErr == nil && os.SameFile(townBeadsInfo, beadsDirInfo) {
 				continue

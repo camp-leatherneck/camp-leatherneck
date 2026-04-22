@@ -58,7 +58,7 @@ func TestStoreResolver_ResolveIssues_SingleStore(t *testing.T) {
 		t.Fatalf("CreateIssue: %v", err)
 	}
 
-	// Create a town root with routes pointing hq- to "."
+	// Create a HQ root with routes pointing hq- to "."
 	townRoot := t.TempDir()
 	beadsDir := filepath.Join(townRoot, ".beads")
 	os.MkdirAll(beadsDir, 0755)

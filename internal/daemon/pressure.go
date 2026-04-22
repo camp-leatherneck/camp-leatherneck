@@ -90,7 +90,7 @@ func (d *Daemon) checkPressure(_ string) PressureResult {
 	return result
 }
 
-// countAgentSessions counts active tmux sessions that belong to Gas Town agents.
+// countAgentSessions counts active tmux sessions that belong to Camp Leatherneck agents.
 // Uses the town's tmux socket so it only counts sessions for this town.
 func (d *Daemon) countAgentSessions() int {
 	t := tmux.NewTmux()
@@ -108,7 +108,7 @@ func (d *Daemon) countAgentSessions() int {
 	return count
 }
 
-// isAgentSession returns true if the tmux session name looks like a Gas Town agent.
+// isAgentSession returns true if the tmux session name looks like a Camp Leatherneck agent.
 // Agent sessions use prefixed names (e.g., "hq-mayor", "rig-witness", "rig-polecat-foo").
 func isAgentSession(name string) bool {
 	// Agent sessions contain role markers

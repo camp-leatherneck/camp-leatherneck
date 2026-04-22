@@ -31,9 +31,9 @@ Hook types:
   WorktreeRemove   - Runs when agent worktree isolation removes a worktree
 
 Examples:
-  gt hooks scan              # List all hooks in workspace
-  gt hooks scan --verbose    # Show hook commands
-  gt hooks scan --json       # Output as JSON`,
+  lt hooks scan              # List all hooks in workspace
+  lt hooks scan --verbose    # Show hook commands
+  lt hooks scan --json       # Output as JSON`,
 	RunE: runHooksScan,
 }
 
@@ -63,7 +63,7 @@ type HooksOutput struct {
 func runHooksScan(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Find all .claude/settings.json files via DiscoverTargets
@@ -165,7 +165,7 @@ func outputHooksHuman(townRoot string, hookInfos []HookInfo) error {
 	}
 
 	fmt.Printf("\n%s Claude Code Hooks\n", style.Bold.Render("🪝"))
-	fmt.Printf("Town root: %s\n\n", style.Dim.Render(townRoot))
+	fmt.Printf("HQ root: %s\n\n", style.Dim.Render(townRoot))
 
 	// Group by hook type
 	byType := make(map[string][]HookInfo)

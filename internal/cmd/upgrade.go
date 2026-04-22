@@ -28,11 +28,11 @@ var upgradeCmd = &cobra.Command{
 	Short:   "Run post-install migration and sync workspace state",
 	Long: `Run post-binary-install migrations to bring the workspace up to date.
 
-This is the user-facing entry point for upgrading Gas Town after installing
+This is the user-facing entry point for upgrading Camp Leatherneck after installing
 a new binary. It orchestrates all migration steps in the right order:
 
-  1. Structural checks   Run gt doctor --fix to repair workspace structure
-  2. CLAUDE.md sync       Update town root CLAUDE.md from embedded template
+  1. Structural checks   Run lt doctor --fix to repair workspace structure
+  2. CLAUDE.md sync       Update HQ root CLAUDE.md from embedded template
   3. Daemon defaults      Ensure daemon.json has lifecycle defaults
   4. Hooks sync           Regenerate settings.json from hook registry
   5. Formula update       Update formulas from embedded copies
@@ -40,10 +40,10 @@ a new binary. It orchestrates all migration steps in the right order:
 Each step reports what changed. Use --dry-run to preview without modifying.
 
 Examples:
-  gt upgrade                  # Run all migration steps
-  gt upgrade --dry-run        # Show what would change
-  gt upgrade --verbose        # Show detailed output
-  gt upgrade --no-start       # Suppress starting daemon during doctor fix`,
+  lt upgrade                  # Run all migration steps
+  lt upgrade --dry-run        # Show what would change
+  lt upgrade --verbose        # Show detailed output
+  lt upgrade --no-start       # Suppress starting daemon during doctor fix`,
 	RunE:         runUpgrade,
 	SilenceUsage: true,
 }
@@ -66,13 +66,13 @@ type upgradeResult struct {
 func runUpgrade(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	if upgradeDryRun {
-		fmt.Printf("\n%s Dry run — showing what would change\n", style.Bold.Render("gt upgrade"))
+		fmt.Printf("\n%s Dry run — showing what would change\n", style.Bold.Render("lt upgrade"))
 	} else {
-		fmt.Printf("\n%s Post-install migration\n", style.Bold.Render("gt upgrade"))
+		fmt.Printf("\n%s Post-install migration\n", style.Bold.Render("lt upgrade"))
 	}
 
 	var results []upgradeResult
@@ -117,7 +117,7 @@ func upgradeDoctor(townRoot string) upgradeResult {
 
 	d := doctor.NewDoctor()
 
-	// Register the same checks as gt doctor (subset most relevant to upgrade)
+	// Register the same checks as lt doctor (subset most relevant to upgrade)
 	d.RegisterAll(doctor.WorkspaceChecks()...)
 	d.Register(doctor.NewGlobalStateCheck())
 	d.Register(doctor.NewStaleBinaryCheck())
@@ -151,8 +151,8 @@ func upgradeDoctor(townRoot string) upgradeResult {
 	d.Register(doctor.NewWorktreeGitdirCheck())
 
 	// Identity bead repair: backfill missing rig, agent, and role beads (GH#2766).
-	// Previously omitted from upgrade, leaving identity gaps that gt doctor --fix
-	// could repair but gt upgrade would not.
+	// Previously omitted from upgrade, leaving identity gaps that lt doctor --fix
+	// could repair but lt upgrade would not.
 	d.Register(doctor.NewAgentBeadsCheck())
 	d.Register(doctor.NewRigBeadsCheck())
 	d.Register(doctor.NewRoleBeadsCheck())
@@ -178,7 +178,7 @@ func upgradeDoctor(townRoot string) upgradeResult {
 	return result
 }
 
-// upgradeCLAUDEMD syncs the town root CLAUDE.md from the embedded template.
+// upgradeCLAUDEMD syncs the HQ root CLAUDE.md from the embedded template.
 func upgradeCLAUDEMD(townRoot string) upgradeResult {
 	result := upgradeResult{step: "CLAUDE.md sync"}
 
@@ -236,13 +236,13 @@ func upgradeCLAUDEMD(townRoot string) upgradeResult {
 	return result
 }
 
-// generateCLAUDEMD returns the expected content for the town root CLAUDE.md.
+// generateCLAUDEMD returns the expected content for the HQ root CLAUDE.md.
 // This must match the template in createTownRootAgentMDs (install.go).
 func generateCLAUDEMD() string {
 	cmdName := cli.Name()
-	return `# Gas Town
+	return `# Camp Leatherneck
 
-This is a Gas Town workspace. Your identity and role are determined by ` + "`" + cmdName + " prime`" + `.
+This is a Camp Leatherneck workspace. Your identity and role are determined by ` + "`" + cmdName + " prime`" + `.
 
 Run ` + "`" + cmdName + " prime`" + ` for full context after compaction, clear, or new session.
 
@@ -483,7 +483,7 @@ func printUpgradeSummary(results []upgradeResult) {
 			fmt.Printf("  %s Workspace is up-to-date — nothing to change\n", style.SuccessPrefix)
 		} else {
 			fmt.Printf("  %s Dry run complete — %d change(s) would be applied\n", style.WarningPrefix, totalChanged)
-			fmt.Printf("     Run %s to apply\n", style.Dim.Render("gt upgrade"))
+			fmt.Printf("     Run %s to apply\n", style.Dim.Render("lt upgrade"))
 		}
 	} else {
 		if totalChanged == 0 {

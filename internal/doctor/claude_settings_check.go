@@ -139,20 +139,20 @@ func (c *ClaudeSettingsCheck) Run(ctx *CheckContext) *CheckResult {
 
 	if hasMissingFiles && !hasStaleFiles {
 		message = fmt.Sprintf("Found %d agent(s) missing settings.json", len(c.staleSettings))
-		fixHint = "Run 'gt up --restore' to restart agents and create settings"
+		fixHint = "Run 'lt up --restore' to restart agents and create settings"
 	} else if hasStaleFiles && !hasMissingFiles {
 		message = fmt.Sprintf("Found %d stale Claude config file(s)", len(c.staleSettings))
 		if hasModifiedFiles {
-			fixHint = "Run 'gt doctor --fix' to fix safe issues. Files with local modifications require manual review."
+			fixHint = "Run 'lt doctor --fix' to fix safe issues. Files with local modifications require manual review."
 		} else {
-			fixHint = "Run 'gt doctor --fix' to delete stale files, then 'gt up --restore' to create new settings"
+			fixHint = "Run 'lt doctor --fix' to delete stale files, then 'lt up --restore' to create new settings"
 		}
 	} else {
 		message = fmt.Sprintf("Found %d Claude settings issue(s)", len(c.staleSettings))
 		if hasModifiedFiles {
-			fixHint = "Run 'gt doctor --fix' to fix safe issues, then 'gt up --restore'. Files with local modifications require manual review."
+			fixHint = "Run 'lt doctor --fix' to fix safe issues, then 'lt up --restore'. Files with local modifications require manual review."
 		} else {
-			fixHint = "Run 'gt doctor --fix' to delete stale files, then 'gt up --restore' to create new settings"
+			fixHint = "Run 'lt doctor --fix' to delete stale files, then 'lt up --restore' to create new settings"
 		}
 	}
 
@@ -172,7 +172,7 @@ func (c *ClaudeSettingsCheck) Run(ctx *CheckContext) *CheckResult {
 func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettingsInfo {
 	var files []staleSettingsInfo
 
-	// Check for STALE settings at town root (~/gt/.claude/settings.json)
+	// Check for STALE settings at HQ root (~/gt/.claude/settings.json)
 	// This is WRONG - settings here pollute ALL child workspaces via directory traversal.
 	staleTownRootSettings := filepath.Join(townRoot, ".claude", "settings.json")
 	if fileExists(staleTownRootSettings) {
@@ -182,10 +182,10 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 			sessionName:   "hq-mayor",
 			wrongLocation: true,
 			gitStatus:     c.getGitFileStatus(staleTownRootSettings),
-			missing:       []string{"stale settings.json at town root (should not exist)"},
+			missing:       []string{"stale settings.json at HQ root (should not exist)"},
 		})
 	}
-	// Also check for stale settings.local.json at town root
+	// Also check for stale settings.local.json at HQ root
 	staleTownRootLocal := filepath.Join(townRoot, ".claude", "settings.local.json")
 	if fileExists(staleTownRootLocal) {
 		files = append(files, staleSettingsInfo{
@@ -194,14 +194,14 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 			sessionName:   "hq-mayor",
 			wrongLocation: true,
 			gitStatus:     c.getGitFileStatus(staleTownRootLocal),
-			missing:       []string{"stale settings.local.json at town root (should not exist)"},
+			missing:       []string{"stale settings.local.json at HQ root (should not exist)"},
 		})
 	}
 
-	// Check for STALE CLAUDE.md at town root (~/gt/CLAUDE.md)
+	// Check for STALE CLAUDE.md at HQ root (~/gt/CLAUDE.md)
 	// This is WRONG if it contains Mayor-specific instructions that would be inherited
 	// by ALL agents via directory traversal. However, a short identity anchor file
-	// (created by priming) that just says "run gt prime" is intentional and safe.
+	// (created by priming) that just says "run lt prime" is intentional and safe.
 	staleTownRootCLAUDEmd := filepath.Join(townRoot, "CLAUDE.md")
 	if fileExists(staleTownRootCLAUDEmd) && !isIdentityAnchor(staleTownRootCLAUDEmd) {
 		files = append(files, staleSettingsInfo{
@@ -210,11 +210,11 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 			sessionName:   "hq-mayor",
 			wrongLocation: true,
 			gitStatus:     c.getGitFileStatus(staleTownRootCLAUDEmd),
-			missing:       []string{"should be at mayor/CLAUDE.md, not town root"},
+			missing:       []string{"should be at mayor/CLAUDE.md, not HQ root"},
 		})
 	}
 
-	// Town-level: mayor - check for stale settings.local.json (should be settings.json)
+	// HQ-level: mayor - check for stale settings.local.json (should be settings.json)
 	mayorStaleLocal := filepath.Join(townRoot, "mayor", ".claude", "settings.local.json")
 	if fileExists(mayorStaleLocal) {
 		files = append(files, staleSettingsInfo{
@@ -243,7 +243,7 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 		})
 	}
 
-	// Town-level: deacon - check for stale settings.local.json (should be settings.json)
+	// HQ-level: deacon - check for stale settings.local.json (should be settings.json)
 	deaconStaleLocal := filepath.Join(townRoot, "deacon", ".claude", "settings.local.json")
 	if fileExists(deaconStaleLocal) {
 		files = append(files, staleSettingsInfo{
@@ -488,7 +488,7 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 				if !pcEntry.IsDir() || pcEntry.Name() == ".claude" {
 					continue
 				}
-				// Intermediate-level (polecats/<name>/) — always Gas Town artifacts
+				// Intermediate-level (polecats/<name>/) — always Camp Leatherneck artifacts
 				for _, staleFile := range []string{"settings.json", "settings.local.json"} {
 					stalePath := filepath.Join(polecatsDir, pcEntry.Name(), ".claude", staleFile)
 					if fileExists(stalePath) {
@@ -547,7 +547,7 @@ func (c *ClaudeSettingsCheck) checkSettings(path, _ string) []string {
 	// All templates should have:
 	// 1. enabledPlugins
 	// 2. SessionStart hook with prime --hook
-	// 3. Stop hook with gt costs record (for autonomous)
+	// 3. Stop hook with lt costs record (for autonomous)
 	// Check enabledPlugins
 	if _, ok := actual["enabledPlugins"]; !ok {
 		missing = append(missing, "enabledPlugins")
@@ -696,25 +696,25 @@ func (c *ClaudeSettingsCheck) Fix(ctx *CheckContext) error {
 			_ = os.Remove(claudeDir) // Best-effort, will fail if not empty
 		}
 
-		// Handle town-root files: redirect to mayor/ instead of recreating at root.
-		// Town-root settings pollute ALL agents via directory traversal.
-		// This handles both settings.json and settings.local.json at the town root.
+		// Handle HQ files: redirect to mayor/ instead of recreating at root.
+		// HQ settings pollute ALL agents via directory traversal.
+		// This handles both settings.json and settings.local.json at the HQ root.
 		if sf.agentType == "mayor" && !strings.Contains(sf.path, "/mayor/") {
 			mayorDir := filepath.Join(ctx.TownRoot, "mayor")
 
 			if strings.HasSuffix(claudeDir, ".claude") {
-				// Town-root .claude/settings{.local}.json → recreate at mayor/.claude/
+				// HQ .claude/settings{.local}.json → recreate at mayor/.claude/
 				if err := os.MkdirAll(mayorDir, 0755); err == nil {
 					runtimeConfig := config.ResolveRoleAgentConfig("mayor", ctx.TownRoot, mayorDir)
 					_ = runtime.EnsureSettingsForRole(mayorDir, mayorDir, "mayor", runtimeConfig)
 				}
 			}
 
-			// Town-root files were inherited by ALL agents via directory traversal.
+			// HQ files were inherited by ALL agents via directory traversal.
 			// Warn user to restart agents - don't auto-kill sessions as that's too disruptive,
-			// especially since deacon runs gt doctor automatically which would create a loop.
-			fmt.Printf("\n  %s Town-root settings were moved. Restart agents to pick up new config:\n", style.Warning.Render("⚠"))
-			fmt.Printf("      gt up --restore\n\n")
+			// especially since deacon runs lt doctor automatically which would create a loop.
+			fmt.Printf("\n  %s HQ settings were moved. Restart agents to pick up new config:\n", style.Warning.Render("⚠"))
+			fmt.Printf("      lt up --restore\n\n")
 			continue
 		}
 
@@ -749,7 +749,7 @@ func (c *ClaudeSettingsCheck) Fix(ctx *CheckContext) error {
 				sf.agentType == "deacon" || sf.agentType == "mayor" {
 				running, _ := t.HasSession(sf.sessionName)
 				if running {
-					// Cycle the agent by killing and letting gt up restart it.
+					// Cycle the agent by killing and letting lt up restart it.
 					// Use KillSessionWithProcesses to ensure all descendant processes are killed.
 					_ = t.KillSessionWithProcesses(sf.sessionName)
 				}
@@ -767,8 +767,8 @@ func (c *ClaudeSettingsCheck) Fix(ctx *CheckContext) error {
 	// Tell user to restart agents so they create correct settings
 	if needsRestart && !ctx.RestartSessions {
 		fmt.Printf("\n  %s Restart agents to create new settings:\n", style.Warning.Render("⚠"))
-		fmt.Printf("      gt up --restore\n")
-		fmt.Printf("\n  If you had custom Claude settings edits, re-apply them via 'gt hooks override <role>'.\n\n")
+		fmt.Printf("      lt up --restore\n")
+		fmt.Printf("\n  If you had custom Claude settings edits, re-apply them via 'lt hooks override <role>'.\n\n")
 	}
 
 	if len(errors) > 0 {
@@ -786,14 +786,14 @@ func fileExists(path string) bool {
 	return !info.IsDir()
 }
 
-// isIdentityAnchor checks if a CLAUDE.md file is the Gas Town town-root
+// isIdentityAnchor checks if a CLAUDE.md file is the Camp Leatherneck HQ
 // identity file. This includes both the minimal bootstrap anchor (<20 lines)
 // and the expanded version with operational norms (Dolt awareness,
-// communication hygiene, etc.). Both formats are intentional Gas Town files
+// communication hygiene, etc.). Both formats are intentional Camp Leatherneck files
 // and should NOT be flagged as "wrong location".
 //
-// A Gas Town CLAUDE.md is identified by:
-// - Starting with "# Gas Town" (the standard header)
+// A Camp Leatherneck CLAUDE.md is identified by:
+// - Starting with "# Camp Leatherneck" (the standard header)
 // - Containing "prime" (the recovery instruction)
 func isIdentityAnchor(path string) bool {
 	data, err := os.ReadFile(path)
@@ -801,5 +801,5 @@ func isIdentityAnchor(path string) bool {
 		return false
 	}
 	content := string(data)
-	return strings.HasPrefix(content, "# Gas Town") && strings.Contains(content, "prime")
+	return strings.HasPrefix(content, "# Camp Leatherneck") && strings.Contains(content, "prime")
 }

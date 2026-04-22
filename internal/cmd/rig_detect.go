@@ -25,7 +25,7 @@ var rigDetectCmd = &cobra.Command{
 	Long: `Detect rig from a repository path and optionally cache the result.
 
 This is an internal command used by shell integration. It checks if the given
-path is inside a Gas Town rig and outputs shell variable assignments.
+path is inside a Camp Leatherneck rig and outputs shell variable assignments.
 
 When --cache is specified, the result is written to ~/.cache/gastown/rigs.cache
 for fast lookups by the shell hook.

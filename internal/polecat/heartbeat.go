@@ -22,7 +22,7 @@ const (
 	HeartbeatWorking HeartbeatState = "working"
 	// HeartbeatIdle means the agent is waiting for input.
 	HeartbeatIdle HeartbeatState = "idle"
-	// HeartbeatExiting means the agent is in the gt done flow.
+	// HeartbeatExiting means the agent is in the lt done flow.
 	HeartbeatExiting HeartbeatState = "exiting"
 	// HeartbeatStuck means the agent self-reports being stuck.
 	HeartbeatStuck HeartbeatState = "stuck"
@@ -67,13 +67,13 @@ func heartbeatFile(townRoot, sessionName string) string {
 // TouchSessionHeartbeat writes or updates the heartbeat file for a polecat session.
 // Writes state="working" by default (heartbeat v2, gt-3vr5).
 // This is best-effort: errors are silently ignored because heartbeat signals
-// are non-critical and should not interrupt gt commands.
+// are non-critical and should not interrupt lt commands.
 func TouchSessionHeartbeat(townRoot, sessionName string) {
 	TouchSessionHeartbeatWithState(townRoot, sessionName, HeartbeatWorking, "", "")
 }
 
 // TouchSessionHeartbeatWithState writes a heartbeat with explicit state information.
-// Used by gt done (state="exiting") and gt heartbeat (state="stuck"). See gt-3vr5.
+// Used by lt done (state="exiting") and lt heartbeat (state="stuck"). See gt-3vr5.
 // This is best-effort: errors are silently ignored.
 func TouchSessionHeartbeatWithState(townRoot, sessionName string, state HeartbeatState, context, bead string) {
 	dir := heartbeatsDir(townRoot)

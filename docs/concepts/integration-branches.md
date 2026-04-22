@@ -3,7 +3,7 @@
 > Group epic work on a shared branch, land to main as a unit.
 
 Integration branches provide end-to-end support for epic-scoped work across
-the Gas Town pipeline. When you create an integration branch for an epic, it
+the Camp Leatherneck pipeline. When you create an integration branch for an epic, it
 becomes the automatic target for every stage: polecats spawn their worktrees
 from the integration branch (so they start with sibling work already present),
 the Refinery merges completed MRs into the integration branch instead of main,

@@ -1,6 +1,6 @@
 # Agent Identity and Attribution
 
-> Canonical format for agent identity in Gas Town
+> Canonical format for agent identity in Camp Leatherneck
 
 ## Why Identity Matters
 
@@ -11,7 +11,7 @@ When you deploy AI agents at scale, anonymous work creates real problems:
 - **Compliance:** Auditors ask "who approved this code?" - you need an answer.
 - **Performance management:** Some agents are better than others at certain tasks.
 
-Gas Town solves this with **universal attribution**: every action, every commit,
+Camp Leatherneck solves this with **universal attribution**: every action, every commit,
 every bead update is linked to a specific agent identity. This enables work
 history tracking, capability-based routing, and objective quality measurement.
 
@@ -41,7 +41,7 @@ The slash format mirrors filesystem paths and enables:
 
 ## Attribution Model
 
-Gas Town uses three fields for complete provenance:
+Camp Leatherneck uses three fields for complete provenance:
 
 ### Git Commits
 
@@ -88,7 +88,7 @@ All events include actor attribution:
 
 ## Environment Setup
 
-Gas Town uses a centralized `config.AgentEnv()` function to set environment
+Camp Leatherneck uses a centralized `config.AgentEnv()` function to set environment
 variables consistently across all agent spawn paths (managers, daemon, boot).
 
 ### Example: Polecat Environment

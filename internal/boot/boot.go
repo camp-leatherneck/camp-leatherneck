@@ -198,7 +198,7 @@ func (b *Boot) spawnTmux(agentOverride string) error {
 // spawnDegraded spawns Boot in degraded mode (no tmux).
 // Boot runs to completion and exits without handoff.
 func (b *Boot) spawnDegraded() error {
-	// In degraded mode, we run gt boot triage directly
+	// In degraded mode, we run lt boot triage directly
 	// This performs the triage logic without a full Claude session
 	cmd := exec.Command("gt", "boot", "triage", "--degraded")
 	cmd.Dir = b.deaconDir

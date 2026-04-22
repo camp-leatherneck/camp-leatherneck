@@ -9,13 +9,13 @@ import (
 )
 
 // AnnotationPolecatSafe marks a cobra command as safe for polecat sandbox execution.
-// Commands with this annotation are included in the output of "gt proxy-subcmds".
+// Commands with this annotation are included in the output of "lt proxy-subcmds".
 // Add Annotations: map[string]string{AnnotationPolecatSafe: "true"} to any
-// gt subcommand that polecats should be permitted to run through the proxy.
+// lt subcommand that polecats should be permitted to run through the proxy.
 const AnnotationPolecatSafe = "polecatSafe"
 
 // bdSafeSubcmds lists the bd subcommands safe for polecat sandbox execution.
-// Unlike gt subcommands (which are auto-discovered via AnnotationPolecatSafe),
+// Unlike lt subcommands (which are auto-discovered via AnnotationPolecatSafe),
 // bd subcommands are listed here since bd does not embed annotations.
 const bdSafeSubcmds = "create,update,close,show,list,ready,dep,export,prime,stats,blocked,doctor"
 
@@ -26,7 +26,7 @@ var proxySubcmdsCmd = &cobra.Command{
 	Long: `Output the allowed subcommand allowlist for gt-proxy-server.
 
 Prints a semicolon-separated "cmd:sub1,sub2,..." string listing which
-subcommands polecats may invoke through the mTLS proxy. The gt portion
+subcommands polecats may invoke through the mTLS proxy. The lt portion
 is discovered automatically by scanning commands annotated with the
 polecatSafe annotation; the bd portion is a fixed list embedded here.
 

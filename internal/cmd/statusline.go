@@ -194,7 +194,7 @@ func runMayorStatusLine(t *tmux.Tmux) error {
 		return nil // Silent fail
 	}
 
-	// Get town root from mayor pane's working directory
+	// Get HQ root from mayor pane's working directory
 	var townRoot string
 	mayorSession := getMayorSessionName()
 	paneDir, err := t.GetPaneWorkDir(mayorSession)
@@ -423,7 +423,7 @@ func runDeaconStatusLine(t *tmux.Tmux) error {
 		return nil // Silent fail
 	}
 
-	// Get town root from deacon pane's working directory
+	// Get HQ root from deacon pane's working directory
 	var townRoot string
 	deaconSession := getDeaconSessionName()
 	paneDir, err := t.GetPaneWorkDir(deaconSession)
@@ -494,7 +494,7 @@ func runWitnessStatusLine(t *tmux.Tmux, rigName string) error {
 		}
 	}
 
-	// Get town root from witness pane's working directory
+	// Get HQ root from witness pane's working directory
 	var townRoot string
 	sessionName := session.WitnessSessionName(session.PrefixFor(rigName))
 	paneDir, err := t.GetPaneWorkDir(sessionName)
@@ -566,7 +566,7 @@ func runRefineryStatusLine(t *tmux.Tmux, rigName string) error {
 		return nil
 	}
 
-	// Get town root from refinery pane's working directory
+	// Get HQ root from refinery pane's working directory
 	var townRoot string
 	sessionName := session.RefinerySessionName(session.PrefixFor(rigName))
 	paneDir, err := t.GetPaneWorkDir(sessionName)
@@ -663,7 +663,7 @@ func isSessionWorking(t *tmux.Tmux, session string) bool {
 }
 
 // getMailPreviewWithRoot returns unread count and a truncated subject of the first unread message,
-// using an explicit town root.
+// using an explicit HQ root.
 func getMailPreviewWithRoot(identity string, maxLen int, townRoot string) (int, string) {
 	// Use NewMailboxFromAddress to normalize identity (e.g., gastown/crew/gus -> gastown/gus)
 	mailbox := mail.NewMailboxFromAddress(identity, townRoot)
@@ -686,9 +686,9 @@ func getMailPreviewWithRoot(identity string, maxLen int, townRoot string) (int, 
 // getHookedWork returns a truncated title of the hooked bead for an agent.
 // Returns empty string if nothing is hooked.
 // beadsDir should be the directory containing .beads (for rig-level) or
-// empty to use the town root (for town-level roles).
+// empty to use the HQ root (for town-level roles).
 func getHookedWork(identity string, maxLen int, beadsDir string) string {
-	// If no beadsDir specified, use town root
+	// If no beadsDir specified, use HQ root
 	if beadsDir == "" {
 		var err error
 		beadsDir, err = findMailWorkDir()

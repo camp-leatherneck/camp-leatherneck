@@ -7,7 +7,7 @@ import (
 )
 
 // ClaudeBinaryCheck verifies that the Claude Code CLI is installed and meets
-// the minimum version requirement. Claude Code is optional (Gas Town supports
+// the minimum version requirement. Claude Code is optional (Camp Leatherneck supports
 // other agents), so missing Claude Code is a warning, not an error.
 type ClaudeBinaryCheck struct {
 	BaseCheck
@@ -18,7 +18,7 @@ func NewClaudeBinaryCheck() *ClaudeBinaryCheck {
 	return &ClaudeBinaryCheck{
 		BaseCheck: BaseCheck{
 			CheckName:        "claude-binary",
-			CheckDescription: "Check that Claude Code meets minimum version for Gas Town",
+			CheckDescription: "Check that Claude Code meets minimum version for Camp Leatherneck",
 			CheckCategory:    CategoryInfrastructure,
 		},
 	}
@@ -50,7 +50,7 @@ func (c *ClaudeBinaryCheck) Run(ctx *CheckContext) *CheckResult {
 			Message: fmt.Sprintf("claude %s is below minimum (%s) — hooks, skills, and nudge delivery may not work",
 				version, deps.MinClaudeCodeVersion),
 			Details: []string{
-				fmt.Sprintf("Gas Town requires Claude Code >= %s for full functionality", deps.MinClaudeCodeVersion),
+				fmt.Sprintf("Camp Leatherneck requires Claude Code >= %s for full functionality", deps.MinClaudeCodeVersion),
 				"Features requiring hooks (priming, mail, guards) will not work on older versions",
 			},
 			FixHint: fmt.Sprintf("Upgrade: npm install -g @anthropic-ai/claude-code@latest (see %s)", deps.ClaudeCodeInstallURL),

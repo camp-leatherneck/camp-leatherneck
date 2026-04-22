@@ -1,4 +1,4 @@
-// Package util provides common utilities for Gas Town.
+// Package util provides common utilities for Camp Leatherneck.
 package util
 
 // RemoveFromSlice removes all occurrences of an item from a string slice.

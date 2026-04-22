@@ -48,13 +48,13 @@ Exit statuses:
   DEFERRED       - Work paused, issue still open
 
 Examples:
-  gt done                              # Submit branch, notify COMPLETED, transition to IDLE
-  gt done --pre-verified               # Submit with pre-verification fast-path
-  gt done --target feat/my-branch      # Explicit MR target branch
-  gt done --pre-verified --target feat/contract-review  # Pre-verified with explicit target
-  gt done --issue gt-abc               # Explicit issue ID
-  gt done --status ESCALATED           # Signal blocker, skip MR
-  gt done --status DEFERRED            # Pause work, skip MR`,
+  lt done                              # Submit branch, notify COMPLETED, transition to IDLE
+  lt done --pre-verified               # Submit with pre-verification fast-path
+  lt done --target feat/my-branch      # Explicit MR target branch
+  lt done --pre-verified --target feat/contract-review  # Pre-verified with explicit target
+  lt done --issue gt-abc               # Explicit issue ID
+  lt done --status ESCALATED           # Signal blocker, skip MR
+  lt done --status DEFERRED            # Pause work, skip MR`,
 	RunE:         runDone,
 	SilenceUsage: true, // Don't print usage on operational errors (confuses agents)
 }
@@ -69,7 +69,7 @@ var (
 	doneTarget        string
 )
 
-// Valid exit types for gt done
+// Valid exit types for lt done
 const (
 	ExitCompleted = "COMPLETED"
 	ExitEscalated = "ESCALATED"
@@ -90,13 +90,13 @@ func init() {
 
 func runDone(cmd *cobra.Command, args []string) (retErr error) {
 	defer func() { telemetry.RecordDone(context.Background(), strings.ToUpper(doneStatus), retErr) }()
-	// Guard: Only polecats should call gt done
-	// Crew, deacons, witnesses etc. don't use gt done - they persist across tasks.
-	// Polecat sessions end with gt done — the session is cleaned up, but the
+	// Guard: Only polecats should call lt done
+	// Crew, deacons, witnesses etc. don't use lt done - they persist across tasks.
+	// Polecat sessions end with lt done — the session is cleaned up, but the
 	// polecat's persistent identity (agent bead, CV chain) survives across assignments.
 	actor := os.Getenv("BD_ACTOR")
 	if actor != "" && !isPolecatActor(actor) {
-		return fmt.Errorf("gt done is for polecats only (you are %s)\nPolecat sessions end with gt done — the session is cleaned up, but identity persists.\nOther roles persist across tasks and don't use gt done.", actor)
+		return fmt.Errorf("lt done is for polecats only (you are %s)\nPolecat sessions end with lt done — the session is cleaned up, but identity persists.\nOther roles persist across tasks and don't use lt done.", actor)
 	}
 
 	// Validate exit status
@@ -105,16 +105,16 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 		return fmt.Errorf("invalid exit status '%s': must be COMPLETED, ESCALATED, or DEFERRED", doneStatus)
 	}
 
-	// Persistent polecat model (gt-hdf8): sessions stay alive after gt done.
+	// Persistent polecat model (gt-hdf8): sessions stay alive after lt done.
 	// No deferred session kill — the polecat transitions to IDLE with sandbox
 	// preserved. The Witness handles any cleanup if the polecat gets stuck.
 
 	// Find workspace with fallback for deleted worktrees (hq-3xaxy)
-	// If the polecat's worktree was deleted by Witness before gt done finishes,
+	// If the polecat's worktree was deleted by Witness before lt done finishes,
 	// getcwd will fail. We fall back to GT_TOWN_ROOT env var in that case.
 	townRoot, cwd, err := workspace.FindFromCwdWithFallback()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Track if cwd is available - affects which operations we can do
@@ -150,12 +150,12 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 		return fmt.Errorf("cannot determine current rig (working directory may be deleted)")
 	}
 
-	// When gt is invoked via shell alias (cd ~/gt && gt), or when Claude Code
+	// When lt is invoked via shell alias (cd ~/gt && gt), or when Claude Code
 	// resets the shell CWD to mayor/rig, cwd is NOT the polecat's worktree.
 	// Detect and reconstruct actual path.
 	//
 	// This triggers when cwd is:
-	// - The town root itself (cd ~/gt && gt)
+	// - The HQ root itself (cd ~/gt && gt)
 	// - The mayor rig path (Claude Code Bash tool CWD reset)
 	// - Any non-polecat path within the rig
 	cwdIsPolecatWorktree := strings.Contains(cwd, "/polecats/")
@@ -178,7 +178,7 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 		}
 	}
 
-	// Normalize polecat CWD: polecats may run gt done from a subdirectory (e.g.,
+	// Normalize polecat CWD: polecats may run lt done from a subdirectory (e.g.,
 	// beads-ide/ inside the repo). beads.ResolveBeadsDir only looks at cwd/.beads,
 	// not parent dirs, so we must normalize to the git repo root before use.
 	// Walk up from cwd until we find .git, stopping if we leave the polecats area.
@@ -272,7 +272,7 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 	}
 
 	// SAFETY NET: Auto-commit uncommitted work before ANY exit path (gt-pvx).
-	// Polecats have been observed running gt done without committing their
+	// Polecats have been observed running lt done without committing their
 	// implementation work (1000s of lines lost). This happened because:
 	// 1. The agent skips the "commit changes" formula step
 	// 2. The COMPLETED check blocks, but the agent retries with --status DEFERRED
@@ -293,7 +293,7 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 			if addErr := g.Add("-A"); addErr != nil {
 				style.PrintWarning("auto-commit: git add failed: %v — uncommitted work may be at risk", addErr)
 			} else {
-				// Unstage Gas Town overlay files that git add -A picked up.
+				// Unstage Camp Leatherneck overlay files that git add -A picked up.
 				// These are runtime artifacts that must not be committed to repos.
 				_ = g.ResetFiles("CLAUDE.local.md")
 				// Only unstage CLAUDE.md if it contains the overlay marker
@@ -323,7 +323,7 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 					style.PrintWarning("auto-commit: git commit failed: %v — uncommitted work may be at risk", commitErr)
 				} else {
 					fmt.Printf("%s Auto-committed uncommitted work (safety net)\n", style.Bold.Render("✓"))
-					fmt.Printf("  The agent should have committed before running gt done.\n")
+					fmt.Printf("  The agent should have committed before running lt done.\n")
 					fmt.Printf("  This auto-save prevents work loss.\n\n")
 					doneCleanupStatus = "unpushed" // Update status — changes are now committed but not pushed
 				}
@@ -361,7 +361,7 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 		agentBeadID = getAgentBeadID(ctx)
 
 		// Persistent polecat model (gt-hdf8): no deferred session kill.
-		// Sessions stay alive after gt done — polecat transitions to IDLE.
+		// Sessions stay alive after lt done — polecat transitions to IDLE.
 	}
 
 	// If issue ID not set by flag or branch name, query for hooked beads
@@ -375,11 +375,11 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 	}
 
 	// Write done-intent label EARLY, before push/MR operations.
-	// If gt done crashes after this point, the Witness can detect the intent
+	// If lt done crashes after this point, the Witness can detect the intent
 	// and auto-nuke the zombie polecat.
 	//
 	// Also read existing checkpoints for resume capability (gt-aufru).
-	// If gt done was interrupted (SIGTERM, context exhaustion, SIGKILL),
+	// If lt done was interrupted (SIGTERM, context exhaustion, SIGKILL),
 	// checkpoints indicate which stages completed. On re-invocation, we
 	// skip those stages to avoid repeating work or hitting errors.
 	checkpoints := map[DoneCheckpoint]string{}
@@ -388,16 +388,16 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 		setDoneIntentLabel(bd, agentBeadID, exitType)
 		checkpoints = readDoneCheckpoints(bd, agentBeadID)
 		if len(checkpoints) > 0 {
-			fmt.Printf("%s Resuming gt done from checkpoint (previous run was interrupted)\n", style.Bold.Render("→"))
+			fmt.Printf("%s Resuming lt done from checkpoint (previous run was interrupted)\n", style.Bold.Render("→"))
 		}
 	}
 
 	// Write heartbeat state="exiting" (gt-3vr5: heartbeat v2).
-	// Tells the witness we're in the gt done flow — trust the agent until
+	// Tells the witness we're in the lt done flow — trust the agent until
 	// heartbeat goes stale. No timer-based inference needed.
 	// Parallel to done-intent label for backwards compat during migration.
 	if sessionName := os.Getenv("GT_SESSION"); sessionName != "" && townRoot != "" {
-		polecat.TouchSessionHeartbeatWithState(townRoot, sessionName, polecat.HeartbeatExiting, "gt done", issueID)
+		polecat.TouchSessionHeartbeatWithState(townRoot, sessionName, polecat.HeartbeatExiting, "lt done", issueID)
 	}
 
 	// Get configured default branch for this rig
@@ -418,7 +418,7 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 		}
 
 		// CRITICAL: Verify work exists before completing (hq-xthqf)
-		// Polecats calling gt done without commits results in lost work.
+		// Polecats calling lt done without commits results in lost work.
 		// We MUST check for:
 		// 1. Working directory availability (can't verify git state without it)
 		// 2. Uncommitted changes (work that would be lost)
@@ -432,7 +432,7 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 		// Block if there are uncommitted changes (would be lost on completion).
 		// Runtime artifacts (.claude/, .beads/, .runtime/, __pycache__/) are
 		// excluded — these are toolchain-managed and normally gitignored.
-		// Without this filter, gt done fails on virtually every polecat because
+		// Without this filter, lt done fails on virtually every polecat because
 		// Cursor creates .claude/ at runtime in every workspace.
 		workStatus, err := g.CheckUncommittedWork()
 		if err != nil {
@@ -493,8 +493,8 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 				if !branchPushedWithWork {
 					return fmt.Errorf("cannot complete: no commits on branch ahead of %s\n"+
 						"Polecats must have at least 1 commit to submit.\n"+
-						"If the bug was already fixed upstream: gt done --status DEFERRED\n"+
-						"If you're blocked: gt done --status ESCALATED",
+						"If the bug was already fixed upstream: lt done --status DEFERRED\n"+
+						"If you're blocked: lt done --status ESCALATED",
 						originDefault)
 				}
 			}
@@ -571,7 +571,7 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 			}
 		}
 
-		// Strip Gas Town overlay from CLAUDE.md / CLAUDE.local.md (gt-p35).
+		// Strip Camp Leatherneck overlay from CLAUDE.md / CLAUDE.local.md (gt-p35).
 		// Polecats commit the overlay (polecat lifecycle boilerplate) into repos,
 		// overwriting project-specific CLAUDE.md content. Detect and revert before push.
 		if stripped := stripOverlayCLAUDEmd(g, defaultBranch); stripped {
@@ -586,8 +586,8 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 		//   local:  keep on feature branch, no push, no MR (for human review/upstream PRs)
 		//
 		// Primary: read convoy info from the issue's attachment fields (gt-7b6wf fix).
-		// gt sling stores convoy_id and merge_strategy on the issue when dispatching,
-		// which avoids unreliable cross-rig dep resolution at gt done time.
+		// lt sling stores convoy_id and merge_strategy on the issue when dispatching,
+		// which avoids unreliable cross-rig dep resolution at lt done time.
 		// Fallback: dep-based lookup via getConvoyInfoForIssue (for issues dispatched
 		// before this fix, or where attachment fields weren't set).
 		convoyInfo = getConvoyInfoFromIssue(issueID, cwd)
@@ -669,7 +669,7 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 		// CRITICAL: Push branch BEFORE creating MR bead (hq-6dk53, hq-a4ksk)
 		// The MR bead triggers Refinery to process this branch. If the branch
 		// isn't pushed yet, Refinery finds nothing to merge. The worktree gets
-		// nuked at the end of gt done, so the commits are lost forever.
+		// nuked at the end of lt done, so the commits are lost forever.
 		//
 		// Auto-push submodule changes BEFORE parent push (gt-dzs).
 		// If the parent repo's submodule pointer references commits that don't
@@ -775,7 +775,7 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 		resolvedBeads := beads.ResolveBeadsDir(cwd)
 		if beads.IsLocalBeadsDir(cwd, resolvedBeads) {
 			fmt.Fprintf(os.Stderr, "WARNING: beads resolved to local dir %s (no shared-beads redirect)\n", resolvedBeads)
-			fmt.Fprintf(os.Stderr, "  MR beads written here will be invisible to the Refinery — run 'gt polecat repair' to fix\n")
+			fmt.Fprintf(os.Stderr, "  MR beads written here will be invisible to the Refinery — run 'lt polecat repair' to fix\n")
 		}
 		bd := beads.NewWithBeadsDir(cwd, resolvedBeads)
 
@@ -1104,7 +1104,7 @@ func runDone(cmd *cobra.Command, args []string) (retErr error) {
 			// could still resolve to the wrong database despite Rig: rigName.
 			// This is a warning-only guard — mrFailed is NOT set on mismatch.
 			if prefixErr := beads.ValidateRigPrefix(townRoot, rigName, mrID); prefixErr != nil {
-				style.PrintWarning("MR bead prefix mismatch: %v\nThe refinery may not find this MR — check 'gt mq list %s'", prefixErr, rigName)
+				style.PrintWarning("MR bead prefix mismatch: %v\nThe refinery may not find this MR — check 'lt mq list %s'", prefixErr, rigName)
 			}
 
 			// GH#3032: Supersede older open MRs for the same source issue.
@@ -1244,7 +1244,7 @@ notifyWitness:
 		// Sync worktree to main so the polecat is ready for new assignments.
 		// Phase 3 of persistent-polecat-pool: DONE→IDLE syncs to main and deletes old branch.
 		// Non-fatal: if sync fails, the polecat is still IDLE and the Witness
-		// or next gt sling can handle the branch state.
+		// or next lt sling can handle the branch state.
 		//
 		// GUARD (gt-pvx): Refuse to sync if uncommitted changes remain.
 		// If the auto-commit safety net above failed (git add/commit error),
@@ -1292,10 +1292,10 @@ notifyWitness:
 	}
 
 	// Self-terminate AFTER all cleanup is complete (opt-in via config).
-	// When enabled, polecats kill their session after gt done finishes
+	// When enabled, polecats kill their session after lt done finishes
 	// instead of transitioning to IDLE. This gives fresh context windows
 	// per task, reduces token waste, and eliminates stale state bugs.
-	// Must be the LAST thing gt done does — everything above must complete first.
+	// Must be the LAST thing lt done does — everything above must complete first.
 	if isPolecat {
 		daemonCfg := config.LoadOperationalConfig(townRoot).GetDaemonConfig()
 		if daemonCfg.PolecatSelfTerminate != nil && *daemonCfg.PolecatSelfTerminate {
@@ -1342,12 +1342,12 @@ func pushSubmoduleChanges(g *git.Git, defaultBranch string) {
 }
 
 // setDoneIntentLabel writes a done-intent:<type>:<unix-ts> label on the agent bead
-// EARLY in gt done, before push/MR. This allows the Witness to detect polecats that
+// EARLY in lt done, before push/MR. This allows the Witness to detect polecats that
 // crashed mid-gt-done: if the session is dead but done-intent exists, the polecat was
 // trying to exit and should be auto-nuked.
 //
 // Follows the existing idle:N / backoff-until:TIMESTAMP label pattern.
-// Non-fatal: if this fails, gt done continues without the safety net.
+// Non-fatal: if this fails, lt done continues without the safety net.
 func setDoneIntentLabel(bd *beads.Beads, agentBeadID, exitType string) {
 	if agentBeadID == "" {
 		return
@@ -1390,7 +1390,7 @@ func clearDoneIntentLabel(bd *beads.Beads, agentBeadID string) {
 	}
 }
 
-// DoneCheckpoint represents a checkpoint stage in the gt done flow (gt-aufru).
+// DoneCheckpoint represents a checkpoint stage in the lt done flow (gt-aufru).
 // Checkpoints are stored as labels on the agent bead, enabling resume after
 // process interruption (context exhaustion, SIGTERM, etc.).
 type DoneCheckpoint string
@@ -1403,7 +1403,7 @@ const (
 
 // writeDoneCheckpoint writes a checkpoint label on the agent bead.
 // Format: done-cp:<stage>:<value>:<unix-ts>
-// Non-fatal: if this fails, gt done continues without the checkpoint.
+// Non-fatal: if this fails, lt done continues without the checkpoint.
 func writeDoneCheckpoint(bd *beads.Beads, agentBeadID string, cp DoneCheckpoint, value string) {
 	if agentBeadID == "" {
 		return
@@ -1478,8 +1478,8 @@ func clearDoneCheckpoints(bd *beads.Beads, agentBeadID string) {
 // Also self-reports cleanup_status for ZFC compliance (#10).
 //
 // BUG FIX (hq-3xaxy): This function must be resilient to working directory deletion.
-// If the polecat's worktree is deleted before gt done finishes, we use env vars as fallback.
-// All errors are warnings, not failures - gt done must complete even if bead ops fail.
+// If the polecat's worktree is deleted before lt done finishes, we use env vars as fallback.
+// All errors are warnings, not failures - lt done must complete even if bead ops fail.
 func updateAgentStateOnDone(cwd, townRoot, exitType, issueID string) {
 	// Get role context - try multiple sources for resilience
 	roleInfo, err := GetRoleWithContext(cwd, townRoot)
@@ -1550,7 +1550,7 @@ func updateAgentStateOnDone(cwd, townRoot, exitType, issueID string) {
 		// BUG FIX (gt-pftz): Close hooked bead unless already terminal (closed/tombstone).
 		// Previously checked hookedBead.Status == StatusHooked, but polecats update
 		// their work bead to in_progress during work. The exact-match check caused
-		// gt done to skip closing the bead, leaving it as unassigned open work after
+		// lt done to skip closing the bead, leaving it as unassigned open work after
 		// the hook was cleared — triggering infinite dispatch loops.
 		//
 		// DEFERRED exits preserve the bead: work is paused, not done. The bead
@@ -1565,15 +1565,15 @@ func updateAgentStateOnDone(cwd, townRoot, exitType, issueID string) {
 			}
 
 			// BUG FIX: Close attached molecule (wisp) BEFORE closing hooked bead.
-			// When using formula-on-bead (gt sling formula --on bead), the base bead
-			// has attached_molecule pointing to the wisp. Without this fix, gt done
+			// When using formula-on-bead (lt sling formula --on bead), the base bead
+			// has attached_molecule pointing to the wisp. Without this fix, lt done
 			// only closed the hooked bead, leaving the wisp orphaned.
 			// Order matters: wisp closes -> unblocks base bead -> base bead closes.
 			attachment := beads.ParseAttachmentFields(hookedBead)
 			if attachment != nil && attachment.AttachedMolecule != "" {
 				// Close molecule step descendants before closing the wisp root.
 				// bd close doesn't cascade — without this, open/in_progress steps
-				// from the molecule stay stuck forever after gt done completes.
+				// from the molecule stay stuck forever after lt done completes.
 				// Order: step children -> wisp root -> base bead.
 				if n := closeDescendants(bd, attachment.AttachedMolecule); n > 0 {
 					fmt.Fprintf(os.Stderr, "Closed %d molecule step(s) for %s\n", n, attachment.AttachedMolecule)
@@ -1582,7 +1582,7 @@ func updateAgentStateOnDone(cwd, townRoot, exitType, issueID string) {
 				// Close the wisp root with --force and audit reason.
 				// ForceCloseWithReason handles any status (hooked, open, in_progress)
 				// and records the reason + session for attribution.
-				// Same pattern as gt mol burn/squash (#1879).
+				// Same pattern as lt mol burn/squash (#1879).
 				if closeErr := bd.ForceCloseWithReason("done", attachment.AttachedMolecule); closeErr != nil {
 					if !errors.Is(closeErr, beads.ErrNotFound) {
 						fmt.Fprintf(os.Stderr, "Warning: couldn't close attached molecule %s: %v\n", attachment.AttachedMolecule, closeErr)
@@ -1649,7 +1649,7 @@ doneStateUpdate:
 		}
 	}
 
-	// Clear done-intent label and checkpoints on clean exit — gt done completed
+	// Clear done-intent label and checkpoints on clean exit — lt done completed
 	// successfully. If we don't reach here (crash/stuck), the Witness uses the
 	// lingering labels to detect the zombie and resume from checkpoints.
 	clearDoneIntentLabel(bd, agentBeadID)
@@ -1693,7 +1693,7 @@ func parseCleanupStatus(s string) polecat.CleanupStatus {
 }
 
 // selfNukePolecat deletes this polecat's worktree.
-// DEPRECATED (gt-4ac): No longer called from gt done. Polecats now go idle
+// DEPRECATED (gt-4ac): No longer called from lt done. Polecats now go idle
 // instead of self-nuking. Kept for explicit nuke scenarios.
 // This is safe because:
 // 1. Work has been pushed to origin (verified below)
@@ -1753,7 +1753,7 @@ func isPolecatActor(actor string) bool {
 }
 
 // selfKillSession terminates the polecat's own tmux session after logging the event.
-// DEPRECATED (gt-hdf8): No longer called from gt done. Polecats now transition to
+// DEPRECATED (gt-hdf8): No longer called from lt done. Polecats now transition to
 // IDLE with session preserved instead of self-killing. Kept for explicit kill scenarios
 // (e.g., Witness-directed termination).
 //
@@ -1789,7 +1789,7 @@ func selfKillSession(townRoot string, roleInfo RoleInfo) error {
 
 	// Log to events (JSON audit log with structured payload)
 	_ = events.LogFeed(events.TypeSessionDeath, agentID,
-		events.SessionDeathPayload(sessionName, agentID, "self-clean: done means idle", "gt done"))
+		events.SessionDeathPayload(sessionName, agentID, "self-clean: done means idle", "lt done"))
 
 	// Kill our own tmux session with proper process cleanup
 	// This will terminate Claude and all child processes, completing the self-cleaning cycle.
@@ -1805,10 +1805,10 @@ func selfKillSession(townRoot string, roleInfo RoleInfo) error {
 	return nil
 }
 
-// stripOverlayCLAUDEmd detects and removes Gas Town overlay content from CLAUDE.md
+// stripOverlayCLAUDEmd detects and removes Camp Leatherneck overlay content from CLAUDE.md
 // and CLAUDE.local.md before the branch is pushed. Polecats were committing the
 // overlay (which contains polecat lifecycle boilerplate like "Idle Polecat Heresy",
-// "gt done" protocol, etc.) into actual repos, overwriting project-specific CLAUDE.md
+// "lt done" protocol, etc.) into actual repos, overwriting project-specific CLAUDE.md
 // content. (gt-p35)
 //
 // This runs after all commits but before push. If overlay files are detected in
@@ -1864,7 +1864,7 @@ func stripOverlayCLAUDEmd(g *git.Git, defaultBranch string) bool {
 				if coErr := g.CheckoutFileFromRef(originRef, "CLAUDE.md"); coErr == nil {
 					if addErr := g.Add("CLAUDE.md"); addErr == nil {
 						needsCommit = true
-						fmt.Printf("%s Restored original CLAUDE.md (stripped Gas Town overlay)\n",
+						fmt.Printf("%s Restored original CLAUDE.md (stripped Camp Leatherneck overlay)\n",
 							style.Bold.Render("→"))
 					}
 				}
@@ -1876,7 +1876,7 @@ func stripOverlayCLAUDEmd(g *git.Git, defaultBranch string) bool {
 	if claudeLocalChanged {
 		if rmErr := g.RmCached("CLAUDE.local.md"); rmErr == nil {
 			needsCommit = true
-			fmt.Printf("%s Removed CLAUDE.local.md from branch (Gas Town overlay)\n",
+			fmt.Printf("%s Removed CLAUDE.local.md from branch (Camp Leatherneck overlay)\n",
 				style.Bold.Render("→"))
 		}
 	}
@@ -1886,12 +1886,12 @@ func stripOverlayCLAUDEmd(g *git.Git, defaultBranch string) bool {
 	}
 
 	// Create cleanup commit
-	if commitErr := g.Commit("chore: strip Gas Town overlay from CLAUDE.md (gt-p35)"); commitErr != nil {
+	if commitErr := g.Commit("chore: strip Camp Leatherneck overlay from CLAUDE.md (gt-p35)"); commitErr != nil {
 		style.PrintWarning("failed to create overlay cleanup commit: %v", commitErr)
 		return false
 	}
 
-	fmt.Printf("%s Created cleanup commit to remove Gas Town overlay files\n",
+	fmt.Printf("%s Created cleanup commit to remove Camp Leatherneck overlay files\n",
 		style.Bold.Render("✓"))
 	return true
 }
@@ -1902,7 +1902,7 @@ func stripOverlayCLAUDEmd(g *git.Git, defaultBranch string) bool {
 // operation but are never deleted, accumulating hundreds of rows that pollute
 // bd ready/list output. (hq-6161m)
 //
-// Best-effort: errors are logged but don't block gt done completion.
+// Best-effort: errors are logged but don't block lt done completion.
 func purgeClosedEphemeralBeads(bd *beads.Beads) {
 	out, err := bd.Run("purge", "--force", "--quiet")
 	if err != nil {

@@ -20,7 +20,7 @@ func setupSeanceTestEnv(t *testing.T) (townRoot, fakeHome string, cleanup func()
 	// Create fake home directory
 	fakeHome = t.TempDir()
 
-	// Create town root
+	// Create HQ root
 	townRoot = t.TempDir()
 
 	// Create mayor directory structure

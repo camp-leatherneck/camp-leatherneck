@@ -98,8 +98,8 @@ If the witness is not running, this will start it first.
 If rig is not specified, infers it from the current directory.
 
 Examples:
-  gt witness attach greenplace
-  gt witness attach          # infer rig from cwd`,
+  lt witness attach greenplace
+  lt witness attach          # infer rig from cwd`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runWitnessAttach,
 }
@@ -112,9 +112,9 @@ var witnessRestartCmd = &cobra.Command{
 Stops the current session (if running) and starts a fresh one.
 
 Examples:
-  gt witness restart greenplace
-  gt witness restart greenplace --agent codex
-  gt witness restart greenplace --env ANTHROPIC_MODEL=claude-3-haiku`,
+  lt witness restart greenplace
+  lt witness restart greenplace --agent codex
+  lt witness restart greenplace --env ANTHROPIC_MODEL=claude-3-haiku`,
 	Args: cobra.ExactArgs(1),
 	RunE: runWitnessRestart,
 }
@@ -170,7 +170,7 @@ func runWitnessStart(cmd *cobra.Command, args []string) error {
 	if err := mgr.Start(witnessForeground, witnessAgentOverride, witnessEnvOverrides); err != nil {
 		if err == witness.ErrAlreadyRunning {
 			fmt.Printf("%s Witness is already running\n", style.Dim.Render("⚠"))
-			fmt.Printf("  %s\n", style.Dim.Render("Use 'gt witness attach' to connect"))
+			fmt.Printf("  %s\n", style.Dim.Render("Use 'lt witness attach' to connect"))
 			return nil
 		}
 		return fmt.Errorf("starting witness: %w", err)
@@ -183,8 +183,8 @@ func runWitnessStart(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("%s Witness started for %s\n", style.Bold.Render("✓"), rigName)
-	fmt.Printf("  %s\n", style.Dim.Render("Use 'gt witness attach' to connect"))
-	fmt.Printf("  %s\n", style.Dim.Render("Use 'gt witness status' to check progress"))
+	fmt.Printf("  %s\n", style.Dim.Render("Use 'lt witness attach' to connect"))
+	fmt.Printf("  %s\n", style.Dim.Render("Use 'lt witness status' to check progress"))
 	return nil
 }
 
@@ -304,11 +304,11 @@ func runWitnessAttach(cmd *cobra.Command, args []string) error {
 	if rigName == "" {
 		townRoot, err := workspace.FindFromCwdOrError()
 		if err != nil {
-			return fmt.Errorf("not in a Gas Town workspace: %w", err)
+			return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 		}
 		rigName, err = inferRigFromCwd(townRoot)
 		if err != nil {
-			return fmt.Errorf("could not determine rig: %w\nUsage: gt witness attach <rig>", err)
+			return fmt.Errorf("could not determine rig: %w\nUsage: lt witness attach <rig>", err)
 		}
 	}
 
@@ -354,6 +354,6 @@ func runWitnessRestart(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("%s Witness restarted for %s\n", style.Bold.Render("✓"), rigName)
-	fmt.Printf("  %s\n", style.Dim.Render("Use 'gt witness attach' to connect"))
+	fmt.Printf("  %s\n", style.Dim.Render("Use 'lt witness attach' to connect"))
 	return nil
 }

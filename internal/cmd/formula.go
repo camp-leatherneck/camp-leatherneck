@@ -60,10 +60,10 @@ Search paths (in order):
   3. $GT_ROOT/.beads/formulas/ (orchestrator)
 
 Examples:
-  gt formula list                    # List all formulas
-  gt formula show shiny              # Show formula details
-  gt formula run shiny --pr=123      # Run formula on PR #123
-  gt formula create my-workflow      # Create new formula template`,
+  lt formula list                    # List all formulas
+  lt formula show shiny              # Show formula details
+  lt formula run shiny --pr=123      # Run formula on PR #123
+  lt formula create my-workflow      # Create new formula template`,
 }
 
 var formulaListCmd = &cobra.Command{
@@ -77,8 +77,8 @@ Searches for formula files (.formula.toml, .formula.json) in:
   3. $GT_ROOT/.beads/formulas/ (orchestrator)
 
 Examples:
-  gt formula list            # List all formulas
-  gt formula list --json     # JSON output`,
+  lt formula list            # List all formulas
+  lt formula list --json     # JSON output`,
 	RunE: runFormulaList,
 }
 
@@ -94,8 +94,8 @@ Shows:
   - Composition rules (extends, aspects)
 
 Examples:
-  gt formula show shiny
-  gt formula show rule-of-five --json`,
+  lt formula show shiny
+  lt formula show rule-of-five --json`,
 	Args: cobra.ExactArgs(1),
 	RunE: runFormulaShow,
 }
@@ -128,12 +128,12 @@ Agent precedence (highest to lowest):
   4. Rig/town default agent (fallback)
 
 Examples:
-  gt formula run shiny                    # Run formula in current rig
-  gt formula run                          # Run default formula from rig config
-  gt formula run shiny --pr=123           # Run on PR #123
-  gt formula run security-audit --rig=beads  # Run in specific rig
-  gt formula run release --dry-run        # Preview execution
-  gt formula run code-review --agent=gemini  # All legs use gemini`,
+  lt formula run shiny                    # Run formula in current rig
+  lt formula run                          # Run default formula from rig config
+  lt formula run shiny --pr=123           # Run on PR #123
+  lt formula run security-audit --rig=beads  # Run in specific rig
+  lt formula run release --dry-run        # Preview execution
+  lt formula run code-review --agent=gemini  # All legs use gemini`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runFormulaRun,
 }
@@ -152,9 +152,9 @@ Formula types:
   patrol    Repeating patrol cycle (for wisps)
 
 Examples:
-  gt formula create my-task                  # Create task formula
-  gt formula create my-workflow --type=workflow
-  gt formula create nightly-check --type=patrol`,
+  lt formula create my-task                  # Create task formula
+  lt formula create my-workflow --type=workflow
+  lt formula create nightly-check --type=patrol`,
 	Args: cobra.ExactArgs(1),
 	RunE: runFormulaCreate,
 }
@@ -237,7 +237,7 @@ func runFormulaRun(cmd *cobra.Command, args []string) error {
 				rigPath = filepath.Join(townRoot, "gastown")
 			}
 		} else {
-			// No town root found, fall back to gastown without rigPath
+			// No HQ root found, fall back to gastown without rigPath
 			targetRig = "gastown"
 		}
 	} else {
@@ -290,10 +290,10 @@ func runFormulaRun(cmd *cobra.Command, args []string) error {
 			style.Dim.Render("Note:"), f.Type)
 		fmt.Printf("Currently only 'convoy' and 'workflow' formulas can be run.\n")
 		fmt.Printf("\nTo run '%s' manually:\n", formulaName)
-		fmt.Printf("  1. View formula:   gt formula show %s\n", formulaName)
+		fmt.Printf("  1. View formula:   lt formula show %s\n", formulaName)
 		fmt.Printf("  2. Cook to proto:  bd cook %s\n", formulaName)
 		fmt.Printf("  3. Pour molecule:  bd pour %s\n", formulaName)
-		fmt.Printf("  4. Sling to rig:   gt sling <mol-id> %s\n", targetRig)
+		fmt.Printf("  4. Sling to rig:   lt sling <mol-id> %s\n", targetRig)
 		return nil
 	}
 }
@@ -438,10 +438,10 @@ func executeConvoyFormula(f *formula.Formula, formulaName, targetRig string) err
 	fmt.Printf("%s Executing convoy formula: %s\n\n",
 		style.Bold.Render("🚚"), formulaName)
 
-	// Get town root and resolve rig-scoped bead prefix
+	// Get HQ root and resolve rig-scoped bead prefix
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 	townBeads := filepath.Join(townRoot, ".beads")
 
@@ -685,7 +685,7 @@ func executeConvoyFormula(f *formula.Formula, formulaName, targetRig string) err
 		// Agent precedence (GH#2118): per-leg > CLI --agent > formula-level
 		legAgent := resolveFormulaLegAgent(leg.Agent, formulaRunAgent, f.Agent)
 
-		// Use gt sling with args for leg-specific context
+		// Use lt sling with args for leg-specific context
 		slingArgs := []string{
 			"sling", legBeadID, targetRig,
 			"-a", leg.Description,
@@ -724,7 +724,7 @@ func executeConvoyFormula(f *formula.Formula, formulaName, targetRig string) err
 	if synthesisBeadID != "" {
 		fmt.Printf("  Synthesis: %s (blocked until legs complete)\n", synthesisBeadID)
 	}
-	fmt.Printf("\n  Track progress: gt convoy status %s\n", convoyID)
+	fmt.Printf("\n  Track progress: lt convoy status %s\n", convoyID)
 
 	return nil
 }
@@ -743,7 +743,7 @@ func executeWorkflowFormula(f *formula.Formula, formulaName, targetRig string) e
 	// Get town beads directory
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 	townBeads := filepath.Join(townRoot, ".beads")
 
@@ -943,7 +943,7 @@ func executeWorkflowFormula(f *formula.Formula, formulaName, targetRig string) e
 		fmt.Printf("  Steps:    %d total, %d dispatched, %d awaiting dependencies\n",
 			len(f.Steps), slingCount, blockedCount)
 	}
-	fmt.Printf("\n  Track progress: gt convoy status %s\n", workflowID)
+	fmt.Printf("\n  Track progress: lt convoy status %s\n", workflowID)
 
 	return nil
 }
@@ -1135,8 +1135,8 @@ func runFormulaCreate(cmd *cobra.Command, args []string) error {
 	fmt.Printf("%s Created formula: %s\n", style.Bold.Render("✓"), filename)
 	fmt.Printf("\nNext steps:\n")
 	fmt.Printf("  1. Edit the formula: %s\n", filename)
-	fmt.Printf("  2. View it:          gt formula show %s\n", formulaName)
-	fmt.Printf("  3. Run it:           gt formula run %s\n", formulaName)
+	fmt.Printf("  2. View it:          lt formula show %s\n", formulaName)
+	fmt.Printf("  3. Run it:           lt formula run %s\n", formulaName)
 
 	return nil
 }
@@ -1148,7 +1148,7 @@ func generateTaskTemplate(name string) string {
 
 	return fmt.Sprintf(`# Formula: %s
 # Type: task
-# Created by: gt formula create
+# Created by: lt formula create
 
 description = """%s task.
 
@@ -1187,7 +1187,7 @@ func generateWorkflowTemplate(name string) string {
 
 	return fmt.Sprintf(`# Formula: %s
 # Type: workflow
-# Created by: gt formula create
+# Created by: lt formula create
 #
 # pour = true  — Steps materialized as sub-wisps (checkpoint recovery on crash)
 # pour = false — Steps read inline (root-only, restart on failure) [DEFAULT]
@@ -1265,7 +1265,7 @@ func generatePatrolTemplate(name string) string {
 
 	return fmt.Sprintf(`# Formula: %s
 # Type: patrol
-# Created by: gt formula create
+# Created by: lt formula create
 #
 # Patrol formulas are for repeating cycles (wisps).
 # They run continuously and are NOT synced to git.

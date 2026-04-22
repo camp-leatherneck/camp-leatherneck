@@ -19,7 +19,7 @@ import (
 //
 // Also detects orphaned agent beads from deregistered rigs — beads whose prefix
 // doesn't match any route in routes.jsonl. These accumulate when a rig is removed
-// via gt rig remove but its agent beads in the town database are not cleaned up.
+// via lt rig remove but its agent beads in the town database are not cleaned up.
 //
 // The fix closes stale beads so they no longer pollute bd ready output.
 type StaleAgentBeadsCheck struct {
@@ -66,7 +66,7 @@ func (c *StaleAgentBeadsCheck) Run(ctx *CheckContext) *CheckResult {
 			}
 			knownPrefixes[prefix] = true
 		} else {
-			// Town-level route (path ".") — track prefix but don't add to prefixToRig
+			// HQ-level route (path ".") — track prefix but don't add to prefixToRig
 			prefix := strings.TrimSuffix(r.Prefix, "-")
 			knownPrefixes[prefix] = true
 		}
@@ -138,7 +138,7 @@ func (c *StaleAgentBeadsCheck) Run(ctx *CheckContext) *CheckResult {
 	// Phase 2: Detect orphaned agent beads from deregistered rigs.
 	// Scan the town beads database for agent beads whose prefix doesn't match
 	// any route in routes.jsonl. These accumulate when a rig is removed via
-	// gt rig remove but its agent beads in the town database are not cleaned up.
+	// lt rig remove but its agent beads in the town database are not cleaned up.
 	townBeadsPath := beads.GetTownBeadsPath(ctx.TownRoot)
 	townBd := beads.New(townBeadsPath)
 	if townAgents, err := townBd.ListAgentBeads(); err == nil {
@@ -228,7 +228,7 @@ func (c *StaleAgentBeadsCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: fmt.Sprintf("%d stale agent bead(s) for removed workers", len(stale)),
 		Details: stale,
-		FixHint: "Run 'gt doctor --fix' to close stale agent beads",
+		FixHint: "Run 'lt doctor --fix' to close stale agent beads",
 	}
 }
 
@@ -292,7 +292,7 @@ func (c *StaleAgentBeadsCheck) Fix(ctx *CheckContext) error {
 		}
 	}
 
-	// Town beads client as fallback for orphan beads from deregistered rigs
+	// HQ beads client as fallback for orphan beads from deregistered rigs
 	townBeadsPath := beads.GetTownBeadsPath(ctx.TownRoot)
 	townBd := beads.New(townBeadsPath)
 

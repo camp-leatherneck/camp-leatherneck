@@ -15,7 +15,7 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
-// moleculeStepDoneCmd is the "gt mol step done" command.
+// moleculeStepDoneCmd is the "lt mol step done" command.
 var moleculeStepDoneCmd = &cobra.Command{
 	Use:   "done <step-id>",
 	Short: "Complete step and auto-continue to next",
@@ -38,7 +38,7 @@ IMPORTANT: This is the canonical way to complete molecule steps. Do NOT manually
 close steps with 'bd close' - it skips the auto-continuation logic.
 
 Example:
-  gt mol step done gt-abc.1    # Complete step 1 of molecule gt-abc`,
+  lt mol step done gt-abc.1    # Complete step 1 of molecule gt-abc`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMoleculeStepDone,
 }
@@ -72,13 +72,13 @@ func runMoleculeStepDone(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("getting current directory: %w", err)
 	}
 
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
 		return fmt.Errorf("finding workspace: %w", err)
 	}
 	if townRoot == "" {
-		return fmt.Errorf("not in a Gas Town workspace")
+		return fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	// Find beads directory
@@ -170,7 +170,7 @@ func runMoleculeStepDone(cmd *cobra.Command, args []string) error {
 	case "no_more_ready":
 		fmt.Printf("\n%s All remaining steps are blocked - waiting on dependencies\n",
 			style.Dim.Render("ℹ"))
-		fmt.Printf("Run 'gt mol progress %s' to see blocked steps\n", moleculeID)
+		fmt.Printf("Run 'lt mol progress %s' to see blocked steps\n", moleculeID)
 		return nil
 	}
 
@@ -306,7 +306,7 @@ func handleStepContinue(cwd, townRoot string, nextStep *beads.Issue, dryRun bool
 	// Respawn the pane
 	if !tmux.IsInsideTmux() {
 		// Not in tmux - just print next action
-		fmt.Printf("\n%s Not in tmux - start new session with 'gt prime'\n",
+		fmt.Printf("\n%s Not in tmux - start new session with 'lt prime'\n",
 			style.Dim.Render("ℹ"))
 		return nil
 	}
@@ -412,7 +412,7 @@ func handleParallelSteps(cwd, townRoot, _ string, steps []*beads.Issue, dryRun b
 	}
 
 	fmt.Printf("\n%s All parallel steps marked as in_progress\n", style.Bold.Render("✓"))
-	fmt.Printf("%s Execute each step and close with: gt mol step done <step-id>\n", style.Dim.Render("ℹ"))
+	fmt.Printf("%s Execute each step and close with: lt mol step done <step-id>\n", style.Dim.Render("ℹ"))
 	fmt.Printf("%s Once all parallel steps are closed, the gather step will become ready\n", style.Dim.Render("ℹ"))
 
 	// For the current agent, pick the first step to continue with
@@ -453,14 +453,14 @@ func handleMoleculeComplete(cwd, townRoot, moleculeID string, dryRun bool) error
 	if dryRun {
 		fmt.Printf("[dry-run] Would unpin work for %s\n", agentID)
 		if roleCtx.Role == RoleDog {
-			fmt.Printf("[dry-run] Would run gt dog done\n")
+			fmt.Printf("[dry-run] Would run lt dog done\n")
 		} else {
 			fmt.Printf("[dry-run] Would send POLECAT_DONE to witness\n")
 		}
 		return nil
 	}
 
-	// Unpin the molecule bead (set status to open, will be closed by gt done or manually)
+	// Unpin the molecule bead (set status to open, will be closed by lt done or manually)
 	workDir, err := findLocalBeadsDir()
 	if err == nil {
 		b := beads.New(workDir)
@@ -482,7 +482,7 @@ func handleMoleculeComplete(cwd, townRoot, moleculeID string, dryRun bool) error
 		}
 	}
 
-	// For polecats, use gt done to signal completion
+	// For polecats, use lt done to signal completion
 	if roleCtx.Role == RolePolecat {
 		fmt.Printf("%s Signaling completion to witness...\n", style.Bold.Render("📤"))
 
@@ -492,7 +492,7 @@ func handleMoleculeComplete(cwd, townRoot, moleculeID string, dryRun bool) error
 		return doneCmd.Run()
 	}
 
-	// For dogs, use gt dog done to clear work and auto-terminate session.
+	// For dogs, use lt dog done to clear work and auto-terminate session.
 	// Without this, dogs idle at the prompt indefinitely after completing
 	// their formula, wasting resources until the stale-working detector
 	// kills them (2 hours).

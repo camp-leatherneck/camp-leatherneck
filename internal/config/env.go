@@ -36,7 +36,7 @@ type AgentEnvConfig struct {
 	// For polecats, this is the polecat name. For crew, this is the crew member name.
 	AgentName string
 
-	// TownRoot is the root of the Gas Town workspace.
+	// TownRoot is the root of the Camp Leatherneck workspace.
 	// Sets GT_ROOT environment variable.
 	TownRoot string
 
@@ -81,7 +81,7 @@ func AgentEnv(cfg AgentEnvConfig) map[string]string {
 
 	// Set role-specific variables
 	// GT_ROLE is set in compound format (e.g., "beads/crew/jane") so that
-	// beads can parse it without knowing about Gas Town role types.
+	// beads can parse it without knowing about Camp Leatherneck role types.
 	switch cfg.Role {
 	case constants.RoleMayor:
 		env["GT_ROLE"] = constants.RoleMayor
@@ -117,7 +117,7 @@ func AgentEnv(cfg AgentEnvConfig) map[string]string {
 		env["BD_ACTOR"] = fmt.Sprintf("%s/polecats/%s", cfg.Rig, cfg.AgentName)
 		env["GIT_AUTHOR_NAME"] = cfg.AgentName
 		// Disable Dolt auto-commit for polecats. With branch-per-polecat,
-		// individual commits are pointless — all changes merge at gt done time
+		// individual commits are pointless — all changes merge at lt done time
 		// via DOLT_MERGE. Without this, concurrent polecats cause manifest
 		// contention leading to Dolt read-only mode (gt-5cc2p).
 		env["BD_DOLT_AUTO_COMMIT"] = "off"
@@ -168,7 +168,7 @@ func AgentEnv(cfg AgentEnvConfig) map[string]string {
 		env["GT_SESSION_ID_ENV"] = cfg.SessionIDEnv
 	}
 
-	// Set GT_SESSION when a session name is provided, so gt commands and
+	// Set GT_SESSION when a session name is provided, so lt commands and
 	// cost reports can correlate activity to a specific tmux session.
 	if cfg.SessionName != "" {
 		env["GT_SESSION"] = cfg.SessionName
@@ -181,10 +181,10 @@ func AgentEnv(cfg AgentEnvConfig) map[string]string {
 		env["GT_AGENT"] = cfg.Agent
 	}
 
-	// Disable bd's per-repo JSONL auto-backup for all Gas Town agents.
+	// Disable bd's per-repo JSONL auto-backup for all Camp Leatherneck agents.
 	// bd auto-enables backup when a git remote exists, then force-adds
 	// .beads/backup/ files (bypassing .gitignore) and commits/pushes them
-	// to the project repo. In Gas Town, Dolt is the persistent data store
+	// to the project repo. In Camp Leatherneck, Dolt is the persistent data store
 	// and the daemon provides centralized backup patrols (dolt_backup,
 	// jsonl_git_backup), making per-repo backup redundant and harmful —
 	// it pollutes rig git history on both main and feature branches.
@@ -218,12 +218,12 @@ func AgentEnv(cfg AgentEnvConfig) map[string]string {
 		fmt.Fprintf(os.Stderr,
 			"notice: CLAUDE_CODE_EFFORT_LEVEL=%s env var is deprecated and ignored; "+
 				"%s effort resolved to %q via config. "+
-				"Set per-role effort with role_effort in settings or gt config cost-tier.\n",
+				"Set per-role effort with role_effort in settings or lt config cost-tier.\n",
 			shellEffort, cfg.Role, effort)
 	}
 
 	// Clear CLAUDECODE to prevent nested session detection in Claude Code v2.x.
-	// When gt sling is invoked from within a Claude Code session, CLAUDECODE=1
+	// When lt sling is invoked from within a Claude Code session, CLAUDECODE=1
 	// leaks through tmux's global environment into new polecat sessions, causing
 	// Claude Code to refuse to start with a "nested sessions" error.
 	// See: https://github.com/camp-leatherneck/camp-leatherneck/issues/1666
@@ -254,7 +254,7 @@ func AgentEnv(cfg AgentEnvConfig) map[string]string {
 			env["OTEL_EXPORTER_OTLP_LOGS_PROTOCOL"] = "http/protobuf"
 			// Log tool usage details (which tools ran, their status).
 			env["OTEL_LOG_TOOL_DETAILS"] = "true"
-			// Log tool output content (e.g. gt prime stdout as it reaches Claude).
+			// Log tool output content (e.g. lt prime stdout as it reaches Claude).
 			env["OTEL_LOG_TOOL_CONTENT"] = "true"
 			// Log user-turn messages (initial beacon + any human prompts to Claude).
 			env["OTEL_LOG_USER_PROMPTS"] = "true"
@@ -329,8 +329,8 @@ func AgentEnv(cfg AgentEnvConfig) map[string]string {
 		}
 	}
 
-	// Suppress bd's Dolt auto-start for all Gas Town agents (GH#2930).
-	// Gas Town manages its own Dolt server (gt dolt start/stop). When the
+	// Suppress bd's Dolt auto-start for all Camp Leatherneck agents (GH#2930).
+	// Camp Leatherneck manages its own Dolt server (lt dolt start/stop). When the
 	// server is momentarily unreachable (restart, journal hiccup), bd's
 	// auto-start tries to launch a shadow server in the agent's .beads/dolt/
 	// directory — which conflicts with the real server on the same port and
@@ -435,7 +435,7 @@ func sanitizeOTELAttrValue(s string, maxLen int) string {
 	return s
 }
 
-// resolveDoltPort determines the Dolt server port for the given town root.
+// resolveDoltPort determines the Dolt server port for the given HQ root.
 //
 // Resolution order (mirrors doltserver.DefaultConfig without importing it):
 //  1. .dolt-data/config.yaml listener.port (authoritative, machine-generated)
@@ -445,7 +445,7 @@ func sanitizeOTELAttrValue(s string, maxLen int) string {
 //
 // This avoids importing doltserver (which pulls in yaml, sql, mysql driver)
 // by scanning the config.yaml line-by-line. The file is machine-generated by
-// gt dolt start with a known format, so a simple line scan is safe.
+// lt dolt start with a known format, so a simple line scan is safe.
 func resolveDoltPort(townRoot string) int {
 	// 1. Read from .dolt-data/config.yaml (authoritative)
 	configPath := filepath.Join(townRoot, ".dolt-data", "config.yaml")
@@ -481,7 +481,7 @@ func resolveDoltPort(townRoot string) int {
 }
 
 // parsePortFromConfigYAML extracts the listener port from a Dolt config.yaml
-// without a yaml dependency. The file is machine-generated by gt dolt start
+// without a yaml dependency. The file is machine-generated by lt dolt start
 // with the format:
 //
 //	listener:

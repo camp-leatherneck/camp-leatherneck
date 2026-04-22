@@ -29,10 +29,10 @@ By default, installs to the current worktree. Use --role to install
 to all worktrees of a specific role in the current rig.
 
 Examples:
-  gt hooks install pr-workflow-guard              # Install to current worktree
-  gt hooks install pr-workflow-guard --role crew  # Install to all crew in current rig
-  gt hooks install session-prime --role crew --all-rigs  # Install to all crew everywhere
-  gt hooks install pr-workflow-guard --dry-run    # Preview what would be installed`,
+  lt hooks install pr-workflow-guard              # Install to current worktree
+  lt hooks install pr-workflow-guard --role crew  # Install to all crew in current rig
+  lt hooks install session-prime --role crew --all-rigs  # Install to all crew everywhere
+  lt hooks install pr-workflow-guard --dry-run    # Preview what would be installed`,
 	Args: cobra.ExactArgs(1),
 	RunE: runHooksInstall,
 }
@@ -50,7 +50,7 @@ func runHooksInstall(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load registry
@@ -229,7 +229,7 @@ func resolveSettingsTarget(townRoot, cwd string) string {
 	}
 	parts := strings.Split(relPath, string(filepath.Separator))
 	if len(parts) < 2 {
-		return cwd // At town root or top-level dir (mayor/deacon)
+		return cwd // At HQ root or top-level dir (mayor/deacon)
 	}
 	// parts[0] = rig name (or mayor/deacon), parts[1] = role dir
 	roleDir := parts[1]
@@ -267,7 +267,7 @@ func installHookTo(worktreePath string, hookDef HookDefinition, dryRun bool) err
 		settings.Hooks.AddEntry(hookDef.Event, entry)
 	}
 
-	// Ensure beads plugin is disabled (standard for Gas Town)
+	// Ensure beads plugin is disabled (standard for Camp Leatherneck)
 	settings.EnabledPlugins["beads@beads-marketplace"] = false
 
 	// Pretty print relative path

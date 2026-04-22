@@ -34,7 +34,7 @@ func (c *TownConfigExistsCheck) Run(ctx *CheckContext) *CheckResult {
 			Name:    c.Name(),
 			Status:  StatusError,
 			Message: "mayor/town.json not found",
-			FixHint: "Run 'gt install' to initialize workspace",
+			FixHint: "Run 'lt install' to initialize workspace",
 		}
 	}
 
@@ -149,7 +149,7 @@ func (c *RigsRegistryExistsCheck) Run(ctx *CheckContext) *CheckResult {
 			Name:    c.Name(),
 			Status:  StatusWarning,
 			Message: "mayor/rigs.json not found (no rigs registered)",
-			FixHint: "Run 'gt doctor --fix' to create empty rigs.json",
+			FixHint: "Run 'lt doctor --fix' to create empty rigs.json",
 		}
 	}
 
@@ -272,7 +272,7 @@ func (c *RigsRegistryValidCheck) Run(ctx *CheckContext) *CheckResult {
 			Status:  StatusWarning,
 			Message: fmt.Sprintf("%d of %d registered rig(s) missing", len(missing), len(config.Rigs)),
 			Details: details,
-			FixHint: "Run 'gt doctor --fix' to remove missing rigs from registry",
+			FixHint: "Run 'lt doctor --fix' to remove missing rigs from registry",
 		}
 	}
 
@@ -341,7 +341,7 @@ func (c *MayorExistsCheck) Run(ctx *CheckContext) *CheckResult {
 			Name:    c.Name(),
 			Status:  StatusError,
 			Message: "mayor/ directory not found",
-			FixHint: "Run 'gt install' to initialize workspace",
+			FixHint: "Run 'lt install' to initialize workspace",
 		}
 	}
 	if !info.IsDir() {
@@ -349,7 +349,7 @@ func (c *MayorExistsCheck) Run(ctx *CheckContext) *CheckResult {
 			Name:    c.Name(),
 			Status:  StatusError,
 			Message: "mayor exists but is not a directory",
-			FixHint: "Remove mayor file and run 'gt install'",
+			FixHint: "Remove mayor file and run 'lt install'",
 		}
 	}
 

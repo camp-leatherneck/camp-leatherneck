@@ -32,7 +32,7 @@ crew/ directory with a name that identifies your source rig and identity.
 
 The worktree is created at: ~/gt/<target-rig>/crew/<source-rig>-<name>/
 
-For example, if you're gastown/crew/joe and run 'gt worktree beads':
+For example, if you're gastown/crew/joe and run 'lt worktree beads':
 - Creates worktree at ~/gt/beads/crew/gastown-joe/
 - The worktree checks out main branch
 - Your identity (BD_ACTOR, GT_ROLE) remains gastown/crew/joe
@@ -40,9 +40,9 @@ For example, if you're gastown/crew/joe and run 'gt worktree beads':
 Use --no-cd to just print the path without printing shell commands.
 
 Examples:
-  gt worktree beads         # Create worktree in beads rig
-  gt worktree gastown       # Create worktree in gastown rig (from another rig)
-  gt worktree beads --no-cd # Just print the path`,
+  lt worktree beads         # Create worktree in beads rig
+  lt worktree gastown       # Create worktree in gastown rig (from another rig)
+  lt worktree beads --no-cd # Just print the path`,
 	Args: cobra.ExactArgs(1),
 	RunE: runWorktree,
 }
@@ -74,12 +74,12 @@ var worktreeRemoveCmd = &cobra.Command{
 	Short: "Remove a cross-rig worktree",
 	Long: `Remove a git worktree created for cross-rig work.
 
-This command removes a worktree that was previously created with 'gt worktree <rig>'.
+This command removes a worktree that was previously created with 'lt worktree <rig>'.
 It will refuse to remove a worktree with uncommitted changes unless --force is used.
 
 Examples:
-  gt worktree remove beads         # Remove beads worktree
-  gt worktree remove beads --force # Force remove even with uncommitted changes`,
+  lt worktree remove beads         # Remove beads worktree
+  lt worktree remove beads --force # Force remove even with uncommitted changes`,
 	Args: cobra.ExactArgs(1),
 	RunE: runWorktreeRemove,
 }
@@ -108,13 +108,13 @@ func runWorktree(cmd *cobra.Command, args []string) error {
 
 	// Cannot create worktree in your own rig
 	if targetRig == sourceRig {
-		return fmt.Errorf("already in rig '%s' - use gt worktree to work in a different rig", targetRig)
+		return fmt.Errorf("already in rig '%s' - use lt worktree to work in a different rig", targetRig)
 	}
 
 	// Verify target rig exists
 	_, targetRigInfo, err := getRig(targetRig)
 	if err != nil {
-		return fmt.Errorf("rig '%s' not found - run 'gt rig list' to see available rigs", targetRig)
+		return fmt.Errorf("rig '%s' not found - run 'lt rig list' to see available rigs", targetRig)
 	}
 
 	// Compute worktree path: ~/gt/<target-rig>/crew/<source-rig>-<name>/
@@ -218,10 +218,10 @@ func runWorktreeList(cmd *cobra.Command, args []string) error {
 	crewName := detected.crewName
 	worktreeName := fmt.Sprintf("%s-%s", sourceRig, crewName)
 
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rigs config to list all rigs
@@ -267,7 +267,7 @@ func runWorktreeList(cmd *cobra.Command, args []string) error {
 
 	if !found {
 		fmt.Printf("  (none)\n")
-		fmt.Printf("\nCreate a worktree with: gt worktree <rig>\n")
+		fmt.Printf("\nCreate a worktree with: lt worktree <rig>\n")
 	}
 
 	return nil
@@ -313,7 +313,7 @@ func runWorktreeRemove(cmd *cobra.Command, args []string) error {
 	// Verify target rig exists
 	_, targetRigInfo, err := getRig(targetRig)
 	if err != nil {
-		return fmt.Errorf("rig '%s' not found - run 'gt rig list' to see available rigs", targetRig)
+		return fmt.Errorf("rig '%s' not found - run 'lt rig list' to see available rigs", targetRig)
 	}
 
 	// Compute worktree path: ~/gt/<target-rig>/crew/<source-rig>-<name>/

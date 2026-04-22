@@ -51,13 +51,13 @@ func (c *LifecycleHygieneCheck) Run(ctx *CheckContext) *CheckResult {
 		Name:    c.Name(),
 		Status:  StatusWarning,
 		Message: fmt.Sprintf("Found %d stale lifecycle message(s) in deacon inbox", staleCount),
-		FixHint: "Run 'gt doctor --fix' to clean up",
+		FixHint: "Run 'lt doctor --fix' to clean up",
 	}
 }
 
 // checkDeaconInbox looks for stale lifecycle messages.
 func (c *LifecycleHygieneCheck) checkDeaconInbox(ctx *CheckContext) int {
-	// Get deacon inbox via gt mail
+	// Get deacon inbox via lt mail
 	cmd := exec.Command("gt", "mail", "inbox", "--identity", "deacon/", "--json")
 	cmd.Dir = ctx.TownRoot
 

@@ -54,8 +54,8 @@ The identity bead tracks:
   - Cleanup status
 
 Example:
-  gt polecat identity add gastown Toast
-  gt polecat identity add gastown  # auto-generate name`,
+  lt polecat identity add gastown Toast
+  lt polecat identity add gastown  # auto-generate name`,
 	Args: cobra.RangeArgs(1, 2),
 	RunE: runPolecatIdentityAdd,
 }
@@ -72,8 +72,8 @@ Shows:
   - Whether worktree exists
 
 Example:
-  gt polecat identity list gastown
-  gt polecat identity list gastown --json`,
+  lt polecat identity list gastown
+  lt polecat identity list gastown --json`,
 	Args: cobra.ExactArgs(1),
 	RunE: runPolecatIdentityList,
 }
@@ -92,8 +92,8 @@ Displays:
   - Recent work list with relative timestamps
 
 Examples:
-  gt polecat identity show gastown Toast
-  gt polecat identity show gastown Toast --json`,
+  lt polecat identity show gastown Toast
+  lt polecat identity show gastown Toast --json`,
 	Args: cobra.ExactArgs(2),
 	RunE: runPolecatIdentityShow,
 }
@@ -114,7 +114,7 @@ Safety checks:
   - Polecat session must not be running
 
 Example:
-  gt polecat identity rename gastown Toast Imperator`,
+  lt polecat identity rename gastown Toast Imperator`,
 	Args: cobra.ExactArgs(3),
 	RunE: runPolecatIdentityRename,
 }
@@ -132,8 +132,8 @@ Safety checks:
 Use --force to bypass safety checks.
 
 Example:
-  gt polecat identity remove gastown Toast
-  gt polecat identity remove gastown Toast --force`,
+  lt polecat identity remove gastown Toast
+  lt polecat identity remove gastown Toast --force`,
 	Args: cobra.ExactArgs(2),
 	RunE: runPolecatIdentityRemove,
 }
@@ -699,7 +699,7 @@ func runPolecatIdentityRemove(cmd *cobra.Command, args []string) error {
 	}
 
 	// Close the identity bead
-	if err := bd.CloseWithReason("removed via gt polecat identity remove", beadID); err != nil {
+	if err := bd.CloseWithReason("removed via lt polecat identity remove", beadID); err != nil {
 		return fmt.Errorf("closing identity bead: %w", err)
 	}
 

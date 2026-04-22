@@ -22,7 +22,7 @@ import (
 // TestExecuteSling_ParkedRig verifies that executeSling fails when the target
 // rig is parked (gt-4owfd.1).
 func TestExecuteSling_ParkedRig(t *testing.T) {
-	// Set up a temp dir as town root
+	// Set up a temp dir as HQ root
 	townRoot := t.TempDir()
 	if err := os.MkdirAll(filepath.Join(townRoot, ".beads"), 0o755); err != nil {
 		t.Fatalf("failed to create .beads: %v", err)

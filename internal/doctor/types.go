@@ -1,4 +1,4 @@
-// Package doctor provides a framework for running health checks on Gas Town workspaces.
+// Package doctor provides a framework for running health checks on Camp Leatherneck workspaces.
 package doctor
 
 import (
@@ -59,7 +59,7 @@ func (s CheckStatus) String() string {
 
 // CheckContext provides context for running checks.
 type CheckContext struct {
-	TownRoot        string // Root directory of the Gas Town workspace
+	TownRoot        string // Root directory of the Camp Leatherneck workspace
 	RigName         string // Rig name (empty for town-level checks)
 	Verbose         bool   // Enable verbose output
 	RestartSessions bool   // Restart patrol sessions when fixing (requires explicit --restart-sessions flag)

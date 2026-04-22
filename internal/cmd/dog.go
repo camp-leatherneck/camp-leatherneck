@@ -73,8 +73,8 @@ Each dog gets a worktree per configured rig (e.g., gastown, beads).
 The dog starts in idle state, ready to receive work from the Deacon.
 
 Example:
-  gt dog add alpha
-  gt dog add bravo`,
+  lt dog add alpha
+  lt dog add bravo`,
 	Args: cobra.ExactArgs(1),
 	RunE: runDogAdd,
 }
@@ -88,10 +88,10 @@ Removes all worktrees and the dog directory.
 Use --force to remove even if dog is in working state.
 
 Examples:
-  gt dog remove alpha
-  gt dog remove alpha bravo
-  gt dog remove --all
-  gt dog remove alpha --force`,
+  lt dog remove alpha
+  lt dog remove alpha bravo
+  lt dog remove --all
+  lt dog remove alpha --force`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if dogRemoveAll {
 			return nil
@@ -114,8 +114,8 @@ Shows each dog's state (idle/working), current work assignment,
 and last active timestamp.
 
 Examples:
-  gt dog list
-  gt dog list --json`,
+  lt dog list
+  lt dog list --json`,
 	RunE: runDogList,
 }
 
@@ -132,9 +132,9 @@ This updates the dog's last-active timestamp and can trigger
 session creation for the dog's worktrees.
 
 Examples:
-  gt dog call alpha
-  gt dog call --all
-  gt dog call`,
+  lt dog call alpha
+  lt dog call --all
+  lt dog call`,
 	RunE: runDogCall,
 }
 
@@ -151,8 +151,8 @@ Without a name argument, auto-detects the current dog from the working
 directory (must be run from within a dog's worktree).
 
 Examples:
-  gt dog done         # Auto-detect from cwd
-  gt dog done alpha   # Explicit name`,
+  lt dog done         # Auto-detect from cwd
+  lt dog done alpha   # Explicit name`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runDogDone,
 }
@@ -169,8 +169,8 @@ By default, refuses to clear a dog if its tmux session still exists.
 Use --force to clear even if the session is alive.
 
 Examples:
-  gt dog clear alpha           # Clear if session is dead
-  gt dog clear alpha --force   # Force clear even if session exists`,
+  lt dog clear alpha           # Clear if session is dead
+  lt dog clear alpha --force   # Force clear even if session exists`,
 	Args: cobra.ExactArgs(1),
 	RunE: runDogClear,
 }
@@ -192,9 +192,9 @@ Without a name, shows pack summary:
   - Pack health
 
 Examples:
-  gt dog status alpha
-  gt dog status
-  gt dog status --json`,
+  lt dog status alpha
+  lt dog status
+  lt dog status --json`,
 	RunE: runDogStatus,
 }
 
@@ -216,12 +216,12 @@ The dog discovers the work via its mail inbox and executes the plugin
 instructions. On completion, the dog sends DOG_DONE mail to deacon/.
 
 Examples:
-  gt dog dispatch --plugin rebuild-gt
-  gt dog dispatch --plugin rebuild-gt --rig gastown
-  gt dog dispatch --plugin rebuild-gt --dog alpha
-  gt dog dispatch --plugin rebuild-gt --create
-  gt dog dispatch --plugin rebuild-gt --dry-run
-  gt dog dispatch --plugin rebuild-gt --json`,
+  lt dog dispatch --plugin rebuild-gt
+  lt dog dispatch --plugin rebuild-gt --rig gastown
+  lt dog dispatch --plugin rebuild-gt --dog alpha
+  lt dog dispatch --plugin rebuild-gt --create
+  lt dog dispatch --plugin rebuild-gt --dry-run
+  lt dog dispatch --plugin rebuild-gt --json`,
 	RunE: runDogDispatch,
 }
 
@@ -244,11 +244,11 @@ Exit codes:
   2 = needs attention
 
 Examples:
-  gt dog health-check
-  gt dog health-check alpha
-  gt dog health-check --json
-  gt dog health-check --auto-clear
-  gt dog health-check --max-inactivity 1h`,
+  lt dog health-check
+  lt dog health-check alpha
+  lt dog health-check --json
+  lt dog health-check --auto-clear
+  lt dog health-check --max-inactivity 1h`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runDogHealthCheck,
 }
@@ -298,11 +298,11 @@ func init() {
 	rootCmd.AddCommand(dogCmd)
 }
 
-// getDogManager creates a dog.Manager with the current town root.
+// getDogManager creates a dog.Manager with the current HQ root.
 func getDogManager() (*dog.Manager, error) {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return nil, fmt.Errorf("finding town root: %w", err)
+		return nil, fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	rigsConfigPath := filepath.Join(townRoot, "mayor", "rigs.json")
@@ -562,7 +562,7 @@ func runDogCall(cmd *cobra.Command, args []string) error {
 		}
 
 		if d.State == dog.StateWorking {
-			fmt.Printf("Dog %s is already working (use 'gt dog done %s' when complete)\n", name, name)
+			fmt.Printf("Dog %s is already working (use 'lt dog done %s' when complete)\n", name, name)
 			return nil
 		}
 
@@ -660,7 +660,7 @@ func runDogDone(cmd *cobra.Command, args []string) error {
 		}
 
 		if name == "" {
-			return fmt.Errorf("could not detect dog name from cwd: %s\nRun from a dog worktree or specify name: gt dog done <name>", cwd)
+			return fmt.Errorf("could not detect dog name from cwd: %s\nRun from a dog worktree or specify name: lt dog done <name>", cwd)
 		}
 	}
 
@@ -726,14 +726,14 @@ func splitPathComponents(path string) []string {
 }
 
 // closePluginMails archives all open "Plugin: " dispatch mails from a dog's inbox.
-// Plugin dispatch mails sent by the daemon accumulate because gt dog done never
-// closed them. On every UserPromptSubmit hook, gt mail check --inject re-injects
+// Plugin dispatch mails sent by the daemon accumulate because lt dog done never
+// closed them. On every UserPromptSubmit hook, lt mail check --inject re-injects
 // ALL open mails, causing context to balloon. This function cleans up eagerly.
 // It is best-effort: failures are logged but do not prevent dog from going idle.
 func closePluginMails(dogName string) {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return // not in a Gas Town workspace, skip cleanup
+		return // not in a Camp Leatherneck workspace, skip cleanup
 	}
 
 	dogAddress := fmt.Sprintf("deacon/dogs/%s", dogName)
@@ -865,7 +865,7 @@ func showPackStatus(mgr *dog.Manager) error {
 	if len(dogs) == 0 {
 		fmt.Println("  No dogs in kennel")
 		fmt.Println()
-		fmt.Println("  Use 'gt dog add <name>' to add a dog")
+		fmt.Println("  Use 'lt dog add <name>' to add a dog")
 		return nil
 	}
 
@@ -885,7 +885,7 @@ func showPackStatus(mgr *dog.Manager) error {
 
 	if idleCount > 0 {
 		fmt.Println()
-		fmt.Println(style.Dim.Render("  Ready for work. Use 'gt dog call' to wake."))
+		fmt.Println(style.Dim.Render("  Ready for work. Use 'lt dog call' to wake."))
 	}
 
 	return nil
@@ -1008,7 +1008,7 @@ func runDogHealthCheck(cmd *cobra.Command, args []string) error {
 func runDogDispatch(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	// Get rig names for plugin scanner
@@ -1179,20 +1179,20 @@ func runDogDispatch(cmd *cobra.Command, args []string) error {
 		// Clearing work returns it to idle so it can be re-dispatched.
 		// See: github.com/camp-leatherneck/camp-leatherneck/issues/2748
 		if clearErr := mgr.ClearWork(targetDog.Name); clearErr != nil {
-			warn := fmt.Sprintf("session start failed AND rollback failed for dog %s — dog stuck in StateWorking, run: gt dog health-check --auto-clear: %v", targetDog.Name, clearErr)
+			warn := fmt.Sprintf("session start failed AND rollback failed for dog %s — dog stuck in StateWorking, run: lt dog health-check --auto-clear: %v", targetDog.Name, clearErr)
 			result.Warnings = append(result.Warnings, warn)
 			if !dogDispatchJSON {
 				style.PrintWarning("%s", warn)
 			}
 		}
-		warn := fmt.Sprintf("dog dispatch: session start failed for %s (work rolled back, re-dispatch with: gt dog dispatch --plugin %s): %v", targetDog.Name, p.Name, sessErr)
+		warn := fmt.Sprintf("dog dispatch: session start failed for %s (work rolled back, re-dispatch with: lt dog dispatch --plugin %s): %v", targetDog.Name, p.Name, sessErr)
 		result.Warnings = append(result.Warnings, warn)
 		if !dogDispatchJSON {
 			style.PrintWarning("%s", warn)
 		}
 		if escErr := dogEscalateBestEffort(warn); escErr != nil {
 			if !dogDispatchJSON {
-				style.PrintWarning("escalation also failed (%v) — escalate manually: gt escalate --severity medium %q", escErr, warn)
+				style.PrintWarning("escalation also failed (%v) — escalate manually: lt escalate --severity medium %q", escErr, warn)
 			}
 		}
 	}
@@ -1241,7 +1241,7 @@ func runDogDispatch(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-// dogDispatchResult is the JSON output for gt dog dispatch.
+// dogDispatchResult is the JSON output for lt dog dispatch.
 type dogDispatchResult struct {
 	Plugin         string   `json:"plugin"`
 	PluginRig      string   `json:"plugin_rig,omitempty"`
@@ -1255,7 +1255,7 @@ type dogDispatchResult struct {
 	Warnings       []string `json:"warnings,omitempty"`
 }
 
-// dogEscalateBestEffort fires a MEDIUM escalation via gt escalate.
+// dogEscalateBestEffort fires a MEDIUM escalation via lt escalate.
 func dogEscalateBestEffort(msg string) error {
 	cmd := exec.Command("gt", "escalate", "--severity", "medium", msg)
 	return cmd.Run()

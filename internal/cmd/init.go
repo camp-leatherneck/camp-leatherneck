@@ -21,8 +21,8 @@ var initForce bool
 var initCmd = &cobra.Command{
 	Use:     "init",
 	GroupID: GroupWorkspace,
-	Short:   "Initialize current directory as a Gas Town rig",
-	Long: `Initialize the current directory for use as a Gas Town rig.
+	Short:   "Initialize current directory as a Camp Leatherneck rig",
+	Long: `Initialize the current directory for use as a Camp Leatherneck rig.
 
 This creates the standard agent directories (polecats/, witness/, refinery/,
 mayor/) and updates .git/info/exclude to ignore them.
@@ -55,7 +55,7 @@ func runInit(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("rig already initialized (use --force to reinitialize)")
 	}
 
-	fmt.Printf("%s Initializing Gas Town rig in %s\n\n",
+	fmt.Printf("%s Initializing Camp Leatherneck rig in %s\n\n",
 		style.Bold.Render("⚙️"), style.Dim.Render(cwd))
 
 	// Create agent directories
@@ -84,7 +84,7 @@ func runInit(cmd *cobra.Command, args []string) error {
 		fmt.Printf("   ✓ Updated .git/info/exclude\n")
 	}
 
-	// Register custom beads types for Gas Town (agent, role, rig, convoy, slot).
+	// Register custom beads types for Camp Leatherneck (agent, role, rig, convoy, slot).
 	// This is best-effort: if beads isn't installed or DB doesn't exist, we skip.
 	// The doctor check will catch missing types later.
 	if err := registerCustomTypes(cwd); err != nil {
@@ -112,9 +112,9 @@ func runInit(cmd *cobra.Command, args []string) error {
 	fmt.Println()
 	fmt.Println("Next steps:")
 	fmt.Printf("  1. Add this rig to a town: %s\n",
-		style.Dim.Render("gt rig add <name> <git-url>"))
+		style.Dim.Render("lt rig add <name> <git-url>"))
 	fmt.Printf("  2. Create a polecat: %s\n",
-		style.Dim.Render("gt polecat identity add <rig> <name>"))
+		style.Dim.Render("lt polecat identity add <rig> <name>"))
 
 	return nil
 }
@@ -134,15 +134,15 @@ func updateGitExclude(repoPath string) error {
 		return err
 	}
 
-	// Check if already has Gas Town section
-	if strings.Contains(string(content), "Gas Town") {
+	// Check if already has Camp Leatherneck section
+	if strings.Contains(string(content), "Camp Leatherneck") {
 		return nil // Already configured
 	}
 
 	// Append agent dirs with leading '/' to anchor at repo root.
 	// Without the anchor, patterns like 'refinery/' match at any depth
 	// and would hide source code directories like 'internal/refinery/'.
-	additions := "\n# Gas Town agent directories\n"
+	additions := "\n# Camp Leatherneck agent directories\n"
 	for _, dir := range rig.AgentDirs {
 		// Get first component (e.g., "polecats" from "polecats")
 		// or "refinery" from "refinery/rig"
@@ -157,7 +157,7 @@ func updateGitExclude(repoPath string) error {
 	return os.WriteFile(excludePath, append(content, []byte(additions)...), 0644)
 }
 
-// registerCustomTypes registers Gas Town custom issue types with beads.
+// registerCustomTypes registers Camp Leatherneck custom issue types with beads.
 // This is best-effort: returns nil if beads isn't available or DB doesn't exist.
 // Handles gracefully: beads not installed, no .beads directory, or config errors.
 func registerCustomTypes(workDir string) error {

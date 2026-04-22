@@ -1455,7 +1455,7 @@ func TestRenderDAGTree_OutputOrdering(t *testing.T) {
 // U-22: Parked rig detected and warned
 // This test uses the isRigParkedFn seam to mock parked rig detection.
 func TestDetectWarnings_ParkedRig(t *testing.T) {
-	// Set up a temp dir as town root and cd there for workspace.FindFromCwd()
+	// Set up a temp dir as HQ root and cd there for workspace.FindFromCwd()
 	townRoot := t.TempDir()
 	if err := os.MkdirAll(filepath.Join(townRoot, ".beads"), 0o755); err != nil {
 		t.Fatalf("failed to create .beads: %v", err)

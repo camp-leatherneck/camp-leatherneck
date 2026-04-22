@@ -61,13 +61,13 @@ func TestPatrolMoleculesExistCheck_NoRigs(t *testing.T) {
 }
 
 func TestPatrolMoleculesExistCheck_RigPathMissing_FallbackToTownRoot(t *testing.T) {
-	// Regression test for: when gt doctor runs from a mayor's canonical clone,
+	// Regression test for: when lt doctor runs from a mayor's canonical clone,
 	// TownRoot/rigName doesn't exist but patrol formulas are accessible from TownRoot.
 	// The check should fall back to TownRoot instead of reporting false missing formulas.
 	tmpDir := t.TempDir()
 
 	// Provision patrol formulas at TownRoot level (not at a rig subdirectory).
-	// This simulates formulas being accessible from the town root.
+	// This simulates formulas being accessible from the HQ root.
 	if _, err := formula.ProvisionFormulas(tmpDir); err != nil {
 		t.Fatalf("ProvisionFormulas: %v", err)
 	}
@@ -126,9 +126,9 @@ func TestPatrolMoleculesExistCheck_RigPathExists_TownLevelFormulas(t *testing.T)
 		t.Fatalf("MkdirAll rig: %v", err)
 	}
 
-	// Provision formulas at the town root level only.
+	// Provision formulas at the HQ root level only.
 	if _, err := formula.ProvisionFormulas(tmpDir); err != nil {
-		t.Fatalf("ProvisionFormulas at town root: %v", err)
+		t.Fatalf("ProvisionFormulas at HQ root: %v", err)
 	}
 
 	writeRigsJSON(t, tmpDir, "gastown")
@@ -138,7 +138,7 @@ func TestPatrolMoleculesExistCheck_RigPathExists_TownLevelFormulas(t *testing.T)
 	result := check.Run(ctx)
 
 	if result.Status != StatusOK {
-		t.Errorf("Status = %v, want OK (formulas accessible from town root)", result.Status)
+		t.Errorf("Status = %v, want OK (formulas accessible from HQ root)", result.Status)
 		for _, d := range result.Details {
 			t.Logf("  detail: %s", d)
 		}

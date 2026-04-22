@@ -155,7 +155,7 @@ var sanitizeRe = regexp.MustCompile(`[^a-z0-9-]+`)
 // Lowercases, replaces non-alphanumeric characters with hyphens, trims hyphens.
 // townSocketName derives a unique tmux socket name from the full town path.
 // Uses the directory basename plus a short hash of the canonical path to ensure
-// uniqueness even when two towns share the same basename (e.g., ~/gt and ~/work/gt).
+// uniqueness even when two towns share the same basename (e.g., ~/lt and ~/work/gt).
 // Format: "basename-hash6" (e.g., "gt-a1b2c3").
 func townSocketName(townRoot string) string {
 	base := sanitizeTownName(filepath.Base(townRoot))
@@ -175,7 +175,7 @@ func townSocketName(townRoot string) string {
 }
 
 // LegacySocketName returns the old-format socket name (basename only, no hash)
-// used before path-based socket derivation was added. Used by gt down to clean
+// used before path-based socket derivation was added. Used by lt down to clean
 // up sessions orphaned on the old socket during migration.
 func LegacySocketName(townRoot string) string {
 	return sanitizeTownName(filepath.Base(townRoot))
@@ -198,7 +198,7 @@ func PrefixFor(rigName string) string {
 }
 
 // BuildPrefixRegistryFromTown reads rigs.json and returns a populated PrefixRegistry.
-// Checks mayor/rigs.json first (canonical), then falls back to town-root rigs.json.
+// Checks mayor/rigs.json first (canonical), then falls back to HQ rigs.json.
 // Warns to stderr if rigs.json is missing entirely — an empty registry causes
 // silent failures in session name parsing (crew cycling, nudge routing, etc.).
 func BuildPrefixRegistryFromTown(townRoot string) (*PrefixRegistry, error) {
@@ -208,22 +208,22 @@ func BuildPrefixRegistryFromTown(townRoot string) (*PrefixRegistry, error) {
 	if _, err := os.Stat(rigsPath); err == nil {
 		r, err := BuildPrefixRegistryFromFile(rigsPath)
 		if err == nil {
-			// Maintain fallback copy at town root (resilient to git ops in mayor/).
+			// Maintain fallback copy at HQ root (resilient to git ops in mayor/).
 			copyFileIfNewer(rigsPath, fallbackPath)
 		}
 		return r, err
 	}
 
-	// Fallback: town root (safe from git operations in mayor worktree).
+	// Fallback: HQ root (safe from git operations in mayor worktree).
 	if _, err := os.Stat(fallbackPath); err == nil {
 		style.PrintWarning("mayor/rigs.json missing, using fallback %s", fallbackPath)
 		return BuildPrefixRegistryFromFile(fallbackPath)
 	}
 
 	// No rigs.json found anywhere — warn loudly.
-	style.PrintWarning("rigs.json not found (checked mayor/rigs.json and town root). " +
+	style.PrintWarning("rigs.json not found (checked mayor/rigs.json and HQ root). " +
 		"PrefixRegistry is empty — session parsing will fail. " +
-		"Run 'gt doctor' or restore rigs.json.")
+		"Run 'lt doctor' or restore rigs.json.")
 	return NewPrefixRegistry(), nil
 }
 
@@ -297,7 +297,7 @@ func (r *PrefixRegistry) HasPrefix(sess string) bool {
 	return false
 }
 
-// IsKnownSession returns true if the session name belongs to Gas Town.
+// IsKnownSession returns true if the session name belongs to Camp Leatherneck.
 // Checks for HQ prefix and registered rig prefixes from the default registry.
 func IsKnownSession(sess string) bool {
 	if strings.HasPrefix(sess, HQPrefix) {

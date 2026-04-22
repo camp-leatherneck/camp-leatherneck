@@ -72,8 +72,8 @@ var nudgeCmd = &cobra.Command{
 	Use:         "nudge <target> [message]",
 	GroupID:     GroupComm,
 	Annotations: map[string]string{AnnotationPolecatSafe: "true"},
-	Short:       "Send a synchronous message to any Gas Town worker",
-	Long: `Universal messaging API for Gas Town worker-to-worker communication.
+	Short:       "Send a synchronous message to any Camp Leatherneck worker",
+	Long: `Universal messaging API for Camp Leatherneck worker-to-worker communication.
 
 Delivers a message to any worker's Claude Code session: polecats, crew,
 witness, refinery, mayor, or deacon.
@@ -109,19 +109,19 @@ Channel syntax:
                   Patterns like "gastown/polecats/*" are expanded.
 
 DND (Do Not Disturb):
-  If the target has DND enabled (gt dnd on), the nudge is skipped.
+  If the target has DND enabled (lt dnd on), the nudge is skipped.
   Use --force to override DND and send anyway.
 
 Examples:
-  gt nudge greenplace/furiosa "Check your mail and start working"
-  gt nudge greenplace/alpha -m "What's your status?"
-  gt nudge mayor "Status update requested"
-  gt nudge witness "Check polecat health"
-  gt nudge deacon session-started
-  gt nudge channel:workers "New priority work available"
+  lt nudge greenplace/furiosa "Check your mail and start working"
+  lt nudge greenplace/alpha -m "What's your status?"
+  lt nudge mayor "Status update requested"
+  lt nudge witness "Check polecat health"
+  lt nudge deacon session-started
+  lt nudge channel:workers "New priority work available"
 
   # Use --stdin for messages with special characters or formatting:
-  gt nudge gastown/alpha --stdin <<'EOF'
+  lt nudge gastown/alpha --stdin <<'EOF'
   Status update:
   - Task 1: complete
   - Task 2: in progress
@@ -172,7 +172,7 @@ func deliverNudge(t *tmux.Tmux, sessionName, message, sender string) error {
 	switch mode {
 	case NudgeModeQueue:
 		if townRoot == "" {
-			return fmt.Errorf("--mode=queue requires a Gas Town workspace")
+			return fmt.Errorf("--mode=queue requires a Camp Leatherneck workspace")
 		}
 		return nudge.Enqueue(townRoot, sessionName, nudge.QueuedNudge{
 			Sender:   sender,
@@ -184,7 +184,7 @@ func deliverNudge(t *tmux.Tmux, sessionName, message, sender string) error {
 		if townRoot == "" {
 			// wait-idle needs workspace for queue fallback — fail explicitly
 			// rather than silently degrading to immediate (destructive) delivery.
-			return fmt.Errorf("--mode=wait-idle requires a Gas Town workspace")
+			return fmt.Errorf("--mode=wait-idle requires a Camp Leatherneck workspace")
 		}
 		// Check if the target agent supports prompt-based idle detection.
 		// WaitForIdle uses Claude Code's prompt pattern (❯) and status bar (⏵⏵).
@@ -209,7 +209,7 @@ func deliverNudge(t *tmux.Tmux, sessionName, message, sender string) error {
 					return t.NudgeSessionWithOpts(sessionName, formatted, tmux.NudgeOpts{TownRoot: townRoot})
 				}
 				// Ensure a nudge-poller is running so the queue actually drains.
-				// The poller is normally started by gt crew start, but if the
+				// The poller is normally started by lt crew start, but if the
 				// session was started manually (or the poller crashed), queued
 				// nudges sit undelivered forever. StartPoller is idempotent —
 				// it no-ops if a poller is already alive for this session.
@@ -259,7 +259,7 @@ func deliverNudge(t *tmux.Tmux, sessionName, message, sender string) error {
 		// The UserPromptSubmit hook drains the queue on agent input, but an
 		// idle agent receives no input — so queued nudges are lost without
 		// this watcher. It exits on: delivery, session death, or timeout.
-		// Must be synchronous (not a goroutine) because gt nudge is a CLI
+		// Must be synchronous (not a goroutine) because lt nudge is a CLI
 		// command — the process exits after return, killing any goroutines.
 		watchAndDeliver(t, townRoot, sessionName)
 		return nil
@@ -284,7 +284,7 @@ func deliverNudge(t *tmux.Tmux, sessionName, message, sender string) error {
 // UserPromptSubmit hook entirely — that hook does not fire for tmux
 // send-keys input, so we cannot rely on it.
 //
-// This runs synchronously — gt nudge blocks until the watcher exits.
+// This runs synchronously — lt nudge blocks until the watcher exits.
 // Errors are logged to stderr rather than returned since delivery failure
 // after successful queue write is non-fatal (queue persists for next drain).
 //
@@ -606,10 +606,10 @@ func runNudge(cmd *cobra.Command, args []string) (retErr error) {
 // runNudgeChannel nudges all members of a named channel.
 // Routes each target through deliverNudge so --mode is respected.
 func runNudgeChannel(channelName, message, sender string) error {
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("cannot find town root: %w", err)
+		return fmt.Errorf("cannot find HQ root: %w", err)
 	}
 
 	// Load messaging config

@@ -1,4 +1,4 @@
-// Package agent provides shared types and utilities for Gas Town agents
+// Package agent provides shared types and utilities for Camp Leatherneck agents
 // (witness, refinery, deacon, etc.).
 package agent
 

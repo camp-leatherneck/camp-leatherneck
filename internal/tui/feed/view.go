@@ -134,7 +134,7 @@ func (m *Model) renderProblemsContent() string {
 	}
 
 	if len(m.problemAgents) == 0 {
-		return AgentIdleStyle.Render("No agents detected. Run gt feed in a GasTown workspace with active agents.")
+		return AgentIdleStyle.Render("No agents detected. Run lt feed in a GasTown workspace with active agents.")
 	}
 
 	// Count problems

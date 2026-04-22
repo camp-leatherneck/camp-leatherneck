@@ -278,7 +278,7 @@ func TestWorktreeGitdirCheck_RigFilter(t *testing.T) {
 // ── New tests for hq-c6u: relocation and deacon dogs ──────────────────── //
 
 func TestWorktreeGitdirCheck_RelocatedWorktree(t *testing.T) {
-	// Simulate rsync from /old/prefix/gt to tmpDir (new town root).
+	// Simulate rsync from /old/prefix/gt to tmpDir (new HQ root).
 	// The .git file contains an absolute path with the old prefix,
 	// but .repo.git exists at the new location.
 	tmpDir := t.TempDir()

@@ -345,7 +345,7 @@ func (m *SessionManager) Start(polecat string, opts SessionStartOptions) error {
 	}
 
 	// Get fallback info to determine beacon content based on agent capabilities.
-	// Non-hook agents need "Run gt prime" in beacon; work instructions come as delayed nudge.
+	// Non-hook agents need "Run lt prime" in beacon; work instructions come as delayed nudge.
 	fallbackInfo := runtime.GetStartupFallbackInfo(runtimeConfig)
 
 	// Build startup command with beacon for predecessor discovery.
@@ -386,15 +386,15 @@ func (m *SessionManager) Start(polecat string, opts SessionStartOptions) error {
 	}
 
 	// Disable Dolt auto-commit for polecats to prevent manifest contention
-	// under concurrent load (gt-5cc2p). Changes merge at gt done time.
+	// under concurrent load (gt-5cc2p). Changes merge at lt done time.
 	command = config.PrependEnv(command, map[string]string{"BD_DOLT_AUTO_COMMIT": "off"})
 
 	// FIX (ga-6s284): Prepend GT_RIG, GT_POLECAT, GT_ROLE to startup command
 	// so they're inherited by Kimi and other agents. Setting via tmux.SetEnvironment
 	// after session creation doesn't work for all agent types.
 	//
-	// GT_BRANCH and GT_POLECAT_PATH are critical for gt done's nuked-worktree fallback:
-	// when the polecat's cwd is deleted before gt done finishes, these env vars allow
+	// GT_BRANCH and GT_POLECAT_PATH are critical for lt done's nuked-worktree fallback:
+	// when the polecat's cwd is deleted before lt done finishes, these env vars allow
 	// branch detection and path resolution without a working directory.
 	polecatGitBranch := ""
 	if g := git.NewGit(workDir); g != nil {
@@ -451,7 +451,7 @@ func (m *SessionManager) Start(polecat string, opts SessionStartOptions) error {
 	}
 
 	// Set GT_BRANCH and GT_POLECAT_PATH in tmux session environment.
-	// This ensures respawned processes also inherit these for gt done fallback.
+	// This ensures respawned processes also inherit these for lt done fallback.
 	if polecatGitBranch != "" {
 		debugSession("SetEnvironment GT_BRANCH", m.tmux.SetEnvironment(sessionID, "GT_BRANCH", polecatGitBranch))
 	}
@@ -513,7 +513,7 @@ func (m *SessionManager) Start(polecat string, opts SessionStartOptions) error {
 			runtime.DeliverStartupPromptFallback(m.tmux, sessionID, startupPromptFallback, runtimeConfig, constants.ClaudeStartTimeout))
 	} else {
 		if fallbackInfo.StartupNudgeDelayMs > 0 {
-			// Wait for agent to finish processing the beacon + gt prime before sending
+			// Wait for agent to finish processing the beacon + lt prime before sending
 			// work instructions. Prompt-capable runtimes already got the beacon as the
 			// initial CLI prompt, so they only need the delayed startup nudge here.
 			primeWaitRC := runtime.RuntimeConfigWithMinDelay(runtimeConfig, fallbackInfo.StartupNudgeDelayMs)
@@ -566,7 +566,7 @@ func (m *SessionManager) Start(polecat string, opts SessionStartOptions) error {
 	_ = session.TrackSessionPID(townRoot, sessionID, m.tmux)
 
 	// Touch initial heartbeat so liveness detection works from the start (gt-qjtq).
-	// Subsequent touches happen on every gt command via persistentPreRun.
+	// Subsequent touches happen on every lt command via persistentPreRun.
 	TouchSessionHeartbeat(townRoot, sessionID)
 
 	// Stream polecat's Claude Code JSONL conversation log to VictoriaLogs (opt-in).

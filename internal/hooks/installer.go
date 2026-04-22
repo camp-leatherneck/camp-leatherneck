@@ -33,7 +33,7 @@ var templateFS embed.FS
 //   - provider: the preset's HooksProvider (e.g., "claude", "gemini").
 //   - settingsDir: the gastown-managed parent (used by agents with --settings flag).
 //   - workDir: the agent's working directory.
-//   - role: the Gas Town role (e.g., "polecat", "crew", "witness").
+//   - role: the Camp Leatherneck role (e.g., "polecat", "crew", "witness").
 //   - hooksDir/hooksFile: from the preset's HooksDir and HooksSettingsFile.
 //
 // Template resolution:
@@ -83,7 +83,7 @@ const (
 // SyncForRole compares the deployed hook/settings file against the current template
 // and overwrites if content differs. Returns what action was taken.
 //
-// This is the explicit sync path used by "gt hooks sync" for template-based agents
+// This is the explicit sync path used by "lt hooks sync" for template-based agents
 // (OpenCode, Copilot, Pi, OMP, etc.). It should NOT be used for agents whose settings
 // are managed by the JSON merge path (Claude), as that would clobber merged overrides.
 func SyncForRole(provider, settingsDir, workDir, role, hooksDir, hooksFile string, useSettingsDir bool) (SyncResult, error) {
@@ -238,7 +238,7 @@ func isSettingsFile(name string) bool {
 	return filepath.Ext(name) == ".json"
 }
 
-// resolveGTBinary returns the absolute path to the gt binary.
+// resolveGTBinary returns the absolute path to the lt binary.
 // Tries os.Executable() first (most reliable when running as gt), then
 // falls back to exec.LookPath for PATH-based discovery. If both fail,
 // returns "gt" and hopes the runtime PATH has it.
@@ -253,7 +253,7 @@ func resolveGTBinary() string {
 }
 
 // ComputeExpectedTemplate returns the expected file content for a template-based
-// provider (e.g., gemini) with {{GT_BIN}} resolved to the actual gt binary path.
+// provider (e.g., gemini) with {{GT_BIN}} resolved to the actual lt binary path.
 // This is used by the doctor hooks-sync check to compare installed files against
 // current templates.
 func ComputeExpectedTemplate(provider, hooksFile, role string) ([]byte, error) {

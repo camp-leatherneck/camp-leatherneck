@@ -89,7 +89,7 @@ func runCheckpointWrite(cmd *cobra.Command, args []string) error {
 	// Detect role context
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil || townRoot == "" {
-		return fmt.Errorf("not in a Gas Town workspace")
+		return fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	roleInfo, err := GetRoleWithContext(cwd, townRoot)

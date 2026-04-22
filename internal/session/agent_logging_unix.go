@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-// ActivateAgentLogging spawns a detached `gt agent-log` process to stream the
+// ActivateAgentLogging spawns a detached `lt agent-log` process to stream the
 // session's Claude Code JSONL conversation log to VictoriaLogs.
 //
 // The process is started with Setsid so it survives the parent's exit.
@@ -21,7 +21,7 @@ import (
 //
 // --since is set to ~60s before now so only JSONL files from this GT session's
 // Claude instance are watched, excluding pre-existing user sessions or other
-// Gas Town rigs running in the same work directory.
+// Camp Leatherneck rigs running in the same work directory.
 //
 // runID is the GASTA run identifier (GT_RUN) generated at session spawn time.
 // It is passed to the agent-log subprocess so every agent.event it emits

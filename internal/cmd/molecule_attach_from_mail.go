@@ -13,13 +13,13 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
-// runMoleculeAttachFromMail handles the "gt mol attach-from-mail <mail-id>" command.
+// runMoleculeAttachFromMail handles the "lt mol attach-from-mail <mail-id>" command.
 // It reads a mail message, extracts the molecule ID from the body, and attaches
 // it to the current agent's hook (pinned bead).
 func runMoleculeAttachFromMail(cmd *cobra.Command, args []string) error {
 	mailID := args[0]
 
-	// Get current working directory and town root
+	// Get current working directory and HQ root
 	cwd, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("getting current directory: %w", err)
@@ -27,7 +27,7 @@ func runMoleculeAttachFromMail(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil || townRoot == "" {
-		return fmt.Errorf("not in a Gas Town workspace")
+		return fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	// Detect agent role and identity using env-aware detection
@@ -123,7 +123,7 @@ func runMoleculeAttachFromMail(cmd *cobra.Command, args []string) error {
 	if attachment != nil && attachment.AttachedAt != "" {
 		fmt.Printf("  Attached at: %s\n", attachment.AttachedAt)
 	}
-	fmt.Printf("\n%s Run 'gt hook' to see progress\n", style.Dim.Render("Hint:"))
+	fmt.Printf("\n%s Run 'lt hook' to see progress\n", style.Dim.Render("Hint:"))
 
 	return nil
 }

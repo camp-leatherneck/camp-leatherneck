@@ -11,7 +11,7 @@ import (
 )
 
 // OverseerConfig represents the human operator's identity (mayor/overseer.json).
-// The overseer is the human who controls Gas Town, distinct from AI agents.
+// The overseer is the human who controls Camp Leatherneck, distinct from AI agents.
 type OverseerConfig struct {
 	Type     string `json:"type"`               // "overseer"
 	Version  int    `json:"version"`            // schema version

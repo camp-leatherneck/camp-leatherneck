@@ -182,7 +182,7 @@ func (m *Manager) Start(foreground bool, agentOverride string) error {
 		return fmt.Errorf("ensuring runtime settings: %w", err)
 	}
 
-	// Ensure .gitignore has required Gas Town patterns
+	// Ensure .gitignore has required Camp Leatherneck patterns
 	if err := rig.EnsureGitignorePatterns(refineryRigDir); err != nil {
 		style.PrintWarning("could not update refinery .gitignore: %v", err)
 	}
@@ -191,7 +191,7 @@ func (m *Manager) Start(foreground bool, agentOverride string) error {
 		Recipient: session.BeaconRecipient("refinery", "", m.rig.Name),
 		Sender:    "deacon",
 		Topic:     "patrol",
-	}, "Run `gt prime --hook` and begin patrol.")
+	}, "Run `lt prime --hook` and begin patrol.")
 
 	command, err := config.BuildStartupCommandFromConfig(config.AgentEnvConfig{
 		Role:             "refinery",
@@ -283,7 +283,7 @@ func (m *Manager) Start(foreground bool, agentOverride string) error {
 
 // repairRefineryWorktree recreates a missing refinery/rig worktree from the
 // shared bare repo (.repo.git). The refinery worktree is created during
-// `gt rig add` but can be lost if `git worktree prune` runs, the directory
+// `lt rig add` but can be lost if `git worktree prune` runs, the directory
 // is deleted, or the .git file becomes corrupted. This self-heals on startup
 // instead of requiring manual intervention.
 func (m *Manager) repairRefineryWorktree(refineryRigDir string) error {
@@ -550,7 +550,7 @@ func (m *Manager) Retry(_ string, _ bool) error {
 
 // RegisterMR is deprecated - MRs are registered via beads merge-request issues.
 // ZFC-compliant: beads is the source of truth, not state file.
-// Use 'gt mr create' or create a merge-request type bead directly.
+// Use 'lt mr create' or create a merge-request type bead directly.
 func (m *Manager) RegisterMR(_ *MergeRequest) error {
 	return fmt.Errorf("RegisterMR is deprecated: use beads to create merge-request issues")
 }
@@ -632,11 +632,11 @@ func (m *Manager) PostMerge(idOrBranch string) (*PostMergeResult, error) {
 	// Close the source issue with reason and --force to bypass dependency checks.
 	// The source issue may have an attached molecule (wisp) whose open steps
 	// would block a normal bd close. ForceCloseWithReason bypasses this,
-	// matching how gt done handles closures for the no-MR path.
+	// matching how lt done handles closures for the no-MR path.
 	if mr.IssueID != "" {
 		closeReason := fmt.Sprintf("Merged in %s", mr.ID)
 		if err := b.ForceCloseWithReason(closeReason, mr.IssueID); err != nil {
-			// Check if already closed (by polecat's gt done) — that's fine
+			// Check if already closed (by polecat's lt done) — that's fine
 			if issue, showErr := b.Show(mr.IssueID); showErr == nil && beads.IssueStatus(issue.Status).IsTerminal() {
 				_, _ = fmt.Fprintf(m.output, "  %s source issue already closed: %s\n", style.Dim.Render("○"), mr.IssueID)
 				result.SourceIssueClosed = true
@@ -657,7 +657,7 @@ func (m *Manager) notifyWorkerRejected(mr *MergeRequest, reason string) {
 	// Nudge polecat about rejection instead of sending permanent mail.
 	polecatName := strings.TrimPrefix(mr.Worker, "polecats/")
 	target := fmt.Sprintf("%s/%s", m.rig.Name, polecatName)
-	nudgeMsg := fmt.Sprintf("MR rejected: branch=%s issue=%s reason=%s — review feedback and resubmit with 'gt done'",
+	nudgeMsg := fmt.Sprintf("MR rejected: branch=%s issue=%s reason=%s — review feedback and resubmit with 'lt done'",
 		mr.Branch, mr.IssueID, reason)
 	nudgeCmd := exec.Command("gt", "nudge", target, nudgeMsg)
 	util.SetDetachedProcessGroup(nudgeCmd)
@@ -667,5 +667,5 @@ func (m *Manager) notifyWorkerRejected(mr *MergeRequest, reason string) {
 	}
 }
 
-// Town root is computed in Start() as filepath.Dir(m.rig.Path) and passed
+// HQ root is computed in Start() as filepath.Dir(m.rig.Path) and passed
 // through to callers — no filesystem-inference function needed (ZFC gt-qago).

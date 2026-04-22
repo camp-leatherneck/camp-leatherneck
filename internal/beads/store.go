@@ -45,7 +45,7 @@ func NewWithBeadsDirAndStore(workDir, beadsDir string, store beadsdk.Storage) *B
 }
 
 // OpenStore opens a beadsdk.Storage for the resolved beads directory.
-// This is a convenience for short-lived gt commands that open, use, and close
+// This is a convenience for short-lived lt commands that open, use, and close
 // a store within a single invocation. For long-lived processes (daemon), prefer
 // keeping persistent stores via SetStore.
 //
@@ -80,7 +80,7 @@ func storeCtx() (context.Context, context.CancelFunc) {
 }
 
 // sdkIssueToIssue converts a beadsdk Issue (types.Issue) to the gastown
-// beads.Issue type used throughout the gt codebase. This handles the type
+// beads.Issue type used throughout the lt codebase. This handles the type
 // differences between the two representations:
 //   - time.Time → string (RFC3339)
 //   - types.Status → string

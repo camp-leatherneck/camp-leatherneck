@@ -44,8 +44,8 @@ Session groups:
 The appropriate cycling is detected automatically from the session name.
 
 Examples:
-  gt cycle next    # Switch to next session in group
-  gt cycle prev    # Switch to previous session in group`,
+  lt cycle next    # Switch to next session in group
+  lt cycle prev    # Switch to previous session in group`,
 }
 
 var cycleNextCmd = &cobra.Command{
@@ -58,8 +58,8 @@ detects whether you're in a town-level session (Mayor/Deacon) or a crew session
 and cycles within the appropriate group.
 
 Examples:
-  gt cycle next
-  gt cycle next --session gt-gastown-witness  # Explicit session context`,
+  lt cycle next
+  lt cycle next --session gt-gastown-witness  # Explicit session context`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return cycleToSession(1, cycleSession, cycleClient)
 	},
@@ -75,8 +75,8 @@ detects whether you're in a town-level session (Mayor/Deacon) or a crew session
 and cycles within the appropriate group.
 
 Examples:
-  gt cycle prev
-  gt cycle prev --session gt-gastown-witness  # Explicit session context`,
+  lt cycle prev
+  lt cycle prev --session gt-gastown-witness  # Explicit session context`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return cycleToSession(-1, cycleSession, cycleClient)
 	},

@@ -95,8 +95,8 @@ const scanLines = 30
 // rate-limit messages lingering higher in the scroll buffer.
 const checkLines = 20
 
-// ScanAll scans all Gas Town tmux sessions for rate-limit and near-limit indicators.
-// Returns results for all Gas Town sessions.
+// ScanAll scans all Camp Leatherneck tmux sessions for rate-limit and near-limit indicators.
+// Returns results for all Camp Leatherneck sessions.
 func (s *Scanner) ScanAll() ([]ScanResult, error) {
 	sessions, err := s.tmux.ListSessions()
 	if err != nil {
@@ -223,7 +223,7 @@ func (s *Scanner) resolveAccountHandle(session string) string {
 	return "" // CLAUDE_CONFIG_DIR doesn't match any registered account
 }
 
-// isGasTownSession returns true if the session name belongs to Gas Town.
+// isGasTownSession returns true if the session name belongs to Camp Leatherneck.
 // Uses the prefix registry to check for known rig prefixes (gt-, bd-, etc.)
 // and the hq- prefix for town-level services.
 func isGasTownSession(sess string) bool {

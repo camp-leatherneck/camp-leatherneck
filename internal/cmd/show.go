@@ -22,11 +22,11 @@ Works with any bead prefix (gt-, bd-, hq-, etc.) and routes
 to the correct beads database automatically.
 
 Examples:
-  gt show gt-abc123          # Show a gastown issue
-  gt show hq-xyz789          # Show a town-level bead (convoy, mail, etc.)
-  gt show bd-def456          # Show a beads issue
-  gt show gt-abc123 --json   # Output as JSON
-  gt show gt-abc123 -v       # Verbose output`,
+  lt show gt-abc123          # Show a gastown issue
+  lt show hq-xyz789          # Show a town-level bead (convoy, mail, etc.)
+  lt show bd-def456          # Show a beads issue
+  lt show gt-abc123 --json   # Output as JSON
+  lt show gt-abc123 -v       # Verbose output`,
 	DisableFlagParsing: true, // Pass all flags through to bd show
 	RunE:               runShow,
 }
@@ -38,7 +38,7 @@ func runShow(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(args) == 0 {
-		return fmt.Errorf("bead ID required\n\nUsage: gt show <bead-id> [flags]")
+		return fmt.Errorf("bead ID required\n\nUsage: lt show <bead-id> [flags]")
 	}
 
 	return execBdShow(args)

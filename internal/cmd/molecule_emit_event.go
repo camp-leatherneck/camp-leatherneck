@@ -29,15 +29,15 @@ Creates a JSON file at ~/gt/events/<channel>/<timestamp>.event:
 
 EXAMPLES:
   # Emit a MERGE_READY event for the refinery
-  gt mol step emit-event --channel refinery --type MERGE_READY \
+  lt mol step emit-event --channel refinery --type MERGE_READY \
     --payload polecat=nux --payload branch=polecat/nux/gt-iw7m
 
   # Emit a PATROL_WAKE event
-  gt mol step emit-event --channel refinery --type PATROL_WAKE \
+  lt mol step emit-event --channel refinery --type PATROL_WAKE \
     --payload source=witness --payload queue_depth=3
 
   # Emit an MQ_SUBMIT event
-  gt mol step emit-event --channel refinery --type MQ_SUBMIT \
+  lt mol step emit-event --channel refinery --type MQ_SUBMIT \
     --payload branch=feat/new-feature --payload mr_id=bd-42`,
 	RunE: runMoleculeEmitEvent,
 }

@@ -62,9 +62,9 @@ func TestFormatLogLine(t *testing.T) {
 				Timestamp: ts,
 				Type:      EventKill,
 				Agent:     "gastown/polecats/Toast",
-				Context:   "gt stop",
+				Context:   "lt stop",
 			},
-			contains: []string{"[kill]", "killed", "gt stop"},
+			contains: []string{"[kill]", "killed", "lt stop"},
 		},
 	}
 

@@ -7,8 +7,8 @@ import (
 var hooksCmd = &cobra.Command{
 	Use:     "hooks",
 	GroupID: GroupConfig,
-	Short:   "Centralized hook management for Gas Town",
-	Long: `Manage Claude Code hooks across the Gas Town workspace.
+	Short:   "Centralized hook management for Camp Leatherneck",
+	Long: `Manage Claude Code hooks across the Camp Leatherneck workspace.
 
 Provides centralized hook configuration with a base config and
 per-role/per-rig overrides. Changes are propagated to all workers
@@ -31,11 +31,11 @@ Config structure:
 Merge strategy: base → role → rig+role (more specific wins)
 
 Examples:
-  gt hooks sync           # Regenerate all settings.json files
-  gt hooks diff           # Preview what sync would change
-  gt hooks base           # Edit the shared base config
-  gt hooks override crew  # Edit overrides for all crew workers
-  gt hooks list           # Show managed locations and sync status`,
+  lt hooks sync           # Regenerate all settings.json files
+  lt hooks diff           # Preview what sync would change
+  lt hooks base           # Edit the shared base config
+  lt hooks override crew  # Edit overrides for all crew workers
+  lt hooks list           # Show managed locations and sync status`,
 	RunE: requireSubcommand,
 }
 

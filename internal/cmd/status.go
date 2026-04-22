@@ -43,7 +43,7 @@ var statusCmd = &cobra.Command{
 	GroupID:     GroupDiag,
 	Annotations: map[string]string{AnnotationPolecatSafe: "true"},
 	Short:       "Show overall town status",
-	Long: `Display the current status of the Gas Town workspace.
+	Long: `Display the current status of the Camp Leatherneck workspace.
 
 Shows town name, registered rigs, polecats, and witness status.
 
@@ -494,7 +494,7 @@ func runStatusWatch(_ *cobra.Command, _ []string) error {
 		}
 
 		timestamp := time.Now().Format("15:04:05")
-		header := fmt.Sprintf("[%s] gt status --watch (every %ds, Ctrl+C to stop)", timestamp, statusInterval)
+		header := fmt.Sprintf("[%s] lt status --watch (every %ds, Ctrl+C to stop)", timestamp, statusInterval)
 		if isTTY {
 			fmt.Fprintf(&buf, "%s\n\n", style.Dim.Render(header))
 		} else {
@@ -605,10 +605,10 @@ func runStatusOnce(_ *cobra.Command, _ []string) error {
 }
 
 func gatherStatus() (TownStatus, error) {
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return TownStatus{}, fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return TownStatus{}, fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load town config
@@ -638,7 +638,7 @@ func gatherStatus() (TownStatus, error) {
 	t := tmux.NewTmux()
 
 	// Pre-fetch all tmux sessions and verify agent liveness for O(1) lookup.
-	// A Gas Town session is only considered "running" if the agent process is
+	// A Camp Leatherneck session is only considered "running" if the agent process is
 	// alive inside it, not merely if the tmux session exists. This prevents
 	// zombie sessions (tmux alive, agent dead) from showing as running.
 	// See: gt-bd6i3
@@ -805,7 +805,7 @@ func gatherStatus() (TownStatus, error) {
 		if doltRunning {
 			// Read the actual port from state — doltCfg.Port comes from
 			// DefaultConfig which reads GT_DOLT_PORT from the shell env,
-			// but gt status is typically run without that env var set.
+			// but lt status is typically run without that env var set.
 			if state, err := doltserver.LoadState(townRoot); err == nil && state.Port > 0 {
 				port = state.Port
 			}
@@ -1091,7 +1091,7 @@ func outputStatusText(w io.Writer, status TownStatus) error {
 	}
 
 	if len(status.Rigs) == 0 {
-		fmt.Fprintf(w, "%s\n", style.Dim.Render("No rigs registered. Use 'gt rig add' to add one."))
+		fmt.Fprintf(w, "%s\n", style.Dim.Render("No rigs registered. Use 'lt rig add' to add one."))
 		return nil
 	}
 

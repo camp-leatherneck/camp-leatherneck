@@ -23,7 +23,7 @@ import (
 // Dolt databases on the shared server.
 var hookTestCounter atomic.Int32
 
-// setupHookTestTown creates a minimal Gas Town with a polecat for testing hooks.
+// setupHookTestTown creates a minimal Camp Leatherneck with a polecat for testing hooks.
 // Uses requireDoltServer for ephemeral port and unique prefixes per test to
 // isolate Dolt databases.
 // Returns townRoot, the path to the polecat's worktree, and the beads prefix.
@@ -220,7 +220,7 @@ func TestHookSlot_Singleton(t *testing.T) {
 	}
 
 	// Query hooked beads - both should be hooked (bd allows multiple)
-	// The singleton constraint is enforced by gt hook, not bd itself
+	// The singleton constraint is enforced by lt hook, not bd itself
 	hookedBeads, err := b.List(beads.ListOptions{
 		Status:   beads.StatusHooked,
 		Assignee: agentID,
@@ -236,7 +236,7 @@ func TestHookSlot_Singleton(t *testing.T) {
 	}
 
 	// The test documents actual behavior: bd allows multiple hooked beads
-	// The gt hook command enforces singleton behavior
+	// The lt hook command enforces singleton behavior
 	if len(hookedBeads) != 2 {
 		t.Errorf("expected 2 hooked beads (bd allows multiple), got %d", len(hookedBeads))
 	}

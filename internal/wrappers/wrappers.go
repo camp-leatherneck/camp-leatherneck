@@ -1,5 +1,5 @@
 // ABOUTME: Manages wrapper scripts for non-Claude agentic coding tools.
-// ABOUTME: Provides gt-codex and gt-opencode wrappers that run gt prime first.
+// ABOUTME: Provides gt-codex and gt-opencode wrappers that run lt prime first.
 
 package wrappers
 

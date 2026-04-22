@@ -54,7 +54,7 @@ func TestPatrolFormulasHaveBackoffLogic(t *testing.T) {
 			requiredPatterns := []string{
 				pf.awaitCmd,
 				"backoff",
-				"gt mol step " + pf.awaitCmd,
+				"lt mol step " + pf.awaitCmd,
 			}
 
 			for _, pattern := range requiredPatterns {
@@ -71,7 +71,7 @@ func TestPatrolFormulasHaveBackoffLogic(t *testing.T) {
 }
 
 // TestPatrolFormulasHaveReportCycle verifies that all three patrol formulas
-// include `gt patrol report` in their loop step.
+// include `lt patrol report` in their loop step.
 //
 // The patrol report command atomically closes the current patrol wisp and
 // starts a new one, replacing the old squash+new pattern.
@@ -112,10 +112,10 @@ func TestPatrolFormulasHaveReportCycle(t *testing.T) {
 				t.Fatalf("%s: %s step not found or has empty description", pf.name, pf.loopStepID)
 			}
 
-			// The loop step must use gt patrol report to close current and start next cycle
-			if !strings.Contains(loopDesc, "gt patrol report") {
-				t.Errorf("%s %s step missing \"gt patrol report\" (close current patrol and start next cycle)\n"+
-					"All patrol formulas must use gt patrol report in their loop step.",
+			// The loop step must use lt patrol report to close current and start next cycle
+			if !strings.Contains(loopDesc, "lt patrol report") {
+				t.Errorf("%s %s step missing \"lt patrol report\" (close current patrol and start next cycle)\n"+
+					"All patrol formulas must use lt patrol report in their loop step.",
 					pf.name, pf.loopStepID)
 			}
 		})
@@ -254,8 +254,8 @@ func TestDeaconPatrolHasHeartbeatSteps(t *testing.T) {
 	if f.Steps[0].ID != "heartbeat" {
 		t.Errorf("first step should be \"heartbeat\", got %q", f.Steps[0].ID)
 	}
-	if !strings.Contains(f.Steps[0].Description, "gt deacon heartbeat") {
-		t.Error("heartbeat step must contain \"gt deacon heartbeat\" command")
+	if !strings.Contains(f.Steps[0].Description, "lt deacon heartbeat") {
+		t.Error("heartbeat step must contain \"lt deacon heartbeat\" command")
 	}
 
 	// inbox-check must depend on heartbeat
@@ -281,17 +281,17 @@ func TestDeaconPatrolHasHeartbeatSteps(t *testing.T) {
 	for _, step := range f.Steps {
 		if step.ID == "heartbeat-mid" {
 			foundMid = true
-			if !strings.Contains(step.Description, "gt deacon heartbeat") {
-				t.Error("heartbeat-mid step must contain \"gt deacon heartbeat\" command")
+			if !strings.Contains(step.Description, "lt deacon heartbeat") {
+				t.Error("heartbeat-mid step must contain \"lt deacon heartbeat\" command")
 			}
 		}
 		if step.ID == "loop-or-exit" && strings.Contains(step.Description, "pre-await checkpoint") {
 			foundPreAwait = true
-			if !strings.Contains(step.Description, "gt deacon heartbeat") {
+			if !strings.Contains(step.Description, "lt deacon heartbeat") {
 				t.Error("loop-or-exit step must refresh heartbeat before await-signal")
 			}
-			heartbeatPos := strings.Index(step.Description, "gt deacon heartbeat \"pre-await checkpoint\"")
-			awaitPos := strings.Index(step.Description, "gt mol step await-signal")
+			heartbeatPos := strings.Index(step.Description, "lt deacon heartbeat \"pre-await checkpoint\"")
+			awaitPos := strings.Index(step.Description, "lt mol step await-signal")
 			if heartbeatPos == -1 || awaitPos == -1 {
 				t.Error("loop-or-exit step must contain both pre-await heartbeat and await-signal commands")
 			} else if heartbeatPos > awaitPos {

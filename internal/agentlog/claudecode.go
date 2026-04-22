@@ -33,7 +33,7 @@ const (
 // (e.g. /Users/pa/gt/mayor → -Users-pa-gt-mayor).
 //
 // The adapter finds the most recently modified JSONL file created after the
-// Gas Town session start time (since), tails it, and automatically switches
+// Camp Leatherneck session start time (since), tails it, and automatically switches
 // to a newer file when a new Claude session starts in the same project dir.
 // This handles Claude instances that are frequently created and destroyed.
 type ClaudeCodeAdapter struct{}
@@ -42,9 +42,9 @@ func (a *ClaudeCodeAdapter) AgentType() string { return "claudecode" }
 
 // Watch starts tailing the Claude Code JSONL log for sessionID.
 // workDir is the agent's CWD and is used to locate the project hash directory.
-// since is the Gas Town session start time: only JSONL files modified at or
+// since is the Camp Leatherneck session start time: only JSONL files modified at or
 // after this time are considered, so unrelated Claude instances (user sessions,
-// other Gas Town rigs) running in the same work dir are excluded.
+// other Camp Leatherneck rigs) running in the same work dir are excluded.
 // Pass zero since to watch any file regardless of age.
 //
 // When Claude exits and a new session starts (new JSONL file), Watch
@@ -156,7 +156,7 @@ func newestJSONLIn(dir string, since time.Time) (string, bool) {
 		if err != nil {
 			continue
 		}
-		// Skip files older than the Gas Town session start — they belong to
+		// Skip files older than the Camp Leatherneck session start — they belong to
 		// previous Claude sessions or unrelated Claude instances.
 		if !since.IsZero() && info.ModTime().Before(since) {
 			continue

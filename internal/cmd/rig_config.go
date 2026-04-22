@@ -1,5 +1,5 @@
-// Package cmd provides CLI commands for the gt tool.
-// This file implements the gt rig config commands for viewing and manipulating
+// Package cmd provides CLI commands for the lt tool.
+// This file implements the lt rig config commands for viewing and manipulating
 // rig configuration across property layers.
 package cmd
 
@@ -40,7 +40,7 @@ By default, shows only the resolved values. Use --layers to see
 which layer each value comes from.
 
 Example output:
-  gt rig config show gastown --layers
+  lt rig config show gastown --layers
   Key                 Value        Source
   status              parked       wisp
   priority_adjustment 10           bead
@@ -59,9 +59,9 @@ Use --global to set in the bead layer (persistent, synced globally).
 Use --block to explicitly block a key (prevents inheritance).
 
 Examples:
-  gt rig config set gastown status parked           # Wisp layer
-  gt rig config set gastown status docked --global  # Bead layer
-  gt rig config set gastown auto_restart --block    # Block inheritance`,
+  lt rig config set gastown status parked           # Wisp layer
+  lt rig config set gastown status docked --global  # Bead layer
+  lt rig config set gastown auto_restart --block    # Block inheritance`,
 	Args: cobra.RangeArgs(2, 3),
 	RunE: runRigConfigSet,
 }
@@ -75,7 +75,7 @@ This clears both regular values and blocked markers for the key.
 Values set in the bead layer remain unchanged.
 
 Example:
-  gt rig config unset gastown status`,
+  lt rig config unset gastown status`,
 	Args: cobra.ExactArgs(2),
 	RunE: runRigConfigUnset,
 }
@@ -277,7 +277,7 @@ func setBeadLabel(townRoot string, r *rig.Rig, key, value string) error {
 	// Check if bead exists
 	issue, err := bd.Show(rigBeadID)
 	if err != nil {
-		return fmt.Errorf("rig identity bead %s not found (run 'gt rig add' to create it)", rigBeadID)
+		return fmt.Errorf("rig identity bead %s not found (run 'lt rig add' to create it)", rigBeadID)
 	}
 
 	// Build new labels list: remove existing key:* and add new key:value

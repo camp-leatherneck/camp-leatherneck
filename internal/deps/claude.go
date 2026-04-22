@@ -10,8 +10,8 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
 )
 
-// MinClaudeCodeVersion is the minimum compatible Claude Code version for Gas Town.
-// v2.0.20 introduced the Skills system, which Gas Town uses for crew-commit,
+// MinClaudeCodeVersion is the minimum compatible Claude Code version for Camp Leatherneck.
+// v2.0.20 introduced the Skills system, which Camp Leatherneck uses for crew-commit,
 // ghi-list, pr-list, and pr-sheriff. See docs/design/claude-code-minimum-version.md.
 const MinClaudeCodeVersion = "2.0.20"
 

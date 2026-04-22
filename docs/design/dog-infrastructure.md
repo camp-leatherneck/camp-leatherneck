@@ -1,10 +1,10 @@
 # Dog Infrastructure: Watchdog Chain & Pool Architecture
 
-> Autonomous health monitoring, recovery, and concurrent shutdown dances in Gas Town.
+> Autonomous health monitoring, recovery, and concurrent shutdown dances in Camp Leatherneck.
 
 ## Overview
 
-Gas Town uses a three-tier watchdog chain for autonomous health monitoring:
+Camp Leatherneck uses a three-tier watchdog chain for autonomous health monitoring:
 
 ```
 Daemon (Go process)          <- Dumb transport, 3-min heartbeat
@@ -160,7 +160,7 @@ If the marker exists and is recent, daemon skips Boot spawn for that tick.
 
 ## Degraded Mode
 
-When tmux is unavailable, Gas Town enters degraded mode:
+When tmux is unavailable, Camp Leatherneck enters degraded mode:
 
 | Capability | Normal | Degraded |
 |------------|--------|----------|

@@ -173,7 +173,7 @@ func (m *Manager) Start(foreground bool, agentOverride string, envOverrides []st
 		return fmt.Errorf("ensuring runtime settings: %w", err)
 	}
 
-	// Ensure .gitignore has required Gas Town patterns
+	// Ensure .gitignore has required Camp Leatherneck patterns
 	if err := rig.EnsureGitignorePatterns(witnessDir); err != nil {
 		style.PrintWarning("could not update witness .gitignore: %v", err)
 	}
@@ -186,7 +186,7 @@ func (m *Manager) Start(foreground bool, agentOverride string, envOverrides []st
 	}
 
 	// Build startup command first
-	// NOTE: No gt prime injection needed - SessionStart hook handles it automatically
+	// NOTE: No lt prime injection needed - SessionStart hook handles it automatically
 	// Export GT_ROLE and BD_ACTOR in the command since tmux SetEnvironment only affects new panes
 	// Pass m.rig.Path so rig agent settings are honored (not town-level defaults)
 	command, err := buildWitnessStartCommand(m.rig.Path, m.rig.Name, townRoot, sessionID, agentOverride, roleConfig, runtimeConfigDir)
@@ -235,7 +235,7 @@ func (m *Manager) Start(foreground bool, agentOverride string, envOverrides []st
 		}
 	}
 
-	// Apply Gas Town theming (non-fatal: theming failure doesn't affect operation)
+	// Apply Camp Leatherneck theming (non-fatal: theming failure doesn't affect operation)
 	theme := tmux.ResolveSessionTheme(townRoot, m.rig.Name, "witness", "")
 	_ = t.ConfigureGasTownSession(sessionID, theme, m.rig.Name, "witness", "witness")
 
@@ -268,7 +268,7 @@ func (m *Manager) Start(foreground bool, agentOverride string, envOverrides []st
 		Recipient: session.BeaconRecipient("witness", "", m.rig.Name),
 		Sender:    "deacon",
 		Topic:     "patrol",
-	}, "Run `gt prime --hook` and begin patrol.")
+	}, "Run `lt prime --hook` and begin patrol.")
 	_ = runtime.DeliverStartupPromptFallback(t, sessionID, initialPrompt, runtimeConfig, constants.ClaudeStartTimeout)
 
 	// Stream witness's Claude Code JSONL conversation log to VictoriaLogs (opt-in).
@@ -351,7 +351,7 @@ func buildWitnessStartCommand(rigPath, rigName, townRoot, sessionName, agentOver
 		Recipient: session.BeaconRecipient("witness", "", rigName),
 		Sender:    "deacon",
 		Topic:     "patrol",
-	}, "Run `gt prime --hook` and begin patrol.")
+	}, "Run `lt prime --hook` and begin patrol.")
 	command, err := config.BuildStartupCommandFromConfig(config.AgentEnvConfig{
 		Role:             "witness",
 		Rig:              rigName,

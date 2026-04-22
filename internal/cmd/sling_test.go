@@ -536,7 +536,7 @@ exit /b 0
 			t.Fatalf("unexpected burn bead id: %q", beadID)
 		}
 		if gotTownRoot != townRoot {
-			t.Fatalf("unexpected town root: got %q want %q", gotTownRoot, townRoot)
+			t.Fatalf("unexpected HQ root: got %q want %q", gotTownRoot, townRoot)
 		}
 		if len(molecules) != 1 || molecules[0] != "gt-wisp-stale" {
 			t.Fatalf("unexpected molecules to burn: %#v", molecules)
@@ -807,7 +807,7 @@ exit /b 0
 }
 
 // TestSlingFormulaOnBeadPassesFeatureAndIssueVars verifies that when using
-// gt sling <formula> --on <bead>, both --var feature=<title> and --var issue=<beadID>
+// lt sling <formula> --on <bead>, both --var feature=<title> and --var issue=<beadID>
 // are passed to the bd mol wisp command.
 func TestSlingFormulaOnBeadPassesFeatureAndIssueVars(t *testing.T) {
 	townRoot := t.TempDir()
@@ -1049,7 +1049,7 @@ exit /b 0
 	}
 }
 
-// TestSlingWithAllowStale tests the full gt sling flow with --allow-stale fix.
+// TestSlingWithAllowStale tests the full lt sling flow with --allow-stale fix.
 // This is an integration test for the gtl-ncq bug.
 func TestSlingWithAllowStale(t *testing.T) {
 	beads.ResetBdAllowStaleCacheForTest()
@@ -1136,23 +1136,23 @@ exit /b 0
 	// Prevent real tmux nudge from firing during tests (causes agent self-interruption)
 	t.Setenv("GT_TEST_NO_NUDGE", "1")
 
-	// EXPECTED: gt sling should use --allow-stale and succeed
+	// EXPECTED: lt sling should use --allow-stale and succeed
 	beadID := "jv-v599"
 	err = runSling(nil, []string{beadID})
 	if err != nil {
 		// Check if it's the specific error we're testing for
 		if strings.Contains(err.Error(), "is not a valid bead or formula") {
-			t.Errorf("gt sling failed to recognize bead %q: %v\nExpected --allow-stale to skip sync check", beadID, err)
+			t.Errorf("lt sling failed to recognize bead %q: %v\nExpected --allow-stale to skip sync check", beadID, err)
 		} else {
 			// Some other error - might be expected in dry-run mode
-			t.Logf("gt sling returned error (may be expected in test): %v", err)
+			t.Logf("lt sling returned error (may be expected in test): %v", err)
 		}
 	}
 }
 
 // TestLooksLikeBeadID tests the bead ID pattern recognition function.
-// This ensures gt sling accepts bead IDs even when routing-based verification fails.
-// Fixes: gt sling bd-ka761 failing with 'not a valid bead or formula'
+// This ensures lt sling accepts bead IDs even when routing-based verification fails.
+// Fixes: lt sling bd-ka761 failing with 'not a valid bead or formula'
 //
 // Note: looksLikeBeadID is a fallback check in sling. The actual sling flow is:
 // 1. Try verifyBeadExists (routing-based lookup)
@@ -1218,13 +1218,13 @@ func TestLooksLikeBeadID(t *testing.T) {
 }
 
 // TestSlingFormulaOnBeadSetsAttachedMolecule verifies that when using
-// gt sling <formula> --on <bead>, the attached_molecule field is set in the
-// hooked bead's description after bonding. This is required for gt hook to
+// lt sling <formula> --on <bead>, the attached_molecule field is set in the
+// hooked bead's description after bonding. This is required for lt hook to
 // recognize the molecule attachment.
 //
 // Bug: The original code bonds the wisp to the bead and sets status=hooked,
 // but doesn't record attached_molecule in the description. This causes
-// gt hook to report "No molecule attached".
+// lt hook to report "No molecule attached".
 func TestSlingFormulaOnBeadSetsAttachedMolecule(t *testing.T) {
 	townRoot := t.TempDir()
 
@@ -1370,7 +1370,7 @@ exit /b 0
 	}
 
 	// After bonding (mol bond), there should be an update call that includes
-	// --description with attached_molecule field. This is what gt hook looks for.
+	// --description with attached_molecule field. This is what lt hook looks for.
 	logLines := strings.Split(string(logBytes), "\n")
 
 	// Find all update commands after the bond
@@ -1408,12 +1408,12 @@ exit /b 0
 			attachedLog = string(descBytes)
 		}
 		t.Errorf("after mol bond, expected update with attached_molecule in description\n"+
-			"This is required for gt hook to recognize the molecule attachment.\n"+
+			"This is required for lt hook to recognize the molecule attachment.\n"+
 			"Log output:\n%s\nAttached log:\n%s", string(logBytes), attachedLog)
 	}
 }
 
-// TestSlingNoMergeFlag verifies that gt sling --no-merge stores the no_merge flag
+// TestSlingNoMergeFlag verifies that lt sling --no-merge stores the no_merge flag
 // in the bead's description. This flag tells gt done to skip the merge queue
 // and keep work on the feature branch for human review.
 func TestSlingNoMergeFlag(t *testing.T) {
@@ -1513,7 +1513,7 @@ exit /b 0
 	}
 }
 
-// TestSlingSetsDoltAutoCommitOff verifies that gt sling sets BD_DOLT_AUTO_COMMIT=off
+// TestSlingSetsDoltAutoCommitOff verifies that lt sling sets BD_DOLT_AUTO_COMMIT=off
 // for all child bd processes. Under concurrent load (batch slinging), auto-commits
 // from individual bd writes cause manifest contention and 'database is read only'
 // errors. The Dolt server handles commits — individual auto-commits are unnecessary.
@@ -1545,7 +1545,7 @@ func TestCheckCrossRigGuard(t *testing.T) {
 		wantErr     bool
 	}{
 		{
-			name:        "same rig: gt bead to gastown polecat",
+			name:        "same rig: lt bead to gastown polecat",
 			beadID:      "gt-abc123",
 			targetAgent: "gastown/polecats/Toast",
 			wantErr:     false,
@@ -1563,13 +1563,13 @@ func TestCheckCrossRigGuard(t *testing.T) {
 			wantErr:     true,
 		},
 		{
-			name:        "cross-rig: gt bead to beads polecat",
+			name:        "cross-rig: lt bead to beads polecat",
 			beadID:      "gt-abc123",
 			targetAgent: "beads/polecats/obsidian",
 			wantErr:     true,
 		},
 		{
-			name:        "town-level: hq bead to rig (rejected — belongs to town root)",
+			name:        "town-level: hq bead to rig (rejected — belongs to HQ root)",
 			beadID:      "hq-abc123",
 			targetAgent: "gastown/polecats/Toast",
 			wantErr:     true,
@@ -1596,7 +1596,7 @@ func TestCheckCrossRigGuard(t *testing.T) {
 			}
 			if err != nil && tc.wantErr {
 				errMsg := err.Error()
-				if !strings.Contains(errMsg, "cross-rig mismatch") && !strings.Contains(errMsg, "town root") {
+				if !strings.Contains(errMsg, "cross-rig mismatch") && !strings.Contains(errMsg, "HQ root") {
 					t.Errorf("expected cross-rig or town-root error, got: %v", err)
 				}
 				if !strings.Contains(errMsg, "--force") {
@@ -2084,7 +2084,7 @@ exit /b 0
 }
 
 // TestSlingFormulaOnBeadBypassesIdempotency verifies that formula-on-bead mode
-// (gt sling <formula> --on <bead>) does NOT idempotent no-op even when the
+// (lt sling <formula> --on <bead>) does NOT idempotent no-op even when the
 // target assignment already matches. The user expects formula instantiation to run.
 func TestSlingFormulaOnBeadBypassesIdempotency(t *testing.T) {
 	townRoot := t.TempDir()
@@ -2484,7 +2484,7 @@ exit /b 0
 	}
 }
 
-// TestSlingRejectsDeferredBead verifies that gt sling refuses to sling beads
+// TestSlingRejectsDeferredBead verifies that lt sling refuses to sling beads
 // with deferred status or deferral keywords in their description (gt-1326mw).
 // This prevents wasting polecat slots on low-priority deferred work.
 func TestSlingRejectsDeferredBead(t *testing.T) {
@@ -2575,7 +2575,7 @@ func TestSlingRejectsDeferredBead(t *testing.T) {
 					t.Fatalf("expected error containing %q, got: %v", tt.wantError, err)
 				}
 			} else if err != nil {
-				// Some errors are OK in dry-run (e.g., "finding town root" when workspace not fully set up).
+				// Some errors are OK in dry-run (e.g., "finding HQ root" when workspace not fully set up).
 				// We only fail if the error is about deferred rejection, which shouldn't happen.
 				if strings.Contains(err.Error(), "refusing to sling deferred") {
 					t.Fatalf("unexpected deferred rejection: %v", err)

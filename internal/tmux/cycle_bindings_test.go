@@ -7,7 +7,7 @@ import (
 
 // TestIsGTBindingCurrent_DetectsStalePattern verifies that isGTBindingCurrent
 // returns false when the baked-in pattern doesn't match the current pattern.
-// This is the core of the gt rig add fix: after adding a rig, the prefix
+// This is the core of the lt rig add fix: after adding a rig, the prefix
 // pattern changes and existing bindings become stale.
 func TestIsGTBindingCurrent_DetectsStalePattern(t *testing.T) {
 	tm := newTestTmux(t)
@@ -25,7 +25,7 @@ func TestIsGTBindingCurrent_DetectsStalePattern(t *testing.T) {
 	oldIfShell := "echo '#{session_name}' | grep -Eq '" + oldPattern + "'"
 	if _, err := tm.run("bind-key", "-T", "prefix", "n",
 		"if-shell", oldIfShell,
-		"run-shell 'gt cycle next --session #{session_name} --client #{client_tty}'",
+		"run-shell 'lt cycle next --session #{session_name} --client #{client_tty}'",
 		"next-window"); err != nil {
 		t.Fatalf("installing old binding: %v", err)
 	}
@@ -66,13 +66,13 @@ func TestSetCycleBindings_RefreshesStalePattern(t *testing.T) {
 	staleIfShell := "echo '#{session_name}' | grep -Eq '" + stalePattern + "'"
 	if _, err := tm.run("bind-key", "-T", "prefix", "n",
 		"if-shell", staleIfShell,
-		"run-shell 'gt cycle next --session #{session_name} --client #{client_tty}'",
+		"run-shell 'lt cycle next --session #{session_name} --client #{client_tty}'",
 		"next-window"); err != nil {
 		t.Fatalf("installing stale binding: %v", err)
 	}
 	if _, err := tm.run("bind-key", "-T", "prefix", "p",
 		"if-shell", staleIfShell,
-		"run-shell 'gt cycle prev --session #{session_name} --client #{client_tty}'",
+		"run-shell 'lt cycle prev --session #{session_name} --client #{client_tty}'",
 		"previous-window"); err != nil {
 		t.Fatalf("installing stale binding for p: %v", err)
 	}

@@ -27,26 +27,26 @@ var hookCmd = &cobra.Command{
 	Short:       "Show or attach work on a hook",
 	Long: `Show what's on your hook, or attach new work.
 
-With no arguments, shows your current hook status (alias for 'gt mol status').
+With no arguments, shows your current hook status (alias for 'lt mol status').
 With a bead ID, attaches that work to your hook.
 With a bead ID and target, attaches work to another agent's hook.
 
 The hook is the "durability primitive" - work on your hook survives session
-restarts, context compaction, and handoffs. When you restart (via gt handoff),
+restarts, context compaction, and handoffs. When you restart (via lt handoff),
 your SessionStart hook finds the attached work and you continue from where
 you left off.
 
 Examples:
-  gt hook                                    # Show what's on my hook
-  gt hook status                             # Same as above
-  gt hook gt-abc                             # Attach issue gt-abc to your hook
-  gt hook gt-abc -s "Fix the bug"            # With subject for handoff mail
-  gt hook gt-abc gastown/crew/max            # Attach gt-abc to max's hook
+  lt hook                                    # Show what's on my hook
+  lt hook status                             # Same as above
+  lt hook gt-abc                             # Attach issue gt-abc to your hook
+  lt hook gt-abc -s "Fix the bug"            # With subject for handoff mail
+  lt hook gt-abc gastown/crew/max            # Attach gt-abc to max's hook
 
 Related commands:
-  gt sling <bead>    # Hook + start now (keep context)
-  gt handoff <bead>  # Hook + restart (fresh context)
-  gt unsling         # Remove work from hook`,
+  lt sling <bead>    # Hook + start now (keep context)
+  lt handoff <bead>  # Hook + restart (fresh context)
+  lt unsling         # Remove work from hook`,
 	Args: cobra.MaximumNArgs(2),
 	RunE: runHookOrStatus,
 }
@@ -57,12 +57,12 @@ var hookStatusCmd = &cobra.Command{
 	Short: "Show what's on your hook",
 	Long: `Show what's slung on your hook.
 
-This is an alias for 'gt mol status'. Shows what work is currently
+This is an alias for 'lt mol status'. Shows what work is currently
 attached to your hook, along with progress information.
 
 Examples:
-  gt hook status                    # Show my hook
-  gt hook status greenplace/nux     # Show nux's hook`,
+  lt hook status                    # Show my hook
+  lt hook status greenplace/nux     # Show nux's hook`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runMoleculeStatus,
 }
@@ -82,10 +82,10 @@ Use cases:
 - Quick status overview
 
 Examples:
-  gt hook show                         # What's on MY hook? (auto-detect)
-  gt hook show gastown/polecats/nux    # What's nux working on?
-  gt hook show gastown/witness         # What's the witness hooked to?
-  gt hook show mayor                   # What's the mayor working on?
+  lt hook show                         # What's on MY hook? (auto-detect)
+  lt hook show gastown/polecats/nux    # What's nux working on?
+  lt hook show gastown/witness         # What's the witness hooked to?
+  lt hook show mayor                   # What's the mayor working on?
 
 Output format (one line):
   gastown/polecats/nux: gt-abc123 'Fix the widget bug' [in_progress]`,
@@ -93,57 +93,57 @@ Output format (one line):
 	RunE: runHookShow,
 }
 
-// hookAttachCmd attaches a bead to a hook (alias for 'gt hook <bead-id>')
+// hookAttachCmd attaches a bead to a hook (alias for 'lt hook <bead-id>')
 var hookAttachCmd = &cobra.Command{
 	Use:   "attach <bead-id> [target]",
 	Short: "Attach work to a hook",
 	Long: `Attach a bead to your hook or another agent's hook.
 
-With just a bead ID, attaches to your own hook (same as 'gt hook <bead-id>').
+With just a bead ID, attaches to your own hook (same as 'lt hook <bead-id>').
 With a target, attaches to another agent's hook (for remote dispatch).
 
 Examples:
-  gt hook attach gt-abc                    # Attach to my hook
-  gt hook attach gt-abc gastown/crew/max   # Attach to max's hook`,
+  lt hook attach gt-abc                    # Attach to my hook
+  lt hook attach gt-abc gastown/crew/max   # Attach to max's hook`,
 	Args: cobra.RangeArgs(1, 2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return runHook(cmd, args)
 	},
 }
 
-// hookDetachCmd detaches a bead from a hook (alias for 'gt hook clear')
+// hookDetachCmd detaches a bead from a hook (alias for 'lt hook clear')
 var hookDetachCmd = &cobra.Command{
 	Use:   "detach <bead-id> [target]",
 	Short: "Detach work from a hook",
-	Long: `Remove a specific bead from a hook (same as 'gt hook clear <bead-id>').
+	Long: `Remove a specific bead from a hook (same as 'lt hook clear <bead-id>').
 
 Examples:
-  gt hook detach gt-abc               # Detach gt-abc from my hook
-  gt hook detach gt-abc gastown/nux   # Detach gt-abc from nux's hook`,
+  lt hook detach gt-abc               # Detach gt-abc from my hook
+  lt hook detach gt-abc gastown/nux   # Detach gt-abc from nux's hook`,
 	Args: cobra.RangeArgs(1, 2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return runUnslingWith(cmd, args, hookDryRun, hookForce)
 	},
 }
 
-// hookClearCmd clears the hook (alias for 'gt unhook')
+// hookClearCmd clears the hook (alias for 'lt unhook')
 var hookClearCmd = &cobra.Command{
 	Use:   "clear [bead-id] [target]",
-	Short: "Clear your hook (alias for 'gt unhook')",
-	Long: `Remove work from your hook (alias for 'gt unhook').
+	Short: "Clear your hook (alias for 'lt unhook')",
+	Long: `Remove work from your hook (alias for 'lt unhook').
 
 With no arguments, clears your own hook. With a bead ID, only clears
 if that specific bead is currently hooked. With a target, operates on
 another agent's hook.
 
 Examples:
-  gt hook clear                       # Clear my hook (whatever's there)
-  gt hook clear gt-abc                # Only clear if gt-abc is hooked
-  gt hook clear greenplace/joe        # Clear joe's hook
+  lt hook clear                       # Clear my hook (whatever's there)
+  lt hook clear gt-abc                # Only clear if gt-abc is hooked
+  lt hook clear greenplace/joe        # Clear joe's hook
 
 Related commands:
-  gt unhook           # Same as 'gt hook clear'
-  gt unsling          # Same as 'gt hook clear'`,
+  lt unhook           # Same as 'lt hook clear'
+  lt unsling          # Same as 'lt hook clear'`,
 	Args: cobra.MaximumNArgs(2),
 	RunE: runHookClear,
 }
@@ -157,14 +157,14 @@ var (
 )
 
 func init() {
-	// Flags for attaching work (gt hook <bead-id>)
+	// Flags for attaching work (lt hook <bead-id>)
 	hookCmd.Flags().StringVarP(&hookSubject, "subject", "s", "", "Subject for handoff mail (optional)")
 	hookCmd.Flags().StringVarP(&hookMessage, "message", "m", "", "Message for handoff mail (optional)")
 	hookCmd.Flags().BoolVarP(&hookDryRun, "dry-run", "n", false, "Show what would be done")
 	hookCmd.Flags().BoolVarP(&hookForce, "force", "f", false, "Replace existing incomplete hooked bead")
-	hookCmd.Flags().BoolVar(&hookClear, "clear", false, "Clear your hook (alias for 'gt unhook')")
+	hookCmd.Flags().BoolVar(&hookClear, "clear", false, "Clear your hook (alias for 'lt unhook')")
 
-	// --json flag for status output (used when no args, i.e., gt hook --json)
+	// --json flag for status output (used when no args, i.e., lt hook --json)
 	hookCmd.Flags().BoolVar(&moleculeJSON, "json", false, "Output as JSON (for status)")
 	hookStatusCmd.Flags().BoolVar(&moleculeJSON, "json", false, "Output as JSON")
 	hookShowCmd.Flags().BoolVar(&moleculeJSON, "json", false, "Output as JSON")
@@ -190,7 +190,7 @@ func init() {
 
 // runHookOrStatus dispatches to status, clear, or hook based on args/flags
 func runHookOrStatus(cmd *cobra.Command, args []string) error {
-	// --clear flag is alias for 'gt unhook'
+	// --clear flag is alias for 'lt unhook'
 	if hookClear {
 		return runUnslingWith(cmd, args, hookDryRun, hookForce)
 	}
@@ -202,7 +202,7 @@ func runHookOrStatus(cmd *cobra.Command, args []string) error {
 	return runHook(cmd, args)
 }
 
-// runHookClear handles 'gt hook clear' - delegates to runUnsling
+// runHookClear handles 'lt hook clear' - delegates to runUnsling
 func runHookClear(cmd *cobra.Command, args []string) error {
 	return runUnslingWith(cmd, args, hookDryRun, hookForce)
 }
@@ -216,7 +216,7 @@ func runHook(_ *cobra.Command, args []string) error {
 		targetAgent = args[1]
 	}
 
-	// Polecats cannot hook - they use gt done for lifecycle.
+	// Polecats cannot hook - they use lt done for lifecycle.
 	// Check GT_ROLE first: coordinators (mayor, witness, etc.) may have a stale
 	// GT_POLECAT in their environment from spawning polecats. Only block if the
 	// parsed role is actually polecat (handles compound forms like
@@ -224,10 +224,10 @@ func runHook(_ *cobra.Command, args []string) error {
 	if role := os.Getenv("GT_ROLE"); role != "" {
 		parsedRole, _, _ := parseRoleString(role)
 		if parsedRole == RolePolecat {
-			return fmt.Errorf("polecats cannot hook work (use gt done for handoff)")
+			return fmt.Errorf("polecats cannot hook work (use lt done for handoff)")
 		}
 	} else if polecatName := os.Getenv("GT_POLECAT"); polecatName != "" {
-		return fmt.Errorf("polecats cannot hook work (use gt done for handoff)")
+		return fmt.Errorf("polecats cannot hook work (use lt done for handoff)")
 	}
 
 	// Verify the bead exists
@@ -250,10 +250,10 @@ func runHook(_ *cobra.Command, args []string) error {
 		}
 	}
 
-	// Find town root - needed for bd routing and agent bead updates
+	// Find HQ root - needed for bd routing and agent bead updates
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 	townBeadsDir := filepath.Join(townRoot, ".beads")
 
@@ -313,7 +313,7 @@ func runHook(_ *cobra.Command, args []string) error {
 				if hasAttachment {
 					// Close completed molecule bead (use bd close --force for pinned)
 					closeArgs := []string{"close", existing.ID, "--force",
-						"--reason=Auto-replaced by gt hook (molecule complete)"}
+						"--reason=Auto-replaced by lt hook (molecule complete)"}
 					if sessionID := runtime.SessionIDFromEnv(); sessionID != "" {
 						closeArgs = append(closeArgs, "--session="+sessionID)
 					}
@@ -365,7 +365,7 @@ func runHook(_ *cobra.Command, args []string) error {
 	}
 
 	// Hook the bead using bd update with retry logic (discovery-based approach).
-	// Run from town root so bd can find routes.jsonl for prefix-based routing.
+	// Run from HQ root so bd can find routes.jsonl for prefix-based routing.
 	// This is essential for hooking convoys (hq-* prefix) stored in town beads.
 	// Dolt can fail with concurrency errors (HTTP 400) when multiple agents write
 	// simultaneously. We retry with exponential backoff, matching sling.go behavior.
@@ -411,15 +411,15 @@ func runHook(_ *cobra.Command, args []string) error {
 		fmt.Printf("%s Work attached to hook (hooked bead)\n", style.Bold.Render("✓"))
 	}
 
-	// Update agent bead's hook_bead field (matches gt sling behavior)
-	// This ensures gt hook / gt mol status can find hooked work via the agent bead
+	// Update agent bead's hook_bead field (matches lt sling behavior)
+	// This ensures lt hook / lt mol status can find hooked work via the agent bead
 	updateAgentHookBead(agentID, beadID, workDir, townBeadsDir)
 
 	if targetAgent != "" {
-		fmt.Printf("  Use 'gt hook show %s' to verify\n", targetAgent)
+		fmt.Printf("  Use 'lt hook show %s' to verify\n", targetAgent)
 	} else {
-		fmt.Printf("  Use 'gt handoff' to restart with this work\n")
-		fmt.Printf("  Use 'gt hook' to see hook status\n")
+		fmt.Printf("  Use 'lt handoff' to restart with this work\n")
+		fmt.Printf("  Use 'lt hook' to see hook status\n")
 	}
 
 	// Log hook event to activity feed (non-fatal)
@@ -474,7 +474,7 @@ func runHookShow(cmd *cobra.Command, args []string) error {
 	// Find beads directory.
 	// For remote rig-level targets (e.g. "myndy_monorepo/refinery"), resolve the
 	// rig's actual beads dir using the same rig-aware routing as runHook (attach).
-	// Without this, gt hook show always queries whatever DB is local (typically HQ),
+	// Without this, lt hook show always queries whatever DB is local (typically HQ),
 	// missing wisps stored in the target rig's database.
 	workDir, err := findLocalBeadsDir()
 	if err != nil {
@@ -647,7 +647,7 @@ func sessionNameToCanonicalAddress(sessionName, targetHint string) (string, bool
 	return identity.Address(), true
 }
 
-// findTownRoot finds the Gas Town root directory.
+// findTownRoot finds the Camp Leatherneck root directory.
 func findTownRoot() (string, error) {
 	return workspace.FindFromCwd()
 }

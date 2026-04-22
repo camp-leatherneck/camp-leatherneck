@@ -116,9 +116,9 @@ func executeSling(params SlingParams) (*SlingResult, error) {
 	if params.RigName != "" {
 		if blocked, reason := IsRigParkedOrDocked(townRoot, params.RigName); blocked {
 			result.ErrMsg = "rig " + reason
-			undoCmd := "gt rig unpark"
+			undoCmd := "lt rig unpark"
 			if reason == "docked" {
-				undoCmd = "gt rig undock"
+				undoCmd = "lt rig undock"
 			}
 			return result, fmt.Errorf("cannot sling to %s rig %q\n%s %s", reason, params.RigName, undoCmd, params.RigName)
 		}

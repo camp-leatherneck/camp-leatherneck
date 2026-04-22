@@ -51,7 +51,7 @@ func TestDetectTownRoot(t *testing.T) {
 		want     string
 	}{
 		{
-			name:     "from town root",
+			name:     "from HQ root",
 			startDir: townRoot,
 			want:     townRoot,
 		},
@@ -84,10 +84,10 @@ func TestDetectTownRoot(t *testing.T) {
 
 // TestDetectTownRoot_PrefersEnvVar verifies that GT_TOWN_ROOT takes priority
 // over workspace detection, preventing rig-level mayor/town.json from being
-// mistaken for the town root.
+// mistaken for the HQ root.
 func TestDetectTownRoot_PrefersEnvVar(t *testing.T) {
 	tmpDir := t.TempDir()
-	// Outer town root (the actual town)
+	// Outer HQ root (the actual town)
 	outerTown := filepath.Join(tmpDir, "town")
 	if err := os.MkdirAll(filepath.Join(outerTown, "mayor"), 0755); err != nil {
 		t.Fatal(err)
@@ -111,7 +111,7 @@ func TestDetectTownRoot_PrefersEnvVar(t *testing.T) {
 		// mayor/town.json first. With GT_TOWN_ROOT set, we get the outer town.
 		got := detectTownRoot(nestedRig)
 		if got != outerTown {
-			t.Errorf("detectTownRoot(%q) = %q, want %q (outer town root via env var)", nestedRig, got, outerTown)
+			t.Errorf("detectTownRoot(%q) = %q, want %q (outer HQ root via env var)", nestedRig, got, outerTown)
 		}
 	})
 
@@ -120,7 +120,7 @@ func TestDetectTownRoot_PrefersEnvVar(t *testing.T) {
 		t.Setenv("GT_ROOT", outerTown)
 		got := detectTownRoot(nestedRig)
 		if got != outerTown {
-			t.Errorf("detectTownRoot(%q) = %q, want %q (outer town root via GT_ROOT)", nestedRig, got, outerTown)
+			t.Errorf("detectTownRoot(%q) = %q, want %q (outer HQ root via GT_ROOT)", nestedRig, got, outerTown)
 		}
 	})
 
@@ -331,7 +331,7 @@ func TestShouldBeWisp(t *testing.T) {
 }
 
 func TestResolveBeadsDir(t *testing.T) {
-	// With town root set
+	// With HQ root set
 	r := NewRouterWithTownRoot("/work/dir", "/home/user/gt")
 	got := r.resolveBeadsDir()
 	want := "/home/user/gt/.beads"
@@ -339,7 +339,7 @@ func TestResolveBeadsDir(t *testing.T) {
 		t.Errorf("resolveBeadsDir with townRoot = %q, want %q", got, want)
 	}
 
-	// Without town root (fallback to workDir)
+	// Without HQ root (fallback to workDir)
 	r2 := &Router{workDir: "/work/dir", townRoot: ""}
 	got2 := r2.resolveBeadsDir()
 	want2 := "/work/dir/.beads"
@@ -637,8 +637,8 @@ func TestExpandListNoTownRoot(t *testing.T) {
 	if err == nil {
 		t.Error("expandList with no townRoot should error")
 	}
-	if !contains(err.Error(), "no town root") {
-		t.Errorf("expandList error = %v, want containing 'no town root'", err)
+	if !contains(err.Error(), "no HQ root") {
+		t.Errorf("expandList error = %v, want containing 'no HQ root'", err)
 	}
 }
 
@@ -730,8 +730,8 @@ func TestExpandQueueNoTownRoot(t *testing.T) {
 	if err == nil {
 		t.Error("expandQueue with no townRoot should error")
 	}
-	if !contains(err.Error(), "no town root") {
-		t.Errorf("expandQueue error = %v, want containing 'no town root'", err)
+	if !contains(err.Error(), "no HQ root") {
+		t.Errorf("expandQueue error = %v, want containing 'no HQ root'", err)
 	}
 }
 
@@ -1162,8 +1162,8 @@ func TestExpandAnnounceNoTownRoot(t *testing.T) {
 	if err == nil {
 		t.Error("expandAnnounce with no townRoot should error")
 	}
-	if !contains(err.Error(), "no town root") {
-		t.Errorf("expandAnnounce error = %v, want containing 'no town root'", err)
+	if !contains(err.Error(), "no HQ root") {
+		t.Errorf("expandAnnounce error = %v, want containing 'no HQ root'", err)
 	}
 }
 
@@ -1467,9 +1467,9 @@ func TestResolveCrewShorthand(t *testing.T) {
 			identity: "mayor/",
 			want:     "mayor/",
 		},
-		// No town root - no resolution attempted
+		// No HQ root - no resolution attempted
 		{
-			name:     "no town root",
+			name:     "no HQ root",
 			identity: "crew/bob",
 			want:     "crew/bob", // tested with empty townRoot below
 		},
@@ -1478,7 +1478,7 @@ func TestResolveCrewShorthand(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			router := r
-			if tt.name == "no town root" {
+			if tt.name == "no HQ root" {
 				router = NewRouterWithTownRoot(tmpDir, "") // empty townRoot
 			}
 			got := router.resolveCrewShorthand(tt.identity)
@@ -1759,7 +1759,7 @@ func TestNotifyRecipient_BusyAgentEscalationUsesUrgentQueuedNudge(t *testing.T) 
 	if nudges[0].Priority != nudge.PriorityUrgent {
 		t.Fatalf("queued escalation priority = %q, want %q", nudges[0].Priority, nudge.PriorityUrgent)
 	}
-	for _, want := range []string{"Escalation mail from gastown/witness", "ID: hq-esc123", "Severity: critical", "gt mail read hq-esc123", "gt escalate ack hq-esc123"} {
+	for _, want := range []string{"Escalation mail from gastown/witness", "ID: hq-esc123", "Severity: critical", "lt mail read hq-esc123", "lt escalate ack hq-esc123"} {
 		if !strings.Contains(nudges[0].Message, want) {
 			t.Fatalf("queued escalation message missing %q: %s", want, nudges[0].Message)
 		}
@@ -1781,7 +1781,7 @@ func TestFormatNotificationMessageForEscalation(t *testing.T) {
 	}
 
 	notification := formatNotificationMessage(msg)
-	for _, want := range []string{"Escalation mail from gastown/witness", "ID: hq-esc456", "Severity: high", "gt mail read hq-esc456", "gt escalate ack hq-esc456"} {
+	for _, want := range []string{"Escalation mail from gastown/witness", "ID: hq-esc456", "Severity: high", "lt mail read hq-esc456", "lt escalate ack hq-esc456"} {
 		if !strings.Contains(notification, want) {
 			t.Fatalf("escalation notification missing %q: %s", want, notification)
 		}
@@ -1875,8 +1875,8 @@ func TestEnqueueReplyReminder_Basic(t *testing.T) {
 	if !strings.Contains(q.Message, msg.From) {
 		t.Errorf("reminder message should mention sender %q, got %q", msg.From, q.Message)
 	}
-	if !strings.Contains(q.Message, "gt mail send") {
-		t.Errorf("reminder message should mention 'gt mail send', got %q", q.Message)
+	if !strings.Contains(q.Message, "lt mail send") {
+		t.Errorf("reminder message should mention 'lt mail send', got %q", q.Message)
 	}
 }
 
@@ -1900,7 +1900,7 @@ func TestEnqueueReplyReminder_SkipsReply(t *testing.T) {
 }
 
 // TestEnqueueReplyReminder_NoTownRoot verifies that the function is a no-op
-// when no town root is set (nudge queue requires a town root).
+// when no HQ root is set (nudge queue requires a HQ root).
 func TestEnqueueReplyReminder_NoTownRoot(t *testing.T) {
 	r := &Router{workDir: t.TempDir(), townRoot: ""}
 	msg := &Message{From: "mayor/", To: "gastown/crew/bob", Subject: "task"}

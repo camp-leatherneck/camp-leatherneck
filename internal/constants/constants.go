@@ -1,4 +1,4 @@
-// Package constants defines shared constant values used throughout Gas Town.
+// Package constants defines shared constant values used throughout Camp Leatherneck.
 // Centralizing these magic strings improves maintainability and consistency.
 package constants
 
@@ -16,7 +16,7 @@ const (
 
 	// ClaudeStartTimeout is how long to wait for Claude to start in a session.
 	// 180s because the first turn must complete before ❯ appears: hooks fire
-	// (gt prime injects patrol context), then the full API round-trip runs.
+	// (lt prime injects patrol context), then the full API round-trip runs.
 	// With large patrol formulas this regularly exceeds 60s, especially on Opus.
 	// Configurable via operational.session.claude_start_timeout.
 	ClaudeStartTimeout = 180 * time.Second
@@ -72,7 +72,7 @@ const (
 
 	// StartupNudgeVerifyDelay is how long to wait after sending a startup nudge
 	// before checking if the agent started working. 25s because Claude may
-	// still be processing gt prime output and preparing its first response;
+	// still be processing lt prime output and preparing its first response;
 	// the c2claude wrapper adds extra latency. 5s was consistently too short,
 	// causing false retries that interrupted Claude mid-processing (GH#3031).
 	// Configurable via operational.session.startup_nudge_verify_delay.
@@ -92,7 +92,7 @@ const (
 	MinHandoffCooldown = 2 * time.Minute
 
 	// GUPPViolationTimeout is how long an agent can have work on hook without
-	// progressing before it's considered a GUPP (Gas Town Universal Propulsion
+	// progressing before it's considered a GUPP (Camp Leatherneck Universal Propulsion
 	// Principle) violation. GUPP states: if you have work on your hook, you run it.
 	//
 	// Single source of truth — referenced by daemon lifecycle patrol,
@@ -106,7 +106,7 @@ const (
 	HungSessionThreshold = 30 * time.Minute
 )
 
-// Directory names within a Gas Town workspace.
+// Directory names within a Camp Leatherneck workspace.
 const (
 	// DirMayor is the directory containing mayor configuration and state.
 	DirMayor = "mayor"
@@ -151,7 +151,7 @@ const (
 	FileAccountsJSON = "accounts.json"
 
 	// FileHandoffMarker is the marker file indicating a handoff just occurred.
-	// Written by gt handoff before respawn, cleared by gt prime after detection.
+	// Written by lt handoff before respawn, cleared by lt prime after detection.
 	// This prevents the handoff loop bug where agents re-run /handoff from context.
 	FileHandoffMarker = "handoff_to_successor"
 
@@ -167,21 +167,21 @@ const (
 // Beads configuration constants.
 const (
 	// BeadsCustomTypes is the comma-separated list of custom issue types that
-	// Gas Town registers with beads. These types were extracted from beads core
+	// Camp Leatherneck registers with beads. These types were extracted from beads core
 	// in v0.46.0 and now require explicit configuration.
 	//
 	// Type origins:
-	//   agent         - Agent identity beads (gt install, rig init)
-	//   role          - Agent role definitions (gt doctor role checks)
-	//   rig           - Rig identity beads (gt rig init)
+	//   agent         - Agent identity beads (lt install, rig init)
+	//   role          - Agent role definitions (lt doctor role checks)
+	//   rig           - Rig identity beads (lt rig init)
 	//   convoy        - Cross-project work tracking
 	//   slot          - Exclusive access / merge slots
-	//   queue         - Message queue routing (gt mail queue)
-	//   event         - Session/cost events (gt costs record)
-	//   message       - Mail system (gt mail send, mailbox, router)
-	//   molecule      - Work decomposition (patrol checks, gt swarm)
+	//   queue         - Message queue routing (lt mail queue)
+	//   event         - Session/cost events (lt costs record)
+	//   message       - Mail system (lt mail send, mailbox, router)
+	//   molecule      - Work decomposition (patrol checks, lt swarm)
 	//   gate          - Async coordination (bd gate wait, park/resume)
-	//   merge-request - Refinery MR processing (gt done, refinery)
+	//   merge-request - Refinery MR processing (lt done, refinery)
 	BeadsCustomTypes = "agent,role,rig,convoy,slot,queue,event,message,molecule,gate,merge-request"
 )
 
@@ -193,7 +193,7 @@ func BeadsCustomTypesList() []string {
 // Beads custom status configuration constants.
 const (
 	// BeadsCustomStatuses is the comma-separated list of custom issue statuses
-	// that Gas Town registers with beads. Convoy staging uses staged_ready and
+	// that Camp Leatherneck registers with beads. Convoy staging uses staged_ready and
 	// staged_warnings to track convoy readiness before launch.
 	//
 	// Status origins:
@@ -227,7 +227,7 @@ const (
 // Rig-level services use gt- prefix: gt-<rig>-witness, gt-<rig>-refinery, etc.
 // Use session.MayorSessionName() and session.DeaconSessionName().
 const (
-	// SessionPrefix is the prefix for rig-level Gas Town tmux sessions.
+	// SessionPrefix is the prefix for rig-level Camp Leatherneck tmux sessions.
 	SessionPrefix = "gt-"
 
 	// HQSessionPrefix is the prefix for town-level services (Mayor, Deacon).
@@ -348,18 +348,18 @@ func RoleEmoji(role string) string {
 	}
 }
 
-// SupportedShells lists shell binaries that Gas Town can detect and work with.
+// SupportedShells lists shell binaries that Camp Leatherneck can detect and work with.
 // Used to identify if a tmux pane is at a shell prompt vs running a command.
 var SupportedShells = []string{"bash", "zsh", "sh", "fish", "tcsh", "ksh", "pwsh", "powershell"}
 
 // Path helpers construct common paths.
 
-// MayorRigsPath returns the path to rigs.json within a town root.
+// MayorRigsPath returns the path to rigs.json within a HQ root.
 func MayorRigsPath(townRoot string) string {
 	return townRoot + "/" + DirMayor + "/" + FileRigsJSON
 }
 
-// MayorTownPath returns the path to town.json within a town root.
+// MayorTownPath returns the path to town.json within a HQ root.
 func MayorTownPath(townRoot string) string {
 	return townRoot + "/" + DirMayor + "/" + FileTownJSON
 }
@@ -384,12 +384,12 @@ func RigCrewPath(rigPath string) string {
 	return rigPath + "/" + DirCrew
 }
 
-// MayorConfigPath returns the path to mayor/config.json within a town root.
+// MayorConfigPath returns the path to mayor/config.json within a HQ root.
 func MayorConfigPath(townRoot string) string {
 	return townRoot + "/" + DirMayor + "/" + FileConfigJSON
 }
 
-// TownRuntimePath returns the path to .runtime/ at the town root.
+// TownRuntimePath returns the path to .runtime/ at the HQ root.
 func TownRuntimePath(townRoot string) string {
 	return townRoot + "/" + DirRuntime
 }
@@ -404,12 +404,12 @@ func RigSettingsPath(rigPath string) string {
 	return rigPath + "/" + DirSettings
 }
 
-// MayorAccountsPath returns the path to mayor/accounts.json within a town root.
+// MayorAccountsPath returns the path to mayor/accounts.json within a HQ root.
 func MayorAccountsPath(townRoot string) string {
 	return townRoot + "/" + DirMayor + "/" + FileAccountsJSON
 }
 
-// MayorQuotaPath returns the path to mayor/quota.json within a town root.
+// MayorQuotaPath returns the path to mayor/quota.json within a HQ root.
 func MayorQuotaPath(townRoot string) string {
 	return townRoot + "/" + DirMayor + "/" + FileQuotaJSON
 }

@@ -128,7 +128,7 @@ func (c *StalledPolecatCheck) Run(ctx *CheckContext) *CheckResult {
 		Message: fmt.Sprintf("Found %d stalled polecat(s) with unpushed work at risk of loss",
 			len(stalled)),
 		Details: details,
-		FixHint: "Run 'gt doctor --fix' to push stalled branches to remote",
+		FixHint: "Run 'lt doctor --fix' to push stalled branches to remote",
 	}
 }
 
@@ -154,7 +154,7 @@ func (c *StalledPolecatCheck) findRigs(ctx *CheckContext) []string {
 		return []string{ctx.RigName}
 	}
 
-	// Scan town root for rig directories (directories containing polecats/)
+	// Scan HQ root for rig directories (directories containing polecats/)
 	entries, err := os.ReadDir(ctx.TownRoot)
 	if err != nil {
 		return nil

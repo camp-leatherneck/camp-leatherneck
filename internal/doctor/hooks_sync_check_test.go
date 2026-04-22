@@ -10,7 +10,7 @@ import (
 )
 
 // scaffoldWorkspace creates a minimal town workspace in a temp directory with
-// the given role agents configured. Returns the town root path.
+// the given role agents configured. Returns the HQ root path.
 func scaffoldWorkspace(t *testing.T, roleAgents map[string]string) string {
 	t.Helper()
 	tmpDir := t.TempDir()

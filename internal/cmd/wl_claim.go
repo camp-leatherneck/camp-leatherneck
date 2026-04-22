@@ -24,7 +24,7 @@ In wild-west mode (Phase 1), this writes directly to the local wl-commons
 database. In PR mode, this will create a DoltHub PR instead.
 
 Examples:
-  gt wl claim w-abc123`,
+  lt wl claim w-abc123`,
 	Args: cobra.ExactArgs(1),
 	RunE: runWlClaim,
 }
@@ -38,7 +38,7 @@ func runWlClaim(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	wlCfg, err := wasteland.LoadConfig(townRoot)
@@ -52,7 +52,7 @@ func runWlClaim(cmd *cobra.Command, args []string) error {
 	if !doltserver.DatabaseExists(townRoot, dbName) {
 		// Fallback for wl-commons clone-based workspaces (join creates .wasteland clone).
 		if wlCfg.LocalDir == "" {
-			return fmt.Errorf("database %q not found\nJoin a wasteland first with: gt wl join <org/db>", dbName)
+			return fmt.Errorf("database %q not found\nJoin a wasteland first with: lt wl join <org/db>", dbName)
 		}
 		if err := claimWantedInLocalClone(wlCfg.LocalDir, wantedID, rigHandle); err != nil {
 			return err

@@ -30,7 +30,7 @@ func resolvePolecatTargets(args []string, useAll bool) ([]polecatTarget, error) 
 		rigName := args[0]
 		// Check if it looks like rig/polecat format
 		if _, _, err := parseAddress(rigName); err == nil {
-			return nil, fmt.Errorf("with --all, provide just the rig name (e.g., 'gt polecat <cmd> %s --all')", strings.Split(rigName, "/")[0])
+			return nil, fmt.Errorf("with --all, provide just the rig name (e.g., 'lt polecat <cmd> %s --all')", strings.Split(rigName, "/")[0])
 		}
 
 		mgr, r, err := getPolecatManager(rigName)
@@ -200,10 +200,10 @@ func displaySafetyCheckBlocked(blocked []*SafetyCheckResult) {
 	fmt.Println()
 	fmt.Println("Safety checks failed. Resolve issues before nuking, or use --force.")
 	fmt.Println("Options:")
-	fmt.Printf("  1. Complete work: gt done (from polecat session)\n")
+	fmt.Printf("  1. Complete work: lt done (from polecat session)\n")
 	fmt.Printf("  2. Push changes: git push (from polecat worktree)\n")
-	fmt.Printf("  3. Escalate: gt mail send mayor/ -s \"RECOVERY_NEEDED\" -m \"...\"\n")
-	fmt.Printf("  4. Force nuke (LOSES WORK): gt polecat nuke --force %s\n", strings.Join(polecatList, " "))
+	fmt.Printf("  3. Escalate: lt mail send mayor/ -s \"RECOVERY_NEEDED\" -m \"...\"\n")
+	fmt.Printf("  4. Force nuke (LOSES WORK): lt polecat nuke --force %s\n", strings.Join(polecatList, " "))
 	fmt.Println()
 }
 

@@ -150,7 +150,7 @@ func TestSquashJitterContextCancellation(t *testing.T) {
 }
 
 // TestSlingFormulaOnBeadHooksBaseBead verifies that when using
-// "gt sling <formula> --on <bead>", the BASE bead is hooked (not the wisp).
+// "lt sling <formula> --on <bead>", the BASE bead is hooked (not the wisp).
 //
 // Current bug: The code hooks the wisp (compound root) instead of the base bead.
 // This causes lifecycle issues:
@@ -159,7 +159,7 @@ func TestSquashJitterContextCancellation(t *testing.T) {
 // - Orphaned base beads accumulate
 //
 // Expected behavior: Hook the base bead, store attached_molecule pointing to wisp.
-// gt hook/gt prime can follow attached_molecule to find the workflow steps.
+// lt hook/lt prime can follow attached_molecule to find the workflow steps.
 func TestSlingFormulaOnBeadHooksBaseBead(t *testing.T) {
 	townRoot := t.TempDir()
 
@@ -340,7 +340,7 @@ exit /b 0
 }
 
 // TestSlingFormulaOnBeadSetsAttachedMoleculeInBaseBead verifies that when using
-// "gt sling <formula> --on <bead>", the attached_molecule field is set in the
+// "lt sling <formula> --on <bead>", the attached_molecule field is set in the
 // BASE bead's description (pointing to the wisp), not in the wisp itself.
 //
 // Current bug: attached_molecule is stored as a self-reference in the wisp.
@@ -350,7 +350,7 @@ exit /b 0
 // Expected behavior: Store attached_molecule in the base bead pointing to wisp.
 // This enables:
 // - Compound resolution: base bead -> attached_molecule -> wisp
-// - gt hook/gt prime: read base bead, follow attached_molecule to show wisp steps
+// - lt hook/lt prime: read base bead, follow attached_molecule to show wisp steps
 func TestSlingFormulaOnBeadSetsAttachedMoleculeInBaseBead(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("Windows batch script JSON output causes storeAttachedMoleculeInBead to fail silently")
@@ -1048,7 +1048,7 @@ exit /b 0
 
 	if !foundWisp {
 		t.Errorf("attached molecule gt-wisp-xyz was NOT closed\n"+
-			"gt done should close the attached_molecule before closing the hooked bead.\n"+
+			"lt done should close the attached_molecule before closing the hooked bead.\n"+
 			"This leaves orphaned wisps after work completes.\n"+
 			"Beads closed: %v", closeLines)
 	}

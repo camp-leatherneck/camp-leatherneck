@@ -1,5 +1,5 @@
-// ABOUTME: Quick-add command for adding a repo to Gas Town with minimal friction.
-// ABOUTME: Used by shell hook for automatic "add to Gas Town?" prompts.
+// ABOUTME: Quick-add command for adding a repo to Camp Leatherneck with minimal friction.
+// ABOUTME: Used by shell hook for automatic "add to Camp Leatherneck?" prompts.
 
 package cmd
 
@@ -23,17 +23,17 @@ var (
 
 var rigQuickAddCmd = &cobra.Command{
 	Use:    "quick-add [path]",
-	Short:  "Quickly add current repo to Gas Town",
+	Short:  "Quickly add current repo to Camp Leatherneck",
 	Hidden: true,
-	Long: `Quickly add a git repository to Gas Town with minimal interaction.
+	Long: `Quickly add a git repository to Camp Leatherneck with minimal interaction.
 
-This command is designed for the shell hook's "Add to Gas Town?" prompt.
+This command is designed for the shell hook's "Add to Camp Leatherneck?" prompt.
 It infers the rig name from the directory and git URL from the remote.
 
 Examples:
-  gt rig quick-add                    # Add current directory
-  gt rig quick-add ~/Repos/myproject  # Add specific path
-  gt rig quick-add --yes              # Non-interactive`,
+  lt rig quick-add                    # Add current directory
+  lt rig quick-add ~/Repos/myproject  # Add specific path
+  lt rig quick-add --yes              # Non-interactive`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runRigQuickAdd,
 }
@@ -57,7 +57,7 @@ func runRigQuickAdd(cmd *cobra.Command, args []string) error {
 	}
 
 	if townRoot, err := workspace.Find(absPath); err == nil && townRoot != "" {
-		return fmt.Errorf("already part of a Gas Town workspace: %s", townRoot)
+		return fmt.Errorf("already part of a Camp Leatherneck workspace: %s", townRoot)
 	}
 
 	gitRoot, err := findGitRoot(absPath)
@@ -74,7 +74,7 @@ func runRigQuickAdd(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := findOrCreateTown()
 	if err != nil {
-		return fmt.Errorf("finding Gas Town: %w", err)
+		return fmt.Errorf("finding Camp Leatherneck: %w", err)
 	}
 
 	rigPath := filepath.Join(townRoot, rigName)
@@ -88,7 +88,7 @@ func runRigQuickAdd(cmd *cobra.Command, args []string) error {
 	}
 
 	if !quickAddQuiet {
-		fmt.Printf("Adding %s to Gas Town...\n", style.Bold.Render(rigName))
+		fmt.Printf("Adding %s to Camp Leatherneck...\n", style.Bold.Render(rigName))
 		fmt.Printf("  Repository: %s\n", gitURL)
 		fmt.Printf("  Town: %s\n", townRoot)
 	}
@@ -100,8 +100,8 @@ func runRigQuickAdd(cmd *cobra.Command, args []string) error {
 	addCmd.Stderr = os.Stderr
 	if err := addCmd.Run(); err != nil {
 		fmt.Printf("\n%s Failed to add rig. You can try manually:\n", style.Warning.Render("⚠"))
-		fmt.Printf("  cd %s && gt rig add %s %s\n", townRoot, rigName, gitURL)
-		return fmt.Errorf("gt rig add failed: %w", err)
+		fmt.Printf("  cd %s && lt rig add %s %s\n", townRoot, rigName, gitURL)
+		return fmt.Errorf("lt rig add failed: %w", err)
 	}
 
 	user := quickAddUser
@@ -123,12 +123,12 @@ func runRigQuickAdd(cmd *cobra.Command, args []string) error {
 	crewCmd.Stderr = os.Stderr
 	if err := crewCmd.Run(); err != nil {
 		fmt.Printf("  %s Could not create crew workspace: %v\n", style.Dim.Render("⚠"), err)
-		fmt.Printf("  Run manually: cd %s && gt crew add %s --rig %s\n", filepath.Join(townRoot, rigName), user, rigName)
+		fmt.Printf("  Run manually: cd %s && lt crew add %s --rig %s\n", filepath.Join(townRoot, rigName), user, rigName)
 	}
 
 	crewPath := filepath.Join(townRoot, rigName, "crew", user)
 	if !quickAddQuiet {
-		fmt.Printf("\n%s Added to Gas Town!\n", style.Success.Render("✓"))
+		fmt.Printf("\n%s Added to Camp Leatherneck!\n", style.Success.Render("✓"))
 		fmt.Printf("\nYour workspace: %s\n", style.Bold.Render(crewPath))
 	}
 
@@ -194,10 +194,10 @@ func findOrCreateTown() (string, error) {
 		}
 	}
 
-	return "", fmt.Errorf("no Gas Town found - run 'gt install ~/gt' first")
+	return "", fmt.Errorf("no Camp Leatherneck found - run 'lt install ~/gt' first")
 }
 
-// isValidTown checks if a path is a valid Gas Town installation.
+// isValidTown checks if a path is a valid Camp Leatherneck installation.
 func isValidTown(path string) bool {
 	mayorDir := filepath.Join(path, "mayor")
 	_, err := os.Stat(mayorDir)

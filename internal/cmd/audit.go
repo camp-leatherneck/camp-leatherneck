@@ -41,12 +41,12 @@ Shows a unified timeline of work performed by an actor including:
   - Activity feed events
 
 Examples:
-  gt audit --actor=greenplace/crew/joe       # Show all work by joe
-  gt audit --actor=greenplace/polecats/toast # Show polecat toast's work
-  gt audit --actor=mayor                  # Show mayor's activity
-  gt audit --since=24h                    # Show all activity in last 24h
-  gt audit --actor=joe --since=1h         # Combined filters
-  gt audit --json                         # Output as JSON`,
+  lt audit --actor=greenplace/crew/joe       # Show all work by joe
+  lt audit --actor=greenplace/polecats/toast # Show polecat toast's work
+  lt audit --actor=mayor                  # Show mayor's activity
+  lt audit --since=24h                    # Show all activity in last 24h
+  lt audit --actor=joe --since=1h         # Combined filters
+  lt audit --json                         # Output as JSON`,
 	RunE: runAudit,
 }
 
@@ -73,7 +73,7 @@ type AuditEntry struct {
 func runAudit(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Parse since duration if provided

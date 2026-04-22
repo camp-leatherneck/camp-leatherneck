@@ -17,7 +17,7 @@ type socketSessionLister interface {
 
 // SocketSplitBrainCheck detects tmux sessions that exist on both the town
 // socket (e.g., "gt-a1b2c3") and the "default" socket. This split-brain causes
-// gt nudge and other session-discovery commands to fail because they only
+// lt nudge and other session-discovery commands to fail because they only
 // search the town socket.
 type SocketSplitBrainCheck struct {
 	FixableCheck
@@ -42,7 +42,7 @@ func NewSocketSplitBrainCheck() *SocketSplitBrainCheck {
 	}
 }
 
-// Run checks for Gas Town sessions on the "default" socket that duplicate
+// Run checks for Camp Leatherneck sessions on the "default" socket that duplicate
 // sessions on the town socket.
 func (c *SocketSplitBrainCheck) Run(ctx *CheckContext) *CheckResult {
 	townSocket := tmux.GetDefaultSocket()
@@ -91,13 +91,13 @@ func (c *SocketSplitBrainCheck) Run(ctx *CheckContext) *CheckResult {
 		townSet[s] = true
 	}
 
-	// Find Gas Town sessions on default that are duplicates or orphans
+	// Find Camp Leatherneck sessions on default that are duplicates or orphans
 	var duplicates []string
 	var orphans []string
 
 	for _, s := range defaultSessions {
 		if !session.IsKnownSession(s) {
-			continue // Not a Gas Town session
+			continue // Not a Camp Leatherneck session
 		}
 		if townSet[s] {
 			duplicates = append(duplicates, s)
@@ -113,7 +113,7 @@ func (c *SocketSplitBrainCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: fmt.Sprintf("No split-brain: all Gas Town sessions on %q socket", townSocket),
+			Message: fmt.Sprintf("No split-brain: all Camp Leatherneck sessions on %q socket", townSocket),
 		}
 	}
 
@@ -128,13 +128,13 @@ func (c *SocketSplitBrainCheck) Run(ctx *CheckContext) *CheckResult {
 	return &CheckResult{
 		Name:    c.Name(),
 		Status:  StatusError,
-		Message: fmt.Sprintf("Found %d Gas Town session(s) on wrong socket — nudge/discovery will fail", len(c.staleSessions)),
+		Message: fmt.Sprintf("Found %d Camp Leatherneck session(s) on wrong socket — nudge/discovery will fail", len(c.staleSessions)),
 		Details: details,
-		FixHint: "Run 'gt doctor --fix' to kill stale sessions on wrong socket",
+		FixHint: "Run 'lt doctor --fix' to kill stale sessions on wrong socket",
 	}
 }
 
-// Fix kills Gas Town sessions on the "default" socket that shouldn't be there.
+// Fix kills Camp Leatherneck sessions on the "default" socket that shouldn't be there.
 func (c *SocketSplitBrainCheck) Fix(ctx *CheckContext) error {
 	if len(c.staleSessions) == 0 {
 		return nil

@@ -86,7 +86,7 @@ func (c *StaleRuntimeFilesCheck) Run(ctx *CheckContext) *CheckResult {
 			// Extract the rig prefix (first part before the hyphen or underscore)
 			rigPrefix := extractRigPrefix(name)
 			if rigPrefix == "" || rigPrefix == "hq" || rigPrefix == "gt" {
-				// Town-level agents (hq, gt) are always valid
+				// HQ-level agents (hq, gt) are always valid
 				continue
 			}
 			// Check if this rig is registered (by name or prefix)
@@ -142,7 +142,7 @@ func (c *StaleRuntimeFilesCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: msg,
 		Details: details,
-		FixHint: "Run 'gt doctor --fix' to remove stale runtime files",
+		FixHint: "Run 'lt doctor --fix' to remove stale runtime files",
 	}
 }
 

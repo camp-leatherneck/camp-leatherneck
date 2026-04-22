@@ -181,7 +181,7 @@ func TestSandbox_DenyWriteOutsideProjectDir(t *testing.T) {
 }
 
 // TestSandbox_DenyWriteToGTRoot verifies that a sandboxed polecat
-// cannot write to the GT town root (~/gt/) — only its own worktree.
+// cannot write to the GT HQ root (~/gt/) — only its own worktree.
 func TestSandbox_DenyWriteToGTRoot(t *testing.T) {
 	skipIfNoSandboxExec(t)
 	t.Parallel()

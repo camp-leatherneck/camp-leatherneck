@@ -229,7 +229,7 @@ func TestExtractJSONArray(t *testing.T) {
 }
 
 func TestLoadTTLConfigDefaults(t *testing.T) {
-	// With empty town root, should return defaults
+	// With empty HQ root, should return defaults
 	ttls := loadTTLConfig("", "")
 
 	if ttls["heartbeat"] != 6*time.Hour {
@@ -244,7 +244,7 @@ func TestLoadTTLConfigDefaults(t *testing.T) {
 }
 
 func TestLoadTTLConfigWithRoleDefaults(t *testing.T) {
-	// With empty town root, should return hardcoded defaults
+	// With empty HQ root, should return hardcoded defaults
 	ttls := loadTTLConfigWithRole("", "")
 
 	for k, want := range defaultTTLs {

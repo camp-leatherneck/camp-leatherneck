@@ -1,4 +1,4 @@
-// Package doltserver manages the Dolt SQL server for Gas Town.
+// Package doltserver manages the Dolt SQL server for Camp Leatherneck.
 //
 // The Dolt server provides multi-client access to beads databases,
 // avoiding the single-writer limitation of embedded Dolt mode.
@@ -11,19 +11,19 @@
 // Each rig (hq, gastown, beads) has its own database subdirectory:
 //
 //	~/gt/.dolt-data/
-//	├── hq/        # Town beads (hq-*)
+//	├── hq/        # HQ beads (hq-*)
 //	├── gastown/   # Gastown rig (gt-*)
 //	├── beads/     # Beads rig (bd-*)
 //	└── ...        # Other rigs
 //
 // Usage:
 //
-//	gt dolt start           # Start the server
-//	gt dolt stop            # Stop the server
-//	gt dolt status          # Check server status
-//	gt dolt logs            # View server logs
-//	gt dolt sql             # Open SQL shell
-//	gt dolt init-rig <name> # Initialize a new rig database
+//	lt dolt start           # Start the server
+//	lt dolt stop            # Stop the server
+//	lt dolt status          # Check server status
+//	lt dolt logs            # View server logs
+//	lt dolt sql             # Open SQL shell
+//	lt dolt init-rig <name> # Initialize a new rig database
 package doltserver
 
 import (
@@ -192,7 +192,7 @@ func getMetadataMu(path string) *sync.Mutex {
 
 // Config holds Dolt server configuration.
 type Config struct {
-	// TownRoot is the Gas Town workspace root.
+	// TownRoot is the Camp Leatherneck workspace root.
 	TownRoot string
 
 	// Host is the Dolt server hostname or IP.
@@ -220,7 +220,7 @@ type Config struct {
 	PidFile string
 
 	// MaxConnections is the maximum number of simultaneous connections the server will accept.
-	// Set to 0 to use the Dolt default (1000). Gas Town defaults to 50 to prevent
+	// Set to 0 to use the Dolt default (1000). Camp Leatherneck defaults to 50 to prevent
 	// connection storms during mass polecat slings.
 	MaxConnections int
 
@@ -308,7 +308,7 @@ func DefaultConfig(townRoot string) *Config {
 	}
 
 	// Fallback: if GT_DOLT_PORT is not in the shell env, read it from
-	// mayor/daemon.json. Commands like gt dolt status, gt dolt stop, etc.
+	// mayor/daemon.json. Commands like lt dolt status, lt dolt stop, etc.
 	// are typically run without the daemon.json env vars exported to the
 	// shell, so DefaultConfig would otherwise return the wrong port (3307)
 	// when the town uses a custom port (e.g. GT_DOLT_PORT=3308).
@@ -586,7 +586,7 @@ func IsRunning(townRoot string) (bool, int, error) {
 	// externally-restarted servers (e.g., dolt restarted outside of gt),
 	// and other setups where no local dolt process is visible via lsof/ss
 	// (e.g., the port is forwarded by a Docker proxy).
-	// We always check, even on the default port 3307, so that gt rig add
+	// We always check, even on the default port 3307, so that lt rig add
 	// succeeds when dolt is live regardless of how it was started.
 	conn, err := net.DialTimeout("tcp", config.HostPort(), 2*time.Second)
 	if err == nil {
@@ -608,7 +608,7 @@ func CheckServerReachable(townRoot string) error {
 	if err != nil {
 		hint := ""
 		if !config.IsRemote() {
-			hint = "\n\nStart with: gt dolt start"
+			hint = "\n\nStart with: lt dolt start"
 		}
 		return fmt.Errorf("Dolt server not reachable at %s: %w%s", addr, err, hint)
 	}
@@ -621,7 +621,7 @@ func CheckServerReachable(townRoot string) error {
 // or if no server-mode metadata is configured (nothing to wait for).
 // Returns an error if the timeout expires before the server is reachable.
 //
-// This is used by gt up to ensure the Dolt server is ready before starting
+// This is used by lt up to ensure the Dolt server is ready before starting
 // agents (witnesses, refineries) that depend on beads database access.
 // Without this, agents race the Dolt server startup and get "connection refused".
 func WaitForReady(townRoot string, timeout time.Duration) error {
@@ -748,7 +748,7 @@ func CheckPortConflict(townRoot string) (int, string) {
 // for Linux systems where lsof is not installed.
 func findDoltServerOnPort(port int) int {
 	// Try lsof — preferred when available (cross-platform).
-	// Without -sTCP:LISTEN, lsof returns client PIDs (e.g., gt daemon) first,
+	// Without -sTCP:LISTEN, lsof returns client PIDs (e.g., lt daemon) first,
 	// which aren't dolt processes — causing false negatives.
 	cmd := exec.Command("lsof", "-i", fmt.Sprintf(":%d", port), "-sTCP:LISTEN", "-t")
 	setProcessGroup(cmd)
@@ -946,7 +946,7 @@ func GetDoltDataDirFromProcess(pid int) string {
 }
 
 // getDoltConfigPathFromProcess reads the --config flag value from the running
-// process's command-line arguments. Gas Town starts Dolt via --config, so this
+// process's command-line arguments. Camp Leatherneck starts Dolt via --config, so this
 // is the primary ownership signal when --data-dir is absent.
 func getDoltConfigPathFromProcess(pid int) string {
 	return resolveProcessPath(pid, getDoltFlagFromArgs(getProcessArgs(pid), "--config"))
@@ -1162,7 +1162,7 @@ func StopIdleMonitors(townRoot string) int {
 		}
 
 		// Scope to this town: match by path in args using path-boundary check
-		// to avoid false matches on sibling paths (e.g., /tmp/gt matching /tmp/gt-old)
+		// to avoid false matches on sibling paths (e.g., /tmp/lt matching /tmp/gt-old)
 		matchesTown := containsPathBoundary(line, absRoot) || containsPathBoundary(line, townRoot)
 		if !matchesTown {
 			// Check for --port <portStr> as a discrete argument to avoid
@@ -1252,7 +1252,7 @@ func checkPortAvailable(port int) error {
 			detail = fmt.Sprintf("\nPort is held by PID %d", pid)
 		}
 		return fmt.Errorf("port %d is already in use.%s\n"+
-			"If you're running multiple Gas Town instances, each needs a unique Dolt port.\n"+
+			"If you're running multiple Camp Leatherneck instances, each needs a unique Dolt port.\n"+
 			"Set GT_DOLT_PORT in mayor/daemon.json env section:\n"+
 			"  {\"env\": {\"GT_DOLT_PORT\": \"<port>\"}}", port, detail)
 	}
@@ -1303,9 +1303,9 @@ func writeServerConfig(config *Config, configPath string) error {
 		maxConnLine = fmt.Sprintf("\n  max_connections: %d", config.MaxConnections)
 	}
 
-	content := fmt.Sprintf(`# Dolt SQL server configuration — managed by Gas Town (gt dolt start)
+	content := fmt.Sprintf(`# Dolt SQL server configuration — managed by Camp Leatherneck (lt dolt start)
 # Do not edit manually; changes are overwritten on each server start.
-# To customize, set Gas Town environment variables:
+# To customize, set Camp Leatherneck environment variables:
 #   GT_DOLT_PORT, GT_DOLT_HOST, GT_DOLT_USER, GT_DOLT_PASSWORD, GT_DOLT_LOGLEVEL
 
 log_level: %s
@@ -1343,7 +1343,7 @@ func Start(townRoot string) error {
 		return fmt.Errorf("creating daemon directory: %w", err)
 	}
 
-	// Acquire exclusive lock to prevent concurrent starts (same pattern as gt daemon).
+	// Acquire exclusive lock to prevent concurrent starts (same pattern as lt daemon).
 	// If the lock is held, retry briefly — the holder may be finishing up. If still
 	// held after retries, check if the holding process is alive. (gt-tosjp)
 	lockFile := filepath.Join(daemonDir, "dolt.lock")
@@ -1393,7 +1393,7 @@ func Start(townRoot string) error {
 			fileLock = flock.New(lockFile)
 			locked, err = fileLock.TryLock()
 			if err != nil || !locked {
-				return fmt.Errorf("another gt dolt start is in progress (lock held after recovery attempt)")
+				return fmt.Errorf("another lt dolt start is in progress (lock held after recovery attempt)")
 			}
 		}
 	}
@@ -1437,7 +1437,7 @@ func Start(townRoot string) error {
 
 	if running {
 		// If data directory doesn't exist, this is an orphaned server (e.g., user
-		// deleted ~/gt and re-ran gt install). Kill it so we can start fresh.
+		// deleted ~/lt and re-ran lt install). Kill it so we can start fresh.
 		if _, statErr := os.Stat(config.DataDir); os.IsNotExist(statErr) {
 			fmt.Fprintf(os.Stderr, "Warning: Dolt server (PID %d) is running but data directory %s does not exist — stopping orphaned server\n", pid, config.DataDir)
 			if stopErr := Stop(townRoot); stopErr != nil {
@@ -1627,7 +1627,7 @@ func Start(townRoot string) error {
 
 		// Check if the process we started is still alive.
 		if !processIsAlive(cmd.Process.Pid) {
-			return fmt.Errorf("Dolt server process died during startup (check logs with 'gt dolt logs')")
+			return fmt.Errorf("Dolt server process died during startup (check logs with 'lt dolt logs')")
 		}
 
 		if !tcpReachable {
@@ -1643,9 +1643,9 @@ func Start(townRoot string) error {
 		// Start() can return on the first iteration where Dolt has bound its
 		// port but is still discovering/loading databases — leaving callers
 		// (and waiting agents) connected to a server that only exposes
-		// information_schema and mysql. Symptom: gt down + gt up cycle leaves
+		// information_schema and mysql. Symptom: lt down + lt up cycle leaves
 		// SHOW DATABASES showing no rig databases until the user manually
-		// runs gt dolt stop + gt dolt start. (gt-nq1)
+		// runs lt dolt stop + lt dolt start. (gt-nq1)
 		if len(databases) == 0 {
 			return nil // Nothing to verify — fresh install or empty data dir
 		}
@@ -1663,9 +1663,9 @@ func Start(townRoot string) error {
 
 	totalTimeout := time.Duration(dbCount) * 5 * time.Second
 	if !tcpReachable {
-		return fmt.Errorf("Dolt server process started (PID %d) but not accepting connections after %v (%d databases × 5s): %w\nCheck logs with: gt dolt logs", cmd.Process.Pid, totalTimeout, dbCount, lastErr)
+		return fmt.Errorf("Dolt server process started (PID %d) but not accepting connections after %v (%d databases × 5s): %w\nCheck logs with: lt dolt logs", cmd.Process.Pid, totalTimeout, dbCount, lastErr)
 	}
-	return fmt.Errorf("Dolt server process started (PID %d) and is reachable, but databases failed to load after %v (%d databases × 5s): %w\nRecovery: gt dolt stop && gt dolt start\nCheck logs with: gt dolt logs", cmd.Process.Pid, totalTimeout, dbCount, lastErr)
+	return fmt.Errorf("Dolt server process started (PID %d) and is reachable, but databases failed to load after %v (%d databases × 5s): %w\nRecovery: lt dolt stop && lt dolt start\nCheck logs with: lt dolt logs", cmd.Process.Pid, totalTimeout, dbCount, lastErr)
 }
 
 // WARNING: DO NOT remove, delete, or modify files inside Dolt's .dolt/
@@ -1748,7 +1748,7 @@ func drainConnectionsBeforeStop(config *Config) {
 }
 
 // Stop stops the Dolt SQL server.
-// Works for both servers started via gt dolt start AND externally-started servers.
+// Works for both servers started via lt dolt start AND externally-started servers.
 func Stop(townRoot string) error {
 	config := DefaultConfig(townRoot)
 
@@ -2258,7 +2258,7 @@ func InitRig(townRoot, rigName string) (serverWasRunning bool, created bool, err
 
 	rigDir := filepath.Join(config.DataDir, rigName)
 
-	// Check if already exists on disk — idempotent for callers like gt install.
+	// Check if already exists on disk — idempotent for callers like lt install.
 	// Still run EnsureMetadata to repair missing/corrupt metadata.json.
 	if _, err := os.Stat(filepath.Join(rigDir, ".dolt")); err == nil {
 		running, _, _ := IsRunning(townRoot)
@@ -2273,7 +2273,7 @@ func InitRig(townRoot, rigName string) (serverWasRunning bool, created bool, err
 
 	if running {
 		// If the data directory doesn't exist, the server is orphaned (e.g., user
-		// deleted ~/gt and re-ran gt install while an old server was still running).
+		// deleted ~/lt and re-ran lt install while an old server was still running).
 		// Stop the orphaned server and fall through to the offline init path.
 		if _, err := os.Stat(config.DataDir); os.IsNotExist(err) {
 			fmt.Fprintf(os.Stderr, "Warning: Dolt server (PID %d) is running but data directory %s does not exist — stopping orphaned server\n", runningPID, config.DataDir)
@@ -2584,7 +2584,7 @@ func readExistingDoltDatabase(beadsDir string) string {
 //   - town-level .beads/metadata.json (HQ)
 //   - all rigs from rigs.json
 //   - all routes from routes.jsonl (catches rigs not yet in rigs.json)
-//   - broad scan of metadata.json files under town root
+//   - broad scan of metadata.json files under HQ root
 func collectReferencedDatabases(townRoot string) map[string]bool {
 	referenced := make(map[string]bool)
 
@@ -2615,7 +2615,7 @@ func collectReferencedDatabases(townRoot string) map[string]bool {
 	}
 
 	// Also check routes.jsonl — catches rigs that have routes but aren't in
-	// rigs.json yet (e.g., hop before gt rig add). (gt-q8f6n fix)
+	// rigs.json yet (e.g., hop before lt rig add). (gt-q8f6n fix)
 	routesPath := filepath.Join(townRoot, ".beads", "routes.jsonl")
 	if routesData, readErr := os.ReadFile(routesPath); readErr == nil {
 		for _, line := range strings.Split(string(routesData), "\n") {
@@ -2629,7 +2629,7 @@ func collectReferencedDatabases(townRoot string) map[string]bool {
 			if json.Unmarshal([]byte(line), &route) != nil || route.Path == "" {
 				continue
 			}
-			// route.Path is relative to town root, e.g., "hop", "beads/mayor/rig"
+			// route.Path is relative to HQ root, e.g., "hop", "beads/mayor/rig"
 			beadsDir := filepath.Join(townRoot, route.Path, ".beads")
 			if db := readExistingDoltDatabase(beadsDir); db != "" {
 				referenced[db] = true
@@ -2668,7 +2668,7 @@ func collectReferencedDatabases(townRoot string) map[string]bool {
 
 // CollectDatabaseOwners returns a map from database name to a human-readable
 // owner description (e.g., "gastown rig beads", "town beads"). This is used by
-// gt dolt status to annotate each database with its rig owner, preventing
+// lt dolt status to annotate each database with its rig owner, preventing
 // accidental drops of production databases. (GH#2252)
 func CollectDatabaseOwners(townRoot string) map[string]string {
 	owners := make(map[string]string)
@@ -3557,7 +3557,7 @@ func IsReadOnlyError(msg string) bool {
 
 // RecoverReadOnly detects a read-only Dolt server, restarts it, and verifies
 // recovery. This is the gt-level counterpart to the daemon's auto-recovery:
-// when a gt command (spawn, done, etc.) encounters persistent read-only errors,
+// when a lt command (spawn, done, etc.) encounters persistent read-only errors,
 // it can call this to attempt recovery without waiting for the daemon's 30s loop.
 // Returns nil if recovery succeeded, an error if recovery failed or wasn't needed.
 func RecoverReadOnly(townRoot string) error {
@@ -3812,7 +3812,7 @@ func moveDir(src, dest string) error {
 // through the running sql-server process. Without these flags, `dolt sql` runs
 // in embedded mode (even from the data directory), which creates databases on
 // disk but does NOT register them with the live server catalog. This caused
-// "database not found" errors during gt rig add.
+// "database not found" errors during lt rig add.
 func serverExecSQL(townRoot, query string) error {
 	config := DefaultConfig(townRoot)
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)

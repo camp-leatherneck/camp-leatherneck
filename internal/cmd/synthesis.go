@@ -42,9 +42,9 @@ Commands:
   close     Close convoy after synthesis complete
 
 Examples:
-  gt synthesis status hq-cv-abc     # Check if ready for synthesis
-  gt synthesis start hq-cv-abc      # Start synthesis step
-  gt synthesis close hq-cv-abc      # Close convoy after synthesis`,
+  lt synthesis status hq-cv-abc     # Check if ready for synthesis
+  lt synthesis start hq-cv-abc      # Start synthesis step
+  lt synthesis close hq-cv-abc      # Close convoy after synthesis`,
 }
 
 var synthesisStartCmd = &cobra.Command{
@@ -127,7 +127,7 @@ type ConvoyMeta struct {
 	LegIssues   []string `json:"leg_issues,omitempty"`   // Tracked leg issue IDs
 }
 
-// runSynthesisStart implements gt synthesis start.
+// runSynthesisStart implements lt synthesis start.
 func runSynthesisStart(cmd *cobra.Command, args []string) error {
 	convoyID := args[0]
 
@@ -235,12 +235,12 @@ func runSynthesisStart(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("%s Synthesis started\n", style.Bold.Render("✓"))
-	fmt.Printf("  Monitor: gt convoy status %s\n", convoyID)
+	fmt.Printf("  Monitor: lt convoy status %s\n", convoyID)
 
 	return nil
 }
 
-// runSynthesisStatus implements gt synthesis status.
+// runSynthesisStatus implements lt synthesis status.
 func runSynthesisStatus(cmd *cobra.Command, args []string) error {
 	convoyID := args[0]
 
@@ -290,7 +290,7 @@ func runSynthesisStatus(cmd *cobra.Command, args []string) error {
 	fmt.Printf("\n  %s\n", style.Bold.Render("Synthesis:"))
 	if allComplete {
 		fmt.Printf("    %s Ready - all legs complete\n", style.Success.Render("✓"))
-		fmt.Printf("    Run: gt synthesis start %s\n", convoyID)
+		fmt.Printf("    Run: lt synthesis start %s\n", convoyID)
 	} else {
 		completedCount := 0
 		for _, leg := range legOutputs {
@@ -313,7 +313,7 @@ func runSynthesisStatus(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-// runSynthesisClose implements gt synthesis close.
+// runSynthesisClose implements lt synthesis close.
 func runSynthesisClose(cmd *cobra.Command, args []string) error {
 	convoyID := args[0]
 

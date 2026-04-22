@@ -1081,8 +1081,8 @@ func TestRuntimeConfigBuildCommandWithPrompt(t *testing.T) {
 		{
 			name:         "with prompt",
 			rc:           DefaultRuntimeConfig(),
-			prompt:       "gt prime",
-			wantContains: []string{"--dangerously-skip-permissions", `"gt prime"`},
+			prompt:       "lt prime",
+			wantContains: []string{"--dangerously-skip-permissions", `"lt prime"`},
 			isClaudeCmd:  true,
 		},
 		{
@@ -1136,7 +1136,7 @@ func TestRuntimeConfigBuildCommandWithPrompt(t *testing.T) {
 }
 
 func TestBuildAgentStartupCommand(t *testing.T) {
-	// BuildAgentStartupCommand auto-detects town root from cwd when rigPath is empty.
+	// BuildAgentStartupCommand auto-detects HQ root from cwd when rigPath is empty.
 	// Use a temp directory to ensure we exercise the fallback default config path.
 	origWD, err := os.Getwd()
 	if err != nil {
@@ -1442,7 +1442,7 @@ func TestBuildCrewStartupCommandWithAgentOverride(t *testing.T) {
 		t.Fatalf("SaveRigSettings: %v", err)
 	}
 
-	cmd, err := BuildCrewStartupCommandWithAgentOverride("testrig", "max", rigPath, "gt prime", "gemini")
+	cmd, err := BuildCrewStartupCommandWithAgentOverride("testrig", "max", rigPath, "lt prime", "gemini")
 	if err != nil {
 		t.Fatalf("BuildCrewStartupCommandWithAgentOverride: %v", err)
 	}
@@ -3373,7 +3373,7 @@ func TestFillRuntimeDefaults(t *testing.T) {
 
 	t.Run("custom claude agent inherits Session and Tmux from preset", func(t *testing.T) {
 		t.Parallel()
-		// Simulates: gt config agent set claude-opus 'claude --model claude-opus-4-6'
+		// Simulates: lt config agent set claude-opus 'claude --model claude-opus-4-6'
 		input := &RuntimeConfig{
 			Command: "claude",
 			Args:    []string{"--dangerously-skip-permissions", "--model", "claude-opus-4-6"},
@@ -3642,7 +3642,7 @@ func TestBuildCommandWithPromptRespectsPromptModeNone(t *testing.T) {
 //
 // Manual test procedure:
 //  1. Set role_agents.mayor to each agent (claude, gemini, codex, cursor, auggie, amp, opencode)
-//  2. Run: gt start
+//  2. Run: lt start
 //  3. Verify mayor starts with correct agent config
 //  4. Run: GT_NUKE_ACKNOWLEDGED=1 gt down --nuke
 //  5. Repeat for all 7 built-in agents
@@ -4759,7 +4759,7 @@ func TestBuildStartupCommandWithAgentOverride_UsesOverrideWhenNoTownRoot(t *test
 	t.Parallel()
 	ResetRegistryForTesting()
 
-	// Change to a directory that is definitely NOT in a Gas Town workspace
+	// Change to a directory that is definitely NOT in a Camp Leatherneck workspace
 	// by using a temp directory with no mayor/town.json
 	tmpDir := t.TempDir()
 	oldWd, err := os.Getwd()

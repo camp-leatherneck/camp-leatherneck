@@ -27,9 +27,9 @@ The email domain is configurable in town settings (agent_email_domain).
 Default: gastown.local
 
 Examples:
-  gt commit -m "Fix bug"              # Commit as current agent
-  gt commit -am "Quick fix"           # Stage all and commit
-  gt commit -- --amend                # Amend last commit
+  lt commit -m "Fix bug"              # Commit as current agent
+  lt commit -am "Quick fix"           # Stage all and commit
+  lt commit -- --amend                # Amend last commit
 
 Identity mapping:
   Agent: gastown/crew/jack  →  Name: gastown/crew/jack
@@ -79,7 +79,7 @@ func runCommit(cmd *cobra.Command, args []string) error {
 	return runGitCommit(args, name, email)
 }
 
-// identityToEmail converts a Gas Town identity to a git email address.
+// identityToEmail converts a Camp Leatherneck identity to a git email address.
 // "gastown/crew/jack" → "gastown.crew.jack@domain"
 // "mayor/" → "mayor@domain"
 func identityToEmail(identity, domain string) string {

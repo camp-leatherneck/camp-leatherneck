@@ -10,7 +10,7 @@ import (
 )
 
 // logUsagePath is the JSONL file where command usage is recorded.
-// Location: $GT_HOME/.gt when GT_HOME is set, otherwise ~/.gt.
+// Location: $GT_HOME/.lt when GT_HOME is set, otherwise ~/.gt.
 var logUsagePath = filepath.Join(gtDataDir(), "cmd-usage.jsonl")
 
 // noLogCommands are top-level commands excluded from telemetry.

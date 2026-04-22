@@ -55,7 +55,7 @@ When you see anomalous state, write down four things — in order — before you
 
 Run the test. Then speak.
 
-**Example:** `2026-04-22` — "The Gas Town repo looks private" was the narrative. Facts said unauthenticated `curl` got a redirect. Benign hypothesis: GitHub redirects anonymous browsers even on public repos. Discriminating test: `gh repo view steveyegge/gastown --json visibility,licenseInfo`. Result: public, MIT. Narrative was wrong; the benign hypothesis was right.
+**Example:** `2026-04-22` — "The Camp Leatherneck repo looks private" was the narrative. Facts said unauthenticated `curl` got a redirect. Benign hypothesis: GitHub redirects anonymous browsers even on public repos. Discriminating test: `gh repo view steveyegge/gastown --json visibility,licenseInfo`. Result: public, MIT. Narrative was wrong; the benign hypothesis was right.
 
 ### Rule 4: Doc first, alarm second
 

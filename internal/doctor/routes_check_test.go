@@ -9,7 +9,7 @@ import (
 )
 
 func TestRoutesCheck_MissingTownRoute(t *testing.T) {
-	t.Run("detects missing town root route", func(t *testing.T) {
+	t.Run("detects missing HQ root route", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		// Create .beads directory with routes.jsonl missing the hq- route
@@ -44,7 +44,7 @@ func TestRoutesCheck_MissingTownRoute(t *testing.T) {
 		}
 	})
 
-	t.Run("passes when town root route exists", func(t *testing.T) {
+	t.Run("passes when HQ root route exists", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		// Create .beads directory with valid routes.jsonl
@@ -78,7 +78,7 @@ func TestRoutesCheck_MissingTownRoute(t *testing.T) {
 }
 
 func TestRoutesCheck_FixRestoresTownRoute(t *testing.T) {
-	t.Run("fix adds missing town root route", func(t *testing.T) {
+	t.Run("fix adds missing HQ root route", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		// Create .beads directory with empty routes.jsonl
@@ -343,10 +343,10 @@ func TestRoutesCheck_DirectLayoutRig(t *testing.T) {
 }
 
 func TestDetermineRigBeadsPath_Containment(t *testing.T) {
-	t.Run("redirect escaping town root falls back to default", func(t *testing.T) {
+	t.Run("redirect escaping HQ root falls back to default", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
-		// Create rig with redirect that escapes the town root
+		// Create rig with redirect that escapes the HQ root
 		rigDir := filepath.Join(tmpDir, "myrig")
 		rigBeadsDir := filepath.Join(rigDir, ".beads")
 		if err := os.MkdirAll(rigBeadsDir, 0755); err != nil {
@@ -364,7 +364,7 @@ func TestDetermineRigBeadsPath_Containment(t *testing.T) {
 		}
 	})
 
-	t.Run("valid redirect within town root resolves correctly", func(t *testing.T) {
+	t.Run("valid redirect within HQ root resolves correctly", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		// Create rig with redirect to mayor/rig/.beads

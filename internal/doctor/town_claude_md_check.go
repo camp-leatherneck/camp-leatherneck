@@ -9,11 +9,11 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/templates"
 )
 
-// TownCLAUDEmdCheck verifies the town-root CLAUDE.md is up to date with
+// TownCLAUDEmdCheck verifies the HQ CLAUDE.md is up to date with
 // the version embedded in the binary. This is the highest-value migration
 // check — behavioral norms for agents come from CLAUDE.md.
 //
-// The town-root CLAUDE.md (~/gt/CLAUDE.md) is loaded by Claude Code for
+// The HQ CLAUDE.md (~/gt/CLAUDE.md) is loaded by Claude Code for
 // all agents running from within the town git tree (Mayor, Deacon).
 // It must contain operational norms (Dolt awareness, communication hygiene,
 // nudge-first) that guide agent behavior.
@@ -23,20 +23,20 @@ type TownCLAUDEmdCheck struct {
 	fileMissing     bool
 }
 
-// NewTownCLAUDEmdCheck creates a new town-root CLAUDE.md version check.
+// NewTownCLAUDEmdCheck creates a new HQ CLAUDE.md version check.
 func NewTownCLAUDEmdCheck() *TownCLAUDEmdCheck {
 	return &TownCLAUDEmdCheck{
 		FixableCheck: FixableCheck{
 			BaseCheck: BaseCheck{
 				CheckName:        "town-claude-md",
-				CheckDescription: "Verify town-root CLAUDE.md is up to date with embedded version",
+				CheckDescription: "Verify HQ CLAUDE.md is up to date with embedded version",
 				CheckCategory:    CategoryConfig,
 			},
 		},
 	}
 }
 
-// Run checks the town-root CLAUDE.md for completeness.
+// Run checks the HQ CLAUDE.md for completeness.
 func (c *TownCLAUDEmdCheck) Run(ctx *CheckContext) *CheckResult {
 	c.missingSections = nil
 	c.fileMissing = false
@@ -51,14 +51,14 @@ func (c *TownCLAUDEmdCheck) Run(ctx *CheckContext) *CheckResult {
 			return &CheckResult{
 				Name:    c.Name(),
 				Status:  StatusError,
-				Message: "Town-root CLAUDE.md is missing",
-				FixHint: "Run 'gt doctor --fix' to create it from embedded template",
+				Message: "HQ CLAUDE.md is missing",
+				FixHint: "Run 'lt doctor --fix' to create it from embedded template",
 			}
 		}
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusError,
-			Message: fmt.Sprintf("Cannot read town-root CLAUDE.md: %v", err),
+			Message: fmt.Sprintf("Cannot read HQ CLAUDE.md: %v", err),
 		}
 	}
 
@@ -80,7 +80,7 @@ func (c *TownCLAUDEmdCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: "Town-root CLAUDE.md has all required sections",
+			Message: "HQ CLAUDE.md has all required sections",
 		}
 	}
 
@@ -89,13 +89,13 @@ func (c *TownCLAUDEmdCheck) Run(ctx *CheckContext) *CheckResult {
 	return &CheckResult{
 		Name:    c.Name(),
 		Status:  StatusWarning,
-		Message: fmt.Sprintf("Town-root CLAUDE.md missing %d section(s)", len(missing)),
+		Message: fmt.Sprintf("HQ CLAUDE.md missing %d section(s)", len(missing)),
 		Details: details,
-		FixHint: "Run 'gt doctor --fix' to add missing sections from embedded template",
+		FixHint: "Run 'lt doctor --fix' to add missing sections from embedded template",
 	}
 }
 
-// Fix updates the town-root CLAUDE.md with missing sections from the
+// Fix updates the HQ CLAUDE.md with missing sections from the
 // embedded template while preserving user customizations.
 func (c *TownCLAUDEmdCheck) Fix(ctx *CheckContext) error {
 	claudePath := filepath.Join(ctx.TownRoot, "CLAUDE.md")

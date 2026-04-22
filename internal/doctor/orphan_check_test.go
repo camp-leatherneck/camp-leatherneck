@@ -397,7 +397,7 @@ func TestOrphanSessionCheck_HQSessions(t *testing.T) {
 	if result.Status != StatusOK {
 		t.Fatalf("expected StatusOK for valid hq sessions, got %v: %s", result.Status, result.Message)
 	}
-	if result.Message != "All 2 Gas Town sessions are valid" {
+	if result.Message != "All 2 Camp Leatherneck sessions are valid" {
 		t.Fatalf("unexpected message: %q", result.Message)
 	}
 	if len(check.orphanSessions) != 0 {

@@ -1,4 +1,4 @@
-// Package config provides configuration types and serialization for Gas Town.
+// Package config provides configuration types and serialization for Camp Leatherneck.
 package config
 
 import (
@@ -318,7 +318,7 @@ type DaemonThresholds struct {
 	PolecatIdleSessionTimeout string `json:"polecat_idle_session_timeout,omitempty"`
 
 	// PolecatSelfTerminate controls whether polecats kill their own session after
-	// gt done completes (default false). When true, polecats terminate 3 seconds
+	// lt done completes (default false). When true, polecats terminate 3 seconds
 	// after work submission instead of transitioning to IDLE. This gives fresh
 	// context windows per task, reduces token waste, and eliminates stale state
 	// issues at scale. Worktree reuse is preserved — ReuseIdlePolecat creates
@@ -447,14 +447,14 @@ type MailThresholds struct {
 	MaxConcurrentAckOps *int `json:"max_concurrent_ack_ops,omitempty"`
 
 	// ReplyReminderDelay is how long after mail delivery to nudge the recipient
-	// to reply via gt mail send rather than in chat (default "30s").
+	// to reply via lt mail send rather than in chat (default "30s").
 	// Set to "0s" to disable reply reminders entirely.
 	ReplyReminderDelay string `json:"reply_reminder_delay,omitempty"`
 }
 
 // WebThresholds configures web API thresholds.
 type WebThresholds struct {
-	// MaxConcurrentCommands is max concurrent gt subprocesses via web API (default 12).
+	// MaxConcurrentCommands is max concurrent lt subprocesses via web API (default 12).
 	MaxConcurrentCommands *int `json:"max_concurrent_commands,omitempty"`
 
 	// MaxSubjectLen is max subject length for mail API (default 500).
@@ -637,7 +637,7 @@ type RigConfig struct {
 
 // WorkflowConfig represents workflow settings for a rig.
 type WorkflowConfig struct {
-	// DefaultFormula is the formula to use when `gt formula run` is called without arguments.
+	// DefaultFormula is the formula to use when `lt formula run` is called without arguments.
 	// If empty, no default is set and a formula name must be provided.
 	DefaultFormula string `json:"default_formula,omitempty"`
 }
@@ -761,7 +761,7 @@ type RuntimeConfig struct {
 	ResolvedAgent string `json:"-"`
 }
 
-// RuntimeSessionConfig configures how Gas Town discovers runtime session IDs.
+// RuntimeSessionConfig configures how Camp Leatherneck discovers runtime session IDs.
 type RuntimeSessionConfig struct {
 	// SessionIDEnv is the environment variable set by the runtime to identify a session.
 	// Default: "CLAUDE_SESSION_ID" for claude, empty for codex/generic.
@@ -784,8 +784,8 @@ type RuntimeHooksConfig struct {
 	SettingsFile string `json:"settings_file,omitempty"`
 
 	// Informational indicates the hooks provider installs instructions files only,
-	// not executable lifecycle hooks. When true, Gas Town sends startup fallback
-	// commands (gt prime) via nudge since hooks won't run automatically.
+	// not executable lifecycle hooks. When true, Camp Leatherneck sends startup fallback
+	// commands (lt prime) via nudge since hooks won't run automatically.
 	// Defaults to false (backwards compatible with claude/opencode which have real hooks).
 	Informational bool `json:"informational,omitempty"`
 }
@@ -973,7 +973,7 @@ func normalizeRuntimeConfig(rc *RuntimeConfig) *RuntimeConfig {
 
 	// Set informational flag for providers whose "hooks" are instructions files,
 	// not executable lifecycle hooks. This tells startup fallback logic to send
-	// gt prime via nudge since hooks won't run automatically.
+	// lt prime via nudge since hooks won't run automatically.
 	if !rc.Hooks.Informational {
 		rc.Hooks.Informational = defaultHooksInformational(rc.Provider)
 	}
@@ -1095,8 +1095,8 @@ func defaultHooksFile(provider string) string {
 }
 
 // defaultHooksInformational returns true for providers whose hooks are instructions
-// files only (not executable lifecycle hooks). For these providers, Gas Town sends
-// startup fallback commands (gt prime) via nudge since hooks won't auto-run.
+// files only (not executable lifecycle hooks). For these providers, Camp Leatherneck sends
+// startup fallback commands (lt prime) via nudge since hooks won't auto-run.
 func defaultHooksInformational(provider string) bool {
 	if preset := GetAgentPresetByName(provider); preset != nil {
 		return preset.HooksInformational
@@ -1258,7 +1258,7 @@ type MergeQueueConfig struct {
 	// Nil defaults to true.
 	IntegrationBranchPolecatEnabled *bool `json:"integration_branch_polecat_enabled,omitempty"`
 
-	// IntegrationBranchRefineryEnabled controls whether mq submit and gt done
+	// IntegrationBranchRefineryEnabled controls whether mq submit and lt done
 	// auto-detect integration branches as MR targets.
 	// Nil defaults to true.
 	IntegrationBranchRefineryEnabled *bool `json:"integration_branch_refinery_enabled,omitempty"`
@@ -1466,7 +1466,7 @@ func DefaultNamepoolConfig() *NamepoolConfig {
 }
 
 // AccountsConfig represents Claude Code account configuration (mayor/accounts.json).
-// This enables Gas Town to manage multiple Claude Code accounts with easy switching.
+// This enables Camp Leatherneck to manage multiple Claude Code accounts with easy switching.
 type AccountsConfig struct {
 	Version  int                `json:"version"`  // schema version
 	Accounts map[string]Account `json:"accounts"` // handle -> account details
@@ -1607,7 +1607,7 @@ type EscalationConfig struct {
 	// Actions are executed in order for each escalation.
 	// Action formats:
 	//   - "bead"        → Create escalation bead (always first, implicit)
-	//   - "mail:<target>" → Send gt mail to target (e.g., "mail:mayor")
+	//   - "mail:<target>" → Send lt mail to target (e.g., "mail:mayor")
 	//   - "email:human" → Send email to contacts.human_email
 	//   - "sms:human"   → Send SMS to contacts.human_sms
 	//   - "slack"       → Post to contacts.slack_webhook

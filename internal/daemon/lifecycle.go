@@ -20,7 +20,7 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
 )
 
-// BeadsMessage represents a message from gt mail inbox --json.
+// BeadsMessage represents a message from lt mail inbox --json.
 type BeadsMessage struct {
 	ID        string `json:"id"`
 	From      string `json:"from"`
@@ -39,10 +39,10 @@ const MaxLifecycleMessageAge = 6 * time.Hour
 
 // ProcessLifecycleRequests checks for and processes lifecycle requests from the deacon inbox.
 func (d *Daemon) ProcessLifecycleRequests() {
-	// Get mail for deacon identity (using gt mail, not bd mail)
+	// Get mail for deacon identity (using lt mail, not bd mail)
 	cmd := exec.Command(d.gtPath, "mail", "inbox", "--identity", "deacon/", "--json")
 	cmd.Dir = d.config.TownRoot
-	cmd.Env = os.Environ() // Inherit PATH to find gt executable
+	cmd.Env = os.Environ() // Inherit PATH to find lt executable
 	util.SetDetachedProcessGroup(cmd)
 
 	output, err := cmd.Output()
@@ -311,7 +311,7 @@ func (d *Daemon) getRoleConfigForIdentity(identity string) (*beads.RoleConfig, *
 }
 
 // identityToSession converts a beads identity to a tmux session name.
-// Always uses session.*SessionName() functions for consistency with gt up and daemon heartbeat.
+// Always uses session.*SessionName() functions for consistency with lt up and daemon heartbeat.
 func (d *Daemon) identityToSession(identity string) string {
 	parsed, err := parseIdentity(identity)
 	if err != nil {
@@ -346,7 +346,7 @@ func (d *Daemon) restartSession(sessionName, identity string) error {
 	}
 
 	// Check rig operational state for rig-level agents (witness, refinery, crew, polecat)
-	// Town-level agents (mayor, deacon) are not affected by rig state
+	// HQ-level agents (mayor, deacon) are not affected by rig state
 	if parsed.RigName != "" {
 		if operational, reason := d.isRigOperational(parsed.RigName); !operational {
 			d.logger.Printf("Skipping session restart for %s: %s", identity, reason)
@@ -508,7 +508,7 @@ func (d *Daemon) getStartCommand(roleConfig *beads.RoleConfig, parsed *ParsedIde
 		Recipient: recipient,
 		Sender:    "daemon",
 		Topic:     "lifecycle-restart",
-	}, "Run `gt prime --hook` and begin work.")
+	}, "Run `lt prime --hook` and begin work.")
 
 	// Build default command using the role-resolved runtime config.
 	// PrependEnv produces "export K=V ... && exec cmd" which is safe for
@@ -765,18 +765,18 @@ func (d *Daemon) resetSyncFailures(workDir string) {
 }
 
 // closeMessage removes a lifecycle mail message after processing.
-// We use delete instead of read because gt mail read intentionally
+// We use delete instead of read because lt mail read intentionally
 // doesn't mark messages as read (to preserve handoff messages).
 func (d *Daemon) closeMessage(id string) error {
-	// Use gt mail delete to actually remove the message
+	// Use lt mail delete to actually remove the message
 	cmd := exec.Command(d.gtPath, "mail", "delete", id)
 	cmd.Dir = d.config.TownRoot
-	cmd.Env = os.Environ() // Inherit PATH to find gt executable
+	cmd.Env = os.Environ() // Inherit PATH to find lt executable
 	util.SetDetachedProcessGroup(cmd)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("gt mail delete %s: %v (output: %s)", id, err, string(output))
+		return fmt.Errorf("lt mail delete %s: %v (output: %s)", id, err, string(output))
 	}
 	d.logger.Printf("Deleted lifecycle message: %s", id)
 	return nil
@@ -1144,7 +1144,7 @@ Action needed: Check if agent is alive and responsive. Consider restarting if st
 
 	cmd := exec.Command(d.gtPath, "mail", "send", witnessAddr, "-s", subject, "-m", body)
 	cmd.Dir = d.config.TownRoot
-	cmd.Env = os.Environ() // Inherit PATH to find gt executable
+	cmd.Env = os.Environ() // Inherit PATH to find lt executable
 	util.SetDetachedProcessGroup(cmd)
 
 	if err := cmd.Run(); err != nil {
@@ -1271,7 +1271,7 @@ Action needed: Either restart the agent or reassign the work.`,
 
 	cmd := exec.Command(d.gtPath, "mail", "send", witnessAddr, "-s", subject, "-m", body)
 	cmd.Dir = d.config.TownRoot
-	cmd.Env = os.Environ() // Inherit PATH to find gt executable
+	cmd.Env = os.Environ() // Inherit PATH to find lt executable
 	util.SetDetachedProcessGroup(cmd)
 
 	if err := cmd.Run(); err != nil {

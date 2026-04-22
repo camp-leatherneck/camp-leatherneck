@@ -16,7 +16,7 @@ import (
 // This mirrors the structure in bd's internal/routing package.
 type Route struct {
 	Prefix string `json:"prefix"` // Issue ID prefix (e.g., "gt-")
-	Path   string `json:"path"`   // Relative path to .beads directory from town root
+	Path   string `json:"path"`   // Relative path to .beads directory from HQ root
 }
 
 // RoutesFileName is the name of the routes configuration file.
@@ -163,8 +163,8 @@ func WriteRoutes(beadsDir string, routes []Route) error {
 }
 
 // GetTownBeadsPath returns the path to town-level beads directory.
-// Town beads store hq-* prefixed issues including Mayor, Deacon, and role beads.
-// The townRoot should be the Gas Town root directory (e.g., ~/gt).
+// HQ beads store hq-* prefixed issues including Mayor, Deacon, and role beads.
+// The townRoot should be the Camp Leatherneck root directory (e.g., ~/gt).
 func GetTownBeadsPath(townRoot string) string {
 	return filepath.Join(townRoot, ".beads")
 }
@@ -172,7 +172,7 @@ func GetTownBeadsPath(townRoot string) string {
 // GetPrefixForRig returns the beads prefix for a given rig name.
 // The prefix is returned without the trailing hyphen (e.g., "bd" not "bd-").
 // If the rig is not found in routes, returns "gt" as the default.
-// The townRoot should be the Gas Town root directory (e.g., ~/gt).
+// The townRoot should be the Camp Leatherneck root directory (e.g., ~/gt).
 func GetPrefixForRig(townRoot, rigName string) string {
 	beadsDir := filepath.Join(townRoot, ".beads")
 	routes, err := LoadRoutes(beadsDir)
@@ -263,7 +263,7 @@ func ExtractPrefix(beadID string) string {
 }
 
 // GetRigPathForPrefix returns the rig path for a given bead ID prefix.
-// The townRoot should be the Gas Town root directory (e.g., ~/gt).
+// The townRoot should be the Camp Leatherneck root directory (e.g., ~/gt).
 // Returns the full absolute path to the rig directory, or empty string if not found.
 // For town-level beads (path="."), returns townRoot.
 func GetRigPathForPrefix(townRoot, prefix string) string {
@@ -276,7 +276,7 @@ func GetRigPathForPrefix(townRoot, prefix string) string {
 	for _, r := range routes {
 		if r.Prefix == prefix {
 			if r.Path == "." {
-				return townRoot // Town-level beads
+				return townRoot // HQ-level beads
 			}
 			return filepath.Join(townRoot, r.Path)
 		}
@@ -320,7 +320,7 @@ func GetRigNameForPrefix(townRoot, prefix string) string {
 	for _, r := range routes {
 		if r.Prefix == prefix {
 			if r.Path == "." {
-				return "" // Town-level bead, no specific rig
+				return "" // HQ-level bead, no specific rig
 			}
 			parts := strings.SplitN(r.Path, "/", 2)
 			if len(parts) > 0 {
@@ -351,10 +351,10 @@ func ResolveBeadsDirForID(currentBeadsDir, beadID string) string {
 	for _, r := range routes {
 		if r.Prefix == prefix {
 			if r.Path == "." {
-				return currentBeadsDir // Town-level — already correct
+				return currentBeadsDir // HQ-level — already correct
 			}
 			// Rig-level bead — resolve to rig's beads directory.
-			// Derive town root from currentBeadsDir (parent of .beads).
+			// Derive HQ root from currentBeadsDir (parent of .beads).
 			townRoot := filepath.Dir(currentBeadsDir)
 			rigDir := filepath.Join(townRoot, r.Path)
 			return ResolveBeadsDir(rigDir)

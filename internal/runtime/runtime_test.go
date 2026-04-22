@@ -339,7 +339,7 @@ func TestGetStartupFallbackInfo_HooksNoPrompt(t *testing.T) {
 		t.Error("Hooks+NoPrompt should need startup nudge (no prompt to include it)")
 	}
 	if info.StartupNudgeDelayMs != 0 {
-		t.Error("Hooks+NoPrompt should NOT wait (hooks already ran gt prime)")
+		t.Error("Hooks+NoPrompt should NOT wait (hooks already ran lt prime)")
 	}
 }
 
@@ -360,7 +360,7 @@ func TestGetStartupFallbackInfo_NoHooksWithPrompt(t *testing.T) {
 		t.Error("NoHooks+Prompt should need startup nudge")
 	}
 	if info.StartupNudgeDelayMs <= 0 {
-		t.Error("NoHooks+Prompt should wait for gt prime to complete")
+		t.Error("NoHooks+Prompt should wait for lt prime to complete")
 	}
 }
 
@@ -381,7 +381,7 @@ func TestGetStartupFallbackInfo_NoHooksNoPrompt(t *testing.T) {
 		t.Error("NoHooks+NoPrompt should need startup nudge")
 	}
 	if info.StartupNudgeDelayMs <= 0 {
-		t.Error("NoHooks+NoPrompt should wait for gt prime to complete")
+		t.Error("NoHooks+NoPrompt should wait for lt prime to complete")
 	}
 	if !info.SendBeaconNudge {
 		t.Error("NoHooks+NoPrompt should send beacon via nudge (no prompt)")
@@ -422,7 +422,7 @@ func TestGetStartupPromptFallback_NoHooksNoPrompt(t *testing.T) {
 		t.Error("NoHooks+NoPrompt should nudge the startup prompt")
 	}
 	if fallback.DelayMs <= 0 {
-		t.Error("NoHooks+NoPrompt should wait for gt prime before nudging the startup prompt")
+		t.Error("NoHooks+NoPrompt should wait for lt prime before nudging the startup prompt")
 	}
 }
 

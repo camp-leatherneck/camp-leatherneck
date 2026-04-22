@@ -147,7 +147,7 @@ exit 0
 
 	// Verify gt was actually called (S-10: resolved path worked).
 	if _, err := os.Stat(callLogPath); err != nil {
-		t.Errorf("gt was never called (resolved path may be broken): %v", err)
+		t.Errorf("lt was never called (resolved path may be broken): %v", err)
 	}
 }
 
@@ -529,17 +529,17 @@ exit 0
 	assertLogContains(t, snapshot, "checking convoy", convoyA.ID)
 	assertLogContains(t, snapshot, "checking convoy", convoyB.ID)
 
-	// Verify gt convoy check was called for both (via mock log file).
+	// Verify lt convoy check was called for both (via mock log file).
 	data, err := os.ReadFile(checkLogPath)
 	if err != nil {
-		t.Fatalf("gt convoy check was never called: %v", err)
+		t.Fatalf("lt convoy check was never called: %v", err)
 	}
 	checkLog := string(data)
 	if !strings.Contains(checkLog, convoyA.ID) {
-		t.Errorf("gt convoy check not called for %s; log: %q", convoyA.ID, checkLog)
+		t.Errorf("lt convoy check not called for %s; log: %q", convoyA.ID, checkLog)
 	}
 	if !strings.Contains(checkLog, convoyB.ID) {
-		t.Errorf("gt convoy check not called for %s; log: %q", convoyB.ID, checkLog)
+		t.Errorf("lt convoy check not called for %s; log: %q", convoyB.ID, checkLog)
 	}
 }
 

@@ -48,7 +48,7 @@ func pollerPidFile(townRoot, session string) string {
 	return filepath.Join(pollerPidDir(townRoot), safe+".pid")
 }
 
-// StartPoller launches a background `gt nudge-poller <session>` process.
+// StartPoller launches a background `lt nudge-poller <session>` process.
 // The process is detached (Setpgid) so it survives the caller's exit.
 // Returns the PID of the launched process, or an error.
 func StartPoller(townRoot, session string) (int, error) {
@@ -62,10 +62,10 @@ func StartPoller(townRoot, session string) (int, error) {
 		return pid, nil // already running
 	}
 
-	// Find the gt binary.
+	// Find the lt binary.
 	gtBin, err := os.Executable()
 	if err != nil {
-		return 0, fmt.Errorf("finding gt binary: %w", err)
+		return 0, fmt.Errorf("finding lt binary: %w", err)
 	}
 
 	cmd := buildPollerCommand(gtBin, townRoot, session)
@@ -174,7 +174,7 @@ type Watcher struct {
 	events   chan struct{}
 }
 
-// NewWatcher creates a new watcher for the given town root and session.
+// NewWatcher creates a new watcher for the given HQ root and session.
 // The watcher observes nudge queue writes and signals via the Events() channel.
 func NewWatcher(townRoot, session string) (*Watcher, error) {
 	dir := queueDir(townRoot, session)

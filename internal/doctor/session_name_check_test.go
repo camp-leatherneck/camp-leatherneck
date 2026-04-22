@@ -25,7 +25,7 @@ func TestNewMalformedSessionNameCheck(t *testing.T) {
 		t.Errorf("expected name 'session-name-format', got %q", check.Name())
 	}
 
-	if check.Description() != "Detect sessions with outdated Gas Town naming format" {
+	if check.Description() != "Detect sessions with outdated Camp Leatherneck naming format" {
 		t.Errorf("unexpected description: %q", check.Description())
 	}
 
@@ -88,7 +88,7 @@ func TestMalformedSessionNameCheck_Run_NonGasTownSessions(t *testing.T) {
 	result := check.Run(ctx)
 
 	if result.Status != StatusOK {
-		t.Errorf("expected OK for non-Gas Town sessions, got %v", result.Status)
+		t.Errorf("expected OK for non-Camp Leatherneck sessions, got %v", result.Status)
 	}
 }
 

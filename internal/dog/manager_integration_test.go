@@ -23,7 +23,7 @@ func skipIfNoGit(t *testing.T) {
 }
 
 // testTownWithGitRigs creates a complete test town with git repositories.
-// Sets up bare repos and mayor worktrees to simulate real Gas Town structure.
+// Sets up bare repos and mayor worktrees to simulate real Camp Leatherneck structure.
 func testTownWithGitRigs(t *testing.T) (*Manager, string) {
 	t.Helper()
 	skipIfNoGit(t)

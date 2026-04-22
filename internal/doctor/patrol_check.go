@@ -66,9 +66,9 @@ func (c *PatrolMoleculesExistCheck) Run(ctx *CheckContext) *CheckResult {
 	for _, rigName := range rigs {
 		rigPath := filepath.Join(ctx.TownRoot, rigName)
 		// If rigPath doesn't exist, fall back to TownRoot. This handles the case
-		// where gt doctor runs from a mayor's canonical clone, where TownRoot
+		// where lt doctor runs from a mayor's canonical clone, where TownRoot
 		// resolves to the clone itself (e.g. gastown/mayor/rig) rather than the
-		// actual town root. The rig directory won't be a subdirectory of the clone,
+		// actual HQ root. The rig directory won't be a subdirectory of the clone,
 		// but patrol formulas are town-level and accessible from TownRoot itself.
 		if _, statErr := os.Stat(rigPath); os.IsNotExist(statErr) {
 			rigPath = ctx.TownRoot
@@ -86,7 +86,7 @@ func (c *PatrolMoleculesExistCheck) Run(ctx *CheckContext) *CheckResult {
 			Status:  StatusWarning,
 			Message: fmt.Sprintf("%d rig(s) missing patrol formulas", len(c.missingFormulas)),
 			Details: details,
-			FixHint: "Run 'gt doctor --fix' to provision embedded patrol formulas",
+			FixHint: "Run 'lt doctor --fix' to provision embedded patrol formulas",
 		}
 	}
 
@@ -183,7 +183,7 @@ func (c *PatrolHooksWiredCheck) Run(ctx *CheckContext) *CheckResult {
 			Name:    c.Name(),
 			Status:  StatusWarning,
 			Message: fmt.Sprintf("%s not found", relPath),
-			FixHint: "Run 'gt doctor --fix' to create default config, or 'gt daemon start' to start the daemon",
+			FixHint: "Run 'lt doctor --fix' to create default config, or 'lt daemon start' to start the daemon",
 		}
 	}
 
@@ -216,8 +216,8 @@ func (c *PatrolHooksWiredCheck) Run(ctx *CheckContext) *CheckResult {
 	return &CheckResult{
 		Name:    c.Name(),
 		Status:  StatusWarning,
-		Message: fmt.Sprintf("Configure patrols in %s or run 'gt daemon start'", relPath),
-		FixHint: "Run 'gt doctor --fix' to create default config",
+		Message: fmt.Sprintf("Configure patrols in %s or run 'lt daemon start'", relPath),
+		FixHint: "Run 'lt doctor --fix' to create default config",
 	}
 }
 
@@ -401,7 +401,7 @@ func (c *PatrolPluginsAccessibleCheck) Run(ctx *CheckContext) *CheckResult {
 			Status:  StatusWarning,
 			Message: fmt.Sprintf("%d plugin directory(ies) missing", len(c.missingDirs)),
 			Details: c.missingDirs,
-			FixHint: "Run 'gt doctor --fix' to create missing directories",
+			FixHint: "Run 'lt doctor --fix' to create missing directories",
 		}
 	}
 
@@ -498,7 +498,7 @@ func (c *PatrolPluginDriftCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: fmt.Sprintf("%d plugin(s) out of sync", len(report.Drifted)+len(report.Missing)),
 		Details: details,
-		FixHint: "Run 'gt plugin sync' to update runtime plugins",
+		FixHint: "Run 'lt plugin sync' to update runtime plugins",
 	}
 }
 

@@ -153,7 +153,7 @@ func NewModelWithProblemsView(bd *beads.Beads) *Model {
 	return m
 }
 
-// SetTownRoot sets the town root for convoy fetching.
+// SetTownRoot sets the HQ root for convoy fetching.
 // Safe to call concurrently with the Bubble Tea event loop.
 func (m *Model) SetTownRoot(townRoot string) {
 	m.mu.Lock()
@@ -626,7 +626,7 @@ func (m *Model) attachToSelected() (tea.Model, tea.Cmd) {
 	)
 }
 
-// nudgeTarget returns the proper gt nudge target for an agent.
+// nudgeTarget returns the proper lt nudge target for an agent.
 // Uses rig/name format for polecats, rig/crew/name for crew,
 // and role shortcuts for singletons (mayor, deacon, witness, refinery).
 func nudgeTarget(agent *ProblemAgent) string {
@@ -651,7 +651,7 @@ func (m *Model) nudgeSelected() (tea.Model, tea.Cmd) {
 	if agent == nil {
 		return m, nil
 	}
-	// Run gt nudge with proper target format
+	// Run lt nudge with proper target format
 	target := nudgeTarget(agent)
 	c := exec.Command("gt", "nudge", target, "continue")
 	util.SetDetachedProcessGroup(c)
@@ -667,7 +667,7 @@ func (m *Model) handoffSelected() (tea.Model, tea.Cmd) {
 	if agent == nil {
 		return m, nil
 	}
-	// Run gt nudge with proper target format
+	// Run lt nudge with proper target format
 	target := nudgeTarget(agent)
 	c := exec.Command("gt", "nudge", target, "handoff")
 	util.SetDetachedProcessGroup(c)

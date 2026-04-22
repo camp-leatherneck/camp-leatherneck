@@ -1,4 +1,4 @@
-// ABOUTME: Command to enable Gas Town system-wide.
+// ABOUTME: Command to enable Camp Leatherneck system-wide.
 // ABOUTME: Sets the global state to enabled for all agentic coding tools.
 
 package cmd
@@ -14,15 +14,15 @@ import (
 var enableCmd = &cobra.Command{
 	Use:     "enable",
 	GroupID: GroupConfig,
-	Short:   "Enable Gas Town system-wide",
-	Long: `Enable Gas Town for all agentic coding tools.
+	Short:   "Enable Camp Leatherneck system-wide",
+	Long: `Enable Camp Leatherneck for all agentic coding tools.
 
 When enabled:
   - Shell hooks set GT_TOWN_ROOT and GT_RIG environment variables
-  - Claude Code SessionStart hooks run 'gt prime' for context
+  - Claude Code SessionStart hooks run 'lt prime' for context
   - Git repos are auto-registered as rigs (configurable)
 
-Use 'gt disable' to turn off. Use 'gt status' to check state.
+Use 'lt disable' to turn off. Use 'lt status' to check state.
 
 Environment overrides:
   GASTOWN_DISABLED=1  - Disable for current session only
@@ -36,19 +36,19 @@ func init() {
 
 func runEnable(cmd *cobra.Command, args []string) error {
 	if err := state.Enable(Version); err != nil {
-		return fmt.Errorf("enabling Gas Town: %w", err)
+		return fmt.Errorf("enabling Camp Leatherneck: %w", err)
 	}
 
-	fmt.Printf("%s Gas Town enabled\n", style.Success.Render("✓"))
+	fmt.Printf("%s Camp Leatherneck enabled\n", style.Success.Render("✓"))
 	fmt.Println()
-	fmt.Println("Gas Town will now:")
+	fmt.Println("Camp Leatherneck will now:")
 	fmt.Println("  • Inject context into Claude Code sessions")
 	fmt.Println("  • Set GT_TOWN_ROOT and GT_RIG environment variables")
 	fmt.Println("  • Auto-register git repos as rigs (if configured)")
 	fmt.Println()
 	fmt.Printf("Use %s to disable, %s to check status\n",
-		style.Dim.Render("gt disable"),
-		style.Dim.Render("gt status"))
+		style.Dim.Render("lt disable"),
+		style.Dim.Render("lt status"))
 
 	return nil
 }

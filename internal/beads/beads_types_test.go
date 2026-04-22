@@ -169,7 +169,7 @@ func TestFindTownRoot(t *testing.T) {
 		startDir string
 		expected string
 	}{
-		{"from town root", tmpDir, tmpDir},
+		{"from HQ root", tmpDir, tmpDir},
 		{"from mayor dir", mayorDir, tmpDir},
 		{"from deep nested dir", deepDir, tmpDir},
 		{"from non-town dir", t.TempDir(), ""},
@@ -193,7 +193,7 @@ func TestFindTownRoot(t *testing.T) {
 		name     string
 		startDir string
 		expected string
-	}{"prefers outermost town root", innerDeepDir, tmpDir})
+	}{"prefers outermost HQ root", innerDeepDir, tmpDir})
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -840,7 +840,7 @@ func TestBeads_getTownRoot(t *testing.T) {
 
 	b := New(rigDir)
 
-	// First call should find town root
+	// First call should find HQ root
 	root1 := b.getTownRoot()
 	if root1 != tmpDir {
 		t.Errorf("first getTownRoot() = %q, want %q", root1, tmpDir)

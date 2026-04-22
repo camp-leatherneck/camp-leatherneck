@@ -154,7 +154,7 @@ func cleanBeadsRuntimeFiles(beadsDir string) error {
 // Both SetupRedirect and doctor checks should use this to stay in sync.
 //
 // Parameters:
-//   - townRoot: the town root directory (e.g., ~/gt)
+//   - townRoot: the HQ root directory (e.g., ~/gt)
 //   - worktreePath: the worktree directory (e.g., <rig>/crew/<name> or <rig>/refinery/rig)
 //
 // Returns the redirect target path (e.g., "../../.beads" or "../../mayor/rig/.beads"),
@@ -168,7 +168,7 @@ func ComputeRedirectTarget(townRoot, worktreePath string) (string, error) {
 	}
 	parts := strings.Split(filepath.ToSlash(relPath), "/")
 	if len(parts) < 2 {
-		return "", fmt.Errorf("invalid worktree path: must be at least 2 levels deep from town root")
+		return "", fmt.Errorf("invalid worktree path: must be at least 2 levels deep from HQ root")
 	}
 
 	// Safety check: prevent creating redirect in canonical beads location (mayor/rig).
@@ -289,7 +289,7 @@ func ComputeRedirectTarget(townRoot, worktreePath string) (string, error) {
 // This is used by crew, polecats, and refinery worktrees to share the rig's beads database.
 //
 // Parameters:
-//   - townRoot: the town root directory (e.g., ~/gt)
+//   - townRoot: the HQ root directory (e.g., ~/gt)
 //   - worktreePath: the worktree directory (e.g., <rig>/crew/<name> or <rig>/refinery/rig)
 //
 // The function:

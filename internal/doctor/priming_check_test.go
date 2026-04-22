@@ -209,8 +209,8 @@ func TestPrimingCheck_AllowsClaudeMdInMayorRig(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create town root CLAUDE.md identity anchor
-	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Gas Town\nRun gt prime\n"), 0644); err != nil {
+	// Create HQ root CLAUDE.md identity anchor
+	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Camp Leatherneck\nRun lt prime\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -254,8 +254,8 @@ func TestPrimingCheck_AllowsClaudeMdInRefineryRig(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create town root CLAUDE.md identity anchor
-	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Gas Town\nRun gt prime\n"), 0644); err != nil {
+	// Create HQ root CLAUDE.md identity anchor
+	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Camp Leatherneck\nRun lt prime\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -300,8 +300,8 @@ func TestPrimingCheck_AllowsClaudeMdInCrewWorktree(t *testing.T) {
 	rigName := "testrig"
 	crewName := "alice"
 
-	// Create town root CLAUDE.md identity anchor
-	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Gas Town\nRun gt prime\n"), 0644); err != nil {
+	// Create HQ root CLAUDE.md identity anchor
+	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Camp Leatherneck\nRun lt prime\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -350,8 +350,8 @@ func TestPrimingCheck_AllowsClaudeMdInPolecatWorktree(t *testing.T) {
 	rigName := "testrig"
 	polecatName := "testpc"
 
-	// Create town root CLAUDE.md identity anchor
-	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Gas Town\nRun gt prime\n"), 0644); err != nil {
+	// Create HQ root CLAUDE.md identity anchor
+	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Camp Leatherneck\nRun lt prime\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -400,8 +400,8 @@ func TestPrimingCheck_FixPreservesCustomerClaudeMd(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create town root CLAUDE.md identity anchor
-	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Gas Town\nRun gt prime\n"), 0644); err != nil {
+	// Create HQ root CLAUDE.md identity anchor
+	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Camp Leatherneck\nRun lt prime\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -441,13 +441,13 @@ func TestPrimingCheck_FixPreservesCustomerClaudeMd(t *testing.T) {
 
 // TestPrimingCheck_FlagsStaleAgentLevelFiles verifies that CLAUDE.md/AGENTS.md
 // at agent level (e.g., refinery/CLAUDE.md) ARE flagged as stale files.
-// These are no longer created — only ~/gt/CLAUDE.md (town root) exists.
+// These are no longer created — only ~/gt/CLAUDE.md (HQ root) exists.
 func TestPrimingCheck_FlagsStaleAgentLevelFiles(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create town root CLAUDE.md identity anchor (required by upstream check)
-	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Gas Town\nRun gt prime\n"), 0644); err != nil {
+	// Create HQ root CLAUDE.md identity anchor (required by upstream check)
+	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Camp Leatherneck\nRun lt prime\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -503,13 +503,13 @@ func TestPrimingCheck_FlagsStaleAgentLevelFiles(t *testing.T) {
 // TestPrimingCheck_NoIssuesWhenCorrectlyConfigured verifies that a correctly
 // configured rig reports no priming issues.
 // A correctly configured rig has NO per-directory CLAUDE.md/AGENTS.md files.
-// Only ~/gt/CLAUDE.md (town root identity anchor) exists on disk.
+// Only ~/gt/CLAUDE.md (HQ root identity anchor) exists on disk.
 func TestPrimingCheck_NoIssuesWhenCorrectlyConfigured(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create town root CLAUDE.md identity anchor (required by upstream check)
-	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Gas Town\nRun gt prime\n"), 0644); err != nil {
+	// Create HQ root CLAUDE.md identity anchor (required by upstream check)
+	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Camp Leatherneck\nRun lt prime\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -554,7 +554,7 @@ func TestPrimingCheck_NoIssuesWhenCorrectlyConfigured(t *testing.T) {
 	// Filter out gt_not_in_path which depends on system PATH
 	var relevantDetails []string
 	for _, d := range result.Details {
-		if !strings.Contains(d, "gt binary not found") {
+		if !strings.Contains(d, "lt binary not found") {
 			relevantDetails = append(relevantDetails, d)
 		}
 	}
@@ -608,8 +608,8 @@ func TestPrimingCheck_DetectsStaleIntermediateFiles(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create town root CLAUDE.md identity anchor
-	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Gas Town\nRun gt prime\n"), 0644); err != nil {
+	// Create HQ root CLAUDE.md identity anchor
+	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Camp Leatherneck\nRun lt prime\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -673,8 +673,8 @@ func TestPrimingCheck_FixRemovesStaleIntermediateFiles(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create town root CLAUDE.md identity anchor
-	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Gas Town\nRun gt prime\n"), 0644); err != nil {
+	// Create HQ root CLAUDE.md identity anchor
+	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Camp Leatherneck\nRun lt prime\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -732,21 +732,21 @@ func TestPrimingCheck_FixRemovesStaleIntermediateFiles(t *testing.T) {
 		}
 	}
 
-	// Verify town root CLAUDE.md was NOT removed (it's the identity anchor)
+	// Verify HQ root CLAUDE.md was NOT removed (it's the identity anchor)
 	townRootClaude := filepath.Join(tmpDir, "CLAUDE.md")
 	if _, err := os.Stat(townRootClaude); os.IsNotExist(err) {
-		t.Errorf("town root CLAUDE.md should NOT have been removed")
+		t.Errorf("HQ root CLAUDE.md should NOT have been removed")
 	}
 }
 
 // TestPrimingCheck_DetectsNoPrimeHook verifies that settings.json files
-// missing 'gt prime' in SessionStart are detected.
+// missing 'lt prime' in SessionStart are detected.
 func TestPrimingCheck_DetectsNoPrimeHook(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create town root CLAUDE.md identity anchor
-	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Gas Town\nRun gt prime\n"), 0644); err != nil {
+	// Create HQ root CLAUDE.md identity anchor
+	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Camp Leatherneck\nRun lt prime\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -759,14 +759,14 @@ func TestPrimingCheck_DetectsNoPrimeHook(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Create witness directory with settings.json MISSING gt prime
+	// Create witness directory with settings.json MISSING lt prime
 	witnessDir := filepath.Join(tmpDir, rigName, "witness")
 	witnessClaudeDir := filepath.Join(witnessDir, ".claude")
 	if err := os.MkdirAll(witnessClaudeDir, 0755); err != nil {
 		t.Fatal(err)
 	}
 
-	// Settings with PATH but no gt prime hook
+	// Settings with PATH but no lt prime hook
 	staleSettings := map[string]any{
 		"hooks": map[string]any{
 			"SessionStart": []any{
@@ -792,10 +792,10 @@ func TestPrimingCheck_DetectsNoPrimeHook(t *testing.T) {
 	ctx := &CheckContext{TownRoot: tmpDir}
 	result := check.Run(ctx)
 
-	// Should detect the missing gt prime hook
+	// Should detect the missing lt prime hook
 	foundIssue := false
 	for _, detail := range result.Details {
-		if strings.Contains(detail, "witness") && strings.Contains(detail, "gt prime") {
+		if strings.Contains(detail, "witness") && strings.Contains(detail, "lt prime") {
 			foundIssue = true
 			break
 		}
@@ -822,13 +822,13 @@ func TestPrimingCheck_DetectsNoPrimeHook(t *testing.T) {
 }
 
 // TestPrimingCheck_FixNoPrimeHook verifies that doctor --fix recreates
-// settings.json from template when gt prime hook is missing.
+// settings.json from template when lt prime hook is missing.
 func TestPrimingCheck_FixNoPrimeHook(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create town root CLAUDE.md identity anchor
-	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Gas Town\nRun gt prime\n"), 0644); err != nil {
+	// Create HQ root CLAUDE.md identity anchor
+	if err := os.WriteFile(filepath.Join(tmpDir, "CLAUDE.md"), []byte("# Camp Leatherneck\nRun lt prime\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -841,7 +841,7 @@ func TestPrimingCheck_FixNoPrimeHook(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Create witness directory with settings.json MISSING gt prime
+	// Create witness directory with settings.json MISSING lt prime
 	witnessDir := filepath.Join(tmpDir, rigName, "witness")
 	witnessClaudeDir := filepath.Join(witnessDir, ".claude")
 	if err := os.MkdirAll(witnessClaudeDir, 0755); err != nil {
@@ -878,7 +878,7 @@ func TestPrimingCheck_FixNoPrimeHook(t *testing.T) {
 		t.Fatalf("Fix() failed: %v", err)
 	}
 
-	// Verify settings.json was recreated and now has gt prime
+	// Verify settings.json was recreated and now has lt prime
 	newData, err := os.ReadFile(settingsPath)
 	if err != nil {
 		t.Fatalf("settings.json should exist after fix: %v", err)

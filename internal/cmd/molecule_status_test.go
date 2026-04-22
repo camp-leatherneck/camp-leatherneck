@@ -60,7 +60,7 @@ func TestOutputMoleculeStatus_FormulaWispShowsWorkflowContext(t *testing.T) {
 			DoneSteps:  0,
 			ReadySteps: []string{"tool-wisp-step-1"},
 		},
-		NextAction: "Show the workflow steps: gt prime or bd mol current tool-wisp-demo",
+		NextAction: "Show the workflow steps: lt prime or bd mol current tool-wisp-demo",
 	}
 
 	oldStdout := os.Stdout
@@ -82,9 +82,9 @@ func TestOutputMoleculeStatus_FormulaWispShowsWorkflowContext(t *testing.T) {
 		t.Fatalf("formula wisp should not be rendered as naked work, got:\n%s", output)
 	}
 	if strings.Contains(output, "Attach a molecule to start work") {
-		t.Fatalf("formula wisp should not suggest gt mol attach, got:\n%s", output)
+		t.Fatalf("formula wisp should not suggest lt mol attach, got:\n%s", output)
 	}
-	if !strings.Contains(output, "Show the workflow steps: gt prime or bd mol current tool-wisp-demo") {
+	if !strings.Contains(output, "Show the workflow steps: lt prime or bd mol current tool-wisp-demo") {
 		t.Fatalf("expected workflow next action, got:\n%s", output)
 	}
 }

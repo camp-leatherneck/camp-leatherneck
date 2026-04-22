@@ -421,8 +421,8 @@ func TestSetupHandler_Install_FlagPathInjection(t *testing.T) {
 	handler := NewSetupAPIHandler("test-token")
 
 	// Validates the validation layer: "--help" passes expandHomePath (it's a
-	// relative path) and reaches gt install. The -- sentinel in the args
-	// ensures gt install sees it as a path, not a flag — but that's verified
+	// relative path) and reaches lt install. The -- sentinel in the args
+	// ensures lt install sees it as a path, not a flag — but that's verified
 	// by the args construction, not by this HTTP-level test.
 	body := `{"path": "--help"}`
 	req := httptest.NewRequest(http.MethodPost, "/api/install", bytes.NewBufferString(body))
@@ -432,7 +432,7 @@ func TestSetupHandler_Install_FlagPathInjection(t *testing.T) {
 	handler.ServeHTTP(w, req)
 
 	// Should get past validation to gt execution (not 400).
-	// The -- sentinel ensures gt install sees "--help" as a path, not a flag.
+	// The -- sentinel ensures lt install sees "--help" as a path, not a flag.
 	if w.Code == http.StatusBadRequest {
 		t.Errorf("POST /api/install with path=--help rejected as bad request (-- sentinel should protect)")
 	}

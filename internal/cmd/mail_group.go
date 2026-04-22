@@ -31,12 +31,12 @@ Members can be:
   - Other group names (nested groups)
 
 Examples:
-  gt mail group list                              # List all groups
-  gt mail group show ops-team                     # Show group members
-  gt mail group create ops-team gastown/witness gastown/crew/max
-  gt mail group add ops-team deacon/
-  gt mail group remove ops-team gastown/witness
-  gt mail group delete ops-team`,
+  lt mail group list                              # List all groups
+  lt mail group show ops-team                     # Show group members
+  lt mail group create ops-team gastown/witness gastown/crew/max
+  lt mail group add ops-team deacon/
+  lt mail group remove ops-team gastown/witness
+  lt mail group delete ops-team`,
 	RunE: requireSubcommand,
 }
 
@@ -64,8 +64,8 @@ var groupCreateCmd = &cobra.Command{
 Members can be specified as positional arguments or with --member flags.
 
 Examples:
-  gt mail group create ops-team gastown/witness gastown/crew/max
-  gt mail group create ops-team --member gastown/witness --member gastown/crew/max`,
+  lt mail group create ops-team gastown/witness gastown/crew/max
+  lt mail group create ops-team --member gastown/witness --member gastown/crew/max`,
 	Args: cobra.MinimumNArgs(1),
 	RunE: runGroupCreate,
 }
@@ -118,7 +118,7 @@ func init() {
 func runGroupList(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	b := beads.New(townRoot)
@@ -156,7 +156,7 @@ func runGroupShow(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	b := beads.New(townRoot)
@@ -211,7 +211,7 @@ func runGroupCreate(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Detect creator
@@ -253,7 +253,7 @@ func runGroupAdd(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	b := beads.New(townRoot)
@@ -271,7 +271,7 @@ func runGroupRemove(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	b := beads.New(townRoot)
@@ -288,7 +288,7 @@ func runGroupDelete(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	b := beads.New(townRoot)

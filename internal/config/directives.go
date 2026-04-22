@@ -8,7 +8,7 @@ import (
 
 // LoadRoleDirective loads role directive content from the directive file layout.
 // Resolution order:
-//  1. Town-level: <townRoot>/directives/<role>.md
+//  1. HQ-level: <townRoot>/directives/<role>.md
 //  2. Rig-level:  <townRoot>/<rigName>/directives/<role>.md
 //
 // If both exist, they are concatenated (town first, then rig) separated by a
@@ -19,7 +19,7 @@ import (
 func LoadRoleDirective(role, townRoot, rigName string) string {
 	var parts []string
 
-	// Town-level directive
+	// HQ-level directive
 	townPath := filepath.Join(townRoot, "directives", role+".md")
 	if content, err := os.ReadFile(townPath); err == nil { //nolint:gosec // G304: path is from trusted config
 		if s := strings.TrimSpace(string(content)); s != "" {

@@ -62,7 +62,7 @@ func resolveSelfTarget() (agentID string, pane string, hookRoot string, err erro
 	}
 
 	// Build agent identity from role
-	// Town-level agents use trailing slash to match addressToIdentity() normalization
+	// HQ-level agents use trailing slash to match addressToIdentity() normalization
 	switch roleInfo.Role {
 	case RoleMayor:
 		agentID = "mayor/"
@@ -187,9 +187,9 @@ func resolveTarget(target string, opts ResolveTargetOptions) (*ResolvedTarget, e
 		}
 		if townRoot != "" {
 			if blocked, reason := IsRigParkedOrDocked(townRoot, rigName); blocked {
-				undoCmd := "gt rig unpark"
+				undoCmd := "lt rig unpark"
 				if reason == "docked" {
-					undoCmd = "gt rig undock"
+					undoCmd = "lt rig undock"
 				}
 				return nil, fmt.Errorf("cannot sling to %s rig %q\n%s %s", reason, rigName, undoCmd, rigName)
 			}

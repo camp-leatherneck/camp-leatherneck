@@ -16,10 +16,10 @@ type AttachmentFields struct {
 	AttachedMolecule string // Root issue ID of the attached molecule
 	AttachedFormula  string // Formula name (e.g., "mol-polecat-work") for inline step display
 	AttachedAt       string // ISO 8601 timestamp when attached
-	AttachedArgs     string // Natural language args passed via gt sling --args (no-tmux mode)
-	AttachedVars     []string // Formula variables passed via gt sling --var
+	AttachedArgs     string // Natural language args passed via lt sling --args (no-tmux mode)
+	AttachedVars     []string // Formula variables passed via lt sling --var
 	DispatchedBy     string // Agent ID that dispatched this work (for completion notification)
-	NoMerge          bool   // If true, gt done skips merge queue (for upstream PRs/human review)
+	NoMerge          bool   // If true, lt done skips merge queue (for upstream PRs/human review)
 	ReviewOnly       bool   // If true, assignee must evaluate and report back — no merge/commit/push
 	Mode             string // Execution mode: "" (normal) or "ralph" (Ralph Wiggum loop)
 	ConvoyID         string // Convoy bead ID tracking this issue (e.g., "hq-cv-abc")
@@ -260,8 +260,8 @@ type ConvoyFields struct {
 	Molecule      string // Associated molecule/swarm ID
 	Merge         string // Merge strategy
 	BaseBranch    string // Target branch for polecats (e.g., "feat/extraction-review")
-	Watchers      string // Comma-separated mail notification addresses (added via gt convoy watch)
-	NudgeWatchers string // Comma-separated nudge notification addresses (added via gt convoy watch --nudge)
+	Watchers      string // Comma-separated mail notification addresses (added via lt convoy watch)
+	NudgeWatchers string // Comma-separated nudge notification addresses (added via lt convoy watch --nudge)
 }
 
 // ParseConvoyFields extracts convoy fields from an issue's description.
@@ -871,7 +871,7 @@ type RoleConfig struct {
 	// Examples: "hq-mayor", "hq-deacon", "gt-{rig}-{role}", "gt-{rig}-{name}"
 	SessionPattern string
 
-	// WorkDirPattern defines the working directory relative to town root.
+	// WorkDirPattern defines the working directory relative to HQ root.
 	// Supports placeholders: {town}, {rig}, {name}, {role}
 	// Examples: "{town}", "{town}/{rig}", "{town}/{rig}/polecats/{name}"
 	WorkDirPattern string

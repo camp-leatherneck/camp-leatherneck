@@ -41,7 +41,7 @@ func (c *CommandsCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: fmt.Sprintf("Town-level slash commands provisioned (%s)", strings.Join(names, ", ")),
+			Message: fmt.Sprintf("HQ-level slash commands provisioned (%s)", strings.Join(names, ", ")),
 		}
 	}
 
@@ -54,7 +54,7 @@ func (c *CommandsCheck) Run(ctx *CheckContext) *CheckResult {
 			fmt.Sprintf("Expected at: %s/.claude/commands/", ctx.TownRoot),
 			"All agents inherit town-level commands via directory traversal",
 		},
-		FixHint: "Run 'gt doctor --fix' to provision missing commands",
+		FixHint: "Run 'lt doctor --fix' to provision missing commands",
 	}
 }
 

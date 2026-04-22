@@ -16,16 +16,16 @@ var staleQuiet bool
 var staleCmd = &cobra.Command{
 	Use:     "stale",
 	GroupID: GroupDiag,
-	Short:   "Check if the gt binary is stale",
-	Long: `Check if the gt binary was built from an older commit than the current repo HEAD.
+	Short:   "Check if the lt binary is stale",
+	Long: `Check if the lt binary was built from an older commit than the current repo HEAD.
 
 This command compares the commit hash embedded in the binary at build time
 with the current HEAD of the gastown repository.
 
 Examples:
-  gt stale              # Human-readable output
-  gt stale --json       # Machine-readable JSON output
-  gt stale --quiet      # Exit code only (0=stale, 1=fresh)
+  lt stale              # Human-readable output
+  lt stale --json       # Machine-readable JSON output
+  lt stale --quiet      # Exit code only (0=stale, 1=fresh)
 
 Exit codes:
   0 - Binary is stale (needs rebuild)

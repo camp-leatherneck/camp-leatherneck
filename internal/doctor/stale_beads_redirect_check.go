@@ -33,7 +33,7 @@ type StaleBeadsRedirectCheck struct {
 // redirectIssue represents a missing or incorrect redirect.
 type redirectIssue struct {
 	worktreePath   string // Full path to the worktree (e.g., <rig>/crew/max)
-	townRoot       string // Town root for SetupRedirect
+	townRoot       string // HQ root for SetupRedirect
 	currentTarget  string // Current redirect target (empty if missing)
 	expectedTarget string // Expected redirect target
 }
@@ -95,7 +95,7 @@ func (c *StaleBeadsRedirectCheck) Run(ctx *CheckContext) *CheckResult {
 		locations := getBeadsDirsToCheck(rigDir)
 		for _, beadsDir := range locations {
 			if hasRedirectWithStaleFiles(beadsDir) {
-				// Make path relative to town root for readability
+				// Make path relative to HQ root for readability
 				relPath, _ := filepath.Rel(ctx.TownRoot, beadsDir)
 				if relPath == "" {
 					relPath = beadsDir
@@ -146,7 +146,7 @@ func (c *StaleBeadsRedirectCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: fmt.Sprintf("%d beads redirect issue(s) found", totalIssues),
 		Details: details,
-		FixHint: "Run 'gt doctor --fix' to repair redirects and remove stale files",
+		FixHint: "Run 'lt doctor --fix' to repair redirects and remove stale files",
 	}
 }
 

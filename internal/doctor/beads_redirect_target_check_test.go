@@ -529,7 +529,7 @@ func TestExtractRigName(t *testing.T) {
 			want:         "myrig",
 		},
 		{
-			name:         "worktree equals town root",
+			name:         "worktree equals HQ root",
 			townRoot:     "/town",
 			worktreePath: "/town",
 			want:         ".",

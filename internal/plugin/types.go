@@ -1,10 +1,10 @@
-// Package plugin provides plugin discovery and management for Gas Town.
+// Package plugin provides plugin discovery and management for Camp Leatherneck.
 //
 // Plugins are periodic automation tasks that run during Deacon patrol cycles.
 // Each plugin is defined by a plugin.md file with TOML frontmatter.
 //
 // Plugin locations:
-//   - Town-level: ~/gt/plugins/ (universal, apply everywhere)
+//   - HQ-level: ~/gt/plugins/ (universal, apply everywhere)
 //   - Rig-level: <rig>/plugins/ (project-specific)
 package plugin
 
@@ -209,7 +209,7 @@ func (p *Plugin) Summary() PluginSummary {
 
 // FormatMailBody formats the plugin as instructions for a dog worker.
 // This is the canonical formatting used by both the daemon dispatcher
-// and the gt dog dispatch command.
+// and the lt dog dispatch command.
 func (p *Plugin) FormatMailBody() string {
 	if p.HasRunScript {
 		return fmt.Sprintf(
@@ -221,7 +221,7 @@ func (p *Plugin) FormatMailBody() string {
 				"Do NOT write your own implementation. Just run the script and report the output.\n\n"+
 				"After completion:\n"+
 				"1. The script should record a plugin-run receipt. If it did not, create one with `bd create --ephemeral` using labels `type:plugin-run`, `plugin:%s`, and `result:<outcome>`.\n"+
-				"2. Run `gt dog done` — this clears your work and auto-terminates the session. Run this even if recording fails.\n",
+				"2. Run `lt dog done` — this clears your work and auto-terminates the session. Run this even if recording fails.\n",
 			p.Name, p.Description, p.Path, p.Name)
 	}
 
@@ -242,7 +242,7 @@ func (p *Plugin) FormatMailBody() string {
 	sb.WriteString("\n\n---\n\n")
 	sb.WriteString("After completion:\n")
 	sb.WriteString("1. Follow the plugin's recording instructions above. If none are provided, create a receipt with `bd create --ephemeral` using labels `type:plugin-run`, `plugin:" + p.Name + "`, and `result:<outcome>`.\n")
-	sb.WriteString("2. Run `gt dog done` — this clears your work and auto-terminates the session. Run this even if recording fails.\n")
+	sb.WriteString("2. Run `lt dog done` — this clears your work and auto-terminates the session. Run this even if recording fails.\n")
 
 	return sb.String()
 }

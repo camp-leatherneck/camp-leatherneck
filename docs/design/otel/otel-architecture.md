@@ -2,7 +2,7 @@
 
 ## Overview
 
-Gas Town uses OpenTelemetry (OTel) for structured observability of all agent operations. Telemetry is emitted via standard OTLP HTTP to any compatible backend (metrics, logs).
+Camp Leatherneck uses OpenTelemetry (OTel) for structured observability of all agent operations. Telemetry is emitted via standard OTLP HTTP to any compatible backend (metrics, logs).
 
 **Backend-agnostic design**: The system emits standard OpenTelemetry Protocol (OTLP) — any OTLP v1.x+ compatible backend can consume it. You are **not obligated** to use VictoriaMetrics/VictoriaLogs; these are simply development defaults.
 
@@ -259,7 +259,7 @@ defer provider.Shutdown(ctx)
 - Metrics: `http://localhost:8428/opentelemetry/api/v1/push`
 - Logs: `http://localhost:9428/insert/opentelemetry/v1/logs`
 
-> **Note**: These defaults target VictoriaMetrics/VictoriaLogs for local development convenience. Gas Town uses standard OTLP — you can override endpoints to use any OTLP v1.x+ compatible backend (Prometheus, Grafana Mimir, Datadog, New Relic, Grafana Cloud, Loki, OpenTelemetry Collector, etc.).
+> **Note**: These defaults target VictoriaMetrics/VictoriaLogs for local development convenience. Camp Leatherneck uses standard OTLP — you can override endpoints to use any OTLP v1.x+ compatible backend (Prometheus, Grafana Mimir, Datadog, New Relic, Grafana Cloud, Loki, OpenTelemetry Collector, etc.).
 
 **OTLP Compatibility**:
 - Uses standard OpenTelemetry Protocol (OTLP) over HTTP

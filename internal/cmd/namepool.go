@@ -23,18 +23,18 @@ var namepoolCmd = &cobra.Command{
 	Use:     "namepool",
 	GroupID: GroupWorkspace,
 	Short:   "Manage polecat name pools",
-	Long: `Manage themed name pools for polecats in Gas Town.
+	Long: `Manage themed name pools for polecats in Camp Leatherneck.
 
 By default, polecats get themed names from the Mad Max universe
 (furiosa, nux, slit, etc.). You can change the theme or add custom names.
 
 Examples:
-  gt namepool              # Show current pool status
-  gt namepool --list       # List available themes
-  gt namepool themes       # Show theme names
-  gt namepool set minerals # Set theme to 'minerals'
-  gt namepool add ember    # Add custom name to pool
-  gt namepool reset        # Reset pool state`,
+  lt namepool              # Show current pool status
+  lt namepool --list       # List available themes
+  lt namepool themes       # Show theme names
+  lt namepool set minerals # Set theme to 'minerals'
+  lt namepool add ember    # Add custom name to pool
+  lt namepool reset        # Reset pool state`,
 	RunE: runNamepool,
 }
 
@@ -54,7 +54,7 @@ var namepoolSetCmd = &cobra.Command{
 	Long: `Set the namepool theme used for naming new polecats in this rig.
 
 Changes the theme and saves it to the rig settings. Existing polecat
-names are not affected. Use 'gt namepool themes' to see available themes.`,
+names are not affected. Use 'lt namepool themes' to see available themes.`,
 	Args: cobra.ExactArgs(1),
 	RunE: runNamepoolSet,
 }
@@ -86,12 +86,12 @@ var namepoolCreateCmd = &cobra.Command{
 	Long: `Create a custom namepool theme stored as a text file.
 
 The theme is saved to <town>/settings/themes/<name>.txt and can be
-used with 'gt namepool set <name>'. Names can be provided as arguments
+used with 'lt namepool set <name>'. Names can be provided as arguments
 or read from a file with --from-file.
 
 Examples:
-  gt namepool create tolkien aragorn legolas gimli gandalf frodo samwise
-  gt namepool create tolkien --from-file ~/tolkien-names.txt`,
+  lt namepool create tolkien aragorn legolas gimli gandalf frodo samwise
+  lt namepool create tolkien --from-file ~/tolkien-names.txt`,
 	Args: cobra.MinimumNArgs(1),
 	RunE: runNamepoolCreate,
 }
@@ -183,7 +183,7 @@ func runNamepool(cmd *cobra.Command, args []string) error {
 }
 
 func runNamepoolThemes(cmd *cobra.Command, args []string) error {
-	// Find town root for custom theme discovery
+	// Find HQ root for custom theme discovery
 	townRoot, _ := workspace.FindFromCwd()
 
 	if len(args) == 0 {
@@ -224,7 +224,7 @@ func runNamepoolThemes(cmd *cobra.Command, args []string) error {
 		names, err = polecat.GetThemeNames(theme)
 	}
 	if err != nil {
-		return fmt.Errorf("unknown theme: %s (use 'gt namepool themes' to list available themes)", theme)
+		return fmt.Errorf("unknown theme: %s (use 'lt namepool themes' to list available themes)", theme)
 	}
 
 	label := ""
@@ -252,12 +252,12 @@ func runNamepoolSet(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("not in a rig directory")
 	}
 
-	// Find town root for custom theme resolution
+	// Find HQ root for custom theme resolution
 	townRoot, _ := workspace.FindFromCwd()
 
 	// Validate theme: check built-in first, then custom
 	if _, err := polecat.ResolveThemeNames(townRoot, theme); err != nil {
-		return fmt.Errorf("unknown theme: %s (use 'gt namepool themes' to list available themes)", theme)
+		return fmt.Errorf("unknown theme: %s (use 'lt namepool themes' to list available themes)", theme)
 	}
 
 	// Update pool
@@ -401,7 +401,7 @@ func detectCurrentRigWithPath() (string, string) {
 		return "", ""
 	}
 
-	// Get path relative to town root
+	// Get path relative to HQ root
 	rel, err := filepath.Rel(townRoot, cwd)
 	if err != nil {
 		return "", ""
@@ -458,7 +458,7 @@ func runNamepoolCreate(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("Created custom theme '%s' with %d names\n", themeName, len(names))
-	fmt.Printf("Use 'gt namepool set %s' to activate it for a rig.\n", themeName)
+	fmt.Printf("Use 'lt namepool set %s' to activate it for a rig.\n", themeName)
 	return nil
 }
 

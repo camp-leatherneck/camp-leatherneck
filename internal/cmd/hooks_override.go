@@ -24,10 +24,10 @@ Hooks with the same matcher replace the base hook entirely.
 Override files are stored in ~/.gt/hooks-overrides/<target>.json.
 
 Examples:
-  gt hooks override crew              # Edit crew role overrides
-  gt hooks override gastown/crew      # Edit gastown rig crew overrides
-  gt hooks override mayor             # Edit mayor overrides
-  gt hooks override crew --show       # Print current override config`,
+  lt hooks override crew              # Edit crew role overrides
+  lt hooks override gastown/crew      # Edit gastown rig crew overrides
+  lt hooks override mayor             # Edit mayor overrides
+  lt hooks override crew --show       # Print current override config`,
 	Args: cobra.ExactArgs(1),
 	RunE: runHooksOverride,
 }
@@ -88,6 +88,6 @@ func runHooksOverride(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("warning: override config has errors after editing: %w", err)
 	}
 
-	fmt.Printf("Override config for %s updated. Run 'gt hooks sync' to propagate changes.\n", target)
+	fmt.Printf("Override config for %s updated. Run 'lt hooks sync' to propagate changes.\n", target)
 	return nil
 }

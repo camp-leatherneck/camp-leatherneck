@@ -32,7 +32,7 @@ const (
 	convoyGracePeriod = 5 * time.Minute
 )
 
-// strandedConvoyInfo matches the JSON output of `gt convoy stranded --json`.
+// strandedConvoyInfo matches the JSON output of `lt convoy stranded --json`.
 type strandedConvoyInfo struct {
 	ID           string    `json:"id"`
 	Title        string    `json:"title"`
@@ -121,7 +121,7 @@ type ConvoyManager struct {
 // unless openStores is provided for lazy initialization.
 // openStores is called lazily if stores is nil (e.g., Dolt not ready at startup).
 // isRigParked reports whether a rig should be skipped during polling (nil = never parked).
-// gtPath is the resolved path to the gt binary for subprocess calls.
+// gtPath is the resolved path to the lt binary for subprocess calls.
 func NewConvoyManager(townRoot string, logger func(format string, args ...interface{}), gtPath string, scanInterval time.Duration, stores map[string]beadsdk.Storage, openStores func() map[string]beadsdk.Storage, isRigParked func(string) bool) *ConvoyManager {
 	if scanInterval <= 0 {
 		scanInterval = defaultStrandedScanInterval
@@ -505,7 +505,7 @@ func (m *ConvoyManager) scan() {
 	}
 }
 
-// findStranded runs `gt convoy stranded --json` and parses the output.
+// findStranded runs `lt convoy stranded --json` and parses the output.
 func (m *ConvoyManager) findStranded() ([]strandedConvoyInfo, error) {
 	cmd := exec.CommandContext(m.ctx, m.gtPath, "convoy", "stranded", "--json")
 	cmd.Dir = m.townRoot
@@ -578,7 +578,7 @@ func (m *ConvoyManager) feedFirstReady(c strandedConvoyInfo) {
 	m.logger("Convoy %s: no dispatchable issues (all %d skipped)", c.ID, len(c.ReadyIssues))
 }
 
-// checkConvoyCompletion runs gt convoy check to auto-close a convoy whose
+// checkConvoyCompletion runs lt convoy check to auto-close a convoy whose
 // tracked issues may all be closed. This handles the case where the event poll
 // missed the close events (e.g., daemon restart, Dolt latency).
 func (m *ConvoyManager) checkConvoyCompletion(convoyID string) {
@@ -593,7 +593,7 @@ func (m *ConvoyManager) checkConvoyCompletion(convoyID string) {
 	}
 }
 
-// closeEmptyConvoy runs gt convoy check to auto-close an empty convoy.
+// closeEmptyConvoy runs lt convoy check to auto-close an empty convoy.
 func (m *ConvoyManager) closeEmptyConvoy(convoyID string) {
 	m.logger("Convoy %s: auto-closing (empty)", convoyID)
 

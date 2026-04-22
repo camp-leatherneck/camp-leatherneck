@@ -92,9 +92,9 @@ func StartupFallbackCommands(role string, rc *config.RuntimeConfig) []string {
 	}
 
 	role = strings.ToLower(role)
-	command := "gt prime"
+	command := "lt prime"
 	if isAutonomousRole(role) {
-		command += " && gt mail check --inject"
+		command += " && lt mail check --inject"
 	}
 	// NOTE: session-started nudge to deacon removed — it interrupted
 	// the deacon's await-signal backoff (exponential sleep). The deacon
@@ -122,7 +122,7 @@ func isAutonomousRole(role string) bool {
 }
 
 // DefaultPrimeWaitMs is the default wait time in milliseconds for non-hook agents
-// to run gt prime before sending work instructions.
+// to run lt prime before sending work instructions.
 const DefaultPrimeWaitMs = 2000
 
 // StartupFallbackInfo describes what fallback actions are needed for agent startup
@@ -132,13 +132,13 @@ const DefaultPrimeWaitMs = 2000
 //
 //	| Hooks | Prompt | Beacon Content           | Context Source      | Work Instructions   |
 //	|-------|--------|--------------------------|---------------------|---------------------|
-//	| ✓     | ✓      | Standard                 | Hook runs gt prime  | In beacon           |
-//	| ✓     | ✗      | Standard (via nudge)     | Hook runs gt prime  | Same nudge          |
-//	| ✗     | ✓      | "Run gt prime" (prompt)  | Agent runs manually | Delayed nudge       |
-//	| ✗     | ✗      | "Run gt prime" (nudge)   | Agent runs manually | Delayed nudge       |
+//	| ✓     | ✓      | Standard                 | Hook runs lt prime  | In beacon           |
+//	| ✓     | ✗      | Standard (via nudge)     | Hook runs lt prime  | Same nudge          |
+//	| ✗     | ✓      | "Run lt prime" (prompt)  | Agent runs manually | Delayed nudge       |
+//	| ✗     | ✗      | "Run lt prime" (nudge)   | Agent runs manually | Delayed nudge       |
 type StartupFallbackInfo struct {
-	// IncludePrimeInBeacon indicates the beacon should include "Run gt prime" instruction.
-	// True for non-hook agents where gt prime doesn't run automatically.
+	// IncludePrimeInBeacon indicates the beacon should include "Run lt prime" instruction.
+	// True for non-hook agents where lt prime doesn't run automatically.
 	IncludePrimeInBeacon bool
 
 	// SendBeaconNudge indicates the beacon must be sent via nudge (agent has no prompt support).
@@ -150,7 +150,7 @@ type StartupFallbackInfo struct {
 	SendStartupNudge bool
 
 	// StartupNudgeDelayMs is milliseconds to wait before sending work instructions nudge.
-	// Allows gt prime to complete for non-hook agents (where it's not automatic).
+	// Allows lt prime to complete for non-hook agents (where it's not automatic).
 	StartupNudgeDelayMs int
 }
 
@@ -162,7 +162,7 @@ type StartupPromptFallback struct {
 	Send bool
 
 	// DelayMs is the minimum wait before sending the startup prompt so
-	// non-hook agents have time to finish `gt prime`.
+	// non-hook agents have time to finish `lt prime`.
 	DelayMs int
 }
 
@@ -178,7 +178,7 @@ func GetStartupFallbackInfo(rc *config.RuntimeConfig) *StartupFallbackInfo {
 	info := &StartupFallbackInfo{}
 
 	if !hasHooks {
-		// Non-hook agents need to be told to run gt prime
+		// Non-hook agents need to be told to run lt prime
 		info.IncludePrimeInBeacon = true
 		info.SendStartupNudge = true
 		info.StartupNudgeDelayMs = DefaultPrimeWaitMs
@@ -189,7 +189,7 @@ func GetStartupFallbackInfo(rc *config.RuntimeConfig) *StartupFallbackInfo {
 		}
 	} else if !hasPrompt {
 		// Has hooks but no prompt - need to nudge beacon + work instructions together
-		// Hook runs gt prime synchronously, so no wait needed
+		// Hook runs lt prime synchronously, so no wait needed
 		info.SendBeaconNudge = true
 		info.SendStartupNudge = true
 		info.StartupNudgeDelayMs = 0
@@ -247,8 +247,8 @@ func BeaconPrimeInstruction() string {
 // RuntimeConfigWithMinDelay returns a shallow copy of rc with ReadyDelayMs set to
 // at least minMs, and ReadyPromptPrefix cleared. This forces WaitForRuntimeReady
 // to use the delay-based fallback path, ensuring the minimum wall-clock wait is
-// always enforced. Used for the gt prime wait where we need a guaranteed delay for
-// the agent to process the beacon and run gt prime — prompt detection would
+// always enforced. Used for the lt prime wait where we need a guaranteed delay for
+// the agent to process the beacon and run lt prime — prompt detection would
 // short-circuit immediately (seeing the still-present prompt from the initial
 // readiness check) and bypass the intended delay floor.
 func RuntimeConfigWithMinDelay(rc *config.RuntimeConfig, minMs int) *config.RuntimeConfig {

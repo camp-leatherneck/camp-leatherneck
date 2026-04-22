@@ -1,11 +1,11 @@
 # Property Layers: Multi-Level Configuration
 
-> Implementation guide for Gas Town's configuration system.
+> Implementation guide for Camp Leatherneck's configuration system.
 > Created: 2025-01-06
 
 ## Overview
 
-Gas Town uses a layered property system for configuration. Properties are
+Camp Leatherneck uses a layered property system for configuration. Properties are
 looked up through multiple layers, with earlier layers overriding later ones.
 This enables both local control and global coordination.
 

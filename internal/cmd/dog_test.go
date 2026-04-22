@@ -16,7 +16,7 @@ import (
 // Test Fixtures
 // =============================================================================
 
-// testDogManager creates a dog.Manager with a temporary town root for testing.
+// testDogManager creates a dog.Manager with a temporary HQ root for testing.
 func testDogManager(t *testing.T) (*dog.Manager, string) {
 	t.Helper()
 	tmpDir := t.TempDir()

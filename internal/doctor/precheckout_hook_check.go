@@ -8,7 +8,7 @@ import (
 )
 
 // BranchProtectionCheck verifies that the post-checkout hook includes branch
-// protection to auto-revert accidental branch switches in the town root.
+// protection to auto-revert accidental branch switches in the HQ root.
 //
 // NOTE: Git does NOT support "pre-checkout" hooks. We use post-checkout to
 // detect and auto-revert bad checkouts immediately after they happen.
@@ -23,7 +23,7 @@ func NewBranchProtectionCheck() *BranchProtectionCheck {
 		FixableCheck: FixableCheck{
 			BaseCheck: BaseCheck{
 				CheckName:        "branch-protection",
-				CheckDescription: "Verify post-checkout hook protects town root branch",
+				CheckDescription: "Verify post-checkout hook protects HQ root branch",
 				CheckCategory:    CategoryHooks,
 			},
 		},
@@ -36,13 +36,13 @@ func NewPreCheckoutHookCheck() *BranchProtectionCheck {
 }
 
 // branchProtectionMarker identifies our branch protection code in post-checkout.
-const branchProtectionMarker = "Gas Town branch protection"
+const branchProtectionMarker = "Camp Leatherneck branch protection"
 
 // branchProtectionScript is the code to prepend to post-checkout hook.
-// It auto-reverts to main if a non-main branch was checked out in the town root.
-const branchProtectionScript = `# Gas Town branch protection
-# Auto-reverts to main if a non-main branch is checked out in the town root.
-# The town root must stay on main to avoid breaking gt commands.
+// It auto-reverts to main if a non-main branch was checked out in the HQ root.
+const branchProtectionScript = `# Camp Leatherneck branch protection
+# Auto-reverts to main if a non-main branch is checked out in the HQ root.
+# The HQ root must stay on main to avoid breaking lt commands.
 # NOTE: Git does NOT support pre-checkout hooks, so we auto-revert after.
 
 # Only check branch checkouts (not file checkouts)
@@ -57,10 +57,10 @@ if [ "$3" = "1" ]; then
     elif [ -n "$CURRENT_BRANCH" ]; then
         # Non-main branch detected - auto-revert!
         echo "" >&2
-        echo "⚠️  AUTO-REVERTING: Town root must stay on main branch" >&2
+        echo "⚠️  AUTO-REVERTING: HQ root must stay on main branch" >&2
         echo "" >&2
-        echo "   Detected checkout to '$CURRENT_BRANCH' in the Gas Town HQ directory." >&2
-        echo "   The town root should always be on main. Switching back..." >&2
+        echo "   Detected checkout to '$CURRENT_BRANCH' in the Camp Leatherneck HQ directory." >&2
+        echo "   The HQ root should always be on main. Switching back..." >&2
         echo "" >&2
 
         # Revert to main
@@ -81,19 +81,19 @@ fi
 func (c *BranchProtectionCheck) Run(ctx *CheckContext) *CheckResult {
 	gitDir := filepath.Join(ctx.TownRoot, ".git")
 
-	// Check if town root is a git repo
+	// Check if HQ root is a git repo
 	if _, err := os.Stat(gitDir); os.IsNotExist(err) {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: "Town root is not a git repository (skipped)",
+			Message: "HQ root is not a git repository (skipped)",
 		}
 	}
 
 	// Also check for and warn about the useless pre-checkout hook
 	preCheckoutPath := filepath.Join(gitDir, "hooks", "pre-checkout")
 	if content, err := os.ReadFile(preCheckoutPath); err == nil {
-		if strings.Contains(string(content), "Gas Town pre-checkout hook") {
+		if strings.Contains(string(content), "Camp Leatherneck pre-checkout hook") {
 			// Old useless hook exists - needs migration
 			c.needsUpdate = true
 			return &CheckResult{
@@ -104,7 +104,7 @@ func (c *BranchProtectionCheck) Run(ctx *CheckContext) *CheckResult {
 					"The pre-checkout hook was installed but git doesn't support it",
 					"Branch protection needs to be in post-checkout instead",
 				},
-				FixHint: "Run 'gt doctor --fix' to migrate to post-checkout",
+				FixHint: "Run 'lt doctor --fix' to migrate to post-checkout",
 			}
 		}
 	}
@@ -120,11 +120,11 @@ func (c *BranchProtectionCheck) Run(ctx *CheckContext) *CheckResult {
 			Status:  StatusWarning,
 			Message: "Post-checkout hook not installed",
 			Details: []string{
-				"Branch protection prevents accidental branch switches in the town root",
-				"Without it, a git checkout in ~/gt could switch to a polecat branch",
-				"This can break gt commands (missing rigs.json, wrong configs)",
+				"Branch protection prevents accidental branch switches in the HQ root",
+				"Without it, a git checkout in ~/lt could switch to a polecat branch",
+				"This can break lt commands (missing rigs.json, wrong configs)",
 			},
-			FixHint: "Run 'gt doctor --fix' to install branch protection",
+			FixHint: "Run 'lt doctor --fix' to install branch protection",
 		}
 	}
 
@@ -147,7 +147,7 @@ func (c *BranchProtectionCheck) Run(ctx *CheckContext) *CheckResult {
 				"Post-checkout hook exists but doesn't include branch protection",
 				"Branch protection auto-reverts if non-main branch is checked out",
 			},
-			FixHint: "Run 'gt doctor --fix' to add branch protection",
+			FixHint: "Run 'lt doctor --fix' to add branch protection",
 		}
 	}
 
@@ -174,7 +174,7 @@ func (c *BranchProtectionCheck) Fix(ctx *CheckContext) error {
 	// Remove obsolete pre-checkout hook if it's ours
 	preCheckoutPath := filepath.Join(hooksDir, "pre-checkout")
 	if content, err := os.ReadFile(preCheckoutPath); err == nil {
-		if strings.Contains(string(content), "Gas Town pre-checkout hook") {
+		if strings.Contains(string(content), "Camp Leatherneck pre-checkout hook") {
 			_ = os.Remove(preCheckoutPath) // Best effort removal
 		}
 	}

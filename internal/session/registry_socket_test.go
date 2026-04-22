@@ -26,7 +26,7 @@ func TestInitRegistry_SocketFromTownName(t *testing.T) {
 		name        string
 		gtTmuxSocket string // GT_TMUX_SOCKET value ("" = unset)
 		tmuxEnv     string  // $TMUX value
-		townDir     string  // basename of the town root directory
+		townDir     string  // basename of the HQ root directory
 	}{
 		{
 			name:        "unset → derived from town path",

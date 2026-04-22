@@ -15,7 +15,7 @@ type Machine struct {
 	Type     string `json:"type"`      // "local", "ssh"
 	Host     string `json:"host"`      // for ssh: user@host
 	KeyPath  string `json:"key_path"`  // SSH private key path
-	TownPath string `json:"town_path"` // Path to town root on remote
+	TownPath string `json:"town_path"` // Path to HQ root on remote
 }
 
 // registryData is the JSON file structure.

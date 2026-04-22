@@ -35,7 +35,7 @@ var moleculeAwaitSignalCmd = &cobra.Command{
 
 This command is the primary wake mechanism for patrol agents. It tails
 ~/gt/.events.jsonl and returns immediately when a new event is appended
-(indicating Gas Town activity such as slings, nudges, mail, spawns, etc.).
+(indicating Camp Leatherneck activity such as slings, nudges, mail, spawns, etc.).
 
 If no activity occurs within the timeout, the command returns with exit code 0
 but sets the AWAIT_SIGNAL_REASON environment variable to "timeout".
@@ -57,30 +57,30 @@ EXIT CODES:
 
 EXAMPLES:
   # Simple wait with 60s timeout (canonical form)
-  gt mol step await-signal --timeout 60s
+  lt mol step await-signal --timeout 60s
 
   # Short form (alias)
-  gt mol await-signal --timeout 60s
+  lt mol await-signal --timeout 60s
 
   # Backoff mode with agent bead tracking:
-  gt mol await-signal --agent-bead gt-gastown-witness \
+  lt mol await-signal --agent-bead gt-gastown-witness \
     --backoff-base 30s --backoff-mult 2 --backoff-max 15m
 
   # On timeout, the agent bead's idle:N label is auto-incremented
-  # On signal, caller should reset: gt agent state gt-gastown-witness --set idle=0
+  # On signal, caller should reset: lt agent state gt-gastown-witness --set idle=0
 
   # Quiet mode (no output, for scripting)
-  gt mol await-signal --timeout 30s --quiet`,
+  lt mol await-signal --timeout 30s --quiet`,
 	RunE: runMoleculeAwaitSignal,
 }
 
 // moleculeAwaitSignalShortcutCmd is a separate command instance that allows
-// "gt mol await-signal" in addition to the canonical "gt mol step await-signal".
+// "lt mol await-signal" in addition to the canonical "lt mol step await-signal".
 // A separate instance is required because cobra does not support a single
 // command having two parents (AddCommand overwrites the parent pointer).
 var moleculeAwaitSignalShortcutCmd = &cobra.Command{
 	Use:   "await-signal",
-	Short: "Wait for activity feed signal with timeout (alias: gt mol step await-signal)",
+	Short: "Wait for activity feed signal with timeout (alias: lt mol step await-signal)",
 	Long:  moleculeAwaitSignalCmd.Long,
 	RunE:  runMoleculeAwaitSignal,
 }
@@ -128,7 +128,7 @@ func init() {
 	moleculeAwaitSignalShortcutCmd.Flags().BoolVar(&moleculeJSON, "json", false,
 		"Output as JSON")
 
-	// alias: gt mol await-signal (in addition to gt mol step await-signal)
+	// alias: lt mol await-signal (in addition to lt mol step await-signal)
 	moleculeCmd.AddCommand(moleculeAwaitSignalShortcutCmd)
 }
 
@@ -139,10 +139,10 @@ func runMoleculeAwaitSignal(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("not in a beads workspace: %w", err)
 	}
 
-	// Find town root for events file (events are always at <townRoot>/.events.jsonl)
+	// Find HQ root for events file (events are always at <townRoot>/.events.jsonl)
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	beadsDir := beads.ResolveBeadsDir(workDir)
@@ -361,7 +361,7 @@ func calculateEffectiveTimeout(idleCycles int) (time.Duration, error) {
 }
 
 // waitForActivitySignal tails the events file for new activity.
-// townRoot is the Gas Town workspace root; the events file is at
+// townRoot is the Camp Leatherneck workspace root; the events file is at
 // <townRoot>/.events.jsonl. Returns immediately when a new event line is
 // appended, or when context is canceled.
 func waitForActivitySignal(ctx context.Context, townRoot string) (*AwaitSignalResult, error) {

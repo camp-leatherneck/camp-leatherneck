@@ -364,7 +364,7 @@ func (d *testDAG) RoutesJSONL() string {
 }
 
 // Setup creates a full test workspace with the bd stub, routes, and directory
-// structure. Returns the town root path and log file path.
+// structure. Returns the HQ root path and log file path.
 func (d *testDAG) Setup(t *testing.T) (townRoot, logPath string) {
 	t.Helper()
 
@@ -420,7 +420,7 @@ func (d *testDAG) Setup(t *testing.T) (townRoot, logPath string) {
 	// Inject bin/ into PATH.
 	t.Setenv("PATH", binDir+":"+os.Getenv("PATH"))
 
-	// Change cwd to town root with cleanup.
+	// Change cwd to HQ root with cleanup.
 	cwd, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("getwd: %v", err)

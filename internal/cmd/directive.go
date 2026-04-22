@@ -21,17 +21,17 @@ Subcommands:
   list    List all directive files
 
 File layout:
-  Town-level: <townRoot>/directives/<role>.md
+  HQ-level: <townRoot>/directives/<role>.md
   Rig-level:  <townRoot>/<rig>/directives/<role>.md
 
 Resolution: Town and rig directives are concatenated (town first, rig last).
 Rig-level content gets the last word.
 
 Examples:
-  gt directive show polecat             # Show active polecat directive
-  gt directive show witness --rig sky   # Show witness directive for sky rig
-  gt directive edit crew                # Edit crew directive (rig-level)
-  gt directive list                     # List all directive files`,
+  lt directive show polecat             # Show active polecat directive
+  lt directive show witness --rig sky   # Show witness directive for sky rig
+  lt directive edit crew                # Edit crew directive (rig-level)
+  lt directive list                     # List all directive files`,
 	RunE: requireSubcommand,
 }
 

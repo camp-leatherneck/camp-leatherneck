@@ -104,7 +104,7 @@ func (c *FormulaCheck) Run(ctx *CheckContext) *CheckResult {
 	}
 
 	if needsFix {
-		result.FixHint = "Run 'gt doctor --fix' to update formulas"
+		result.FixHint = "Run 'lt doctor --fix' to update formulas"
 	}
 
 	return result

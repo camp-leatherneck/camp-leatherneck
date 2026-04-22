@@ -1,6 +1,6 @@
-// Package wasteland implements the Wasteland federation protocol for Gas Town.
+// Package wasteland implements the Wasteland federation protocol for Camp Leatherneck.
 //
-// The Wasteland is a federation of Gas Towns via DoltHub. Each rig has a
+// The Wasteland is a federation of Camp Leathernecks via DoltHub. Each rig has a
 // sovereign fork of a shared commons database. Rigs register by writing
 // to the commons' rigs table, and contribute wanted work items and
 // completions through DoltHub's fork/PR/merge primitives.
@@ -57,7 +57,7 @@ func LoadConfig(townRoot string) (*Config, error) {
 	data, err := os.ReadFile(ConfigPath(townRoot))
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, fmt.Errorf("%w (run 'gt wl join <upstream>')", ErrNotJoined)
+			return nil, fmt.Errorf("%w (run 'lt wl join <upstream>')", ErrNotJoined)
 		}
 		return nil, fmt.Errorf("reading wasteland config: %w", err)
 	}
@@ -321,7 +321,7 @@ func (s *Service) Join(upstream, forkOrg, token, handle, displayName, ownerEmail
 	// Check if already joined
 	if existing, err := s.Config.Load(townRoot); err == nil {
 		if existing.Upstream != upstream {
-			return nil, fmt.Errorf("already joined to %s; run gt wl leave first", existing.Upstream)
+			return nil, fmt.Errorf("already joined to %s; run lt wl leave first", existing.Upstream)
 		}
 		return existing, nil
 	} else if !errors.Is(err, ErrNotJoined) {

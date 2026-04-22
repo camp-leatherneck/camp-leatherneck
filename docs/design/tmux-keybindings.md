@@ -1,8 +1,8 @@
 # Tmux Keybindings
 
-Gas Town overrides several tmux keybindings to provide session navigation
+Camp Leatherneck overrides several tmux keybindings to provide session navigation
 and operational shortcuts. All bindings are conditional — they only activate
-in Gas Town sessions (those matching a registered rig prefix or `hq-`).
+in Camp Leatherneck sessions (those matching a registered rig prefix or `hq-`).
 Non-GT sessions retain the user's original bindings.
 
 ## Session Cycle Groups (prefix+n / prefix+p)
@@ -34,7 +34,7 @@ Bindings are configured by `ConfigureGasTownSession()` in the tmux package,
 which is called whenever a session is created (by the daemon for patrol
 agents, by the witness for polecats, by `gt crew at` for crew). This means:
 
-- Bindings are set on the **first** Gas Town session created on a tmux server
+- Bindings are set on the **first** Camp Leatherneck session created on a tmux server
 - They apply server-wide (tmux keybindings are global, not per-session)
 - The `if-shell` guard scopes them to GT sessions at press time
 - Subsequent calls are no-ops (idempotent)

@@ -89,7 +89,7 @@ func (c *RigIsGitRepoCheck) Run(ctx *CheckContext) *CheckResult {
 	}
 }
 
-// GitExcludeConfiguredCheck verifies .git/info/exclude has Gas Town directories.
+// GitExcludeConfiguredCheck verifies .git/info/exclude has Camp Leatherneck directories.
 type GitExcludeConfiguredCheck struct {
 	FixableCheck
 	missingEntries []string
@@ -102,7 +102,7 @@ func NewGitExcludeConfiguredCheck() *GitExcludeConfiguredCheck {
 		FixableCheck: FixableCheck{
 			BaseCheck: BaseCheck{
 				CheckName:        "git-exclude-configured",
-				CheckDescription: "Check .git/info/exclude has Gas Town directories",
+				CheckDescription: "Check .git/info/exclude has Camp Leatherneck directories",
 				CheckCategory:    CategoryRig,
 			},
 		},
@@ -196,9 +196,9 @@ func (c *GitExcludeConfiguredCheck) Run(ctx *CheckContext) *CheckResult {
 	return &CheckResult{
 		Name:    c.Name(),
 		Status:  StatusWarning,
-		Message: fmt.Sprintf("%d Gas Town directories not excluded", len(c.missingEntries)),
+		Message: fmt.Sprintf("%d Camp Leatherneck directories not excluded", len(c.missingEntries)),
 		Details: []string{fmt.Sprintf("Missing: %s", strings.Join(c.missingEntries, ", "))},
-		FixHint: "Run 'gt doctor --fix' to add missing entries",
+		FixHint: "Run 'lt doctor --fix' to add missing entries",
 	}
 }
 
@@ -224,12 +224,12 @@ func (c *GitExcludeConfiguredCheck) Fix(ctx *CheckContext) error {
 	// Add a header comment if file is empty or new
 	info, _ := f.Stat()
 	if info.Size() == 0 {
-		if _, err := f.WriteString("# Gas Town directories\n"); err != nil {
+		if _, err := f.WriteString("# Camp Leatherneck directories\n"); err != nil {
 			return err
 		}
 	} else {
 		// Add newline before new entries
-		if _, err := f.WriteString("\n# Gas Town directories\n"); err != nil {
+		if _, err := f.WriteString("\n# Camp Leatherneck directories\n"); err != nil {
 			return err
 		}
 	}
@@ -349,7 +349,7 @@ func (c *HooksPathConfiguredCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: fmt.Sprintf("%d clone(s) missing hooks configuration", len(c.unconfiguredClones)),
 		Details: details,
-		FixHint: "Run 'gt doctor --fix' to configure hooks",
+		FixHint: "Run 'lt doctor --fix' to configure hooks",
 	}
 }
 
@@ -438,7 +438,7 @@ func (c *WitnessExistsCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: "Witness structure incomplete",
 		Details: issues,
-		FixHint: "Run 'gt doctor --fix' to create missing structure",
+		FixHint: "Run 'lt doctor --fix' to create missing structure",
 	}
 }
 
@@ -545,7 +545,7 @@ func (c *RefineryExistsCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: "Refinery structure incomplete",
 		Details: issues,
-		FixHint: "Run 'gt doctor --fix' to create missing structure",
+		FixHint: "Run 'lt doctor --fix' to create missing structure",
 	}
 }
 
@@ -672,7 +672,7 @@ func (c *MayorCloneExistsCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: "Mayor structure incomplete",
 		Details: issues,
-		FixHint: "Run 'gt doctor --fix' to create structure (clone requires repo URL)",
+		FixHint: "Run 'lt doctor --fix' to create structure (clone requires repo URL)",
 	}
 }
 
@@ -943,7 +943,7 @@ func (c *BeadsRedirectCheck) Run(ctx *CheckContext) *CheckResult {
 					"Beads database not initialized for this rig",
 					"This prevents issue tracking for this rig",
 				},
-				FixHint: "Run 'gt doctor --fix --rig " + ctx.RigName + "' to initialize beads",
+				FixHint: "Run 'lt doctor --fix --rig " + ctx.RigName + "' to initialize beads",
 			}
 		}
 		return &CheckResult{
@@ -971,7 +971,7 @@ func (c *BeadsRedirectCheck) Run(ctx *CheckContext) *CheckResult {
 				"Local beads with data exist at: .beads/",
 				"Fix will remove local beads and create redirect to tracked beads",
 			},
-			FixHint: "Run 'gt doctor --fix --rig " + ctx.RigName + "' to fix",
+			FixHint: "Run 'lt doctor --fix --rig " + ctx.RigName + "' to fix",
 		}
 	}
 
@@ -986,7 +986,7 @@ func (c *BeadsRedirectCheck) Run(ctx *CheckContext) *CheckResult {
 				"Missing redirect at: .beads/redirect",
 				"Without this redirect, bd commands from rig root won't find beads",
 			},
-			FixHint: "Run 'gt doctor --fix' to create the redirect",
+			FixHint: "Run 'lt doctor --fix' to create the redirect",
 		}
 	}
 
@@ -1006,7 +1006,7 @@ func (c *BeadsRedirectCheck) Run(ctx *CheckContext) *CheckResult {
 			Name:    c.Name(),
 			Status:  StatusError,
 			Message: fmt.Sprintf("Redirect points to %q, expected mayor/rig/.beads", target),
-			FixHint: "Run 'gt doctor --fix --rig " + ctx.RigName + "' to correct the redirect",
+			FixHint: "Run 'lt doctor --fix --rig " + ctx.RigName + "' to correct the redirect",
 		}
 	}
 
@@ -1051,7 +1051,7 @@ func (c *BeadsRedirectCheck) Fix(ctx *CheckContext) error {
 		}
 
 		// Run bd init with the configured prefix (Dolt is the only backend since bd v0.51.0).
-		// Gas Town rigs use Dolt server mode via the shared town Dolt sql-server.
+		// Camp Leatherneck rigs use Dolt server mode via the shared town Dolt sql-server.
 		initArgs := []string{"init"}
 		if prefix != "" {
 			initArgs = append(initArgs, "--prefix", prefix)
@@ -1067,7 +1067,7 @@ func (c *BeadsRedirectCheck) Fix(ctx *CheckContext) error {
 			// Continue - minimal config created
 		} else {
 			_ = output // bd init succeeded
-			// Configure custom types for Gas Town (beads v0.46.0+)
+			// Configure custom types for Camp Leatherneck (beads v0.46.0+)
 			configCmd := exec.Command("bd", "config", "set", "types.custom", constants.BeadsCustomTypes)
 			configCmd.Dir = rigPath
 			_, _ = configCmd.CombinedOutput() // Ignore errors - older beads don't need this
@@ -1164,7 +1164,7 @@ func (c *BareRepoRefspecCheck) Run(ctx *CheckContext) *CheckResult {
 				"Worktrees cannot fetch or see origin/* refs without this config",
 				"This breaks refinery merge operations and causes stale origin/main",
 			},
-			FixHint: "Run 'gt doctor --fix' to configure the refspec",
+			FixHint: "Run 'lt doctor --fix' to configure the refspec",
 		}
 	}
 
@@ -1179,7 +1179,7 @@ func (c *BareRepoRefspecCheck) Run(ctx *CheckContext) *CheckResult {
 				fmt.Sprintf("Current: %s", refspec),
 				fmt.Sprintf("Expected: %s", expectedRefspec),
 			},
-			FixHint: "Run 'gt doctor --fix' to update the refspec",
+			FixHint: "Run 'lt doctor --fix' to update the refspec",
 		}
 	}
 
@@ -1333,7 +1333,7 @@ func (c *DefaultBranchAllRigsCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusError,
-			Message: fmt.Sprintf("Cannot read town root: %v", err),
+			Message: fmt.Sprintf("Cannot read HQ root: %v", err),
 		}
 	}
 
@@ -1590,8 +1590,8 @@ func (c *BareRepoExistsCheck) Run(ctx *CheckContext) *CheckResult {
 				Name:     c.Name(),
 				Status:   StatusWarning,
 				Message:  "Shared bare repo push URL does not match config.json",
-				Details:  []string{"Note: manual config.json edits require 'gt rig add <name> --adopt' to propagate to town.json"},
-				FixHint:  "Run 'gt doctor --fix --rig " + ctx.RigName + "' to update push URL",
+				Details:  []string{"Note: manual config.json edits require 'lt rig add <name> --adopt' to propagate to town.json"},
+				FixHint:  "Run 'lt doctor --fix --rig " + ctx.RigName + "' to update push URL",
 				Category: c.Category(),
 			}
 		}
@@ -1607,7 +1607,7 @@ func (c *BareRepoExistsCheck) Run(ctx *CheckContext) *CheckResult {
 				Status:   StatusError,
 				Message:  fmt.Sprintf("Push URL mismatch and %d broken worktree(s)", len(c.brokenWorktrees)),
 				Details:  details,
-				FixHint:  "Run 'gt doctor --fix --rig " + ctx.RigName + "' to repair",
+				FixHint:  "Run 'lt doctor --fix --rig " + ctx.RigName + "' to repair",
 				Category: c.Category(),
 			}
 		}
@@ -1622,7 +1622,7 @@ func (c *BareRepoExistsCheck) Run(ctx *CheckContext) *CheckResult {
 			Status:   StatusError,
 			Message:  fmt.Sprintf("%d worktree(s) have broken references in .repo.git", len(c.brokenWorktrees)),
 			Details:  details,
-			FixHint:  "Run 'gt doctor --fix --rig " + ctx.RigName + "' to recreate worktree entries",
+			FixHint:  "Run 'lt doctor --fix --rig " + ctx.RigName + "' to recreate worktree entries",
 			Category: c.Category(),
 		}
 	}
@@ -1645,7 +1645,7 @@ func (c *BareRepoExistsCheck) Run(ctx *CheckContext) *CheckResult {
 			[]string{"Missing: " + bareRepoPath},
 			c.brokenWorktrees...,
 		),
-		FixHint:  "Run 'gt doctor --fix --rig " + ctx.RigName + "' to recreate .repo.git from remote",
+		FixHint:  "Run 'lt doctor --fix --rig " + ctx.RigName + "' to recreate .repo.git from remote",
 		Category: c.Category(),
 	}
 }

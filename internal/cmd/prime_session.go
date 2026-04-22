@@ -40,8 +40,8 @@ type hookInput struct {
 // GT_HOOK_SOURCE in their hook commands to get full --hook behavior with
 // zero stdin delay. Example:
 //
-//	SessionStart: "export GT_SESSION_ID=$(uuidgen) GT_HOOK_SOURCE=startup && gt prime --hook"
-//	PreCompress:  "export GT_HOOK_SOURCE=compact && gt prime --hook"
+//	SessionStart: "export GT_SESSION_ID=$(uuidgen) GT_HOOK_SOURCE=startup && lt prime --hook"
+//	PreCompress:  "export GT_HOOK_SOURCE=compact && lt prime --hook"
 func readHookSessionID() (sessionID, source string) {
 	primeStructuredSessionStartOutput = false
 	// Source can come from env (any runtime) or stdin JSON (Claude only).
@@ -124,7 +124,7 @@ func readStdinJSON() *hookInput {
 		line = r.line
 	case <-time.After(stdinReadTimeout):
 		// The goroutine above is still blocked on ReadString and will leak.
-		// This is intentional — gt prime is a short-lived CLI command that
+		// This is intentional — lt prime is a short-lived CLI command that
 		// exits shortly after, so the goroutine is cleaned up by process exit.
 		return nil
 	}
@@ -143,7 +143,7 @@ func readStdinJSON() *hookInput {
 }
 
 // persistSessionID writes the session ID to .runtime/session_id
-// This allows subsequent gt prime calls to find the session ID.
+// This allows subsequent lt prime calls to find the session ID.
 func persistSessionID(dir, sessionID string) {
 	runtimeDir := filepath.Join(dir, ".runtime")
 	if err := os.MkdirAll(runtimeDir, 0755); err != nil {
@@ -156,7 +156,7 @@ func persistSessionID(dir, sessionID string) {
 }
 
 // ReadPersistedSessionID reads a previously persisted session ID.
-// Checks cwd first, then town root.
+// Checks cwd first, then HQ root.
 // Returns empty string if not found.
 func ReadPersistedSessionID() string {
 	// Try cwd first
@@ -167,7 +167,7 @@ func ReadPersistedSessionID() string {
 		}
 	}
 
-	// Try town root
+	// Try HQ root
 	townRoot, err := workspace.FindFromCwd()
 	if err == nil && townRoot != "" {
 		if id := readSessionFile(townRoot); id != "" {
@@ -200,7 +200,7 @@ func resolveSessionIDForPrime(actor string) string {
 		return id
 	}
 
-	// 2. Persisted session file (from gt prime --hook)
+	// 2. Persisted session file (from lt prime --hook)
 	if id := ReadPersistedSessionID(); id != "" {
 		return id
 	}
@@ -210,7 +210,7 @@ func resolveSessionIDForPrime(actor string) string {
 }
 
 // emitSessionEvent emits a session_start event for seance discovery.
-// The event is written to ~/gt/.events.jsonl and can be queried via gt seance.
+// The event is written to ~/gt/.events.jsonl and can be queried via lt seance.
 // Session ID resolution order: GT_SESSION_ID, CLAUDE_SESSION_ID, persisted file, fallback.
 func emitSessionEvent(ctx RoleContext) {
 	if ctx.Role == RoleUnknown {
@@ -239,7 +239,7 @@ func emitSessionEvent(ctx RoleContext) {
 
 // outputSessionMetadata prints a structured metadata line for seance discovery.
 // Format: [GAS TOWN] role:<role> pid:<pid> session:<session_id>
-// This enables gt seance to discover sessions from gt prime output.
+// This enables lt seance to discover sessions from lt prime output.
 func outputSessionMetadata(ctx RoleContext) {
 	if ctx.Role == RoleUnknown {
 		return
@@ -305,7 +305,7 @@ func detectSessionState(ctx RoleContext) SessionState {
 	}
 
 	// Check for hooked work (autonomous state).
-	// Primary: read hook_bead from the agent bead's DB column (same strategy as gt hook).
+	// Primary: read hook_bead from the agent bead's DB column (same strategy as lt hook).
 	// Fallback: query hooked/in_progress beads by assignee.
 	agentID := getAgentIdentity(ctx)
 	if agentID != "" {
@@ -360,7 +360,7 @@ func detectSessionState(ctx RoleContext) SessionState {
 			state.HookedBead = inProgressBeads[0].ID
 			return state
 		}
-		// Town-level fallback: rig-level agents may have hooked HQ beads
+		// HQ-level fallback: rig-level agents may have hooked HQ beads
 		// stored in townRoot/.beads. Matches prime.go and molecule_status.go. (gt-dtq7)
 		if !isTownLevelRole(agentID) && ctx.TownRoot != "" {
 			townB := beads.New(filepath.Join(ctx.TownRoot, ".beads"))

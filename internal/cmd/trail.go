@@ -44,13 +44,13 @@ Flags:
   --all      Include all activity (not just agents)
 
 Examples:
-  gt trail                     # Recent commits (default)
-  gt trail commits             # Same as above
-  gt trail commits --since 1h  # Last hour
-  gt trail beads               # Recent beads
-  gt trail hooks               # Recent hook activity
-  gt recent                    # Alias for gt trail
-  gt recap --since 24h         # Activity from last 24 hours`,
+  lt trail                     # Recent commits (default)
+  lt trail commits             # Same as above
+  lt trail commits --since 1h  # Last hour
+  lt trail beads               # Recent beads
+  lt trail hooks               # Recent hook activity
+  lt recent                    # Alias for lt trail
+  lt recap --since 24h         # Activity from last 24 hours`,
 	RunE: runTrailCommits, // Default to commits
 }
 
@@ -63,10 +63,10 @@ By default, filters to commits from agents (using the configured
 email domain). Use --all to include all commits.
 
 Examples:
-  gt trail commits              # Recent agent commits
-  gt trail commits --since 1h   # Last hour of commits
-  gt trail commits --all        # All commits (including non-agents)
-  gt trail commits --json       # JSON output`,
+  lt trail commits              # Recent agent commits
+  lt trail commits --since 1h   # Last hour of commits
+  lt trail commits --all        # All commits (including non-agents)
+  lt trail commits --json       # JSON output`,
 	RunE: runTrailCommits,
 }
 
@@ -76,9 +76,9 @@ var trailBeadsCmd = &cobra.Command{
 	Long: `Show recently created or modified beads (work items).
 
 Examples:
-  gt trail beads              # Recent beads
-  gt trail beads --since 24h  # Last 24 hours of beads
-  gt trail beads --json       # JSON output`,
+  lt trail beads              # Recent beads
+  lt trail beads --since 24h  # Last 24 hours of beads
+  lt trail beads --json       # JSON output`,
 	RunE: runTrailBeads,
 }
 
@@ -88,9 +88,9 @@ var trailHooksCmd = &cobra.Command{
 	Long: `Show recent hook activity (agents taking or dropping hooks).
 
 Examples:
-  gt trail hooks              # Recent hook activity
-  gt trail hooks --since 1h   # Last hour of hook activity
-  gt trail hooks --json       # JSON output`,
+  lt trail hooks              # Recent hook activity
+  lt trail hooks --since 1h   # Last hour of hook activity
+  lt trail hooks --json       # JSON output`,
 	RunE: runTrailHooks,
 }
 
@@ -474,7 +474,7 @@ func findBeadsDir() (string, error) {
 		return dir, nil
 	}
 
-	// Fall back to town root
+	// Fall back to HQ root
 	return findMailWorkDir()
 }
 

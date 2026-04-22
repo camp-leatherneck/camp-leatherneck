@@ -22,25 +22,25 @@ var moleculeCmd = &cobra.Command{
 	Long: `Agent-specific molecule workflow operations.
 
 These commands operate on YOUR hook and YOUR attached molecules.
-Use 'gt hook' to see what's on your hook (alias for 'gt mol status').
+Use 'lt hook' to see what's on your hook (alias for 'lt mol status').
 
 VIEWING YOUR WORK:
-  gt hook              Show what's on your hook
-  gt mol current       Show what you should be working on
-  gt mol progress      Show execution progress
+  lt hook              Show what's on your hook
+  lt mol current       Show what you should be working on
+  lt mol progress      Show execution progress
 
 WORKING ON STEPS:
-  gt mol step done     Complete current step (auto-continues)
+  lt mol step done     Complete current step (auto-continues)
 
 LIFECYCLE:
-  gt mol attach        Attach molecule to your hook
-  gt mol detach        Detach molecule from your hook
-  gt mol burn          Discard attached molecule (no record)
-  gt mol squash        Compress to digest (permanent record)
+  lt mol attach        Attach molecule to your hook
+  lt mol detach        Detach molecule from your hook
+  lt mol burn          Discard attached molecule (no record)
+  lt mol squash        Compress to digest (permanent record)
 
 TO DISPATCH WORK (with molecules):
-  gt sling mol-xxx target   # Pour formula + sling to agent
-  gt formulas               # List available formulas`,
+  lt sling mol-xxx target   # Pour formula + sling to agent
+  lt formulas               # List available formulas`,
 }
 
 
@@ -57,7 +57,7 @@ Given a root issue (the parent of molecule steps), displays:
 This is useful for the Witness to monitor molecule execution.
 
 Example:
-  gt molecule progress gt-abc`,
+  lt molecule progress gt-abc`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMoleculeProgress,
 }
@@ -74,8 +74,8 @@ When called with a single argument from an agent working directory, the
 pinned bead ID is auto-detected from the current agent's hook.
 
 Examples:
-  gt molecule attach gt-abc mol-xyz  # Explicit pinned bead
-  gt molecule attach mol-xyz         # Auto-detect from cwd`,
+  lt molecule attach gt-abc mol-xyz  # Explicit pinned bead
+  lt molecule attach mol-xyz         # Auto-detect from cwd`,
 	Args: cobra.RangeArgs(1, 2),
 	RunE: runMoleculeAttach,
 }
@@ -88,7 +88,7 @@ var moleculeDetachCmd = &cobra.Command{
 This clears the attached_molecule and attached_at fields from the bead.
 
 Example:
-  gt molecule detach gt-abc`,
+  lt molecule detach gt-abc`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMoleculeDetach,
 }
@@ -99,7 +99,7 @@ var moleculeAttachmentCmd = &cobra.Command{
 	Long: `Show which molecule is attached to a pinned bead.
 
 Example:
-  gt molecule attachment gt-abc`,
+  lt molecule attachment gt-abc`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMoleculeAttachment,
 }
@@ -114,7 +114,7 @@ and attaches it to the agent's pinned bead (hook).
 
 The mail body should contain an "attached_molecule:" field with the molecule ID.
 
-Usage: gt mol attach-from-mail <mail-id>
+Usage: lt mol attach-from-mail <mail-id>
 
 Behavior:
 1. Read mail body for attached_molecule field
@@ -123,7 +123,7 @@ Behavior:
 4. Return control for execution
 
 Example:
-  gt mol attach-from-mail msg-abc123`,
+  lt mol attach-from-mail msg-abc123`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMoleculeAttachFromMail,
 }
@@ -143,9 +143,9 @@ Output includes:
 - Next action hint
 
 Examples:
-  gt mol status                       # Show current agent's hook
-  gt mol status greenplace/nux        # Show specific polecat's hook
-  gt mol status greenplace/witness    # Show witness's hook`,
+  lt mol status                       # Show current agent's hook
+  lt mol status greenplace/nux        # Show specific polecat's hook
+  lt mol status greenplace/witness    # Show witness's hook`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runMoleculeStatus,
 }
@@ -167,10 +167,10 @@ Output includes:
 - Current step that should be worked on next
 
 Examples:
-  gt molecule current                 # Current agent's work
-  gt molecule current greenplace/furiosa
-  gt molecule current deacon
-  gt mol current greenplace/witness`,
+  lt molecule current                 # Current agent's work
+  lt molecule current greenplace/furiosa
+  lt molecule current deacon
+  lt mol current greenplace/witness`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runMoleculeCurrent,
 }
@@ -220,10 +220,10 @@ as its parent. Steps can have dependencies on other steps.
 
 When a polecat is working on a molecule, it processes one step at a time:
 1. Work on the current step
-2. When done: gt mol step done <step-id>
+2. When done: lt mol step done <step-id>
 3. System auto-continues to next ready step
 
-IMPORTANT: Always use 'gt mol step done' to complete steps. Do not manually
+IMPORTANT: Always use 'lt mol step done' to complete steps. Do not manually
 close steps with 'bd close' - that skips the auto-continuation logic.`,
 }
 

@@ -1,6 +1,6 @@
-# Installing Gas Town
+# Installing Camp Leatherneck
 
-Complete setup guide for Gas Town multi-agent orchestrator.
+Complete setup guide for Camp Leatherneck multi-agent orchestrator.
 
 ## Prerequisites
 
@@ -79,12 +79,12 @@ dolt version      # Should show 1.82.4 or higher
 tmux -V           # (Optional) Should show 3.0 or higher
 ```
 
-## Installing Gas Town
+## Installing Camp Leatherneck
 
 ### Step 1: Install the Binaries
 
 ```bash
-# Install Gas Town CLI
+# Install Camp Leatherneck CLI
 go install github.com/camp-leatherneck/camp-leatherneck/cmd/gt@latest
 
 # Install Beads (issue tracker)
@@ -105,7 +105,7 @@ export PATH="$PATH:$HOME/go/bin"
 ### Step 2: Create Your Workspace
 
 ```bash
-# Create a Gas Town workspace (HQ)
+# Create a Camp Leatherneck workspace (HQ)
 gt install ~/gt --shell
 
 # This creates:
@@ -136,7 +136,7 @@ gt rig add myproject https://github.com/you/repo.git
 ```bash
 cd ~/gt
 
-gt enable              # enable Gas Town system-wide
+gt enable              # enable Camp Leatherneck system-wide
 gt git-init            # initialize a git repo for your HQ
 gt up                  # Start all services. Use gt down or gt shutdown for stopping. 
 
@@ -146,7 +146,7 @@ gt status              # Show workspace status
 
 ### Step 5: Configure Agents (Optional)
 
-Gas Town supports built-in runtimes (`claude`, `gemini`, `codex`, `cursor`, `auggie`, `amp`, `opencode`, `copilot`) plus custom agent aliases.
+Camp Leatherneck supports built-in runtimes (`claude`, `gemini`, `codex`, `cursor`, `auggie`, `amp`, `opencode`, `copilot`) plus custom agent aliases.
 
 ```bash
 # List available agents
@@ -169,11 +169,11 @@ gt sling gt-abc12 myproject --agent claude-haiku
 
 ## Minimal Mode vs Full Stack Mode
 
-Gas Town supports two operational modes:
+Camp Leatherneck supports two operational modes:
 
 ### Minimal Mode (No Daemon)
 
-Run individual runtime instances manually. Gas Town only tracks state.
+Run individual runtime instances manually. Camp Leatherneck only tracks state.
 
 ```bash
 # Create and assign work
@@ -216,7 +216,7 @@ gt witness attach myproject
 
 ### Choosing Roles
 
-Gas Town is modular. Enable only what you need:
+Camp Leatherneck is modular. Enable only what you need:
 
 | Configuration | Roles | Use Case |
 |--------------|-------|----------|
@@ -292,7 +292,7 @@ bd doctor                  # Run beads health check
 
 ## Updating
 
-To update Gas Town and Beads:
+To update Camp Leatherneck and Beads:
 
 ```bash
 go install github.com/camp-leatherneck/camp-leatherneck/cmd/gt@latest

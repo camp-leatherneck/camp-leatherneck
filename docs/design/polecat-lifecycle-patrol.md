@@ -14,7 +14,7 @@
 ## 1. Overview
 
 This document formalizes how Deacon, Witness, Refinery, and Polecats coordinate
-to move work through the Gas Town propulsion system. It captures the
+to move work through the Camp Leatherneck propulsion system. It captures the
 session-per-step model, defines the two cleanup stages, designs the per-rig
 lifecycle channel, and resolves open design questions about step granularity,
 recycling, and spawning.
@@ -182,7 +182,7 @@ Each stage can fail independently. Recovery is handled by the next patrol cycle:
 The per-rig polecat channel is implemented using the existing `gt mail` system.
 This was chosen over beads-based queues or state files because:
 
-1. **Consistency:** Mail is already the coordination primitive for all Gas Town agents
+1. **Consistency:** Mail is already the coordination primitive for all Camp Leatherneck agents
 2. **Persistence:** Messages survive process crashes and session cycles
 3. **Routing:** Mail addresses (`gastown/witness`) already map to rig-level agents
 4. **Audit trail:** Mail creates beads entries (observable, discoverable)
@@ -331,7 +331,7 @@ The system prioritizes **liveness** (work eventually completes) over strict safe
 
 ### 6.1 The Four Patrol Agents
 
-Gas Town has four agents that perform patrol (periodic health monitoring):
+Camp Leatherneck has four agents that perform patrol (periodic health monitoring):
 
 | Agent | Scope | Frequency | Key Checks |
 |-------|-------|-----------|-----------|

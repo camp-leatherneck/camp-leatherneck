@@ -18,13 +18,13 @@ var forgetCmd = &cobra.Command{
 	Short: "Remove a stored memory",
 	Long: `Remove a memory from the beads key-value store.
 
-The key should match the short name shown by 'gt memories'.
+The key should match the short name shown by 'lt memories'.
 For typed memories, use type/key format or just the key (searches all types).
 
 Examples:
-  gt forget refinery-worktree
-  gt forget feedback/dont-mock-db
-  gt forget hooks-package-structure`,
+  lt forget refinery-worktree
+  lt forget feedback/dont-mock-db
+  lt forget hooks-package-structure`,
 	Args: cobra.ExactArgs(1),
 	RunE: runForget,
 }

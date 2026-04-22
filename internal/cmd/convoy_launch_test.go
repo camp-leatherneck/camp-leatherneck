@@ -175,7 +175,7 @@ func TestConvoyStageLaunchFlag(t *testing.T) {
 // Launch-as-alias tests (gt-csl.6.4)
 // ---------------------------------------------------------------------------
 
-// IT-19: gt convoy launch <epic-id> delegates to stage+launch (no "not yet
+// IT-19: lt convoy launch <epic-id> delegates to stage+launch (no "not yet
 // implemented" error). Verifies the delegation path is wired up.
 //
 // Note: rigFromBeadID() is a stub returning "", so the staging pipeline will
@@ -233,7 +233,7 @@ func TestLaunchAsAlias_EpicInput(t *testing.T) {
 	}
 }
 
-// IT-20: gt convoy launch <task-id1> <task-id2> delegates to stage+launch for
+// IT-20: lt convoy launch <task-id1> <task-id2> delegates to stage+launch for
 // task list input.
 //
 // Note: rigFromBeadID() is a stub returning "", so the staging pipeline will
@@ -454,7 +454,7 @@ func TestDispatchWave1_ContinuesOnFailure(t *testing.T) {
 // renderLaunchOutput tests (gt-csl.6.3)
 // ---------------------------------------------------------------------------
 
-// IT-29: Output contains convoy ID and gt convoy status <id> command.
+// IT-29: Output contains convoy ID and lt convoy status <id> command.
 func TestRenderLaunchOutput_ConvoyIDAndMonitor(t *testing.T) {
 	dag := &ConvoyDAG{Nodes: map[string]*ConvoyDAGNode{
 		"gt-task-1": {ID: "gt-task-1", Title: "Task One", Type: "task", Rig: "gastown"},
@@ -474,8 +474,8 @@ func TestRenderLaunchOutput_ConvoyIDAndMonitor(t *testing.T) {
 	if !strings.Contains(output, "hq-cv-abc12") {
 		t.Errorf("output should contain convoy ID 'hq-cv-abc12', got:\n%s", output)
 	}
-	if !strings.Contains(output, "gt convoy status hq-cv-abc12") {
-		t.Errorf("output should contain 'gt convoy status hq-cv-abc12', got:\n%s", output)
+	if !strings.Contains(output, "lt convoy status hq-cv-abc12") {
+		t.Errorf("output should contain 'lt convoy status hq-cv-abc12', got:\n%s", output)
 	}
 }
 
@@ -513,7 +513,7 @@ func TestRenderLaunchOutput_DispatchedTasksWithRig(t *testing.T) {
 	}
 }
 
-// IT-31: Output contains gt convoy -i TUI hint.
+// IT-31: Output contains lt convoy -i TUI hint.
 func TestRenderLaunchOutput_TUIHint(t *testing.T) {
 	dag := &ConvoyDAG{Nodes: map[string]*ConvoyDAGNode{
 		"gt-task-1": {ID: "gt-task-1", Title: "Task One", Type: "task", Rig: "gastown"},
@@ -530,8 +530,8 @@ func TestRenderLaunchOutput_TUIHint(t *testing.T) {
 
 	output := renderLaunchOutput("hq-cv-test", waves, results, dag)
 
-	if !strings.Contains(output, "gt convoy -i") {
-		t.Errorf("output should contain 'gt convoy -i' TUI hint, got:\n%s", output)
+	if !strings.Contains(output, "lt convoy -i") {
+		t.Errorf("output should contain 'lt convoy -i' TUI hint, got:\n%s", output)
 	}
 }
 
@@ -593,7 +593,7 @@ func TestRenderLaunchOutput_Snapshot(t *testing.T) {
 	}
 
 	// Section 2: Monitor command
-	if !strings.Contains(output, "gt convoy status hq-cv-abc12") {
+	if !strings.Contains(output, "lt convoy status hq-cv-abc12") {
 		t.Errorf("missing monitor command, got:\n%s", output)
 	}
 
@@ -631,7 +631,7 @@ func TestRenderLaunchOutput_Snapshot(t *testing.T) {
 	}
 
 	// Section 5: TUI hint
-	if !strings.Contains(output, "gt convoy -i") {
+	if !strings.Contains(output, "lt convoy -i") {
 		t.Errorf("missing TUI hint, got:\n%s", output)
 	}
 

@@ -77,7 +77,7 @@ var beadsExemptCommands = map[string]bool{
 	"heartbeat":           true, // Heartbeat state update — must be fast and dependency-free
 }
 
-// Commands exempt from the town root branch warning.
+// Commands exempt from the HQ root branch warning.
 // These are commands that help fix the problem or are diagnostic.
 var branchCheckExemptCommands = map[string]bool{
 	"version":    true,
@@ -113,10 +113,10 @@ func persistentPreRun(cmd *cobra.Command, args []string) error {
 	// Log command usage telemetry (fire-and-forget, excludes tap/signal)
 	logCommandUsage(cmd, args)
 
-	// Initialize session prefix registry and agent registry from town root.
+	// Initialize session prefix registry and agent registry from HQ root.
 	// Try CWD detection first, then fall back to GT_TOWN_ROOT / GT_ROOT env vars.
 	// Env var fallback ensures commands invoked from outside the town directory
-	// (e.g., "gt agents menu" via a cross-socket tmux binding) still connect to
+	// (e.g., "lt agents menu" via a cross-socket tmux binding) still connect to
 	// the correct town socket rather than silently using the wrong server.
 	if townRoot := detectTownRootFromCwd(); townRoot != "" {
 		if err := session.InitRegistry(townRoot); err != nil {
@@ -132,14 +132,14 @@ func persistentPreRun(cmd *cobra.Command, args []string) error {
 		checkStaleBinaryWarning()
 	}
 
-	// Check town root branch (warning only, non-blocking)
+	// Check HQ root branch (warning only, non-blocking)
 	if !branchCheckExemptCommands[cmdName] {
 		warnIfTownRootOffMain()
 	}
 
-	// Touch polecat session heartbeat on every gt command (gt-qjtq: ZFC liveness fix).
+	// Touch polecat session heartbeat on every lt command (gt-qjtq: ZFC liveness fix).
 	// This is best-effort and non-blocking — the heartbeat file signals that the agent
-	// is alive and actively running gt commands. Used by isSessionProcessDead to
+	// is alive and actively running lt commands. Used by isSessionProcessDead to
 	// determine liveness without PID signal probing.
 	touchPolecatHeartbeat()
 
@@ -152,12 +152,12 @@ func persistentPreRun(cmd *cobra.Command, args []string) error {
 	if err := CheckBeadsVersion(); err != nil {
 		fmt.Fprintf(os.Stderr, "\n%s beads (bd) version issue:\n", style.Bold.Render("⚠️  WARNING:"))
 		fmt.Fprintf(os.Stderr, "   %v\n", err)
-		fmt.Fprintf(os.Stderr, "   Run %s for details.\n\n", style.Dim.Render("gt doctor"))
+		fmt.Fprintf(os.Stderr, "   Run %s for details.\n\n", style.Dim.Render("lt doctor"))
 	}
 	return nil
 }
 
-// isRoleCommand returns true when the invoked command belongs to the `gt role` tree.
+// isRoleCommand returns true when the invoked command belongs to the `lt role` tree.
 // Role introspection commands are often used in scripts and tests that expect clean
 // output; beads version warnings are unrelated noise for these commands.
 func isRoleCommand(cmd *cobra.Command) bool {
@@ -186,8 +186,8 @@ func initCLITheme() {
 }
 
 // touchPolecatHeartbeat touches the session heartbeat file for polecat agents.
-// Called from persistentPreRun on every gt command. The heartbeat signals that
-// the agent process is alive and actively running gt commands. Used by
+// Called from persistentPreRun on every lt command. The heartbeat signals that
+// the agent process is alive and actively running lt commands. Used by
 // isSessionProcessDead to determine liveness without PID signal probing (gt-qjtq).
 //
 // This is best-effort: errors are silently ignored. Non-polecat sessions and
@@ -213,10 +213,10 @@ func touchPolecatHeartbeat() {
 	polecat.TouchSessionHeartbeat(townRoot, sessionName)
 }
 
-// warnIfTownRootOffMain prints a warning if the town root is not on main branch.
+// warnIfTownRootOffMain prints a warning if the HQ root is not on main branch.
 // This is a non-blocking warning to help catch accidental branch switches.
 func warnIfTownRootOffMain() {
-	// Find town root (silently - don't error if not in workspace)
+	// Find HQ root (silently - don't error if not in workspace)
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil || townRoot == "" {
 		return
@@ -241,11 +241,11 @@ func warnIfTownRootOffMain() {
 		return
 	}
 
-	// Town root is on wrong branch - warn the user
-	fmt.Fprintf(os.Stderr, "\n%s Town root is on branch '%s' (should be 'main')\n",
+	// HQ root is on wrong branch - warn the user
+	fmt.Fprintf(os.Stderr, "\n%s HQ root is on branch '%s' (should be 'main')\n",
 		style.Bold.Render("⚠️  WARNING:"), branch)
-	fmt.Fprintf(os.Stderr, "   This can cause gt commands to fail. Run: %s\n\n",
-		style.Dim.Render("gt doctor --fix"))
+	fmt.Fprintf(os.Stderr, "   This can cause lt commands to fail. Run: %s\n\n",
+		style.Dim.Render("lt doctor --fix"))
 }
 
 // staleBinaryWarned tracks if we've already warned about stale binary in this session.
@@ -276,10 +276,10 @@ func checkStaleBinaryWarning() {
 		staleBinaryWarned = true
 		_ = os.Setenv("GT_STALE_WARNED", "1")
 
-		msg := fmt.Sprintf("gt binary is stale (built from %s, repo at %s)",
+		msg := fmt.Sprintf("lt binary is stale (built from %s, repo at %s)",
 			version.ShortCommit(info.BinaryCommit), version.ShortCommit(info.RepoCommit))
 		if info.CommitsBehind > 0 {
-			msg = fmt.Sprintf("gt binary is %d commits behind (built from %s, repo at %s)",
+			msg = fmt.Sprintf("lt binary is %d commits behind (built from %s, repo at %s)",
 				info.CommitsBehind, version.ShortCommit(info.BinaryCommit), version.ShortCommit(info.RepoCommit))
 		}
 		fmt.Fprintf(os.Stderr, "%s %s\n", style.WarningPrefix, msg)
@@ -329,7 +329,7 @@ const (
 )
 
 func init() {
-	// Enable prefix matching for subcommands (e.g., "gt ref at" -> "gt refinery attach")
+	// Enable prefix matching for subcommands (e.g., "lt ref at" -> "lt refinery attach")
 	cobra.EnablePrefixMatching = true
 
 	// Define command groups (order determines help output order)
@@ -352,7 +352,7 @@ func init() {
 }
 
 // buildCommandPath walks the command hierarchy to build the full command path.
-// For example: "gt mail send", "gt status", etc.
+// For example: "lt mail send", "lt status", etc.
 func buildCommandPath(cmd *cobra.Command) string {
 	var parts []string
 	for c := cmd; c != nil; c = c.Parent() {
@@ -363,7 +363,7 @@ func buildCommandPath(cmd *cobra.Command) string {
 
 // requireSubcommand returns a RunE function for parent commands that require
 // a subcommand. Without this, Cobra silently shows help and exits 0 for
-// unknown subcommands like "gt mol foobar", masking errors.
+// unknown subcommands like "lt mol foobar", masking errors.
 func requireSubcommand(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
 		return fmt.Errorf("requires a subcommand\n\nRun '%s --help' for usage", buildCommandPath(cmd))
@@ -394,9 +394,9 @@ func requireSubcommand(cmd *cobra.Command, args []string) error {
 //
 // We only check the FIRST argument to avoid false positives like:
 //
-//	gt commit -m "--help"  # User wants message "--help", not help output
+//	lt commit -m "--help"  # User wants message "--help", not help output
 //
-// This covers the common case (gt commit --help) without breaking edge cases.
+// This covers the common case (lt commit --help) without breaking edge cases.
 func checkHelpFlag(cmd *cobra.Command, args []string) (bool, error) {
 	if len(args) > 0 && (args[0] == "--help" || args[0] == "-h") {
 		return true, cmd.Help()

@@ -69,10 +69,10 @@ func TestBuildPrompt_WithInstructions(t *testing.T) {
 			Sender:    "daemon",
 			Topic:     "triage",
 		},
-		Instructions: "Run gt boot triage now.",
+		Instructions: "Run lt boot triage now.",
 	}
 	prompt := buildPrompt(cfg)
-	if !contains(prompt, "Run gt boot triage now.") {
+	if !contains(prompt, "Run lt boot triage now.") {
 		t.Errorf("prompt should contain instructions: %s", prompt)
 	}
 	if !contains(prompt, "[GAS TOWN]") {

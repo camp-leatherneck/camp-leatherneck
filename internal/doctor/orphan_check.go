@@ -13,7 +13,7 @@ import (
 )
 
 // OrphanSessionCheck detects orphaned tmux sessions that don't match
-// the expected Gas Town session naming patterns.
+// the expected Camp Leatherneck session naming patterns.
 type OrphanSessionCheck struct {
 	FixableCheck
 	sessionLister  SessionLister
@@ -53,7 +53,7 @@ func NewOrphanSessionCheckWithSessionLister(lister SessionLister) *OrphanSession
 	return check
 }
 
-// Run checks for orphaned Gas Town tmux sessions.
+// Run checks for orphaned Camp Leatherneck tmux sessions.
 func (c *OrphanSessionCheck) Run(ctx *CheckContext) *CheckResult {
 	lister := c.sessionLister
 	if lister == nil {
@@ -94,7 +94,7 @@ func (c *OrphanSessionCheck) Run(ctx *CheckContext) *CheckResult {
 			continue
 		}
 
-		// Only check sessions that parse as Gas Town sessions
+		// Only check sessions that parse as Camp Leatherneck sessions
 		if _, err := session.ParseSessionName(sess); err != nil {
 			continue
 		}
@@ -113,7 +113,7 @@ func (c *OrphanSessionCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: fmt.Sprintf("All %d Gas Town sessions are valid", validCount),
+			Message: fmt.Sprintf("All %d Camp Leatherneck sessions are valid", validCount),
 		}
 	}
 
@@ -127,7 +127,7 @@ func (c *OrphanSessionCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: fmt.Sprintf("Found %d orphaned session(s)", len(orphans)),
 		Details: details,
-		FixHint: "Run 'gt doctor --fix' to kill orphaned sessions",
+		FixHint: "Run 'lt doctor --fix' to kill orphaned sessions",
 	}
 }
 
@@ -148,7 +148,7 @@ func (c *OrphanSessionCheck) Fix(ctx *CheckContext) error {
 		}
 		// Log pre-death event for crash investigation (before killing)
 		_ = events.LogFeed(events.TypeSessionDeath, sess,
-			events.SessionDeathPayload(sess, "unknown", "orphan cleanup", "gt doctor"))
+			events.SessionDeathPayload(sess, "unknown", "orphan cleanup", "lt doctor"))
 		// Use KillSessionWithProcesses to ensure all descendant processes are killed.
 		if err := t.KillSessionWithProcesses(sess); err != nil {
 			lastErr = err
@@ -175,7 +175,7 @@ func (c *OrphanSessionCheck) getValidRigs(townRoot string) []string {
 	// Read rigs.json if it exists
 	rigsPath := filepath.Join(townRoot, "mayor", "rigs.json")
 	if _, err := os.Stat(rigsPath); err == nil {
-		// For simplicity, just scan directories at town root that look like rigs
+		// For simplicity, just scan directories at HQ root that look like rigs
 		entries, err := os.ReadDir(townRoot)
 		if err == nil {
 			for _, entry := range entries {
@@ -196,7 +196,7 @@ func (c *OrphanSessionCheck) getValidRigs(townRoot string) []string {
 	return rigs
 }
 
-// isValidSession checks if a session name matches expected Gas Town patterns.
+// isValidSession checks if a session name matches expected Camp Leatherneck patterns.
 // Valid patterns:
 //   - hq-mayor (headquarters mayor session)
 //   - hq-deacon (headquarters deacon session)
@@ -230,7 +230,7 @@ func (c *OrphanSessionCheck) isValidSession(sess string, validRigs []string, may
 
 	rigName := identity.Rig
 	if rigName == "" {
-		// Town-level session - not orphaned
+		// HQ-level session - not orphaned
 		return true
 	}
 
@@ -276,9 +276,9 @@ func (c *OrphanSessionCheck) isValidSession(sess string, validRigs []string, may
 
 // OrphanProcessCheck detects runtime processes that are not
 // running inside a tmux session. These may be user's personal sessions
-// or legitimately orphaned processes from crashed Gas Town sessions.
+// or legitimately orphaned processes from crashed Camp Leatherneck sessions.
 // This check is informational only - it does not auto-fix since we cannot
-// distinguish user sessions from orphaned Gas Town processes.
+// distinguish user sessions from orphaned Camp Leatherneck processes.
 type OrphanProcessCheck struct {
 	BaseCheck
 }
@@ -347,7 +347,7 @@ func (c *OrphanProcessCheck) Run(ctx *CheckContext) *CheckResult {
 	}
 
 	details := make([]string, 0, len(outsideTmux)+2)
-	details = append(details, "These may be your personal sessions or orphaned Gas Town processes.")
+	details = append(details, "These may be your personal sessions or orphaned Camp Leatherneck processes.")
 	details = append(details, "Verify these are expected before manually killing any:")
 	for _, proc := range outsideTmux {
 		details = append(details, fmt.Sprintf("  PID %d: %s (parent: %d)", proc.pid, proc.cmd, proc.ppid))
@@ -419,7 +419,7 @@ func argvHasFlag(args, flag string) bool {
 	return false
 }
 
-// gasTownRuntimeYOLO returns true when argv matches a Gas Town-managed agent (YOLO / auto-approve),
+// gasTownRuntimeYOLO returns true when argv matches a Camp Leatherneck-managed agent (YOLO / auto-approve),
 // excluding personal interactive sessions that omit these flags.
 func gasTownRuntimeYOLO(cmdName, args string) bool {
 	cmdName = strings.ToLower(filepath.Base(cmdName))
@@ -439,13 +439,13 @@ func gasTownRuntimeYOLO(cmdName, args string) bool {
 	}
 }
 
-// findRuntimeProcesses finds Gas Town agent processes by per-provider YOLO / launch signatures
+// findRuntimeProcesses finds Camp Leatherneck agent processes by per-provider YOLO / launch signatures
 // in argv (not comm name alone): claude/codex --dangerously-skip-permissions, cursor-agent -f,
 // copilot --yolo, etc.
 func (c *OrphanProcessCheck) findRuntimeProcesses() ([]processInfo, error) {
 	var procs []processInfo
 
-	// Use ps with args to get full command line (needed to check for Gas Town signature)
+	// Use ps with args to get full command line (needed to check for Camp Leatherneck signature)
 	out, err := exec.Command("ps", "-eo", "pid,ppid,args").Output()
 	if err != nil {
 		return nil, err

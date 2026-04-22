@@ -11,7 +11,7 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
 )
 
-// setupTestTown creates a minimal Gas Town workspace for testing.
+// setupTestTown creates a minimal Camp Leatherneck workspace for testing.
 func setupTestTownForConfig(t *testing.T) string {
 	t.Helper()
 
@@ -54,7 +54,7 @@ func TestConfigAgentList(t *testing.T) {
 		townRoot := setupTestTownForConfig(t)
 		settingsPath := config.TownSettingsPath(townRoot)
 
-		// Change to town root so workspace.FindFromCwd works
+		// Change to HQ root so workspace.FindFromCwd works
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -95,7 +95,7 @@ func TestConfigAgentList(t *testing.T) {
 			t.Fatalf("save settings: %v", err)
 		}
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -120,7 +120,7 @@ func TestConfigAgentList(t *testing.T) {
 	t.Run("JSON output", func(t *testing.T) {
 		townRoot := setupTestTownForConfig(t)
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -148,7 +148,7 @@ func TestConfigAgentGet(t *testing.T) {
 	t.Run("gets built-in agent", func(t *testing.T) {
 		townRoot := setupTestTownForConfig(t)
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -190,7 +190,7 @@ func TestConfigAgentGet(t *testing.T) {
 			t.Fatalf("save settings: %v", err)
 		}
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -215,7 +215,7 @@ func TestConfigAgentGet(t *testing.T) {
 	t.Run("returns error for unknown agent", func(t *testing.T) {
 		townRoot := setupTestTownForConfig(t)
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -246,7 +246,7 @@ func TestConfigAgentSet(t *testing.T) {
 		townRoot := setupTestTownForConfig(t)
 		settingsPath := config.TownSettingsPath(townRoot)
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -286,7 +286,7 @@ func TestConfigAgentSet(t *testing.T) {
 		townRoot := setupTestTownForConfig(t)
 		settingsPath := config.TownSettingsPath(townRoot)
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -336,7 +336,7 @@ func TestConfigAgentSet(t *testing.T) {
 			t.Fatalf("save initial settings: %v", err)
 		}
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -488,7 +488,7 @@ func TestConfigAgentRemove(t *testing.T) {
 			t.Fatalf("save settings: %v", err)
 		}
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -519,7 +519,7 @@ func TestConfigAgentRemove(t *testing.T) {
 	t.Run("rejects removing built-in agent", func(t *testing.T) {
 		townRoot := setupTestTownForConfig(t)
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -541,7 +541,7 @@ func TestConfigAgentRemove(t *testing.T) {
 	t.Run("returns error for non-existent custom agent", func(t *testing.T) {
 		townRoot := setupTestTownForConfig(t)
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -565,7 +565,7 @@ func TestConfigDefaultAgent(t *testing.T) {
 	t.Run("gets default agent (shows current)", func(t *testing.T) {
 		townRoot := setupTestTownForConfig(t)
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -585,7 +585,7 @@ func TestConfigDefaultAgent(t *testing.T) {
 		townRoot := setupTestTownForConfig(t)
 		settingsPath := config.TownSettingsPath(townRoot)
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -631,7 +631,7 @@ func TestConfigDefaultAgent(t *testing.T) {
 			t.Fatalf("save settings: %v", err)
 		}
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {
@@ -660,7 +660,7 @@ func TestConfigDefaultAgent(t *testing.T) {
 	t.Run("returns error for unknown agent", func(t *testing.T) {
 		townRoot := setupTestTownForConfig(t)
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {

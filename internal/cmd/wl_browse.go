@@ -30,17 +30,17 @@ var wlBrowseCmd = &cobra.Command{
 	RunE:  runWLBrowse,
 	Long: `Browse the Wasteland wanted board.
 
-Uses the local fork if available (set by gt wl join), otherwise falls back
+Uses the local fork if available (set by lt wl join), otherwise falls back
 to cloning the upstream commons temporarily.
 
 EXAMPLES:
-  gt wl browse                          # All open wanted items
-  gt wl browse --project gastown        # Filter by project
-  gt wl browse --type bug               # Only bugs
-  gt wl browse --status claimed         # Claimed items
-  gt wl browse --priority 0             # Critical priority only
-  gt wl browse --limit 5               # Show 5 items
-  gt wl browse --json                   # JSON output`,
+  lt wl browse                          # All open wanted items
+  lt wl browse --project gastown        # Filter by project
+  lt wl browse --type bug               # Only bugs
+  lt wl browse --status claimed         # Claimed items
+  lt wl browse --priority 0             # Critical priority only
+  lt wl browse --limit 5               # Show 5 items
+  lt wl browse --json                   # JSON output`,
 }
 
 func init() {
@@ -57,7 +57,7 @@ func init() {
 func runWLBrowse(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Fast path: query through the Dolt server if the database is registered.
@@ -152,7 +152,7 @@ func runWLBrowse(cmd *cobra.Command, args []string) error {
 // Returns (cloneDir, tmpDir, err). If tmpDir is non-empty, caller must
 // defer os.RemoveAll(tmpDir) — a temporary clone was created.
 func resolveWLCommonsBrowse(townRoot, doltPath string) (cloneDir, tmpDir string, err error) {
-	// Try wasteland config (set by gt wl join).
+	// Try wasteland config (set by lt wl join).
 	if cfg, cfgErr := wasteland.LoadConfig(townRoot); cfgErr == nil && cfg.LocalDir != "" {
 		if _, statErr := os.Stat(filepath.Join(cfg.LocalDir, ".dolt")); statErr == nil {
 			return cfg.LocalDir, "", nil

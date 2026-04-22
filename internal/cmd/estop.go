@@ -1,4 +1,4 @@
-// Emergency stop (gt estop / gt thaw) — pause and resume agent work.
+// Emergency stop (lt estop / lt thaw) — pause and resume agent work.
 //
 // Original implementation by outdoorsea (PR #3237). Cherry-picked for
 // manual-only operation: no daemon auto-trigger.
@@ -39,13 +39,13 @@ Use --rig to freeze a single rig instead of the whole town. Per-rig
 E-stop is useful when traveling or pausing non-critical work while
 keeping other rigs running.
 
-To resume: gt thaw [--rig <name>]
+To resume: lt thaw [--rig <name>]
 
 Examples:
-  gt estop                              # Freeze everything
-  gt estop -r "closing laptop"          # Freeze with reason
-  gt estop --rig gastown                # Freeze only gastown
-  gt estop --rig beads -r "maintenance" # Freeze beads rig`,
+  lt estop                              # Freeze everything
+  lt estop -r "closing laptop"          # Freeze with reason
+  lt estop --rig gastown                # Freeze only gastown
+  lt estop --rig beads -r "maintenance" # Freeze beads rig`,
 	RunE: runEstop,
 }
 
@@ -53,14 +53,14 @@ var thawCmd = &cobra.Command{
 	Use:     "thaw",
 	GroupID: GroupServices,
 	Short:   "Resume from emergency stop — thaw all frozen agents",
-	Long: `Resume agent sessions that were frozen by gt estop.
+	Long: `Resume agent sessions that were frozen by lt estop.
 
 Sends SIGCONT to all frozen sessions, removes the ESTOP sentinel file,
 and nudges all sessions to alert them that work can continue.
 
 Examples:
-  gt thaw                    # Thaw everything
-  gt thaw --rig gastown      # Thaw only gastown`,
+  lt thaw                    # Thaw everything
+  lt thaw --rig gastown      # Thaw only gastown`,
 	RunE: runThaw,
 }
 
@@ -75,7 +75,7 @@ func init() {
 func runEstop(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Per-rig E-stop
@@ -114,7 +114,7 @@ func runEstop(cmd *cobra.Command, args []string) error {
 
 	fmt.Println()
 	fmt.Printf("%s %d session(s) frozen\n", style.Error.Render("⛔"), frozen)
-	fmt.Printf("   Resume with: %s\n", style.Bold.Render("gt thaw"))
+	fmt.Printf("   Resume with: %s\n", style.Bold.Render("lt thaw"))
 
 	return nil
 }
@@ -148,7 +148,7 @@ func runEstopRig(townRoot, rigName string) error {
 
 	fmt.Println()
 	fmt.Printf("%s %d session(s) frozen in %s\n", style.Error.Render("⛔"), frozen, rigName)
-	fmt.Printf("   Resume with: %s\n", style.Bold.Render("gt thaw --rig "+rigName))
+	fmt.Printf("   Resume with: %s\n", style.Bold.Render("lt thaw --rig "+rigName))
 
 	return nil
 }
@@ -156,7 +156,7 @@ func runEstopRig(townRoot, rigName string) error {
 func runThaw(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Per-rig thaw
@@ -231,7 +231,7 @@ var exemptSessions = map[string]bool{
 	session.OverseerSessionName(): true,
 }
 
-// freezeAllSessions sends SIGTSTP to all Gas Town agent sessions via
+// freezeAllSessions sends SIGTSTP to all Camp Leatherneck agent sessions via
 // process-group signaling. Mayor and overseer sessions are exempt.
 // If rigFilter is non-empty, only sessions for that rig are frozen.
 func freezeAllSessions(t *tmux.Tmux, townRoot string, rigFilter string) int {
@@ -264,7 +264,7 @@ func freezeAllSessions(t *tmux.Tmux, townRoot string, rigFilter string) int {
 	return frozen
 }
 
-// thawAllSessions sends SIGCONT to all Gas Town agent sessions.
+// thawAllSessions sends SIGCONT to all Camp Leatherneck agent sessions.
 // If rigFilter is non-empty, only sessions for that rig are thawed.
 func thawAllSessions(t *tmux.Tmux, townRoot string, rigFilter string) int {
 	sessions := collectGTSessions(t, townRoot)
@@ -322,7 +322,7 @@ func isRigSession(name, rigPrefix string) bool {
 	return strings.HasPrefix(name, rigPrefix+"-") || name == rigPrefix
 }
 
-// collectGTSessions returns all Gas Town tmux sessions.
+// collectGTSessions returns all Camp Leatherneck tmux sessions.
 func collectGTSessions(t *tmux.Tmux, townRoot string) []string {
 	allSessions, err := t.ListSessions()
 	if err != nil {
@@ -344,9 +344,9 @@ func collectGTSessions(t *tmux.Tmux, townRoot string) []string {
 	return gtSessions
 }
 
-// isGTSession checks if a session name belongs to Gas Town.
+// isGTSession checks if a session name belongs to Camp Leatherneck.
 func isGTSession(name string, rigPrefixes map[string]bool) bool {
-	// Town-level sessions (hq-*)
+	// HQ-level sessions (hq-*)
 	if strings.HasPrefix(name, session.HQPrefix) {
 		return true
 	}
@@ -363,7 +363,7 @@ func isGTSession(name string, rigPrefixes map[string]bool) bool {
 }
 
 // addEstopToStatus checks for E-stop and prints a banner if active.
-// Called from gt status to surface E-stop state.
+// Called from lt status to surface E-stop state.
 func addEstopToStatus(townRoot string) {
 	if estop.IsActive(townRoot) {
 		info := estop.Read(townRoot)

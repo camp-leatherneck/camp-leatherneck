@@ -127,8 +127,8 @@ func TestBrowser_ConvoyListLoads(t *testing.T) {
 
 	// Verify page title
 	title := page.MustElement("title").MustText()
-	if !strings.Contains(title, "Gas Town") {
-		t.Fatalf("Expected title to contain 'Gas Town', got: %s", title)
+	if !strings.Contains(title, "Camp Leatherneck") {
+		t.Fatalf("Expected title to contain 'Camp Leatherneck', got: %s", title)
 	}
 
 	// Verify convoy IDs are displayed
@@ -291,8 +291,8 @@ func TestBrowser_EmptyState(t *testing.T) {
 	}
 
 	// Verify help text is shown
-	if !strings.Contains(bodyText, "gt convoy create") {
-		t.Error("Expected help text with 'gt convoy create' command")
+	if !strings.Contains(bodyText, "lt convoy create") {
+		t.Error("Expected help text with 'lt convoy create' command")
 	}
 
 	t.Log("PASSED: Empty state displays correctly")

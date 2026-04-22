@@ -82,7 +82,7 @@ func runEpicScheduleByID(epicID string, opts epicScheduleOpts) error {
 		if rigName == "" {
 			skippedNoRig++
 			prefix := beads.ExtractPrefix(c.ID)
-			fmt.Printf("  %s %s: cannot resolve rig from prefix %q (town-root or unknown)\n",
+			fmt.Printf("  %s %s: cannot resolve rig from prefix %q (HQ or unknown)\n",
 				style.Dim.Render("○"), c.ID, prefix)
 			continue
 		}
@@ -197,7 +197,7 @@ func runEpicSlingByID(epicID string, opts epicScheduleOpts) error {
 		if rigName == "" {
 			skippedNoRig++
 			prefix := beads.ExtractPrefix(c.ID)
-			fmt.Printf("  %s %s: cannot resolve rig from prefix %q (town-root or unknown)\n",
+			fmt.Printf("  %s %s: cannot resolve rig from prefix %q (HQ or unknown)\n",
 				style.Dim.Render("○"), c.ID, prefix)
 			continue
 		}
@@ -303,7 +303,7 @@ func getEpicChildren(epicID string) ([]epicChild, error) {
 
 	// bd sql queries the database discovered from cmd.Dir. When the epic lives
 	// in a rig database (not HQ), we must resolve to the rig's directory so
-	// bd sql queries the correct database. resolveBeadDir returns the town root
+	// bd sql queries the correct database. resolveBeadDir returns the HQ root
 	// (for bd CLI routing), but bd sql doesn't use routes.jsonl.
 	sqlDir := dir
 	if prefix := beads.ExtractPrefix(epicID); prefix != "" {

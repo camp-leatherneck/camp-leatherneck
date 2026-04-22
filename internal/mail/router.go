@@ -36,11 +36,11 @@ const DefaultIdleNotifyTimeout = 3 * time.Second
 
 // Router handles message delivery via beads.
 // It routes messages to the correct beads database based on address:
-// - Town-level (mayor/, deacon/) -> {townRoot}/.beads
+// - HQ-level (mayor/, deacon/) -> {townRoot}/.beads
 // - Rig-level (rig/polecat) -> {townRoot}/{rig}/.beads
 type Router struct {
 	workDir  string // fallback directory to run bd commands in
-	townRoot string // town root directory (e.g., ~/gt)
+	townRoot string // HQ root directory (e.g., ~/gt)
 	tmux     *tmux.Tmux
 
 	// IdleNotifyTimeout controls how long to wait for a session to become
@@ -52,9 +52,9 @@ type Router struct {
 
 // NewRouter creates a new mail router.
 // workDir should be a directory containing a .beads database.
-// The town root is auto-detected from workDir if possible.
+// The HQ root is auto-detected from workDir if possible.
 func NewRouter(workDir string) *Router {
-	// Try to detect town root from workDir
+	// Try to detect HQ root from workDir
 	townRoot := detectTownRoot(workDir)
 
 	return &Router{
@@ -64,7 +64,7 @@ func NewRouter(workDir string) *Router {
 	}
 }
 
-// NewRouterWithTownRoot creates a router with an explicit town root.
+// NewRouterWithTownRoot creates a router with an explicit HQ root.
 func NewRouterWithTownRoot(workDir, townRoot string) *Router {
 	return &Router{
 		workDir:  workDir,
@@ -126,7 +126,7 @@ func parseChannelName(address string) string {
 func expandFromConfig[T any](r *Router, name string, getter func(*config.MessagingConfig) (T, bool), errType error) (T, error) {
 	var zero T
 	if r.townRoot == "" {
-		return zero, fmt.Errorf("%w: %s (no town root)", errType, name)
+		return zero, fmt.Errorf("%w: %s (no HQ root)", errType, name)
 	}
 
 	configPath := config.MessagingConfigPath(r.townRoot)
@@ -185,7 +185,7 @@ func (r *Router) expandAnnounce(announceName string) (*config.AnnounceConfig, er
 	}, ErrUnknownAnnounce)
 }
 
-// detectTownRoot finds the town root directory.
+// detectTownRoot finds the HQ root directory.
 //
 // Uses workspace.Find which correctly handles nested workspaces by always
 // searching to the filesystem root and returning the outermost workspace.
@@ -216,7 +216,7 @@ func detectTownRoot(startDir string) string {
 // All mail uses town beads ({townRoot}/.beads). Rig-level beads ({rig}/.beads)
 // are for project issues only, not mail.
 func (r *Router) resolveBeadsDir() string {
-	// If no town root, fall back to workDir's .beads
+	// If no HQ root, fall back to workDir's .beads
 	if r.townRoot == "" {
 		return filepath.Join(r.workDir, ".beads")
 	}
@@ -393,7 +393,7 @@ func agentBeadToAddress(bead *agentBead) string {
 	parts := strings.Split(rest, "-")
 
 	if len(parts) == 1 {
-		// Town-level: gt-mayor, gt-deacon
+		// HQ-level: gt-mayor, gt-deacon
 		return parts[0] + "/"
 	}
 
@@ -413,7 +413,7 @@ func agentBeadToAddress(bead *agentBead) string {
 			}
 			return rig + "/"
 		case "dog":
-			// Town-level named: gt-dog-alpha
+			// HQ-level named: gt-dog-alpha
 			if i+1 < len(parts) {
 				name := strings.Join(parts[i+1:], "-")
 				return "dog/" + name
@@ -578,7 +578,7 @@ func parseAgentAddressFromDescription(desc string) string {
 		return ""
 	}
 
-	// Town-level agents (no rig)
+	// HQ-level agents (no rig)
 	if rig == "" {
 		return roleType + "/"
 	}
@@ -625,7 +625,7 @@ func (r *Router) resolveGroup(group *ParsedGroup) ([]string, error) {
 // Loads the overseer config and returns "overseer" as the address.
 func (r *Router) resolveOverseer() ([]string, error) {
 	if r.townRoot == "" {
-		return nil, errors.New("town root not set, cannot resolve @overseer")
+		return nil, errors.New("HQ root not set, cannot resolve @overseer")
 	}
 
 	// Load overseer config to verify it exists
@@ -641,7 +641,7 @@ func (r *Router) resolveOverseer() ([]string, error) {
 
 // resolveTownAgents resolves @town to all town-level agents (mayor, deacon).
 func (r *Router) resolveTownAgents() ([]string, error) {
-	// Town-level agents have rig=null in their description
+	// HQ-level agents have rig=null in their description
 	agents := r.queryAgents("rig: null")
 
 	var addresses []string
@@ -1009,7 +1009,7 @@ func (r *Router) validateAgentWorkspace(identity string) bool {
 
 	switch len(parts) {
 	case 1:
-		// Town-level singleton: "mayor", "deacon"
+		// HQ-level singleton: "mayor", "deacon"
 		name := strings.TrimSuffix(parts[0], "/")
 		return dirExists(filepath.Join(r.townRoot, name))
 	case 2:
@@ -1047,8 +1047,8 @@ func dirExists(path string) bool {
 // resolveCrewShorthand expands "crew/name" or "polecats/name" shorthand addresses
 // to fully-qualified "rig/name" form by scanning the town filesystem.
 //
-// When gt agents displays crew workers, it shows them as "crew/bob" (without rig).
-// This function enables "gt mail send crew/bob" to work by finding the rig.
+// When lt agents displays crew workers, it shows them as "crew/bob" (without rig).
+// This function enables "lt mail send crew/bob" to work by finding the rig.
 //
 // Returns the normalized identity if exactly one rig contains the crew member,
 // or the original identity unchanged if zero or multiple rigs match (to let
@@ -1407,7 +1407,7 @@ func (r *Router) sendToChannel(msg *Message) error {
 
 	// Validate channel exists as a beads-native channel
 	if r.townRoot == "" {
-		return fmt.Errorf("town root not set, cannot send to channel: %s", channelName)
+		return fmt.Errorf("HQ root not set, cannot send to channel: %s", channelName)
 	}
 	b := beads.New(r.townRoot)
 	_, fields, err := b.GetChannelBead(channelName)
@@ -1590,7 +1590,7 @@ func (r *Router) GetMailbox(address string) (*Mailbox, error) {
 //
 // After a successful notification, a deferred reply-reminder nudge is also
 // enqueued (after a configurable delay, default 30s) to prompt the recipient
-// to reply via gt mail send rather than in chat.
+// to reply via lt mail send rather than in chat.
 //
 // Supports mayor/, deacon/, rig/crew/name, rig/polecats/name, and rig/name addresses.
 // Respects agent DND/muted state - skips notification if recipient has DND enabled.
@@ -1666,7 +1666,7 @@ func (r *Router) notifyRecipient(msg *Message) error {
 			r.enqueueReplyReminder(msg, sessionID)
 			return nil
 		}
-		// No town root available — last resort direct delivery.
+		// No HQ root available — last resort direct delivery.
 		err = r.tmux.NudgeSession(sessionID, notification)
 		if err == nil {
 			r.enqueueReplyReminder(msg, sessionID)
@@ -1708,9 +1708,9 @@ func nudgePriorityForMailPriority(priority Priority) string {
 
 func formatNotificationMessage(msg *Message) string {
 	if msg.Type == TypeEscalation {
-		return fmt.Sprintf("🚨 Escalation mail from %s. ID: %s. Severity: %s. Subject: %s. Run 'gt mail read %s' or 'gt escalate ack %s'.", msg.From, msg.ThreadID, prioritySeverityLabel(msg.Priority), msg.Subject, msg.ThreadID, msg.ThreadID)
+		return fmt.Sprintf("🚨 Escalation mail from %s. ID: %s. Severity: %s. Subject: %s. Run 'lt mail read %s' or 'lt escalate ack %s'.", msg.From, msg.ThreadID, prioritySeverityLabel(msg.Priority), msg.Subject, msg.ThreadID, msg.ThreadID)
 	}
-	return fmt.Sprintf("📬 You have new mail from %s. Subject: %s. Run 'gt mail inbox' to read.", msg.From, msg.Subject)
+	return fmt.Sprintf("📬 You have new mail from %s. Subject: %s. Run 'lt mail inbox' to read.", msg.From, msg.Subject)
 }
 
 func prioritySeverityLabel(priority Priority) string {
@@ -1727,10 +1727,10 @@ func prioritySeverityLabel(priority Priority) string {
 }
 
 // enqueueReplyReminder queues a deferred nudge reminding the recipient to reply
-// via gt mail send rather than in chat. Best-effort: errors are logged, not returned.
+// via lt mail send rather than in chat. Best-effort: errors are logged, not returned.
 //
 // Skipped when:
-//   - No town root (can't use nudge queue)
+//   - No HQ root (can't use nudge queue)
 //   - Message type is TypeReply (recipient is already replying)
 //   - Configured delay is zero or negative (feature disabled)
 func (r *Router) enqueueReplyReminder(msg *Message, sessionID string) {
@@ -1746,7 +1746,7 @@ func (r *Router) enqueueReplyReminder(msg *Message, sessionID string) {
 	}
 	reminder := nudge.QueuedNudge{
 		Sender:       "system",
-		Message:      fmt.Sprintf("Remember to reply to %s (subject: %q) via `gt mail send %s` — not in chat.", msg.From, msg.Subject, msg.From),
+		Message:      fmt.Sprintf("Remember to reply to %s (subject: %q) via `lt mail send %s` — not in chat.", msg.From, msg.Subject, msg.From),
 		Priority:     nudge.PriorityNormal,
 		DeliverAfter: time.Now().Add(delay),
 	}
@@ -1757,7 +1757,7 @@ func (r *Router) enqueueReplyReminder(msg *Message, sessionID string) {
 
 // IsRecipientMuted checks if a mail recipient has DND/muted notifications enabled.
 // Returns true if the recipient is muted and should not receive tmux nudges.
-// Fails open (returns false) if the agent bead cannot be found or the town root is not set.
+// Fails open (returns false) if the agent bead cannot be found or the HQ root is not set.
 func (r *Router) IsRecipientMuted(address string) bool {
 	if r.townRoot == "" {
 		return false

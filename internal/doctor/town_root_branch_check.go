@@ -6,28 +6,28 @@ import (
 	"strings"
 )
 
-// TownRootBranchCheck verifies that the town root directory is on the main branch.
-// The town root should always stay on main to avoid confusion and broken gt commands.
+// TownRootBranchCheck verifies that the HQ root directory is on the main branch.
+// The HQ root should always stay on main to avoid confusion and broken lt commands.
 // Accidental branch switches can happen when git commands run in the wrong directory.
 type TownRootBranchCheck struct {
 	FixableCheck
 	currentBranch string // Cached during Run for use in Fix
 }
 
-// NewTownRootBranchCheck creates a new town root branch check.
+// NewTownRootBranchCheck creates a new HQ root branch check.
 func NewTownRootBranchCheck() *TownRootBranchCheck {
 	return &TownRootBranchCheck{
 		FixableCheck: FixableCheck{
 			BaseCheck: BaseCheck{
-				CheckName:        "town-root-branch",
-				CheckDescription: "Verify town root is on main branch",
+				CheckName:        "HQ-branch",
+				CheckDescription: "Verify HQ root is on main branch",
 				CheckCategory:    CategoryCore,
 			},
 		},
 	}
 }
 
-// Run checks if the town root is on the main branch.
+// Run checks if the HQ root is on the main branch.
 func (c *TownRootBranchCheck) Run(ctx *CheckContext) *CheckResult {
 	// Get current branch
 	cmd := exec.Command("git", "branch", "--show-current")
@@ -38,7 +38,7 @@ func (c *TownRootBranchCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: "Town root is not a git repository (skipped)",
+			Message: "HQ root is not a git repository (skipped)",
 		}
 	}
 
@@ -50,12 +50,12 @@ func (c *TownRootBranchCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusWarning,
-			Message: "Town root is in detached HEAD state",
+			Message: "HQ root is in detached HEAD state",
 			Details: []string{
-				"The town root should be on the main branch",
-				"Detached HEAD can cause gt commands to fail",
+				"The HQ root should be on the main branch",
+				"Detached HEAD can cause lt commands to fail",
 			},
-			FixHint: "Run 'gt doctor --fix' or manually: cd ~/gt && git checkout main",
+			FixHint: "Run 'lt doctor --fix' or manually: cd ~/gt && git checkout main",
 		}
 	}
 
@@ -64,7 +64,7 @@ func (c *TownRootBranchCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: fmt.Sprintf("Town root is on %s branch", branch),
+			Message: fmt.Sprintf("HQ root is on %s branch", branch),
 		}
 	}
 
@@ -72,18 +72,18 @@ func (c *TownRootBranchCheck) Run(ctx *CheckContext) *CheckResult {
 	return &CheckResult{
 		Name:    c.Name(),
 		Status:  StatusError,
-		Message: fmt.Sprintf("Town root is on wrong branch: %s", branch),
+		Message: fmt.Sprintf("HQ root is on wrong branch: %s", branch),
 		Details: []string{
-			"The town root (~/gt) must stay on main branch",
+			"The HQ root (~/gt) must stay on main branch",
 			fmt.Sprintf("Currently on: %s", branch),
-			"This can cause gt commands to fail (missing rigs.json, etc.)",
+			"This can cause lt commands to fail (missing rigs.json, etc.)",
 			"The branch switch was likely accidental (git command in wrong dir)",
 		},
-		FixHint: "Run 'gt doctor --fix' or manually: cd ~/gt && git checkout main",
+		FixHint: "Run 'lt doctor --fix' or manually: cd ~/gt && git checkout main",
 	}
 }
 
-// Fix switches the town root back to main branch.
+// Fix switches the HQ root back to main branch.
 func (c *TownRootBranchCheck) Fix(ctx *CheckContext) error {
 	// Only fix if we're not already on main
 	if c.currentBranch == "main" || c.currentBranch == "master" || c.currentBranch == "gt_managed" {
@@ -99,7 +99,7 @@ func (c *TownRootBranchCheck) Fix(ctx *CheckContext) error {
 	}
 
 	if strings.TrimSpace(string(out)) != "" {
-		return fmt.Errorf("cannot switch to main: uncommitted changes in town root (stash or commit first)")
+		return fmt.Errorf("cannot switch to main: uncommitted changes in HQ root (stash or commit first)")
 	}
 
 	// Switch to main

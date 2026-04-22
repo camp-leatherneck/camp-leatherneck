@@ -73,8 +73,8 @@ func TestEmbeddedScripts_HaveGtPrime(t *testing.T) {
 				t.Fatalf("Failed to read %s: %v", name, err)
 			}
 
-			if !strings.Contains(string(content), "gt prime") {
-				t.Errorf("Script %s should run 'gt prime' before launching agent", name)
+			if !strings.Contains(string(content), "lt prime") {
+				t.Errorf("Script %s should run 'lt prime' before launching agent", name)
 			}
 		})
 	}

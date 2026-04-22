@@ -20,7 +20,7 @@ func runMailSearch(cmd *cobra.Command, args []string) error {
 	// Get workspace for mail operations
 	workDir, err := findMailWorkDir()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Get mailbox

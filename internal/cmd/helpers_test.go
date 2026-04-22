@@ -50,7 +50,7 @@ func TestInferRigFromCrewName(t *testing.T) {
 	mkdirAll("rigB/crew/bob")   // bob exists in both rigs
 	mkdirAll(".hidden/crew/dave") // hidden dir, should be skipped
 
-	// Create a non-dir entry at town root
+	// Create a non-dir entry at HQ root
 	os.WriteFile(filepath.Join(townRoot, "README.md"), []byte("hi"), 0o644)
 
 	tests := []struct {

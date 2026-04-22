@@ -22,13 +22,13 @@ the heartbeat state instead of inferring it from timers (ZFC: gt-3vr5).
 States:
   working  - Actively processing (default)
   idle     - Waiting for input
-  exiting  - In gt done flow
+  exiting  - In lt done flow
   stuck    - Self-reporting stuck (triggers witness escalation)
 
 Examples:
-  gt heartbeat --state=stuck "blocked on auth issue"
-  gt heartbeat --state=idle
-  gt heartbeat --state=working`,
+  lt heartbeat --state=stuck "blocked on auth issue"
+  lt heartbeat --state=idle
+  lt heartbeat --state=working`,
 	RunE: runHeartbeat,
 }
 
@@ -42,12 +42,12 @@ func init() {
 func runHeartbeat(cmd *cobra.Command, args []string) error {
 	sessionName := os.Getenv("GT_SESSION")
 	if sessionName == "" {
-		return fmt.Errorf("GT_SESSION not set (not running in a Gas Town session)")
+		return fmt.Errorf("GT_SESSION not set (not running in a Camp Leatherneck session)")
 	}
 
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil || townRoot == "" {
-		return fmt.Errorf("could not find town root: %v", err)
+		return fmt.Errorf("could not find HQ root: %v", err)
 	}
 
 	state := polecat.HeartbeatState(heartbeatState)

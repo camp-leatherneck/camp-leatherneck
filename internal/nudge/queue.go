@@ -1,4 +1,4 @@
-// Package nudge provides non-destructive nudge delivery for Gas Town agents.
+// Package nudge provides non-destructive nudge delivery for Camp Leatherneck agents.
 //
 // The nudge queue allows messages to be delivered cooperatively: instead of
 // sending text directly to a tmux session (which cancels in-flight tool calls),

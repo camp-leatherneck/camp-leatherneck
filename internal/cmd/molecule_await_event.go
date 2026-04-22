@@ -38,7 +38,7 @@ var moleculeAwaitEventCmd = &cobra.Command{
 
 Unlike await-signal (which subscribes to the generic beads activity feed),
 await-event watches a dedicated event channel directory for .event files.
-Events are emitted via "gt mol step emit-event" or programmatically.
+Events are emitted via "lt mol step emit-event" or programmatically.
 
 Channels are single-consumer: only one process should watch a given channel
 at a time. If multiple consumers watch the same channel with --cleanup,
@@ -65,14 +65,14 @@ EXIT CODES:
 
 EXAMPLES:
   # Wait for refinery events with 10min timeout
-  gt mol step await-event --channel refinery --timeout 10m
+  lt mol step await-event --channel refinery --timeout 10m
 
   # Backoff mode with agent bead tracking
-  gt mol step await-event --channel refinery --agent-bead VAS-refinery \
+  lt mol step await-event --channel refinery --agent-bead VAS-refinery \
     --backoff-base 60s --backoff-mult 2 --backoff-max 10m
 
   # Auto-cleanup processed events
-  gt mol step await-event --channel refinery --cleanup`,
+  lt mol step await-event --channel refinery --cleanup`,
 	RunE: runMoleculeAwaitEvent,
 }
 

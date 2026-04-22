@@ -731,7 +731,7 @@ func TestPostMergeConvoyCheck_NoTownBeads(t *testing.T) {
 	}
 	defer os.RemoveAll(tmpDir)
 
-	// Create rig dir as a subdirectory of the "town root"
+	// Create rig dir as a subdirectory of the "HQ root"
 	rigDir := filepath.Join(tmpDir, "testrig")
 	if err := os.MkdirAll(rigDir, 0755); err != nil {
 		t.Fatal(err)

@@ -21,7 +21,7 @@ import (
 
 // buildAgentBeadID constructs the agent bead ID from an agent identity.
 // Uses canonical naming: prefix-rig-role-name
-// Town-level agents use hq- prefix; rig-level agents use rig's prefix.
+// HQ-level agents use hq- prefix; rig-level agents use rig's prefix.
 // Examples:
 //   - "mayor" -> "hq-mayor"
 //   - "deacon" -> "hq-deacon"
@@ -321,13 +321,13 @@ func runMoleculeStatus(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("getting current directory: %w", err)
 	}
 
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
 		return fmt.Errorf("finding workspace: %w", err)
 	}
 	if townRoot == "" {
-		return fmt.Errorf("not in a Gas Town workspace")
+		return fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	// Determine target agent
@@ -356,7 +356,7 @@ func runMoleculeStatus(cmd *cobra.Command, args []string) error {
 
 	// Find beads directory.
 	// First try CWD-based discovery, then resolve to the correct rig database
-	// based on the agent's identity. Without this, CWD at the town root (~/gt)
+	// based on the agent's identity. Without this, CWD at the HQ root (~/gt)
 	// queries the hq database instead of the rig's database where hooked beads
 	// actually live. See bd-hook-status-cwd-bug.
 	workDir, err := findLocalBeadsDir()
@@ -514,11 +514,11 @@ func runMoleculeStatus(cmd *cobra.Command, args []string) error {
 
 	// Determine next action if no work is slung
 	if !status.HasWork {
-		status.NextAction = "Check inbox for work assignments: gt mail inbox"
+		status.NextAction = "Check inbox for work assignments: lt mail inbox"
 	} else if status.AttachedMolecule == "" && status.AttachedFormula == "" {
-		status.NextAction = "Attach a molecule to start work: gt mol attach <bead-id> <molecule-id>"
+		status.NextAction = "Attach a molecule to start work: lt mol attach <bead-id> <molecule-id>"
 	} else if status.AttachedFormula != "" && status.NextAction == "" && status.PinnedBead != nil {
-		status.NextAction = "Show the workflow steps: gt prime or bd mol current " + status.PinnedBead.ID
+		status.NextAction = "Show the workflow steps: lt prime or bd mol current " + status.PinnedBead.ID
 	}
 
 	// JSON output
@@ -543,7 +543,7 @@ func extractRoleFromIdentity(target string) string {
 }
 
 // buildAgentIdentity constructs the agent identity string from role context.
-// Town-level agents (mayor, deacon) use trailing slash to match the format
+// HQ-level agents (mayor, deacon) use trailing slash to match the format
 // used when setting assignee on hooked beads (see resolveSelfTarget in sling.go).
 func buildAgentIdentity(ctx RoleContext) string {
 	switch ctx.Role {
@@ -737,7 +737,7 @@ func outputMoleculeStatus(status MoleculeStatusInfo) {
 	if status.PinnedBead.Status == "closed" {
 		fmt.Printf("%s Hooked bead %s is already closed!\n", style.Bold.Render("⚠"), status.PinnedBead.ID)
 		fmt.Printf("   Title: %s\n", status.PinnedBead.Title)
-		fmt.Printf("   This work was completed elsewhere. Clear your hook with: gt unsling\n")
+		fmt.Printf("   This work was completed elsewhere. Clear your hook with: lt unsling\n")
 		return
 	}
 
@@ -749,7 +749,7 @@ func outputMoleculeStatus(status MoleculeStatusInfo) {
 			fmt.Printf("   From: %s\n", sender)
 		}
 		fmt.Printf("   Subject: %s\n", status.PinnedBead.Title)
-		fmt.Printf("   Run: gt mail read %s\n", status.PinnedBead.ID)
+		fmt.Printf("   Run: lt mail read %s\n", status.PinnedBead.ID)
 		return
 	}
 
@@ -947,13 +947,13 @@ func runMoleculeCurrent(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("getting current directory: %w", err)
 	}
 
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
 		return fmt.Errorf("finding workspace: %w", err)
 	}
 	if townRoot == "" {
-		return fmt.Errorf("not in a Gas Town workspace")
+		return fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	// Determine target agent identity
@@ -1168,7 +1168,7 @@ func outputMoleculeCurrent(info MoleculeCurrentInfo) error {
 }
 
 // isTownLevelRole returns true if the agent ID is a town-level role.
-// Town-level roles (Mayor, Deacon) operate from the town root and may have
+// HQ-level roles (Mayor, Deacon) operate from the HQ root and may have
 // pinned beads in any rig's beads directory.
 // Accepts both "mayor" and "mayor/" formats for compatibility.
 func isTownLevelRole(agentID string) bool {

@@ -254,7 +254,7 @@ func TestAgentEnv_WithoutAgentOverride_RequiresFallback(t *testing.T) {
 	t.Parallel()
 
 	// Simulate the default polecat dispatch path (no --agent flag).
-	// This is what lifecycle.go calls when gt scheduler run / gt sling dispatches.
+	// This is what lifecycle.go calls when gt scheduler run / lt sling dispatches.
 	env := AgentEnv(AgentEnvConfig{
 		Role:      "polecat",
 		Rig:       "myrig",
@@ -541,8 +541,8 @@ func TestBuildStartupCommandWithEnv(t *testing.T) {
 			name:     "env with prompt",
 			env:      map[string]string{"GT_ROLE": "polecat"},
 			agentCmd: "claude",
-			prompt:   "gt prime",
-			expected: `export GT_ROLE=polecat && claude "gt prime"`,
+			prompt:   "lt prime",
+			expected: `export GT_ROLE=polecat && claude "lt prime"`,
 		},
 	}
 
@@ -813,7 +813,7 @@ func TestAgentEnv_IncludesNodeOptionsClearing(t *testing.T) {
 func TestAgentEnv_IncludesClaudeCodeClearing(t *testing.T) {
 	t.Parallel()
 	// Verify AgentEnv always includes CLAUDECODE="" regardless of role.
-	// This prevents nested session detection when gt sling is invoked
+	// This prevents nested session detection when lt sling is invoked
 	// from within a Claude Code session (issue #1666).
 	roles := []struct {
 		role      string
@@ -844,7 +844,7 @@ func TestAgentEnv_IncludesClaudeCodeClearing(t *testing.T) {
 func TestAgentEnv_DisablesBdBackup(t *testing.T) {
 	t.Parallel()
 	// Verify AgentEnv always includes BD_BACKUP_ENABLED=false regardless of role.
-	// In Gas Town, Dolt is the persistent data store and the daemon provides
+	// In Camp Leatherneck, Dolt is the persistent data store and the daemon provides
 	// centralized backup patrols (dolt_backup, jsonl_git_backup). bd's per-repo
 	// auto-backup is redundant and pollutes rig git history via git add -f.
 	// See: https://github.com/steveyegge/beads/issues/2241
@@ -970,7 +970,7 @@ func TestSanitizeOTELAttrValue(t *testing.T) {
 		},
 		{
 			name:   "beacon first line",
-			input:  "[GAS TOWN] polecat rust (rig: gastown) <- witness • 2025-12-30T15:42 • assigned:gt-abc12\n\nRun `gt prime --hook`",
+			input:  "[GAS TOWN] polecat rust (rig: gastown) <- witness • 2025-12-30T15:42 • assigned:gt-abc12\n\nRun `lt prime --hook`",
 			maxLen: 120,
 			want:   "[GAS TOWN] polecat rust (rig: gastown) <- witness • 2025-12-30T15:42 • assigned:gt-abc12",
 		},
@@ -1001,7 +1001,7 @@ func TestAgentEnv_OTELPromptAndTown(t *testing.T) {
 	t.Setenv("GT_OTEL_METRICS_URL", "http://localhost:8428/opentelemetry/api/v1/push")
 	t.Setenv("GT_OTEL_LOGS_URL", "http://localhost:9428/insert/opentelemetry/v1/logs")
 
-	beacon := "[GAS TOWN] polecat rust (rig: gastown) <- witness • 2025-12-30T15:42 • assigned:gt-abc12\n\nRun `gt prime --hook`"
+	beacon := "[GAS TOWN] polecat rust (rig: gastown) <- witness • 2025-12-30T15:42 • assigned:gt-abc12\n\nRun `lt prime --hook`"
 	env := AgentEnv(AgentEnvConfig{
 		Role:      "polecat",
 		Rig:       "gastown",

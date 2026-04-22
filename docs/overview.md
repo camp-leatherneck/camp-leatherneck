@@ -1,9 +1,9 @@
-# Understanding Gas Town
+# Understanding Camp Leatherneck
 
-This document provides a conceptual overview of Gas Town's architecture, focusing on
+This document provides a conceptual overview of Camp Leatherneck's architecture, focusing on
 the role taxonomy and how different agents interact.
 
-## Why Gas Town Exists
+## Why Camp Leatherneck Exists
 
 As AI agents become central to engineering workflows, teams face new challenges:
 
@@ -12,18 +12,18 @@ As AI agents become central to engineering workflows, teams face new challenges:
 - **Efficiency:** How do you route work to the right agent?
 - **Scale:** How do you coordinate agents across repos and teams?
 
-Gas Town is an orchestration layer that treats AI agent work as structured data.
+Camp Leatherneck is an orchestration layer that treats AI agent work as structured data.
 Every action is attributed. Every agent has a track record. Every piece of work
 has provenance. See [Why These Features](why-these-features.md) for the full rationale,
 and [Glossary](glossary.md) for terminology.
 
 ## Role Taxonomy
 
-Gas Town has several agent types, each with distinct responsibilities and lifecycles.
+Camp Leatherneck has several agent types, each with distinct responsibilities and lifecycles.
 
 ### Infrastructure Roles
 
-These roles manage the Gas Town system itself:
+These roles manage the Camp Leatherneck system itself:
 
 | Role | Description | Lifecycle |
 |------|-------------|-----------|
@@ -44,7 +44,7 @@ These roles do actual project work:
 
 ## Convoys: Tracking Work
 
-A **convoy** (🚚) is how you track batched work in Gas Town. When you kick off work -
+A **convoy** (🚚) is how you track batched work in Camp Leatherneck. When you kick off work -
 even a single issue - create a convoy to track it.
 
 ```bash
@@ -179,16 +179,16 @@ Identity is preserved even when working cross-rig:
 
 ## The Propulsion Principle
 
-All Gas Town agents follow the same core principle:
+All Camp Leatherneck agents follow the same core principle:
 
 > **If you find something on your hook, YOU RUN IT.**
 
 This applies regardless of role. The hook is your assignment. Execute it immediately
-without waiting for confirmation. Gas Town is a steam engine - agents are pistons.
+without waiting for confirmation. Camp Leatherneck is a steam engine - agents are pistons.
 
 ## Model Evaluation and A/B Testing
 
-Gas Town's attribution system enables objective model comparison by tracking
+Camp Leatherneck's attribution system enables objective model comparison by tracking
 completion time, quality signals, and revision count per agent. Deploy different
 models on similar tasks and compare outcomes with `bd stats`.
 
@@ -199,6 +199,6 @@ capability-based routing.
 
 1. **Using dogs for user work**: Dogs are Deacon infrastructure. Use crew or polecats.
 2. **Confusing crew with polecats**: Crew is persistent and human-managed. Polecats are transient and Witness-managed.
-3. **Working in wrong directory**: Gas Town uses cwd for identity detection. Stay in your home directory.
+3. **Working in wrong directory**: Camp Leatherneck uses cwd for identity detection. Stay in your home directory.
 4. **Waiting for confirmation when work is hooked**: The hook IS your assignment. Execute immediately.
 5. **Creating worktrees when dispatch is better**: If work should be owned by the target rig, dispatch it instead.

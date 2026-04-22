@@ -16,17 +16,17 @@ import (
 // Returns the workspace root path for use by the caller.
 //
 // Use this guard for integration tests that shell out to gt/bd or otherwise
-// depend on a live Gas Town directory tree being present. Tests that create
+// depend on a live Camp Leatherneck directory tree being present. Tests that create
 // their own temporary town structure (via t.TempDir) do NOT need this guard.
 func RequireTownEnv(t *testing.T) string {
 	t.Helper()
 
 	root, err := workspace.FindFromCwd()
 	if err != nil {
-		t.Skipf("skipping: not in a Gas Town workspace (%v)", err)
+		t.Skipf("skipping: not in a Camp Leatherneck workspace (%v)", err)
 	}
 	if root == "" {
-		t.Skip("skipping: not in a Gas Town workspace")
+		t.Skip("skipping: not in a Camp Leatherneck workspace")
 	}
 
 	if _, err := os.Stat(filepath.Join(root, "mayor", "rigs.json")); os.IsNotExist(err) {

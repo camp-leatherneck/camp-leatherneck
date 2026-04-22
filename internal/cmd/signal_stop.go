@@ -52,10 +52,10 @@ func runSignalStop(cmd *cobra.Command, args []string) error {
 		return outputStopAllow()
 	}
 
-	// Find town root for mail and beads operations
+	// Find HQ root for mail and beads operations
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil || townRoot == "" {
-		// Not in a Gas Town workspace — allow the stop
+		// Not in a Camp Leatherneck workspace — allow the stop
 		return outputStopAllow()
 	}
 
@@ -137,12 +137,12 @@ func checkUnreadMail(townRoot, address string) string {
 	// Build the block reason with the most important message
 	msg := relevant[0]
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("[gt signal stop] You have %d unread message(s). ", len(relevant)))
+	sb.WriteString(fmt.Sprintf("[lt signal stop] You have %d unread message(s). ", len(relevant)))
 	sb.WriteString(fmt.Sprintf("Most recent from %s: \"%s\"", msg.From, msg.Subject))
 	if len(relevant) > 1 {
 		sb.WriteString(fmt.Sprintf(" (+%d more)", len(relevant)-1))
 	}
-	sb.WriteString("\n\nRun `gt mail inbox` to read your messages, then continue working.")
+	sb.WriteString("\n\nRun `lt mail inbox` to read your messages, then continue working.")
 	return sb.String()
 }
 
@@ -178,8 +178,8 @@ func checkStopSlungWork(townRoot string) string {
 		if err == nil && hookBead != nil {
 			// Only block if the hooked work is in "hooked" status (not yet claimed)
 			if hookBead.Status == beads.StatusHooked {
-				return fmt.Sprintf("[gt signal stop] Work slung to you: %s — \"%s\"\n\n"+
-					"Run `gt hook` to see details, then execute the work.",
+				return fmt.Sprintf("[lt signal stop] Work slung to you: %s — \"%s\"\n\n"+
+					"Run `lt hook` to see details, then execute the work.",
 					hookBead.ID, hookBead.Title)
 			}
 		}
@@ -197,8 +197,8 @@ func checkStopSlungWork(townRoot string) string {
 	})
 	if err == nil && len(hookedBeads) > 0 {
 		bead := hookedBeads[0]
-		return fmt.Sprintf("[gt signal stop] Work slung to you: %s — \"%s\"\n\n"+
-			"Run `gt hook` to see details, then execute the work.",
+		return fmt.Sprintf("[lt signal stop] Work slung to you: %s — \"%s\"\n\n"+
+			"Run `lt hook` to see details, then execute the work.",
 			bead.ID, bead.Title)
 	}
 

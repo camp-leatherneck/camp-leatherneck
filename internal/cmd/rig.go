@@ -1,4 +1,4 @@
-// Package cmd provides CLI commands for the gt tool.
+// Package cmd provides CLI commands for the lt tool.
 package cmd
 
 import (
@@ -39,7 +39,7 @@ var rigCmd = &cobra.Command{
 	GroupID: GroupWorkspace,
 	Short:   "Manage rigs in the workspace",
 	RunE:    requireSubcommand,
-	Long: `Manage rigs (project containers) in the Gas Town workspace.
+	Long: `Manage rigs (project containers) in the Camp Leatherneck workspace.
 
 A rig is a container for managing a project and its agents:
   - refinery/rig/  Canonical main clone (Refinery's working copy)
@@ -61,7 +61,7 @@ This creates a rig container with:
   - plugins/              Rig-level plugin directory
   - refinery/rig/         Canonical main clone
   - mayor/rig/            Mayor's working clone
-  - crew/                 Empty crew directory (add members with 'gt crew add')
+  - crew/                 Empty crew directory (add members with 'lt crew add')
   - witness/              Witness agent directory
   - polecats/             Worker directory (empty)
 
@@ -76,9 +76,9 @@ Use --adopt to register an existing directory instead of creating new:
   - Adds entry to mayor/rigs.json
 
 Example:
-  gt rig add gastown https://github.com/camp-leatherneck/camp-leatherneck
-  gt rig add my_project git@github.com:user/repo.git --prefix mp
-  gt rig add existing_rig --adopt`,
+  lt rig add gastown https://github.com/camp-leatherneck/camp-leatherneck
+  lt rig add my_project git@github.com:user/repo.git --prefix mp
+  lt rig add existing_rig --adopt`,
 	Args: cobra.RangeArgs(1, 2),
 	RunE: runRigAdd,
 }
@@ -86,7 +86,7 @@ Example:
 var rigListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all rigs in the workspace",
-	Long: `List all rigs registered in the Gas Town workspace.
+	Long: `List all rigs registered in the Camp Leatherneck workspace.
 
 For each rig, displays:
   - Rig name and operational state (OPERATIONAL, PARKED, DOCKED)
@@ -95,29 +95,29 @@ For each rig, displays:
   - Number of polecats and crew members
 
 Examples:
-  gt rig list          # List all rigs with status
-  gt rig list --json   # Output as JSON for scripting`,
+  lt rig list          # List all rigs with status
+  lt rig list --json   # Output as JSON for scripting`,
 	RunE: runRigList,
 }
 
 var rigRemoveCmd = &cobra.Command{
 	Use:   "remove <name>",
 	Short: "Remove a rig from the registry (does not delete files)",
-	Long: `Remove a rig from the Gas Town registry.
+	Long: `Remove a rig from the Camp Leatherneck registry.
 
 This only removes the rig entry from mayor/rigs.json and cleans up
 the beads route. The rig's files on disk are NOT deleted.
 
 If the rig has running tmux sessions (witness, refinery, polecats, crew),
-you must shut them down first with 'gt rig shutdown' or use --force to
+you must shut them down first with 'lt rig shutdown' or use --force to
 kill them automatically.
 
 To fully remove a rig, delete the directory manually after unregistering.
 
 Examples:
-  gt rig remove myproject                    # Unregister (fails if sessions running)
-  gt rig remove myproject --force            # Kill sessions then unregister
-  gt rig remove myproject && rm -rf myproject # Unregister and delete files`,
+  lt rig remove myproject                    # Unregister (fails if sessions running)
+  lt rig remove myproject --force            # Kill sessions then unregister
+  lt rig remove myproject && rm -rf myproject # Unregister and delete files`,
 	Args: cobra.ExactArgs(1),
 	RunE: runRigRemove,
 }
@@ -130,11 +130,11 @@ var rigResetCmd = &cobra.Command{
 By default, resets all resettable state. Use flags to reset specific items.
 
 Examples:
-  gt rig reset              # Reset all state
-  gt rig reset --handoff    # Clear handoff content only
-  gt rig reset --mail       # Clear stale mail messages only
-  gt rig reset --stale      # Reset orphaned in_progress issues
-  gt rig reset --stale --dry-run  # Preview what would be reset`,
+  lt rig reset              # Reset all state
+  lt rig reset --handoff    # Clear handoff content only
+  lt rig reset --mail       # Clear stale mail messages only
+  lt rig reset --stale      # Reset orphaned in_progress issues
+  lt rig reset --stale --dry-run  # Preview what would be reset`,
 	RunE: runRigReset,
 }
 
@@ -143,7 +143,7 @@ var rigBootCmd = &cobra.Command{
 	Short: "Start witness and refinery for a rig",
 	Long: `Start the witness and refinery agents for a rig.
 
-This is the inverse of 'gt rig shutdown'. It starts:
+This is the inverse of 'lt rig shutdown'. It starts:
 - The witness (if not already running)
 - The refinery (if not already running)
 
@@ -151,7 +151,7 @@ Polecats are NOT started by this command - they are spawned
 on demand when work is assigned.
 
 Examples:
-  gt rig boot greenplace`,
+  lt rig boot greenplace`,
 	Args: cobra.ExactArgs(1),
 	RunE: runRigBoot,
 }
@@ -161,7 +161,7 @@ var rigStartCmd = &cobra.Command{
 	Short: "Start witness and refinery on patrol for one or more rigs",
 	Long: `Start the witness and refinery agents on patrol for one or more rigs.
 
-This is similar to 'gt rig boot' but supports multiple rigs at once.
+This is similar to 'lt rig boot' but supports multiple rigs at once.
 For each rig, it starts:
 - The witness (if not already running)
 - The refinery (if not already running)
@@ -170,9 +170,9 @@ Polecats are NOT started by this command - they are spawned
 on demand when work is assigned.
 
 Examples:
-  gt rig start gastown
-  gt rig start gastown beads
-  gt rig start gastown beads myproject`,
+  lt rig start gastown
+  lt rig start gastown beads
+  lt rig start gastown beads myproject`,
 	Args: cobra.MinimumNArgs(1),
 	RunE: runRigStart,
 }
@@ -182,12 +182,12 @@ var rigRebootCmd = &cobra.Command{
 	Short: "Restart witness and refinery for a rig",
 	Long: `Restart the patrol agents (witness and refinery) for a rig.
 
-This is equivalent to 'gt rig shutdown' followed by 'gt rig boot'.
+This is equivalent to 'lt rig shutdown' followed by 'lt rig boot'.
 Useful after polecats complete work and land their changes.
 
 Examples:
-  gt rig reboot greenplace
-  gt rig reboot beads --force`,
+  lt rig reboot greenplace
+  lt rig reboot beads --force`,
 	Args: cobra.ExactArgs(1),
 	RunE: runRigReboot,
 }
@@ -211,9 +211,9 @@ Use --force to force immediate shutdown (prompts if uncommitted work).
 Use --nuclear to bypass ALL safety checks (will lose work!).
 
 Examples:
-  gt rig shutdown greenplace
-  gt rig shutdown greenplace --force
-  gt rig shutdown greenplace --nuclear  # DANGER: loses uncommitted work`,
+  lt rig shutdown greenplace
+  lt rig shutdown greenplace --force
+  lt rig shutdown greenplace --nuclear  # DANGER: loses uncommitted work`,
 	Args: cobra.ExactArgs(1),
 	RunE: runRigShutdown,
 }
@@ -234,9 +234,9 @@ Displays:
 - Crew members (name, branch, session status, git status)
 
 Examples:
-  gt rig status           # Infer rig from current directory
-  gt rig status gastown
-  gt rig status beads`,
+  lt rig status           # Infer rig from current directory
+  lt rig status gastown
+  lt rig status beads`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runRigStatus,
 }
@@ -246,7 +246,7 @@ var rigStopCmd = &cobra.Command{
 	Short: "Stop one or more rigs (shutdown semantics)",
 	Long: `Stop all agents in one or more rigs.
 
-This command is similar to 'gt rig shutdown' but supports multiple rigs.
+This command is similar to 'lt rig shutdown' but supports multiple rigs.
 For each rig, it gracefully shuts down:
 - All polecat sessions
 - The refinery (if running)
@@ -261,10 +261,10 @@ Use --force to force immediate shutdown (prompts if uncommitted work).
 Use --nuclear to bypass ALL safety checks (will lose work!).
 
 Examples:
-  gt rig stop gastown
-  gt rig stop gastown beads
-  gt rig stop --force gastown beads
-  gt rig stop --nuclear gastown  # DANGER: loses uncommitted work`,
+  lt rig stop gastown
+  lt rig stop gastown beads
+  lt rig stop --force gastown beads
+  lt rig stop --nuclear gastown  # DANGER: loses uncommitted work`,
 	Args: cobra.MinimumNArgs(1),
 	RunE: runRigStop,
 }
@@ -274,7 +274,7 @@ var rigRestartCmd = &cobra.Command{
 	Short: "Restart one or more rigs (stop then start)",
 	Long: `Restart the patrol agents (witness and refinery) for one or more rigs.
 
-This is equivalent to 'gt rig stop' followed by 'gt rig start' for each rig.
+This is equivalent to 'lt rig stop' followed by 'lt rig start' for each rig.
 Useful after polecats complete work and land their changes.
 
 Before shutdown, checks all polecats for uncommitted work:
@@ -286,10 +286,10 @@ Use --force to force immediate shutdown (prompts if uncommitted work).
 Use --nuclear to bypass ALL safety checks (will lose work!).
 
 Examples:
-  gt rig restart gastown
-  gt rig restart gastown beads
-  gt rig restart --force gastown beads
-  gt rig restart --nuclear gastown  # DANGER: loses uncommitted work`,
+  lt rig restart gastown
+  lt rig restart gastown beads
+  lt rig restart --force gastown beads
+  lt rig restart --nuclear gastown  # DANGER: loses uncommitted work`,
 	Args: cobra.MinimumNArgs(1),
 	RunE: runRigRestart,
 }
@@ -491,7 +491,7 @@ func runRigAdd(cmd *cobra.Command, args []string) error {
 	gitURL := args[1]
 
 	if !isGitRemoteURL(gitURL) {
-		return fmt.Errorf("invalid git URL %q: expected a remote URL (e.g. https://, git@host:, ssh://, s3://, file:///abs/path)\n\nTo use a local repo as the source, pass a file:// URL. To register an already-assembled rig directory, use:\n  gt rig add %s --adopt", gitURL, name)
+		return fmt.Errorf("invalid git URL %q: expected a remote URL (e.g. https://, git@host:, ssh://, s3://, file:///abs/path)\n\nTo use a local repo as the source, pass a file:// URL. To register an already-assembled rig directory, use:\n  lt rig add %s --adopt", gitURL, name)
 	}
 
 	// Ensure beads (bd) is available before proceeding
@@ -502,7 +502,7 @@ func runRigAdd(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rigs config
@@ -669,12 +669,12 @@ func runRigAdd(cmd *cobra.Command, args []string) error {
 	fmt.Printf("  ├── plugins/          (rig-level plugins)\n")
 	fmt.Printf("  ├── mayor/rig/        (clone: %s)\n", defaultBranch)
 	fmt.Printf("  ├── refinery/rig/     (worktree: %s, sees polecat branches)\n", defaultBranch)
-	fmt.Printf("  ├── crew/             (empty - add crew with 'gt crew add')\n")
+	fmt.Printf("  ├── crew/             (empty - add crew with 'lt crew add')\n")
 	fmt.Printf("  ├── witness/\n")
 	fmt.Printf("  └── polecats/         (.claude/ scaffolded for polecat sessions)\n")
 
 	fmt.Printf("\nNext steps:\n")
-	fmt.Printf("  gt crew add <name> --rig %s   # Create your personal workspace\n", name)
+	fmt.Printf("  lt crew add <name> --rig %s   # Create your personal workspace\n", name)
 	fmt.Printf("  cd %s/crew/<name>              # Start working\n", filepath.Join(townRoot, name))
 
 	return nil
@@ -730,7 +730,7 @@ func runRigList(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rigs config
@@ -743,7 +743,7 @@ func runRigList(cmd *cobra.Command, args []string) error {
 
 	if len(rigsConfig.Rigs) == 0 {
 		fmt.Println("No rigs configured.")
-		fmt.Printf("\nAdd one with: %s\n", style.Dim.Render("gt rig add <name> <git-url>"))
+		fmt.Printf("\nAdd one with: %s\n", style.Dim.Render("lt rig add <name> <git-url>"))
 		return nil
 	}
 
@@ -863,7 +863,7 @@ var rigMenuCmd = &cobra.Command{
 func runRigMenu(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	rigsPath := filepath.Join(townRoot, "mayor", "rigs.json")
@@ -926,36 +926,36 @@ func runRigMenu(cmd *cobra.Command, args []string) error {
 		}
 		label := fmt.Sprintf("%s%s%s", r.led, space, r.name)
 		key := shortcutKey(keyIndex)
-		action := fmt.Sprintf("display-popup -E -w 80 -h 25 -T ' %s ' 'gt rig status %s; echo; echo \"Press any key to close\"; read -rsn1'", r.name, r.name)
+		action := fmt.Sprintf("display-popup -E -w 80 -h 25 -T ' %s ' 'lt rig status %s; echo; echo \"Press any key to close\"; read -rsn1'", r.name, r.name)
 		menuArgs = append(menuArgs, label, key, action)
 		keyIndex++
 
 		// Contextual actions (no shortcut keys)
 		if r.running {
 			menuArgs = append(menuArgs,
-				"   Stop", "", fmt.Sprintf("run-shell 'gt rig stop %s'", r.name),
-				"   Reboot", "", fmt.Sprintf("run-shell 'gt rig reboot %s'", r.name),
+				"   Stop", "", fmt.Sprintf("run-shell 'lt rig stop %s'", r.name),
+				"   Reboot", "", fmt.Sprintf("run-shell 'lt rig reboot %s'", r.name),
 			)
 		} else if r.opState == "PARKED" {
 			menuArgs = append(menuArgs,
-				"   Unpark", "", fmt.Sprintf("run-shell 'gt rig unpark %s'", r.name),
-				"   Start", "", fmt.Sprintf("run-shell 'gt rig start %s'", r.name),
+				"   Unpark", "", fmt.Sprintf("run-shell 'lt rig unpark %s'", r.name),
+				"   Start", "", fmt.Sprintf("run-shell 'lt rig start %s'", r.name),
 			)
 		} else if r.opState == "DOCKED" {
 			menuArgs = append(menuArgs,
-				"   Undock", "", fmt.Sprintf("run-shell 'gt rig undock %s'", r.name),
+				"   Undock", "", fmt.Sprintf("run-shell 'lt rig undock %s'", r.name),
 			)
 		} else {
 			// Stopped but not parked/docked
 			menuArgs = append(menuArgs,
-				"   Start", "", fmt.Sprintf("run-shell 'gt rig start %s'", r.name),
+				"   Start", "", fmt.Sprintf("run-shell 'lt rig start %s'", r.name),
 			)
 		}
 
 		// Park/dock available for non-parked/docked rigs
 		if r.opState != "PARKED" && r.opState != "DOCKED" {
 			menuArgs = append(menuArgs,
-				"   Park", "", fmt.Sprintf("run-shell 'gt rig park %s'", r.name),
+				"   Park", "", fmt.Sprintf("run-shell 'lt rig park %s'", r.name),
 			)
 		}
 
@@ -981,7 +981,7 @@ func runRigRemove(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rigs config
@@ -1018,9 +1018,9 @@ func runRigRemove(cmd *cobra.Command, args []string) error {
 				fmt.Printf("  - %s\n", s)
 			}
 			fmt.Printf("\nShut them down first:\n")
-			fmt.Printf("  %s\n", style.Dim.Render(fmt.Sprintf("gt rig shutdown %s", name)))
+			fmt.Printf("  %s\n", style.Dim.Render(fmt.Sprintf("lt rig shutdown %s", name)))
 			fmt.Printf("Or force removal:\n")
-			fmt.Printf("  %s\n", style.Dim.Render(fmt.Sprintf("gt rig remove %s --force", name)))
+			fmt.Printf("  %s\n", style.Dim.Render(fmt.Sprintf("lt rig remove %s --force", name)))
 			return fmt.Errorf("refusing to remove rig with running sessions")
 		}
 
@@ -1049,7 +1049,7 @@ func runRigRemove(cmd *cobra.Command, args []string) error {
 					style.Warning.Render("!"), name, rigPath)
 				fmt.Printf("This is an inconsistent state. To fix it, either:\n")
 				fmt.Printf("  Adopt the directory:  %s\n",
-					style.Dim.Render(fmt.Sprintf("gt rig add %s --adopt", name)))
+					style.Dim.Render(fmt.Sprintf("lt rig add %s --adopt", name)))
 				fmt.Printf("  Delete the directory: %s\n",
 					style.Dim.Render(fmt.Sprintf("rm -rf %s", rigPath)))
 				return fmt.Errorf("rig %q not in registry but directory exists", name)
@@ -1089,7 +1089,7 @@ func runRigRemove(cmd *cobra.Command, args []string) error {
 }
 
 // refreshCycleBindingsOnExistingSessions forces a refresh of the tmux C-b n/p
-// cycle bindings on any existing session. This is needed after gt rig add so
+// cycle bindings on any existing session. This is needed after lt rig add so
 // the new rig's prefix is included in the grep pattern.
 // Non-fatal: failure only means existing sessions need a restart to pick up the
 // new prefix.
@@ -1110,7 +1110,7 @@ func runRigAdopt(_ *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rigs config
@@ -1290,7 +1290,7 @@ func runRigAdopt(_ *cobra.Command, args []string) error {
 	}
 
 	// If no existing .beads/ candidate was found, initialize a fresh database
-	// to match the behavior of the normal (non-adopt) gt rig add path.
+	// to match the behavior of the normal (non-adopt) lt rig add path.
 	if !foundBeadsCandidate && result.BeadsPrefix != "" {
 		// Dolt server is required for beads init.
 		if running, _, sErr := doltserver.IsRunning(townRoot); sErr != nil || !running {
@@ -1376,7 +1376,7 @@ func runRigReset(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	cwd, err := os.Getwd()
@@ -1401,7 +1401,7 @@ func runRigReset(cmd *cobra.Command, args []string) error {
 	// If no specific flags, reset all; otherwise only reset what's specified
 	resetAll := !rigResetHandoff && !rigResetMail && !rigResetStale
 
-	// Town beads for handoff/mail operations
+	// HQ beads for handoff/mail operations
 	townBd := beads.New(townRoot)
 	// Rig beads for issue operations (uses cwd to find .beads/)
 	rigBd := beads.New(cwd)
@@ -1578,7 +1578,7 @@ func runRigBoot(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rigs config and get rig
@@ -1597,7 +1597,7 @@ func runRigBoot(cmd *cobra.Command, args []string) error {
 
 	// Check if rig is parked or docked (uses bead labels + wisp state)
 	if blocked, reason := IsRigParkedOrDocked(townRoot, rigName); blocked {
-		return fmt.Errorf("rig '%s' is %s - use 'gt rig unpark' or 'gt rig undock' first", rigName, reason)
+		return fmt.Errorf("rig '%s' is %s - use 'lt rig unpark' or 'lt rig undock' first", rigName, reason)
 	}
 
 	fmt.Printf("Booting rig %s...\n", style.Bold.Render(rigName))
@@ -1657,7 +1657,7 @@ func runRigStart(cmd *cobra.Command, args []string) error {
 	// Find workspace once
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rigs config
@@ -1684,7 +1684,7 @@ func runRigStart(cmd *cobra.Command, args []string) error {
 
 		// Check if rig is parked or docked (uses bead labels + wisp state)
 		if blocked, reason := IsRigParkedOrDocked(townRoot, rigName); blocked {
-			fmt.Printf("%s Rig '%s' is %s - skipping (use 'gt rig unpark' or 'gt rig undock' first)\n",
+			fmt.Printf("%s Rig '%s' is %s - skipping (use 'lt rig unpark' or 'lt rig undock' first)\n",
 				style.Warning.Render("⚠"), rigName, reason)
 			continue
 		}
@@ -1765,7 +1765,7 @@ func runRigShutdown(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rigs config and get rig
@@ -2045,7 +2045,7 @@ func runRigStatus(cmd *cobra.Command, args []string) error {
 			// If session is dead but beads says working, show "stalled" so the
 			// witness can detect unsubmitted work (gt-3071b). Previously this
 			// showed "done" which masked failures where polecats died before
-			// running gt done, leaving work stranded in worktrees.
+			// running lt done, leaving work stranded in worktrees.
 			displayState := pi.state
 			if pi.hasSession && displayState == polecat.StateDone {
 				displayState = polecat.StateWorking
@@ -2091,7 +2091,7 @@ func runRigStop(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rigs config
@@ -2189,7 +2189,7 @@ func runRigRestart(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rigs config

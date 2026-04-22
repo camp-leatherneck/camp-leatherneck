@@ -224,17 +224,17 @@ The --merge flag sets the merge strategy for all work in the convoy:
   local   Keep on feature branch (for upstream PRs, human review)
 
 Examples:
-  gt convoy create "Deploy v2.0" gt-abc bd-xyz
-  gt convoy create "Release prep" gt-abc --notify           # defaults to mayor/
-  gt convoy create "Release prep" gt-abc --notify ops/      # notify ops/
-  gt convoy create "Feature rollout" gt-a gt-b --owner mayor/ --notify ops/
-  gt convoy create "Feature rollout" gt-a gt-b gt-c --molecule mol-release
-  gt convoy create --owned "Manual deploy" gt-abc           # caller-managed lifecycle
-  gt convoy create "Quick fix" gt-abc --merge=direct        # bypass refinery
+  lt convoy create "Deploy v2.0" gt-abc bd-xyz
+  lt convoy create "Release prep" gt-abc --notify           # defaults to mayor/
+  lt convoy create "Release prep" gt-abc --notify ops/      # notify ops/
+  lt convoy create "Feature rollout" gt-a gt-b --owner mayor/ --notify ops/
+  lt convoy create "Feature rollout" gt-a gt-b gt-c --molecule mol-release
+  lt convoy create --owned "Manual deploy" gt-abc           # caller-managed lifecycle
+  lt convoy create "Quick fix" gt-abc --merge=direct        # bypass refinery
 
   # Auto-discover issues from an epic's children:
-  gt convoy create --from-epic gt-epic-abc
-  gt convoy create --from-epic gt-epic-abc --owned --merge=direct`,
+  lt convoy create --from-epic gt-epic-abc
+  lt convoy create --from-epic gt-epic-abc --owned --merge=direct`,
 	Args:         cobra.ArbitraryArgs,
 	SilenceUsage: true,
 	RunE:         runConvoyCreate,
@@ -258,11 +258,11 @@ var convoyListCmd = &cobra.Command{
 	Long: `List convoys, showing open convoys by default.
 
 Examples:
-  gt convoy list              # Open convoys only (default)
-  gt convoy list --all        # All convoys (open + closed)
-  gt convoy list --status=closed  # Recently landed
-  gt convoy list --tree       # Show convoy + child status tree
-  gt convoy list --json`,
+  lt convoy list              # Open convoys only (default)
+  lt convoy list --all        # All convoys (open + closed)
+  lt convoy list --status=closed  # Recently landed
+  lt convoy list --tree       # Show convoy + child status tree
+  lt convoy list --json`,
 	SilenceUsage: true,
 	RunE:         runConvoyList,
 }
@@ -275,8 +275,8 @@ var convoyAddCmd = &cobra.Command{
 If the convoy is closed, it will be automatically reopened.
 
 Examples:
-  gt convoy add hq-cv-abc gt-new-issue
-  gt convoy add hq-cv-abc gt-issue1 gt-issue2 gt-issue3`,
+  lt convoy add hq-cv-abc gt-new-issue
+  lt convoy add hq-cv-abc gt-issue1 gt-issue2 gt-issue3`,
 	Args:         cobra.MinimumNArgs(2),
 	SilenceUsage: true,
 	RunE:         runConvoyAdd,
@@ -295,9 +295,9 @@ in rig beads won't auto-close via bd close alone. This command bridges that gap.
 Can be run manually or by deacon patrol to ensure convoys close promptly.
 
 Examples:
-  gt convoy check              # Check all open convoys
-  gt convoy check hq-cv-abc    # Check specific convoy
-  gt convoy check --dry-run    # Preview what would close without acting`,
+  lt convoy check              # Check all open convoys
+  lt convoy check hq-cv-abc    # Check specific convoy
+  lt convoy check --dry-run    # Preview what would close without acting`,
 	Args:         cobra.MaximumNArgs(1),
 	SilenceUsage: true,
 	RunE:         runConvoyCheck,
@@ -319,8 +319,8 @@ Use this to detect convoys that need feeding or cleanup. The Deacon patrol
 runs this periodically and dispatches dogs to feed stranded convoys.
 
 Examples:
-  gt convoy stranded              # Show stranded convoys
-  gt convoy stranded --json       # Machine-readable output for automation`,
+  lt convoy stranded              # Show stranded convoys
+  lt convoy stranded --json       # Machine-readable output for automation`,
 	SilenceUsage: true,
 	RunE:         runConvoyStranded,
 }
@@ -336,10 +336,10 @@ close. Use --force to close regardless of tracked issue status.
 The close is idempotent - closing an already-closed convoy is a no-op.
 
 Examples:
-  gt convoy close hq-cv-abc                           # Close (all items must be done)
-  gt convoy close hq-cv-abc --force                   # Force close abandoned convoy
-  gt convoy close hq-cv-abc --reason="no longer needed" --force
-  gt convoy close hq-cv-xyz --notify mayor/`,
+  lt convoy close hq-cv-abc                           # Close (all items must be done)
+  lt convoy close hq-cv-abc --force                   # Force close abandoned convoy
+  lt convoy close hq-cv-abc --reason="no longer needed" --force
+  lt convoy close hq-cv-xyz --notify mayor/`,
 	Args:         cobra.ExactArgs(1),
 	SilenceUsage: true,
 	RunE:         runConvoyClose,
@@ -360,13 +360,13 @@ The command:
   4. Closes the convoy bead with reason "Landed by owner"
   5. Sends completion notifications to owner/notify addresses
 
-Use 'gt convoy close' instead for non-owned convoys.
+Use 'lt convoy close' instead for non-owned convoys.
 
 Examples:
-  gt convoy land hq-cv-abc                  # Land owned convoy
-  gt convoy land hq-cv-abc --force          # Land even with open issues
-  gt convoy land hq-cv-abc --keep-worktrees # Skip worktree cleanup
-  gt convoy land hq-cv-abc --dry-run        # Preview what would happen`,
+  lt convoy land hq-cv-abc                  # Land owned convoy
+  lt convoy land hq-cv-abc --force          # Land even with open issues
+  lt convoy land hq-cv-abc --keep-worktrees # Skip worktree cleanup
+  lt convoy land hq-cv-abc --dry-run        # Preview what would happen`,
 	Args:         cobra.ExactArgs(1),
 	SilenceUsage: true,
 	RunE:         runConvoyLand,
@@ -426,13 +426,13 @@ func init() {
 	rootCmd.AddCommand(convoyCmd)
 }
 
-// getTownBeadsDir returns the town root directory for bd commands.
-// Convoy commands run bd from town root (not .beads/) so bd discovers
+// getTownBeadsDir returns the HQ root directory for bd commands.
+// Convoy commands run bd from HQ root (not .beads/) so bd discovers
 // the correct database via its own workspace detection.
 func getTownBeadsDir() (string, error) {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return "", fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return "", fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 	return townRoot, nil
 }
@@ -627,7 +627,7 @@ func runConvoyCreate(cmd *cobra.Command, args []string) error {
 	} else {
 		// Standard mode: explicit issue list
 		if len(args) == 0 {
-			return fmt.Errorf("at least one argument is required\nUsage: gt convoy create <name> <issue-id> [issue-id...]\n       gt convoy create --from-epic <epic-id>")
+			return fmt.Errorf("at least one argument is required\nUsage: lt convoy create <name> <issue-id> [issue-id...]\n       lt convoy create --from-epic <epic-id>")
 		}
 		name = args[0]
 		trackedIssues = args[1:]
@@ -644,7 +644,7 @@ func runConvoyCreate(cmd *cobra.Command, args []string) error {
 		}
 
 		if len(trackedIssues) == 0 {
-			return fmt.Errorf("at least one issue ID is required\nUsage: gt convoy create <name> <issue-id> [issue-id...]")
+			return fmt.Errorf("at least one issue ID is required\nUsage: lt convoy create <name> <issue-id> [issue-id...]")
 		}
 	}
 
@@ -759,7 +759,7 @@ func runConvoyCreate(cmd *cobra.Command, args []string) error {
 	}
 
 	if convoyOwned {
-		fmt.Printf("\n  %s\n", style.Dim.Render("Owned convoy: caller manages lifecycle via gt convoy land"))
+		fmt.Printf("\n  %s\n", style.Dim.Render("Owned convoy: caller manages lifecycle via lt convoy land"))
 	} else {
 		fmt.Printf("\n  %s\n", style.Dim.Render("Convoy auto-closes when all tracked issues complete"))
 	}
@@ -1181,7 +1181,7 @@ func runConvoyLand(cmd *cobra.Command, args []string) error {
 	// Verify the convoy is owned
 	if !hasLabel(convoy.Labels, "gt:owned") {
 		return fmt.Errorf("convoy '%s' is not an owned convoy\n  Only convoys created with --owned can be landed.\n  Use %s instead for non-owned convoys.",
-			convoyID, style.Bold.Render("gt convoy close"))
+			convoyID, style.Bold.Render("lt convoy close"))
 	}
 
 	// Check if already closed
@@ -1346,9 +1346,9 @@ func findConvoyWorktrees(tracked []trackedIssueInfo) []convoyWorktreeInfo {
 	return worktrees
 }
 
-// removePolecatWorktree removes a polecat worktree via gt polecat remove.
+// removePolecatWorktree removes a polecat worktree via lt polecat remove.
 func removePolecatWorktree(wt convoyWorktreeInfo) error {
-	// gt polecat remove accepts rig/polecat format
+	// lt polecat remove accepts rig/polecat format
 	target := fmt.Sprintf("%s/%s", wt.rigName, wt.polecatName)
 	cmd := exec.Command("gt", "polecat", "remove", target, "--force")
 	var stderr bytes.Buffer
@@ -1435,7 +1435,7 @@ func runConvoyStranded(cmd *cobra.Command, args []string) error {
 	if len(feedable) > 0 {
 		fmt.Println("To feed stranded convoys, run:")
 		for _, s := range feedable {
-			fmt.Printf("  gt sling mol-convoy-feed deacon/dogs --var convoy=%s\n", s.ID)
+			fmt.Printf("  lt sling mol-convoy-feed deacon/dogs --var convoy=%s\n", s.ID)
 		}
 	}
 	if len(needsAttention) > 0 {
@@ -1453,7 +1453,7 @@ func runConvoyStranded(cmd *cobra.Command, args []string) error {
 		}
 		fmt.Println("To close empty convoys, run:")
 		for _, s := range empty {
-			fmt.Printf("  gt convoy check %s\n", s.ID)
+			fmt.Printf("  lt convoy check %s\n", s.ID)
 		}
 	}
 	fmt.Println()
@@ -1514,8 +1514,8 @@ func findStrandedConvoys(townBeads string) ([]strandedConvoyInfo, error) {
 		}
 
 		// Find ready issues (open, not blocked, no live assignee, slingable).
-		// Town-level beads (hq- prefix with path=".") are excluded because
-		// they can't be dispatched via gt sling -- they're handled by the deacon.
+		// HQ-level beads (hq- prefix with path=".") are excluded because
+		// they can't be dispatched via lt sling -- they're handled by the deacon.
 		// Non-slingable types (epics, convoys, etc.) are also excluded.
 
 		// Batch-check scheduling status for all tracked issues (single DB query).
@@ -1620,8 +1620,8 @@ func isReadyIssue(t trackedIssueInfo, scheduledSet map[string]bool) bool {
 	return false // Session exists = worker is active
 }
 
-// isSlingableBead reports whether a bead can be dispatched via gt sling.
-// Town-level beads (hq- prefix with path=".") and beads with unknown
+// isSlingableBead reports whether a bead can be dispatched via lt sling.
+// HQ-level beads (hq- prefix with path=".") and beads with unknown
 // prefixes are not slingable — they're handled by the deacon/mayor.
 func isSlingableBead(townRoot, beadID string) bool {
 	prefix := beads.ExtractPrefix(beadID)
@@ -1891,7 +1891,7 @@ func runConvoyStatus(cmd *cobra.Command, args []string) error {
 
 	// Hint for owned convoys when all issues are complete
 	if isOwned && completed == len(tracked) && len(tracked) > 0 && normalizeConvoyStatus(convoy.Status) == convoyStatusOpen {
-		fmt.Printf("\n  %s\n", style.Dim.Render("All issues complete. Land with: gt convoy land "+convoyID))
+		fmt.Printf("\n  %s\n", style.Dim.Render("All issues complete. Land with: lt convoy land "+convoyID))
 	}
 
 	return nil
@@ -1916,7 +1916,7 @@ func showAllConvoyStatus(townBeads string) error {
 
 	if len(convoys) == 0 {
 		fmt.Println("No active convoys.")
-		fmt.Println("Create a convoy with: gt convoy create <name> [issues...]")
+		fmt.Println("Create a convoy with: lt convoy create <name> [issues...]")
 		return nil
 	}
 
@@ -1934,7 +1934,7 @@ func showAllConvoyStatus(townBeads string) error {
 		}
 		fmt.Printf("  🚚 %s: %s%s\n", c.ID, c.Title, ownedTag)
 	}
-	fmt.Printf("\nUse 'gt convoy status <id>' for detailed status.\n")
+	fmt.Printf("\nUse 'lt convoy status <id>' for detailed status.\n")
 
 	return nil
 }
@@ -2014,7 +2014,7 @@ func runConvoyList(cmd *cobra.Command, args []string) error {
 
 	if len(convoys) == 0 {
 		fmt.Println("No convoys found.")
-		fmt.Println("Create a convoy with: gt convoy create <name> [issues...]")
+		fmt.Println("Create a convoy with: lt convoy create <name> [issues...]")
 		return nil
 	}
 
@@ -2032,7 +2032,7 @@ func runConvoyList(cmd *cobra.Command, args []string) error {
 		}
 		fmt.Printf("  %d. 🚚 %s: %s %s%s\n", i+1, c.ID, c.Title, status, ownedTag)
 	}
-	fmt.Printf("\nUse 'gt convoy status <id>' or 'gt convoy status <n>' for detailed view.\n")
+	fmt.Printf("\nUse 'lt convoy status <id>' or 'lt convoy status <n>' for detailed view.\n")
 
 	return nil
 }
@@ -2376,7 +2376,7 @@ func (issue issueDetailsJSON) toIssueDetails() *issueDetails {
 // rigName: name of the rig (e.g., "claycantrell")
 // issueID: the issue ID to look up
 func getExternalIssueDetails(townBeads, rigName, issueID string) *issueDetails {
-	// Resolve rig directory path: townBeads is the town root
+	// Resolve rig directory path: townBeads is the HQ root
 	rigDir := filepath.Join(townBeads, rigName)
 
 	// Check if rig directory exists
@@ -2449,7 +2449,7 @@ func getIssueDetailsBatch(issueIDs []string) map[string]*issueDetails {
 	args := append([]string{"show"}, issueIDs...)
 	args = append(args, "--json")
 
-	// Run from town root so bd's prefix routing (routes.jsonl) can dispatch
+	// Run from HQ root so bd's prefix routing (routes.jsonl) can dispatch
 	// to the correct rig database for cross-rig bead lookups. (GH#2960)
 	townRoot, _ := workspace.FindFromCwdOrError()
 	showCmd := exec.Command("bd", args...)
@@ -2486,7 +2486,7 @@ func getIssueDetailsBatch(issueIDs []string) map[string]*issueDetails {
 // getIssueDetails fetches issue details by trying to show it via bd.
 // Prefer getIssueDetailsBatch for multiple issues to avoid N+1 subprocess calls.
 func getIssueDetails(issueID string) *issueDetails {
-	// Use bd show with routing - resolve from town root so bd's prefix
+	// Use bd show with routing - resolve from HQ root so bd's prefix
 	// routing (routes.jsonl) can dispatch to the correct rig database.
 	// Without Dir + StripBeadsDir, bd inherits CWD/BEADS_DIR which may
 	// point to a rig that doesn't contain the target bead. (GH#2960)
@@ -2532,7 +2532,7 @@ func getWorkersForIssues(issueIDs []string) map[string]*workerInfo {
 		return result
 	}
 
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil || townRoot == "" {
 		return result
@@ -2648,7 +2648,7 @@ func parseWorkerFromAgentBead(agentID string) string {
 
 	// Build path from parsed components
 	if rig == "" {
-		// Town-level
+		// HQ-level
 		if name != "" {
 			return role + "/" + name
 		}
@@ -2688,7 +2688,7 @@ func runConvoyTUI() error {
 }
 
 // resolveConvoyNumber converts a numeric shortcut (1, 2, 3...) to a convoy ID.
-// Numbers correspond to the order shown in 'gt convoy list'.
+// Numbers correspond to the order shown in 'lt convoy list'.
 func resolveConvoyNumber(townBeads string, n int) (string, error) {
 	// Get convoy list (same query as runConvoyList)
 	out, err := runBdJSON(townBeads, "list", "--type=convoy", "--json")

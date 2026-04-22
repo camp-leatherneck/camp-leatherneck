@@ -85,7 +85,7 @@ const (
 )
 
 // ExitType constants define the completion outcome for polecat work.
-// These match the exit statuses used by `gt done` and are stored on the
+// These match the exit statuses used by `lt done` and are stored on the
 // agent bead's exit_type field so the witness can discover completion
 // outcomes from beads instead of POLECAT_DONE mail.
 type ExitType string

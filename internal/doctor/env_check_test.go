@@ -38,7 +38,7 @@ func (m *mockEnvReader) GetAllEnvironment(session string) (map[string]string, er
 	return map[string]string{}, nil
 }
 
-// testTownRoot is the town root used in tests.
+// testTownRoot is the HQ root used in tests.
 // Tests use this fixed path so expected values match what the check generates.
 const testTownRoot = "/town"
 
@@ -52,7 +52,7 @@ func expectedEnv(role, rig, agentName string) map[string]string {
 	})
 }
 
-// testCtx returns a CheckContext with the test town root.
+// testCtx returns a CheckContext with the test HQ root.
 func testCtx() *CheckContext {
 	return &CheckContext{TownRoot: testTownRoot}
 }
@@ -82,8 +82,8 @@ func TestEnvVarsCheck_NoSessions(t *testing.T) {
 	if result.Status != StatusOK {
 		t.Errorf("Status = %v, want StatusOK", result.Status)
 	}
-	if result.Message != "No Gas Town sessions running" {
-		t.Errorf("Message = %q, want %q", result.Message, "No Gas Town sessions running")
+	if result.Message != "No Camp Leatherneck sessions running" {
+		t.Errorf("Message = %q, want %q", result.Message, "No Camp Leatherneck sessions running")
 	}
 }
 
@@ -94,7 +94,7 @@ func TestEnvVarsCheck_ListSessionsError(t *testing.T) {
 	check := NewEnvVarsCheckWithReader(reader)
 	result := check.Run(testCtx())
 
-	// No tmux server is valid (Gas Town can be down)
+	// No tmux server is valid (Camp Leatherneck can be down)
 	if result.Status != StatusOK {
 		t.Errorf("Status = %v, want StatusOK", result.Status)
 	}
@@ -113,8 +113,8 @@ func TestEnvVarsCheck_NonGasTownSessions(t *testing.T) {
 	if result.Status != StatusOK {
 		t.Errorf("Status = %v, want StatusOK", result.Status)
 	}
-	if result.Message != "No Gas Town sessions running" {
-		t.Errorf("Message = %q, want %q", result.Message, "No Gas Town sessions running")
+	if result.Message != "No Camp Leatherneck sessions running" {
+		t.Errorf("Message = %q, want %q", result.Message, "No Camp Leatherneck sessions running")
 	}
 }
 
@@ -437,7 +437,7 @@ func TestEnvVarsCheck_BeadsDirWarning(t *testing.T) {
 	if !strings.Contains(result.Message, "BEADS_DIR") {
 		t.Errorf("Message should mention BEADS_DIR, got: %q", result.Message)
 	}
-	if !strings.Contains(result.FixHint, "gt shutdown") {
+	if !strings.Contains(result.FixHint, "lt shutdown") {
 		t.Errorf("FixHint should mention restart, got: %q", result.FixHint)
 	}
 }

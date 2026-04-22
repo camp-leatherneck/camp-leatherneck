@@ -1,14 +1,14 @@
 # Dolt Storage Architecture
 
-> **Status**: Current reference for Gas Town agents
+> **Status**: Current reference for Camp Leatherneck agents
 > **Updated**: 2026-02-28
-> **Context**: Dolt is the sole storage backend for Beads and Gas Town
+> **Context**: Dolt is the sole storage backend for Beads and Camp Leatherneck
 
 ---
 
 ## Overview
 
-Gas Town uses [Dolt](https://github.com/dolthub/dolt), an open-source
+Camp Leatherneck uses [Dolt](https://github.com/dolthub/dolt), an open-source
 SQL database with Git-like versioning (Apache 2.0). One Dolt SQL server
 per town serves all databases via MySQL protocol on port 3307. There is
 no embedded mode and no SQLite. JSONL is used only for disaster-recovery
@@ -39,7 +39,7 @@ accessible via `USE <name>` in SQL.
 gt and bd use separate env vars for Dolt connection. gt automatically
 translates its variables to bd's equivalents when spawning agents.
 
-| gt (Gas Town) | bd (Beads) | Purpose |
+| gt (Camp Leatherneck) | bd (Beads) | Purpose |
 |---------------|------------|---------|
 | `GT_DOLT_HOST` | `BEADS_DOLT_SERVER_HOST` | Server host (bd defaults to `127.0.0.1` if unset) |
 | `GT_DOLT_PORT` | `BEADS_DOLT_PORT` | Server port (default: `3307`) |
@@ -168,7 +168,7 @@ issues table — there is no separate mail table. The `sender` field and
 
 ## Dolt-Specific Capabilities
 
-These are available to agents via SQL and used throughout Gas Town:
+These are available to agents via SQL and used throughout Camp Leatherneck:
 
 | Feature | Usage |
 |---------|-------|
@@ -465,7 +465,7 @@ survive the recipient's session death.**
 ## Standalone Beads Note
 
 The `bd` CLI retains an embedded Dolt option for standalone use (outside
-Gas Town). Server-only mode applies to Gas Town exclusively — standalone
+Camp Leatherneck). Server-only mode applies to Camp Leatherneck exclusively — standalone
 users may not have a Dolt server running.
 
 The Dolt team is working on improving embedded mode for single-process
@@ -475,7 +475,7 @@ versioning capabilities.
 
 ## Remote Push (Git Protocol)
 
-Gas Town pushes Dolt databases to GitHub remotes via `gt dolt sync`. These
+Camp Leatherneck pushes Dolt databases to GitHub remotes via `gt dolt sync`. These
 use git SSH protocol (`git+ssh://git@github.com/...`), not DoltHub's native
 protocol.
 

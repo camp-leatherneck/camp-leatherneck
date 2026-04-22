@@ -30,16 +30,16 @@ var readyCmd = &cobra.Command{
 	Long: `Display all ready work items across the town and all rigs.
 
 Aggregates ready issues from:
-- Town beads (hq-* items: convoys, cross-rig coordination)
+- HQ beads (hq-* items: convoys, cross-rig coordination)
 - Each rig's beads (project-level issues, MRs)
 
 Ready items have no blockers and can be worked immediately.
 Results are sorted by priority (highest first) then by source.
 
 Examples:
-  gt ready              # Show all ready work
-  gt ready --json       # Output as JSON
-  gt ready --rig=gastown  # Show only one rig`,
+  lt ready              # Show all ready work
+  lt ready --json       # Output as JSON
+  lt ready --rig=gastown  # Show only one rig`,
 	RunE: runReady,
 }
 
@@ -56,7 +56,7 @@ type ReadySource struct {
 	Error  string         `json:"error,omitempty"`
 }
 
-// ReadyResult is the aggregated result of gt ready.
+// ReadyResult is the aggregated result of lt ready.
 type ReadyResult struct {
 	Sources  []ReadySource `json:"sources"`
 	Summary  ReadySummary  `json:"summary"`
@@ -75,10 +75,10 @@ type ReadySummary struct {
 }
 
 func runReady(cmd *cobra.Command, args []string) error {
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rigs config

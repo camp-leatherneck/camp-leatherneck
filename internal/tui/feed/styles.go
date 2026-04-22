@@ -1,4 +1,4 @@
-// Package feed provides a TUI for the Gas Town activity feed.
+// Package feed provides a TUI for the Camp Leatherneck activity feed.
 package feed
 
 import (
@@ -181,7 +181,7 @@ var (
 		"merged":        "✓",
 		"merge_failed":  "✗",
 		"merge_skipped": "⊘",
-		// General gt events
+		// General lt events
 		"sling":   "🎯",
 		"hook":    "🪝",
 		"unhook":  "↩",

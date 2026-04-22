@@ -1,5 +1,5 @@
 // Package convoy provides convoy tracking operations: finding tracking convoys,
-// checking completion, feeding ready issues, and dispatching via gt sling.
+// checking completion, feeding ready issues, and dispatching via lt sling.
 package convoy
 
 import (
@@ -22,16 +22,16 @@ import (
 // polling-based patrol cycles.
 //
 // The check is idempotent - running it multiple times for the same issue is safe.
-// The underlying `gt convoy check` handles already-closed convoys gracefully.
+// The underlying `lt convoy check` handles already-closed convoys gracefully.
 //
 // Parameters:
 //   - ctx: context for storage operations
 //   - store: beads storage for dependency/issue queries (nil skips convoy checks)
-//   - townRoot: path to the town root directory
+//   - townRoot: path to the HQ root directory
 //   - issueID: the issue ID that was just closed
 //   - caller: identifier for logging (e.g., "Convoy")
 //   - logger: optional logger function (can be nil)
-//   - gtPath: resolved path to the gt binary (e.g. from exec.LookPath or daemon config)
+//   - gtPath: resolved path to the lt binary (e.g. from exec.LookPath or daemon config)
 //   - resolver: optional StoreResolver for cross-database issue resolution (nil falls back to subprocess)
 //
 // Returns the convoy IDs that were checked (may be empty if issue isn't tracked).
@@ -61,7 +61,7 @@ func CheckConvoysForIssue(ctx context.Context, store beadsdk.Storage, townRoot, 
 	logger("%s: %s tracked by %d convoy(s): %v", caller, issueID, len(convoyIDs), convoyIDs)
 
 	// Run convoy check for each tracking convoy
-	// Note: gt convoy check is idempotent and handles already-closed convoys
+	// Note: lt convoy check is idempotent and handles already-closed convoys
 	for _, convoyID := range convoyIDs {
 		if isConvoyClosed(ctx, store, convoyID) {
 			logger("%s: convoy %s already closed, skipping", caller, convoyID)
@@ -129,10 +129,10 @@ func isConvoyStaged(ctx context.Context, store beadsdk.Storage, convoyID string)
 	return strings.HasPrefix(string(issue.Status), "staged_")
 }
 
-// runConvoyCheck runs `gt convoy check <convoy-id>` to check a specific convoy.
+// runConvoyCheck runs `lt convoy check <convoy-id>` to check a specific convoy.
 // This is idempotent and handles already-closed convoys gracefully.
 // The context parameter enables cancellation on daemon shutdown.
-// gtPath is the resolved path to the gt binary.
+// gtPath is the resolved path to the lt binary.
 func runConvoyCheck(ctx context.Context, townRoot, convoyID, gtPath string) error {
 	cmd := exec.CommandContext(ctx, gtPath, "convoy", "check", convoyID)
 	cmd.Dir = townRoot
@@ -156,7 +156,7 @@ type trackedIssue struct {
 	IssueType string `json:"issue_type"`
 }
 
-// slingableTypes are bead types that can be dispatched via gt sling.
+// slingableTypes are bead types that can be dispatched via lt sling.
 // Only leaf work items are slingable — containers (epic) and non-work types
 // (decision, message, event) are excluded. Unknown/empty types are treated
 // as slingable (beads default to "task" when IssueType is empty).
@@ -168,7 +168,7 @@ var slingableTypes = map[string]bool{
 	"":        true, // Empty type defaults to task
 }
 
-// IsSlingableType reports whether a bead type can be dispatched via gt sling.
+// IsSlingableType reports whether a bead type can be dispatched via lt sling.
 // Exported for use by cmd/convoy.go stranded scan path.
 func IsSlingableType(issueType string) bool {
 	return slingableTypes[issueType]
@@ -275,13 +275,13 @@ func isIssueBlocked(ctx context.Context, store beadsdk.Storage, issueID string, 
 }
 
 // feedNextReadyIssue finds the next ready issue in a convoy and dispatches it
-// via gt sling. A ready issue is one that is open, with no assignee, and not
+// via lt sling. A ready issue is one that is open, with no assignee, and not
 // blocked by unclosed dependencies. This provides reactive (event-driven)
 // convoy feeding instead of waiting for polling-based patrol cycles.
 //
 // Only one issue is dispatched per call. When that issue completes, the
 // next close event triggers another feed cycle.
-// gtPath is the resolved path to the gt binary.
+// gtPath is the resolved path to the lt binary.
 func feedNextReadyIssue(ctx context.Context, store beadsdk.Storage, townRoot, convoyID, caller string, logger func(format string, args ...interface{}), gtPath string, isRigParked func(string) bool, resolver *StoreResolver) {
 	tracked := getConvoyTrackedIssues(ctx, store, convoyID, townRoot, resolver)
 	if len(tracked) == 0 {
@@ -522,9 +522,9 @@ func fetchCrossRigBeadStatus(townRoot string, ids []string) map[string]*beadsdk.
 	return result
 }
 
-// dispatchIssue dispatches an issue to a rig via gt sling.
+// dispatchIssue dispatches an issue to a rig via lt sling.
 // The context parameter enables cancellation on daemon shutdown.
-// gtPath is the resolved path to the gt binary.
+// gtPath is the resolved path to the lt binary.
 func dispatchIssue(ctx context.Context, townRoot, issueID, rig, gtPath, baseBranch string) error {
 	args := []string{"sling", issueID, rig, "--no-boot"}
 	if baseBranch != "" {

@@ -34,16 +34,16 @@ func TestBuildPrefixRegistryFromTown_CanonicalExists_FallbackCreated(t *testing.
 		t.Errorf("expected gastown for prefix -, got %q", rig)
 	}
 
-	// Fallback copy should have been created at town root.
+	// Fallback copy should have been created at HQ root.
 	fallback := filepath.Join(townRoot, "rigs.json")
 	if _, err := os.Stat(fallback); os.IsNotExist(err) {
-		t.Error("fallback rigs.json was not created at town root")
+		t.Error("fallback rigs.json was not created at HQ root")
 	}
 }
 
 func TestBuildPrefixRegistryFromTown_CanonicalMissing_FallbackUsed(t *testing.T) {
 	townRoot := t.TempDir()
-	// No mayor/rigs.json — only fallback at town root.
+	// No mayor/rigs.json — only fallback at HQ root.
 	fallback := filepath.Join(townRoot, "rigs.json")
 	if err := os.WriteFile(fallback, []byte(testRigsJSON), 0644); err != nil {
 		t.Fatal(err)

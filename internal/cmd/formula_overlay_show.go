@@ -19,8 +19,8 @@ var formulaOverlayShowCmd = &cobra.Command{
 Shows which file provides the overlay (town-level or rig-level) and its contents.
 
 Examples:
-  gt formula overlay show mol-polecat-work
-  gt formula overlay show mol-polecat-work --rig gastown`,
+  lt formula overlay show mol-polecat-work
+  lt formula overlay show mol-polecat-work --rig gastown`,
 	Args: cobra.ExactArgs(1),
 	RunE: runFormulaOverlayShow,
 }
@@ -58,7 +58,7 @@ func runFormulaOverlayShow(cmd *cobra.Command, args []string) error {
 		if rigPath != "" {
 			fmt.Printf("  Checked: %s\n", rigPath)
 		}
-		fmt.Println("\nUse 'gt formula overlay edit' to create one.")
+		fmt.Println("\nUse 'lt formula overlay edit' to create one.")
 		return nil
 	}
 
@@ -90,11 +90,11 @@ func runFormulaOverlayShow(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-// resolveOverlayContext finds the town root and rig name for overlay commands.
+// resolveOverlayContext finds the HQ root and rig name for overlay commands.
 func resolveOverlayContext(explicitRig string) (townRoot, rigName string, err error) {
 	townRoot, err = workspace.FindFromCwdOrError()
 	if err != nil {
-		return "", "", fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return "", "", fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	rigName = explicitRig

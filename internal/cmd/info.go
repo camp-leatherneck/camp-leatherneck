@@ -13,17 +13,17 @@ import (
 var infoCmd = &cobra.Command{
 	Use:     "info",
 	GroupID: GroupDiag,
-	Short:   "Show Gas Town information and what's new",
-	Long: `Display information about the current Gas Town installation.
+	Short:   "Show Camp Leatherneck information and what's new",
+	Long: `Display information about the current Camp Leatherneck installation.
 
 This command shows:
   - Version information
   - What's new in recent versions (with --whats-new flag)
 
 Examples:
-  gt info
-  gt info --whats-new
-  gt info --whats-new --json`,
+  lt info
+  lt info --whats-new
+  lt info --whats-new --json`,
 	Run: func(cmd *cobra.Command, args []string) {
 		whatsNewFlag, _ := cmd.Flags().GetBool("whats-new")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
@@ -53,7 +53,7 @@ Examples:
 			return
 		}
 
-		fmt.Printf("Gas Town v%s (%s)\n", Version, Build)
+		fmt.Printf("Camp Leatherneck v%s (%s)\n", Version, Build)
 		if commit, ok := info["commit"].(string); ok {
 			if branch, ok := info["branch"].(string); ok {
 				fmt.Printf("  %s@%s\n", branch, commit)
@@ -61,7 +61,7 @@ Examples:
 				fmt.Printf("  %s\n", commit)
 			}
 		}
-		fmt.Println("\nUse 'gt info --whats-new' to see recent changes")
+		fmt.Println("\nUse 'lt info --whats-new' to see recent changes")
 	},
 }
 
@@ -79,13 +79,13 @@ var versionChanges = []VersionChange{
 		Date:    "2026-04-02",
 		Changes: []string{
 			"NEW: Windows platform support (signals, process management, tmux)",
-			"NEW: Workflow formula type — gt formula run supports type=workflow",
+			"NEW: Workflow formula type — lt formula run supports type=workflow",
 			"NEW: Refinery merge_strategy=pr — use gh pr merge for native merge queue",
 			"NEW: /crew-commit skill for canonical crew commit workflow",
 			"NEW: Rate-limit watchdog plugin — auto-estop on API 429",
-			"NEW: gt mail send --from flag for relay/bridge use",
-			"NEW: gt mail mark-read --all",
-			"NEW: gt dolt pull command",
+			"NEW: lt mail send --from flag for relay/bridge use",
+			"NEW: lt mail mark-read --all",
+			"NEW: lt dolt pull command",
 			"NEW: Prefix collision checking on rig add/adopt",
 			"NEW: Default effort level config (CLAUDE_CODE_EFFORT_LEVEL)",
 			"CHANGED: Refinery enforces require_review=true — blocks merge until PR approved",
@@ -98,7 +98,7 @@ var versionChanges = []VersionChange{
 			"FIX: Crew status shows all rigs",
 			"FIX: Git identity propagated into polecat worktrees",
 			"FIX: Sling context routed to target rig instead of HQ",
-			"FIX: Nested town root detection returns outermost root",
+			"FIX: Nested HQ root detection returns outermost root",
 		},
 	},
 	{
@@ -106,8 +106,8 @@ var versionChanges = []VersionChange{
 		Date:    "2026-03-15",
 		Changes: []string{
 			"NEW: Agent Client Protocol (ACP) for structured agent communication",
-			"NEW: gt mountain — stage, label, and launch epic work in one command",
-			"NEW: gt assign — one-shot bead creation + hook for direct agent assignment",
+			"NEW: lt mountain — stage, label, and launch epic work in one command",
+			"NEW: lt assign — one-shot bead creation + hook for direct agent assignment",
 			"NEW: convoy --from-epic flag stages epic children into waves",
 			"NEW: Typed memories (--type feedback/project/user/reference)",
 			"NEW: Repo-sourced rig settings via .gastown/settings.json",
@@ -128,7 +128,7 @@ var versionChanges = []VersionChange{
 		Changes: []string{
 			"NEW: Event-driven polecat lifecycle with FIX_NEEDED feedback loop",
 			"NEW: Cross-database convoy dependency resolution for multi-rig towns",
-			"NEW: gt plugin sync — auto-deploy plugins after build",
+			"NEW: lt plugin sync — auto-deploy plugins after build",
 			"NEW: Compactor dog plugin for Dolt database compaction",
 			"NEW: GitHub sheriff v2 — single API call PR categorization",
 			"NEW: Mail reply reminders via deferred nudge delivery",
@@ -137,7 +137,7 @@ var versionChanges = []VersionChange{
 			"NEW: Opt-in CPU/memory pressure checks before agent spawns",
 			"NEW: Formula composition (extends + compose/expand)",
 			"NEW: Crew agent assignment — per-crew runtime selection",
-			"NEW: Partial clones and sparse checkout for gt rig add",
+			"NEW: Partial clones and sparse checkout for lt rig add",
 			"CHANGED: Refinery configurable merge strategy (direct vs PR mode)",
 			"CHANGED: Session hygiene converted to deterministic run.sh",
 			"CHANGED: Nudge wait-idle degrades to queue for non-Claude agents",
@@ -149,7 +149,7 @@ var versionChanges = []VersionChange{
 			"FIX: Tmux socket split-brain causing nudge failures",
 			"FIX: bd JSON corruption from stdout warnings",
 			"FIX: Remote branch deletion restricted to polecat branches only",
-			"FIX: Convoy routing — town root and BEADS_DIR properly stripped",
+			"FIX: Convoy routing — HQ root and BEADS_DIR properly stripped",
 		},
 	},
 	{
@@ -161,8 +161,8 @@ var versionChanges = []VersionChange{
 			"FIX: Sling race condition — hook write visibility ensured before polecat startup",
 			"FIX: Refinery PostMerge uses ForceCloseWithReason for source issue",
 			"FIX: bd JSON guard handles non-JSON output from bd v0.58.0+",
-			"FIX: Branch contamination preflight added to gt done",
-			"FIX: gt done uses correct rig when Claude Code resets shell cwd",
+			"FIX: Branch contamination preflight added to lt done",
+			"FIX: lt done uses correct rig when Claude Code resets shell cwd",
 			"FIX: Dolt server-side timeouts prevent CLOSE_WAIT accumulation",
 			"FIX: Sling TTL prevents permanent scheduling blocks",
 			"FIX: Prefix registry reloaded on heartbeat to prevent ghost sessions",
@@ -170,12 +170,12 @@ var versionChanges = []VersionChange{
 			"NEW: Cursor hooks — polecat agent integration for Cursor IDE",
 			"NEW: Context-budget guard — external script prevents context window overflow",
 			"NEW: Cascade close — bd close --cascade closes parent and all children",
-			"NEW: Schema evolution support for gt wl sync",
+			"NEW: Schema evolution support for lt wl sync",
 			"NEW: POLECAT_SLOT env var for test isolation",
 			"CHANGED: Beads dependency upgraded v0.57.0 to v0.59.0",
 			"CHANGED: Hook installers consolidated into generic declarative system",
 			"CHANGED: Hardcoded isKnownAgent replaced with config.IsKnownPreset",
-			"REMOVED: gt swarm command and internal/swarm package",
+			"REMOVED: lt swarm command and internal/swarm package",
 			"REMOVED: Beads Classic legacy code paths",
 		},
 	},
@@ -191,15 +191,15 @@ var versionChanges = []VersionChange{
 		Date:    "2026-03-01",
 		Changes: []string{
 			"NEW: Batch-then-bisect merge queue — Bors-style MQ with GatesParallel",
-			"NEW: Persistent polecats — identity survives across work assignments, gt done transitions to idle",
+			"NEW: Persistent polecats — identity survives across work assignments, lt done transitions to idle",
 			"NEW: Four maintenance Dogs — Compactor (flatten), Doctor (health), JSONL (backup), Reaper (GC)",
 			"NEW: Six-stage data lifecycle — CREATE/LIVE/CLOSE/DECAY/COMPACT/FLATTEN, all automated",
 			"NEW: Root-only wisps — formula steps not materialized in DB, cuts ~6k rows/day",
-			"NEW: gt maintain — one-command Dolt maintenance (flatten + gc)",
-			"NEW: gt vitals — unified health dashboard",
-			"NEW: gt upgrade — post-binary migration for config propagation",
+			"NEW: lt maintain — one-command Dolt maintenance (flatten + gc)",
+			"NEW: lt vitals — unified health dashboard",
+			"NEW: lt upgrade — post-binary migration for config propagation",
 			"NEW: Log rotation for daemon and Dolt server logs",
-			"NEW: Town-root CLAUDE.md version check and lifecycle defaults doctor check",
+			"NEW: HQ CLAUDE.md version check and lifecycle defaults doctor check",
 			"CHANGED: OperationalConfig replaces hardcoded thresholds (ZFC compliance)",
 			"CHANGED: Nudge-first communication — ~80% fewer Dolt commits for patrol traffic",
 			"CHANGED: Default Dolt log level debug→info, max connections 200→1000",
@@ -215,20 +215,20 @@ var versionChanges = []VersionChange{
 		Version: "0.8.0",
 		Date:    "2026-02-23",
 		Changes: []string{
-			"NEW: Work queue dispatch engine — gt queue, gt queue epic, gt convoy queue, gt sling --queue",
+			"NEW: Work queue dispatch engine — lt queue, lt queue epic, lt convoy queue, lt sling --queue",
 			"NEW: Full OpenTelemetry observability — VictoriaMetrics, VictoriaLogs, OTLP log export",
 			"NEW: Dog subsystem — handler patrol, session-hygiene plugin, idle reaping, shutdown dance",
 			"NEW: Wisps table — ephemeral SQLite store for agent beads, wisp GC in patrol cycles",
 			"NEW: Convoy stage & launch commands, auto-resolve rig from bead prefixes",
 			"NEW: Refinery configurable quality gates, auto-close completed convoys after merge",
 			"NEW: Bead respawn count tracking for spawn storm detection",
-			"NEW: gt handoff --cycle (full session replacement) and --agent (runtime selection)",
-			"NEW: gt crew start --resume, gt crew at --reset, gt deacon pending",
+			"NEW: lt handoff --cycle (full session replacement) and --agent (runtime selection)",
+			"NEW: lt crew start --resume, lt crew at --reset, lt deacon pending",
 			"NEW: Pi agent provider, promptfoo model comparison, cost-tier presets",
 			"NEW: Dashboard convoy drill-down, session terminal preview, mail threading",
-			"NEW: Wasteland CLI command suite (gt wl)",
+			"NEW: Wasteland CLI command suite (lt wl)",
 			"NEW: GitHub Sheriff Deacon plugin for CI failure monitoring",
-			"NEW: gt mol step await-event for channel-based event subscription",
+			"NEW: lt mol step await-event for channel-based event subscription",
 			"NEW: Remote Dolt server support, server identity verification, restart command",
 			"NEW: Nix flake with bump-version integration",
 			"CHANGED: Removed Dolt branch-per-polecat infrastructure (server mode eliminates branch isolation)",
@@ -248,8 +248,8 @@ var versionChanges = []VersionChange{
 		Version: "0.7.0",
 		Date:    "2026-02-15",
 		Changes: []string{
-			"NEW: Convoy ownership — --owned flag, --merge strategy (direct/mr/local), gt convoy land",
-			"NEW: gt done checkpoint-based resilience — recovery from session death mid-completion",
+			"NEW: Convoy ownership — --owned flag, --merge strategy (direct/mr/local), lt convoy land",
+			"NEW: lt done checkpoint-based resilience — recovery from session death mid-completion",
 			"NEW: Agent factory — data-driven preset registry (no more provider switch statements)",
 			"NEW: Gemini CLI and GitHub Copilot CLI integrations as runtime adapters",
 			"NEW: Non-destructive nudge delivery — queue and wait-idle modes",
@@ -260,14 +260,14 @@ var versionChanges = []VersionChange{
 			"NEW: Orphaned molecule detection and auto-close (mol-polecat-work)",
 			"NEW: Merge queue --verify flag to detect orphaned entries",
 			"NEW: Mayor GT_ROLE Task tool guard",
-			"NEW: Remote hook attach (gt hook attach with remote target)",
+			"NEW: Remote hook attach (lt hook attach with remote target)",
 			"CHANGED: Beads Classic dead code removed (-924 lines SQLite/JSONL/sync)",
 			"CHANGED: Session prefixes now registry-based (replaces hardcoded gt-* patterns)",
 			"CHANGED: Molecule step readiness delegated to bd ready --mol",
 			"FIX: Race conditions in web dashboard, feed curator, TUI convoy/feed",
 			"FIX: Convoy lifecycle guards extended to batch auto-close and synthesis",
 			"FIX: Rig remove now kills tmux sessions, aborts on kill failures",
-			"FIX: Don't infer RoleMayor from town root cwd",
+			"FIX: Don't infer RoleMayor from HQ root cwd",
 			"FIX: Polecat zero-commit completion blocked",
 			"FIX: Signal stop hook infinite loop prevention",
 			"FIX: 50+ additional bug fixes from community contributions",
@@ -278,26 +278,26 @@ var versionChanges = []VersionChange{
 		Date:    "2026-02-15",
 		Changes: []string{
 			"NEW: Dolt-native architecture — SQLite fully removed, Dolt is the only backend",
-			"NEW: gt dolt command — server management (start, stop, migrate, rollback, sync)",
-			"NEW: gt install now folds Dolt identity, HQ database, and server start into one step",
+			"NEW: lt dolt command — server management (start, stop, migrate, rollback, sync)",
+			"NEW: lt install now folds Dolt identity, HQ database, and server start into one step",
 			"NEW: Branch-per-polecat write isolation prevents Dolt conflicts",
 			"NEW: Proactive Dolt health alerting in daemon (30s health ticker)",
 			"NEW: Dashboard UX overhaul — 13 panels, SSE real-time updates, command palette",
 			"NEW: launchd/systemd daemon supervision support",
 			"NEW: Boot watchdog — ephemeral dog triages Deacon state each tick",
-			"NEW: gt mol dag — DAG visualization for molecules",
+			"NEW: lt mol dag — DAG visualization for molecules",
 			"NEW: Fan-out/gather parallel steps in patrol workflows",
-			"NEW: gt compact — TTL-based wisp compaction",
-			"NEW: Centralized hook management (gt hooks sync/diff/list)",
+			"NEW: lt compact — TTL-based wisp compaction",
+			"NEW: Centralized hook management (lt hooks sync/diff/list)",
 			"NEW: Persistent polecat identity model — agent beads survive nuke",
 			"NEW: Convoy completion notifications pushed to active Mayor session",
 			"NEW: --stdin flag for mail, nudge, handoff, escalate, sling (shell-safe)",
-			"NEW: gt signal stop — turn-boundary messaging for clean stops",
-			"NEW: gt rig settings — interactive rig settings management",
+			"NEW: lt signal stop — turn-boundary messaging for clean stops",
+			"NEW: lt rig settings — interactive rig settings management",
 			"NEW: Dark mode CLI theme support",
 			"NEW: C-b g keybinding for tmux agent switcher",
-			"NEW: Auto-create DoltHub repos and configure remotes (gt dolt sync)",
-			"CHANGED: gt status --fast optimized from ~5s to ~2s",
+			"NEW: Auto-create DoltHub repos and configure remotes (lt dolt sync)",
+			"CHANGED: lt status --fast optimized from ~5s to ~2s",
 			"CHANGED: Centralized configuration — hardcoded timeouts moved to TownSettings",
 			"CHANGED: Priority-based mail notifications prevent agent derailment",
 			"FIX: flock-based locking across molecules, events, crew files, locks",
@@ -312,14 +312,14 @@ var versionChanges = []VersionChange{
 		Version: "0.5.0",
 		Date:    "2026-01-22",
 		Changes: []string{
-			"NEW: gt mail read <index> - Read messages by inbox position",
-			"NEW: gt mail hook - Shortcut for gt hook attach from mail",
-			"NEW: --body alias for --message in gt mail send/reply",
-			"NEW: gt bd alias for gt bead, gt work alias for gt hook",
-			"NEW: OpenCode as built-in agent preset (gt config set agent opencode)",
+			"NEW: lt mail read <index> - Read messages by inbox position",
+			"NEW: lt mail hook - Shortcut for lt hook attach from mail",
+			"NEW: --body alias for --message in lt mail send/reply",
+			"NEW: lt bd alias for lt bead, lt work alias for lt hook",
+			"NEW: OpenCode as built-in agent preset (lt config set agent opencode)",
 			"NEW: Config-based role definition system",
 			"NEW: Deacon icon in mayor status line",
-			"NEW: gt hooks - Hook registry and install command",
+			"NEW: lt hooks - Hook registry and install command",
 			"NEW: Squash merge in refinery for cleaner history",
 			"CHANGED: Parallel mail inbox queries (~6x speedup)",
 			"FIX: Crew session stability - Don't kill pane processes on new sessions",
@@ -341,21 +341,21 @@ var versionChanges = []VersionChange{
 		Date:    "2026-01-17",
 		Changes: []string{
 			"FIX: Orphan cleanup on macOS - TTY comparison now handles macOS '??' format",
-			"FIX: Session kill orphan prevention - gt done and gt crew stop use KillSessionWithProcesses",
+			"FIX: Session kill orphan prevention - lt done and lt crew stop use KillSessionWithProcesses",
 		},
 	},
 	{
 		Version: "0.3.0",
 		Date:    "2026-01-17",
 		Changes: []string{
-			"NEW: gt show/cat - Inspect bead contents and metadata",
-			"NEW: gt orphans list/kill - Detect and clean up orphaned Claude processes",
-			"NEW: gt convoy close - Manual convoy closure command",
-			"NEW: gt commit/trail - Git wrappers with bead awareness",
-			"NEW: Plugin system - gt plugin run/history, gt dispatch --plugin",
+			"NEW: lt show/cat - Inspect bead contents and metadata",
+			"NEW: lt orphans list/kill - Detect and clean up orphaned Claude processes",
+			"NEW: lt convoy close - Manual convoy closure command",
+			"NEW: lt commit/trail - Git wrappers with bead awareness",
+			"NEW: Plugin system - lt plugin run/history, lt dispatch --plugin",
 			"NEW: Beads-native messaging - Queue, channel, and group beads",
-			"NEW: gt mail claim - Claim messages from queues",
-			"NEW: gt polecat identity show - Display CV summary",
+			"NEW: lt mail claim - Claim messages from queues",
+			"NEW: lt polecat identity show - Display CV summary",
 			"NEW: gastown-release molecule formula - Automated release workflow",
 			"NEW: Parallel agent startup - Faster boot with concurrency limit",
 			"NEW: Automatic orphan cleanup - Detect and kill orphaned processes",
@@ -374,20 +374,20 @@ var versionChanges = []VersionChange{
 		Version: "0.2.0",
 		Date:    "2026-01-04",
 		Changes: []string{
-			"NEW: Convoy Dashboard - Web UI for monitoring Gas Town (gt dashboard)",
+			"NEW: Convoy Dashboard - Web UI for monitoring Camp Leatherneck (lt dashboard)",
 			"NEW: Two-level beads architecture - hq-* prefix for town, rig prefixes for projects",
 			"NEW: Multi-agent support with pluggable registry",
-			"NEW: gt rig start/stop/restart/status - Multi-rig management commands",
+			"NEW: lt rig start/stop/restart/status - Multi-rig management commands",
 			"NEW: Ephemeral polecat model - Immediate recycling after each work unit",
-			"NEW: gt costs command - Session cost tracking and reporting",
+			"NEW: lt costs command - Session cost tracking and reporting",
 			"NEW: Conflict resolution workflow for polecats with merge-slot gates",
-			"NEW: gt convoy --tree and gt convoy check for cross-rig coordination",
-			"NEW: Batch slinging - gt sling supports multiple beads at once",
+			"NEW: lt convoy --tree and lt convoy check for cross-rig coordination",
+			"NEW: Batch slinging - lt sling supports multiple beads at once",
 			"NEW: spawn alias for start across all role subcommands",
-			"NEW: gt mail archive supports multiple message IDs",
-			"NEW: gt mail --all flag for clearing all mail",
+			"NEW: lt mail archive supports multiple message IDs",
+			"NEW: lt mail --all flag for clearing all mail",
 			"NEW: Circuit breaker for stuck agents",
-			"NEW: Binary age detection in gt status",
+			"NEW: Binary age detection in lt status",
 			"NEW: Shell completion installation instructions",
 			"CHANGED: Handoff migrated to skills format",
 			"CHANGED: Crew workers push directly to main (no PRs)",
@@ -404,10 +404,10 @@ var versionChanges = []VersionChange{
 		Version: "0.1.1",
 		Date:    "2026-01-02",
 		Changes: []string{
-			"FIX: Tmux keybindings scoped to Gas Town sessions only",
+			"FIX: Tmux keybindings scoped to Camp Leatherneck sessions only",
 			"NEW: OSS project files - CHANGELOG.md, .golangci.yml, RELEASING.md",
 			"NEW: Version bump script - scripts/bump-version.sh",
-			"FIX: gt rig add and gt crew add CLI syntax documentation",
+			"FIX: lt rig add and lt crew add CLI syntax documentation",
 			"FIX: Rig prefix routing for agent beads",
 			"FIX: Beads init targets correct database",
 		},
@@ -416,26 +416,26 @@ var versionChanges = []VersionChange{
 		Version: "0.1.0",
 		Date:    "2026-01-02",
 		Changes: []string{
-			"Initial public release of Gas Town",
+			"Initial public release of Camp Leatherneck",
 			"NEW: Town structure - Hierarchical workspace with rigs, crews, and polecats",
-			"NEW: Rig management - gt rig add/list/remove",
-			"NEW: Crew workspaces - gt crew add for persistent developer workspaces",
+			"NEW: Rig management - lt rig add/list/remove",
+			"NEW: Crew workspaces - lt crew add for persistent developer workspaces",
 			"NEW: Polecat workers - Transient agent workers managed by Witness",
 			"NEW: Mayor - Global coordinator for cross-rig work",
-			"NEW: Deacon - Town-level lifecycle patrol and heartbeat",
+			"NEW: Deacon - HQ-level lifecycle patrol and heartbeat",
 			"NEW: Witness - Per-rig polecat lifecycle manager",
 			"NEW: Refinery - Merge queue processor with code review",
-			"NEW: Convoy system - gt convoy create/list/status",
-			"NEW: Sling workflow - gt sling <bead> <rig>",
+			"NEW: Convoy system - lt convoy create/list/status",
+			"NEW: Sling workflow - lt sling <bead> <rig>",
 			"NEW: Molecule workflows - Formula-based multi-step task execution",
-			"NEW: Mail system - gt mail inbox/send/read",
-			"NEW: Escalation protocol - gt escalate with severity levels",
-			"NEW: Handoff mechanism - gt handoff for context-preserving session cycling",
+			"NEW: Mail system - lt mail inbox/send/read",
+			"NEW: Escalation protocol - lt escalate with severity levels",
+			"NEW: Handoff mechanism - lt handoff for context-preserving session cycling",
 			"NEW: Beads integration - Issue tracking via beads (bd commands)",
 			"NEW: Tmux sessions with theming",
-			"NEW: Status dashboard - gt status",
-			"NEW: Activity feed - gt feed",
-			"NEW: Nudge system - gt nudge for reliable message delivery",
+			"NEW: Status dashboard - lt status",
+			"NEW: Activity feed - lt feed",
+			"NEW: Nudge system - lt nudge for reliable message delivery",
 		},
 	},
 }
@@ -453,7 +453,7 @@ func showWhatsNew(jsonOutput bool) {
 	}
 
 	// Human-readable output
-	fmt.Printf("\nWhat's New in Gas Town (Current: v%s)\n", Version)
+	fmt.Printf("\nWhat's New in Camp Leatherneck (Current: v%s)\n", Version)
 	fmt.Println(strings.Repeat("=", 50))
 	fmt.Println()
 
@@ -472,7 +472,7 @@ func showWhatsNew(jsonOutput bool) {
 		fmt.Println()
 	}
 
-	fmt.Println("Tip: Use 'gt info --whats-new --json' for machine-readable output")
+	fmt.Println("Tip: Use 'lt info --whats-new --json' for machine-readable output")
 	fmt.Println()
 }
 

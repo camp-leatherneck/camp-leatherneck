@@ -43,7 +43,7 @@ func RunIDFromCtx(ctx context.Context) string {
 }
 
 // instanceID derives a human-readable Gastown instance identifier from the
-// town root path and the machine hostname.
+// HQ root path and the machine hostname.
 // Format: "<hostname>:<basename(townRoot)>" (e.g. "laptop:gt").
 // Falls back to basename alone when hostname is unavailable.
 func instanceID(townRoot string) string {
@@ -169,7 +169,7 @@ func initInstruments() {
 			metric.WithDescription("Total agent session instantiations (one per agent spawn)"),
 		)
 		inst.primeTotal, _ = m.Int64Counter("gastown.prime.total",
-			metric.WithDescription("Total gt prime invocations"),
+			metric.WithDescription("Total lt prime invocations"),
 		)
 		inst.agentStateTotal, _ = m.Int64Counter("gastown.agent.state_changes.total",
 			metric.WithDescription("Total agent state transitions"),
@@ -187,10 +187,10 @@ func initInstruments() {
 			metric.WithDescription("Total mail/bd SDK operations"),
 		)
 		inst.nudgeTotal, _ = m.Int64Counter("gastown.nudge.total",
-			metric.WithDescription("Total gt nudge invocations"),
+			metric.WithDescription("Total lt nudge invocations"),
 		)
 		inst.doneTotal, _ = m.Int64Counter("gastown.done.total",
-			metric.WithDescription("Total gt done invocations (polecat work completions)"),
+			metric.WithDescription("Total lt done invocations (polecat work completions)"),
 		)
 		inst.daemonRestartTotal, _ = m.Int64Counter("gastown.daemon.agent_restarts.total",
 			metric.WithDescription("Total daemon-initiated agent session restarts"),
@@ -397,7 +397,7 @@ type AgentInstantiateInfo struct {
 	SessionID string
 	// RigName is the rig name; empty for town-level agents (mayor, deacon).
 	RigName string
-	// TownRoot is the absolute path to the Gastown town root (~/gt); used to
+	// TownRoot is the absolute path to the Gastown HQ root (~/gt); used to
 	// derive the instance identifier "hostname:basename(townRoot)".
 	TownRoot string
 	// IssueID is the bead ID of the work item assigned to this agent.
@@ -466,7 +466,7 @@ func RecordMailMessage(ctx context.Context, operation string, msg MailMessageInf
 	emit(ctx, "mail", severity(err), kvs...)
 }
 
-// RecordPrime records a gt prime invocation (metrics + log event).
+// RecordPrime records a lt prime invocation (metrics + log event).
 func RecordPrime(ctx context.Context, role string, hookMode bool, err error) {
 	initInstruments()
 	status := statusStr(err)
@@ -485,9 +485,9 @@ func RecordPrime(ctx context.Context, role string, hookMode bool, err error) {
 	)
 }
 
-// RecordPrimeContext logs the formula/context rendered by gt prime.
+// RecordPrimeContext logs the formula/context rendered by lt prime.
 // Opt-in: set GT_LOG_PRIME_CONTEXT=true to enable. Default off because the
-// rendered formula may contain secrets injected by gt prime (API keys, tokens).
+// rendered formula may contain secrets injected by lt prime (API keys, tokens).
 // Only emits when telemetry is active and the env var is set.
 func RecordPrimeContext(ctx context.Context, formula, role string, hookMode bool) {
 	if formula == "" || os.Getenv("GT_LOG_PRIME_CONTEXT") != "true" {
@@ -584,7 +584,7 @@ func RecordMail(ctx context.Context, operation string, err error) {
 	)
 }
 
-// RecordNudge records a gt nudge invocation (metrics + log event).
+// RecordNudge records a lt nudge invocation (metrics + log event).
 func RecordNudge(ctx context.Context, target string, err error) {
 	initInstruments()
 	status := statusStr(err)
@@ -598,7 +598,7 @@ func RecordNudge(ctx context.Context, target string, err error) {
 	)
 }
 
-// RecordDone records a gt done invocation — polecat work completion (metrics + log event).
+// RecordDone records a lt done invocation — polecat work completion (metrics + log event).
 // exitType is one of COMPLETED, ESCALATED, DEFERRED.
 func RecordDone(ctx context.Context, exitType string, err error) {
 	initInstruments()

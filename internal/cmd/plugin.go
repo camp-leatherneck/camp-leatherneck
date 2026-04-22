@@ -38,7 +38,7 @@ var pluginCmd = &cobra.Command{
 Plugins are periodic automation tasks defined by plugin.md files with TOML frontmatter.
 
 PLUGIN LOCATIONS:
-  ~/gt/plugins/           Town-level plugins (universal, apply everywhere)
+  ~/gt/plugins/           HQ-level plugins (universal, apply everywhere)
   <rig>/plugins/          Rig-level plugins (project-specific)
 
 GATE TYPES:
@@ -49,9 +49,9 @@ GATE TYPES:
   manual      Never auto-run, trigger explicitly
 
 Examples:
-  gt plugin list                    # List all discovered plugins
-  gt plugin show <name>             # Show plugin details
-  gt plugin list --json             # JSON output`,
+  lt plugin list                    # List all discovered plugins
+  lt plugin show <name>             # Show plugin details
+  lt plugin list --json             # JSON output`,
 	RunE: requireSubcommand,
 }
 
@@ -67,8 +67,8 @@ Plugins are discovered from:
 When a plugin exists at both levels, the rig-level version takes precedence.
 
 Examples:
-  gt plugin list              # Human-readable output
-  gt plugin list --json       # JSON output for scripting`,
+  lt plugin list              # Human-readable output
+  lt plugin list --json       # JSON output for scripting`,
 	RunE: runPluginList,
 }
 
@@ -80,8 +80,8 @@ var pluginShowCmd = &cobra.Command{
 Displays the plugin's configuration, gate settings, and instructions.
 
 Examples:
-  gt plugin show rebuild-gt
-  gt plugin show rebuild-gt --json`,
+  lt plugin show rebuild-gt
+  lt plugin show rebuild-gt --json`,
 	Args: cobra.ExactArgs(1),
 	RunE: runPluginShow,
 }
@@ -95,9 +95,9 @@ By default, checks if the gate would allow execution and informs you
 if it wouldn't. Use --force to bypass gate checks.
 
 Examples:
-  gt plugin run rebuild-gt              # Run if gate allows
-  gt plugin run rebuild-gt --force      # Bypass gate check
-  gt plugin run rebuild-gt --dry-run    # Show what would happen`,
+  lt plugin run rebuild-gt              # Run if gate allows
+  lt plugin run rebuild-gt --force      # Bypass gate check
+  lt plugin run rebuild-gt --dry-run    # Show what would happen`,
 	Args: cobra.ExactArgs(1),
 	RunE: runPluginRun,
 }
@@ -113,10 +113,10 @@ looking for a gastown repo, or checks known locations within the town.
 Syncs to town-level plugins (~/gt/plugins/) so all rigs see the latest plugins.
 
 Examples:
-  gt plugin sync                           # Auto-detect source, sync to town
-  gt plugin sync --source ./plugins        # Explicit source directory
-  gt plugin sync --clean                   # Remove plugins not in source
-  gt plugin sync --dry-run                 # Show what would happen`,
+  lt plugin sync                           # Auto-detect source, sync to town
+  lt plugin sync --source ./plugins        # Explicit source directory
+  lt plugin sync --clean                   # Remove plugins not in source
+  lt plugin sync --dry-run                 # Show what would happen`,
 	RunE: runPluginSync,
 }
 
@@ -128,9 +128,9 @@ var pluginHistoryCmd = &cobra.Command{
 Queries ephemeral beads (wisps) that record plugin runs.
 
 Examples:
-  gt plugin history rebuild-gt
-  gt plugin history rebuild-gt --json
-  gt plugin history rebuild-gt --limit 20`,
+  lt plugin history rebuild-gt
+  lt plugin history rebuild-gt --json
+  lt plugin history rebuild-gt --limit 20`,
 	Args: cobra.ExactArgs(1),
 	RunE: runPluginHistory,
 }
@@ -165,11 +165,11 @@ func init() {
 	rootCmd.AddCommand(pluginCmd)
 }
 
-// getPluginScanner creates a scanner with town root and all rig names.
+// getPluginScanner creates a scanner with HQ root and all rig names.
 func getPluginScanner() (*plugin.Scanner, string, error) {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return nil, "", fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return nil, "", fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rigs config to get rig names
@@ -249,7 +249,7 @@ func outputPluginListText(plugins []*plugin.Plugin, townRoot string) error {
 
 	// Print town-level plugins
 	if len(townPlugins) > 0 {
-		fmt.Printf("  %s\n", style.Bold.Render("Town-level plugins:"))
+		fmt.Printf("  %s\n", style.Bold.Render("HQ-level plugins:"))
 		for _, p := range townPlugins {
 			printPluginSummary(p)
 		}
@@ -478,7 +478,7 @@ func runPluginRun(cmd *cobra.Command, args []string) error {
 		PluginName: p.Name,
 		RigName:    p.RigName,
 		Result:     plugin.ResultSuccess, // Manual runs are marked success
-		Body:       "Manual run via gt plugin run",
+		Body:       "Manual run via lt plugin run",
 	})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Warning: failed to record run: %v\n", err)
@@ -492,7 +492,7 @@ func runPluginRun(cmd *cobra.Command, args []string) error {
 func runPluginSync(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Determine source directory

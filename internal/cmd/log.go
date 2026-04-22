@@ -32,7 +32,7 @@ var logCmd = &cobra.Command{
 	Use:     "log",
 	GroupID: GroupDiag,
 	Short:   "View town activity log",
-	Long: `View the centralized log of Gas Town agent lifecycle events.
+	Long: `View the centralized log of Camp Leatherneck agent lifecycle events.
 
 Events logged include:
   spawn   - new agent created
@@ -44,12 +44,12 @@ Events logged include:
   kill    - agent killed intentionally
 
 Examples:
-  gt log                     # Show last 20 events
-  gt log -n 50               # Show last 50 events
-  gt log --type spawn        # Show only spawn events
-  gt log --agent greenplace/    # Show events for gastown rig
-  gt log --since 1h          # Show events from last hour
-  gt log -f                  # Follow log (like tail -f)`,
+  lt log                     # Show last 20 events
+  lt log -n 50               # Show last 50 events
+  lt log --type spawn        # Show only spawn events
+  lt log --agent greenplace/    # Show events for gastown rig
+  lt log --since 1h          # Show events from last hour
+  lt log -f                  # Follow log (like tail -f)`,
 	RunE: runLog,
 }
 
@@ -66,7 +66,7 @@ The exit code determines if this was a crash or expected exit:
   - Exit code non-zero: Crash (logged as 'crash')
 
 Examples:
-  gt log crash --agent greenplace/Toast --session gt-greenplace-Toast --exit-code 1`,
+  lt log crash --agent greenplace/Toast --session gt-greenplace-Toast --exit-code 1`,
 	RunE: runLogCrash,
 }
 
@@ -91,7 +91,7 @@ func init() {
 func runLog(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Handle --acp flag to view ACP debug logs
@@ -354,11 +354,11 @@ func truncateStr(s string, maxLen int) string {
 	return s[:maxLen-3] + "..."
 }
 
-// runLogCrash handles the "gt log crash" command from tmux pane-died hooks.
+// runLogCrash handles the "lt log crash" command from tmux pane-died hooks.
 func runLogCrash(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil || townRoot == "" {
-		// Try to find town root from conventional location
+		// Try to find HQ root from conventional location
 		// This is called from tmux hook which may not have proper cwd
 		home := os.Getenv("HOME")
 		defaultRoot := home + "/gt"
@@ -366,7 +366,7 @@ func runLogCrash(cmd *cobra.Command, args []string) error {
 			townRoot = defaultRoot
 		}
 		if townRoot == "" {
-			return fmt.Errorf("cannot find town root (tried cwd and ~/gt)")
+			return fmt.Errorf("cannot find HQ root (tried cwd and ~/gt)")
 		}
 	}
 
@@ -404,7 +404,7 @@ func runLogCrash(cmd *cobra.Command, args []string) error {
 }
 
 // LogEvent is a helper that logs an event from anywhere in the codebase.
-// It finds the town root and logs the event.
+// It finds the HQ root and logs the event.
 func LogEvent(eventType townlog.EventType, agent, context string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
@@ -418,7 +418,7 @@ func LogEvent(eventType townlog.EventType, agent, context string) error {
 	return logger.Log(eventType, agent, context)
 }
 
-// LogEventWithRoot logs an event when the town root is already known.
+// LogEventWithRoot logs an event when the HQ root is already known.
 func LogEventWithRoot(townRoot string, eventType townlog.EventType, agent, context string) error {
 	logger := townlog.NewLogger(townRoot)
 	return logger.Log(eventType, agent, context)

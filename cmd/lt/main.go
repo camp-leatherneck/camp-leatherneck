@@ -1,4 +1,4 @@
-// gt is the Gas Town CLI for managing multi-agent workspaces.
+// lt is the Camp Leatherneck CLI for managing multi-agent workspaces.
 package main
 
 import (

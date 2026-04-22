@@ -46,7 +46,7 @@ func TestRenderRole_Mayor(t *testing.T) {
 		t.Error("output missing 'Mayor Context'")
 	}
 	if !strings.Contains(output, "/test/town") {
-		t.Error("output missing town root")
+		t.Error("output missing HQ root")
 	}
 	if !strings.Contains(output, "global coordinator") {
 		t.Error("output missing role description")
@@ -114,7 +114,7 @@ func TestRenderRole_Deacon(t *testing.T) {
 		t.Error("output missing 'Deacon Context'")
 	}
 	if !strings.Contains(output, "/test/town") {
-		t.Error("output missing town root")
+		t.Error("output missing HQ root")
 	}
 	if !strings.Contains(output, "Patrol Executor") {
 		t.Error("output missing role description")
@@ -277,7 +277,7 @@ func TestRenderRole_Dog(t *testing.T) {
 		t.Error("output missing dog name")
 	}
 	if !strings.Contains(output, "/test/town") {
-		t.Error("output missing town root")
+		t.Error("output missing HQ root")
 	}
 }
 
@@ -485,7 +485,7 @@ func TestRenderRole_TownRootInOutput(t *testing.T) {
 }
 
 // TestRenderRole_Polecat_CwdInstruction verifies the critical cwd instruction
-// uses the actual town root, not a hardcoded ~/gt path.
+// uses the actual HQ root, not a hardcoded ~/gt path.
 // Regression test: agents were following hardcoded ~/gt even in test instances.
 func TestRenderRole_Polecat_CwdInstruction(t *testing.T) {
 	tmpl, err := New()
@@ -572,7 +572,7 @@ func TestCreatePolecatCLAUDEmd(t *testing.T) {
 	}
 
 	// Verify critical gt done instructions are present
-	if !strings.Contains(content, "gt done") {
+	if !strings.Contains(content, "lt done") {
 		t.Fatal("CLAUDE.md does not contain 'gt done' — polecats will not know to call it")
 	}
 	if !strings.Contains(content, "IDLE POLECAT HERESY") {
@@ -587,7 +587,7 @@ func TestCreatePolecatCLAUDEmd_WritesToLocalWhenTrackedExists(t *testing.T) {
 	dir := t.TempDir()
 
 	// Write a CLAUDE.md with the exact town-root template content that gets
-	// tracked in repos. This is the real-world scenario: gt install creates
+	// tracked in repos. This is the real-world scenario: lt install creates
 	// ~/gt/CLAUDE.md with Dolt operational awareness, the user commits it to
 	// their repo, and git worktree add checks it out in the polecat worktree.
 	existing := TownRootCLAUDEmd()
@@ -626,8 +626,8 @@ func TestCreatePolecatCLAUDEmd_WritesToLocalWhenTrackedExists(t *testing.T) {
 	if !strings.Contains(localContent, "IDLE POLECAT HERESY") {
 		t.Error("polecat lifecycle instructions not written to CLAUDE.local.md")
 	}
-	if !strings.Contains(localContent, "gt done") {
-		t.Fatal("gt done instructions not in CLAUDE.local.md — polecats will not know to call it")
+	if !strings.Contains(localContent, "lt done") {
+		t.Fatal("lt done instructions not in CLAUDE.local.md — polecats will not know to call it")
 	}
 }
 
@@ -725,8 +725,8 @@ func TestCreatePolecatCLAUDEmd_ReusePath(t *testing.T) {
 		t.Error("town-root content in CLAUDE.md was lost")
 	}
 	localData, _ = os.ReadFile(claudeLocalPath)
-	if !strings.Contains(string(localData), "gt done") {
-		t.Fatal("gt done instructions not found in CLAUDE.local.md")
+	if !strings.Contains(string(localData), "lt done") {
+		t.Fatal("lt done instructions not found in CLAUDE.local.md")
 	}
 }
 
@@ -804,7 +804,7 @@ func TestCreatePolecatCLAUDEmd_GitCleanScenario(t *testing.T) {
 	}
 
 	data, _ := os.ReadFile(claudePath)
-	if !strings.Contains(string(data), "gt done") {
-		t.Fatal("gt done instructions not found after re-creation")
+	if !strings.Contains(string(data), "lt done") {
+		t.Fatal("lt done instructions not found after re-creation")
 	}
 }

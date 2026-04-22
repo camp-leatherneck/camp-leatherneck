@@ -6,7 +6,7 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/version"
 )
 
-// StaleBinaryCheck verifies the installed gt binary is up to date with the repo.
+// StaleBinaryCheck verifies the installed lt binary is up to date with the repo.
 type StaleBinaryCheck struct {
 	FixableCheck
 }
@@ -17,7 +17,7 @@ func NewStaleBinaryCheck() *StaleBinaryCheck {
 		FixableCheck: FixableCheck{
 			BaseCheck: BaseCheck{
 				CheckName:        "stale-binary",
-				CheckDescription: "Check if gt binary is up to date with repo",
+				CheckDescription: "Check if lt binary is up to date with repo",
 				CheckCategory:    CategoryInfrastructure,
 			},
 		},
@@ -31,7 +31,7 @@ func (c *StaleBinaryCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: "Cannot locate gt source repo (not a development environment)",
+			Message: "Cannot locate lt source repo (not a development environment)",
 			Details: []string{err.Error()},
 		}
 	}
@@ -58,7 +58,7 @@ func (c *StaleBinaryCheck) Run(ctx *CheckContext) *CheckResult {
 			Name:    c.Name(),
 			Status:  StatusWarning,
 			Message: msg,
-			FixHint: "Run 'gt install' to rebuild and install",
+			FixHint: "Run 'lt install' to rebuild and install",
 		}
 	}
 
@@ -74,8 +74,8 @@ func (c *StaleBinaryCheck) Fix(ctx *CheckContext) error {
 	// Note: We don't auto-fix this because:
 	// 1. It requires building and installing, which takes time
 	// 2. It modifies system files outside the workspace
-	// 3. User should explicitly run 'gt install'
-	return fmt.Errorf("run 'gt install' manually to rebuild")
+	// 3. User should explicitly run 'lt install'
+	return fmt.Errorf("run 'lt install' manually to rebuild")
 }
 
 // CanFix returns false - stale binary should be fixed manually.

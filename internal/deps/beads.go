@@ -1,4 +1,4 @@
-// Package deps manages external dependencies for Gas Town.
+// Package deps manages external dependencies for Camp Leatherneck.
 package deps
 
 import (
@@ -14,8 +14,8 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
 )
 
-// MinBeadsVersion is the minimum compatible beads version for this Gas Town release.
-// Update this when Gas Town requires new beads features.
+// MinBeadsVersion is the minimum compatible beads version for this Camp Leatherneck release.
+// Update this when Camp Leatherneck requires new beads features.
 const MinBeadsVersion = "0.57.0"
 
 // BeadsInstallPath is the go install path for beads.

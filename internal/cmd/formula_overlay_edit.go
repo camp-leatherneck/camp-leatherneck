@@ -21,9 +21,9 @@ rig-level overlay (if a rig is detected) or the town-level overlay.
 Use --town to explicitly edit the town-level overlay.
 
 Examples:
-  gt formula overlay edit mol-polecat-work
-  gt formula overlay edit mol-polecat-work --rig gastown
-  gt formula overlay edit mol-polecat-work --town`,
+  lt formula overlay edit mol-polecat-work
+  lt formula overlay edit mol-polecat-work --rig gastown
+  lt formula overlay edit mol-polecat-work --town`,
 	Args: cobra.ExactArgs(1),
 	RunE: runFormulaOverlayEdit,
 }
@@ -98,6 +98,6 @@ func runFormulaOverlayEdit(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("Overlay updated: %s\n", path)
-	fmt.Println("Changes take effect at next 'gt prime'.")
+	fmt.Println("Changes take effect at next 'lt prime'.")
 	return nil
 }

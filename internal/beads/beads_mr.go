@@ -7,7 +7,7 @@ import (
 
 // FindMRForBranch searches for an open merge-request bead for the given branch.
 // Returns the MR bead if found, nil if not found.
-// This enables idempotent `gt done` - if an MR already exists, we skip creation.
+// This enables idempotent `lt done` - if an MR already exists, we skip creation.
 func (b *Beads) FindMRForBranch(branch string) (*Issue, error) {
 	return b.findMRForBranch(branch, true)
 }

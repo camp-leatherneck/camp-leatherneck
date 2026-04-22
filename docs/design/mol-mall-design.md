@@ -2,11 +2,11 @@
 
 > **Status: Vision document** — Phase 1 (local formulas) exists. Phases 2-5 (registry, publishing, federation) are not implemented.
 
-> A marketplace for Gas Town formulas
+> A marketplace for Camp Leatherneck formulas
 
 ## Vision
 
-**Mol Mall** is a registry for sharing formulas across Gas Town installations. Think npm for molecules, or Terraform Registry for workflows.
+**Mol Mall** is a registry for sharing formulas across Camp Leatherneck installations. Think npm for molecules, or Terraform Registry for workflows.
 
 ```
 "Cook a formula, sling it to a polecat, the witness watches, refinery merges."
@@ -17,7 +17,7 @@ have your polecats executing world-class workflows?
 
 ### The Network Effect
 
-A well-designed formula for "code review" or "security audit" or "deploy to K8s" can spread across thousands of Gas Town installations. Each adoption means:
+A well-designed formula for "code review" or "security audit" or "deploy to K8s" can spread across thousands of Camp Leatherneck installations. Each adoption means:
 - More agents executing proven workflows
 - More structured, trackable work output
 - Better capability routing (agents with track records on a formula get similar work)
@@ -33,7 +33,7 @@ A well-designed formula for "code review" or "security audit" or "deploy to K8s"
 
 PUBLIC REGISTRY (molmall.gastown.io)
 ├── Community formulas (MIT licensed)
-├── Official Gas Town formulas (blessed)
+├── Official Camp Leatherneck formulas (blessed)
 ├── Verified publisher formulas
 └── Open contribution model
 
@@ -301,7 +301,7 @@ VERIFIED PUBLISHER
   Higher search ranking
 
 OFFICIAL
-  Maintained by Gas Town team
+  Maintained by Camp Leatherneck team
   Displayed with 🏛️ badge
   Included in embedded defaults
 

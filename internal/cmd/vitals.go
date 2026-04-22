@@ -28,7 +28,7 @@ func init() { rootCmd.AddCommand(vitalsCmd) }
 func runVitals(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 	printVitalsDoltServers(townRoot)
 	fmt.Println()
@@ -69,12 +69,12 @@ func printVitalsDoltServers(townRoot string) {
 
 type vitalsZombie struct {
 	pid, port string
-	foreign   bool // true if process belongs to another Gas Town workspace
+	foreign   bool // true if process belongs to another Camp Leatherneck workspace
 }
 
 // findVitalsZombies finds Dolt servers not on the production port.
 // Uses lsof-based port discovery instead of pgrep/ps string matching (ZFC fix: gt-fj87).
-// Checks workspace ownership to avoid flagging sibling Gas Town instances as zombies.
+// Checks workspace ownership to avoid flagging sibling Camp Leatherneck instances as zombies.
 func findVitalsZombies(townRoot string, prodPort int) []vitalsZombie {
 	listeners := doltserver.FindAllDoltListeners()
 	expectedDataDir, _ := filepath.Abs(filepath.Join(townRoot, ".dolt-data"))
@@ -83,7 +83,7 @@ func findVitalsZombies(townRoot string, prodPort int) []vitalsZombie {
 		if l.Port == prodPort {
 			continue
 		}
-		// Check if this Dolt process belongs to a Gas Town workspace.
+		// Check if this Dolt process belongs to a Camp Leatherneck workspace.
 		// If its --data-dir is a .dolt-data directory under a valid workspace,
 		// it's a sibling instance, not a test zombie.
 		dataDir := doltserver.GetDoltDataDirFromProcess(l.PID)
@@ -94,7 +94,7 @@ func findVitalsZombies(townRoot string, prodPort int) []vitalsZombie {
 			} else if filepath.Base(absDataDir) == ".dolt-data" {
 				parentDir := filepath.Dir(absDataDir)
 				if isWs, _ := workspace.IsWorkspace(parentDir); isWs {
-					// Legitimate sibling Gas Town workspace
+					// Legitimate sibling Camp Leatherneck workspace
 					zombies = append(zombies, vitalsZombie{
 						pid:     strconv.Itoa(l.PID),
 						port:    strconv.Itoa(l.Port),

@@ -104,21 +104,21 @@ fi
 case "$*" in
   "list --type=convoy --json --all")
     if [ "$PWD" != "%s" ]; then
-      echo "expected town root, got $PWD" >&2
+      echo "expected HQ root, got $PWD" >&2
       exit 1
     fi
     echo '[{"id":"hq-cv-town","title":"Town convoy","status":"open","created_at":"2026-03-09T00:00:00Z"}]'
     ;;
   "dep list hq-cv-town --direction=down --type=tracks --allow-stale --json")
     if [ "$PWD" != "%s" ]; then
-      echo "expected town root, got $PWD" >&2
+      echo "expected HQ root, got $PWD" >&2
       exit 1
     fi
     echo '[]'
     ;;
   "show hq-cv-town --json")
     if [ "$PWD" != "%s" ]; then
-      echo "expected town root, got $PWD" >&2
+      echo "expected HQ root, got $PWD" >&2
       exit 1
     fi
     echo '[{"id":"hq-cv-town","title":"Town convoy","status":"open","issue_type":"convoy","dependencies":[]}]'
@@ -177,14 +177,14 @@ fi
 case "$*" in
   "show hq-cv-status --json")
     if [ "$PWD" != "%s" ]; then
-      echo "expected town root, got $PWD" >&2
+      echo "expected HQ root, got $PWD" >&2
       exit 1
     fi
     echo '[{"id":"hq-cv-status","title":"Status convoy","status":"open","issue_type":"convoy","created_at":"2026-03-09T00:00:00Z","labels":[],"dependencies":[]}]'
     ;;
   "dep list hq-cv-status --direction=down --type=tracks --allow-stale --json")
     if [ "$PWD" != "%s" ]; then
-      echo "expected town root, got $PWD" >&2
+      echo "expected HQ root, got $PWD" >&2
       exit 1
     fi
     echo '[]'
@@ -300,7 +300,7 @@ func TestConvoyAdd_UsesTrackingHelper(t *testing.T) {
 case "$*" in
   "show hq-cv-test --json")
     if [ "$PWD" != "%s" ]; then
-      echo "expected town root, got $PWD" >&2
+      echo "expected HQ root, got $PWD" >&2
       exit 1
     fi
     echo '[{"id":"hq-cv-test","title":"Test Convoy","status":"open","issue_type":"convoy"}]'

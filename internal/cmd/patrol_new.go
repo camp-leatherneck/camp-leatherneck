@@ -23,8 +23,8 @@ target_branch, etc.) are read from the rig's config.json and settings/config.jso
 passed as --var args to the wisp.
 
 Examples:
-  gt patrol new                  # Auto-detect role, create patrol
-  gt patrol new --role refinery  # Explicitly create refinery patrol`,
+  lt patrol new                  # Auto-detect role, create patrol
+  lt patrol new --role refinery  # Explicitly create refinery patrol`,
 	RunE: runPatrolNew,
 }
 

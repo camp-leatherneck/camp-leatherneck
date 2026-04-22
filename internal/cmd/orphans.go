@@ -39,10 +39,10 @@ This command scans for:
 Note: --days and --all only apply to orphaned commits, not polecat branches.
 
 Examples:
-  gt orphans              # Last 7 days (default), infers rig from cwd
-  gt orphans --rig=gastown # Target a specific rig
-  gt orphans --days=14    # Last 2 weeks
-  gt orphans --all        # Show all orphans (no date filter)`,
+  lt orphans              # Last 7 days (default), infers rig from cwd
+  lt orphans --rig=gastown # Target a specific rig
+  lt orphans --days=14    # Last 2 weeks
+  lt orphans --all        # Show all orphans (no date filter)`,
 	RunE: runOrphans,
 }
 
@@ -76,21 +76,21 @@ WARNING: This operation is irreversible. Once commits are pruned,
 they cannot be recovered.
 
 Note: This only affects orphaned commits and processes. Unmerged polecat
-branches (shown by 'gt orphans') must be recovered or cleaned up manually.
+branches (shown by 'lt orphans') must be recovered or cleaned up manually.
 
 The command will:
-1. Find orphaned commits (same as 'gt orphans')
-2. Find orphaned Claude processes (same as 'gt orphans procs')
+1. Find orphaned commits (same as 'lt orphans')
+2. Find orphaned Claude processes (same as 'lt orphans procs')
 3. Show what will be removed/killed
 4. Ask for confirmation (unless --force)
 5. Run git gc and kill processes
 
 Examples:
-  gt orphans kill              # Kill orphans from last 7 days (default)
-  gt orphans kill --days=14    # Kill orphans from last 2 weeks
-  gt orphans kill --all        # Kill all orphans
-  gt orphans kill --dry-run    # Preview without deleting
-  gt orphans kill --force      # Skip confirmation prompt`,
+  lt orphans kill              # Kill orphans from last 7 days (default)
+  lt orphans kill --days=14    # Kill orphans from last 2 weeks
+  lt orphans kill --all        # Kill all orphans
+  lt orphans kill --dry-run    # Preview without deleting
+  lt orphans kill --force      # Skip confirmation prompt`,
 	RunE: runOrphansKill,
 }
 
@@ -109,10 +109,10 @@ is considered an orphan. This catches processes that have been reparented to
 something other than init (PPID != 1).
 
 Examples:
-  gt orphans procs              # List orphaned Claude processes (PPID=1 only)
-  gt orphans procs list         # Same as above
-  gt orphans procs --aggressive # List ALL orphaned processes (tmux verification)
-  gt orphans procs kill         # Kill orphaned processes`,
+  lt orphans procs              # List orphaned Claude processes (PPID=1 only)
+  lt orphans procs list         # Same as above
+  lt orphans procs --aggressive # List ALL orphaned processes (tmux verification)
+  lt orphans procs kill         # Kill orphaned processes`,
 	RunE: runOrphansListProcesses, // Default to list
 }
 
@@ -133,8 +133,8 @@ Excludes:
 - Claude.app desktop application processes
 
 Examples:
-  gt orphans procs list             # Show orphans with PPID=1
-  gt orphans procs list --aggressive # Show ALL orphans (tmux verification)`,
+  lt orphans procs list             # Show orphans with PPID=1
+  lt orphans procs list --aggressive # Show ALL orphans (tmux verification)`,
 	RunE: runOrphansListProcesses,
 }
 
@@ -148,9 +148,9 @@ Use -f/--force to kill without confirmation.
 Use --aggressive to kill ALL orphaned processes (not just PPID=1).
 
 Examples:
-  gt orphans procs kill             # Kill with confirmation
-  gt orphans procs kill -f          # Force kill without confirmation
-  gt orphans procs kill --aggressive # Kill ALL orphans (tmux verification)`,
+  lt orphans procs kill             # Kill with confirmation
+  lt orphans procs kill -f          # Force kill without confirmation
+  lt orphans procs kill --aggressive # Kill ALL orphans (tmux verification)`,
 	RunE: runOrphansKillProcesses,
 }
 
@@ -193,7 +193,7 @@ func runOrphans(cmd *cobra.Command, args []string) error {
 	// Find workspace to determine rig root
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Find rig: use --rig flag if provided, otherwise infer from cwd
@@ -550,7 +550,7 @@ func formatAge(t time.Time) string {
 func runOrphansKill(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Find rig: use --rig flag if provided, otherwise infer from cwd
@@ -821,7 +821,7 @@ func runOrphansListProcesses(cmd *cobra.Command, args []string) error {
 		fmt.Printf("  %s %s\n", style.Bold.Render(fmt.Sprintf("PID %d", o.PID)), displayArgs)
 	}
 
-	fmt.Printf("\n%s\n", style.Dim.Render("Use 'gt orphans procs kill' to terminate these processes"))
+	fmt.Printf("\n%s\n", style.Dim.Render("Use 'lt orphans procs kill' to terminate these processes"))
 	fmt.Printf("%s\n", style.Dim.Render("Use --aggressive to find more orphans via tmux session verification"))
 
 	return nil
@@ -851,7 +851,7 @@ func runOrphansListProcessesAggressive() error {
 			z.TTY)
 	}
 
-	fmt.Printf("\n%s\n", style.Dim.Render("Use 'gt orphans procs kill --aggressive' to terminate these processes"))
+	fmt.Printf("\n%s\n", style.Dim.Render("Use 'lt orphans procs kill --aggressive' to terminate these processes"))
 
 	return nil
 }

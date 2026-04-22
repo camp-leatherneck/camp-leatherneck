@@ -63,8 +63,8 @@ The target should be an agent path like:
   - beads/polecats/charlie
 
 Examples:
-  gt warrant file gastown/polecats/alpha --reason "Zombie: no session, idle >10m"
-  gt warrant file deacon/dogs/bravo --reason "Stuck: working on task for >2h"`,
+  lt warrant file gastown/polecats/alpha --reason "Zombie: no session, idle >10m"
+  lt warrant file deacon/dogs/bravo --reason "Stuck: working on task for >2h"`,
 	Args: cobra.ExactArgs(1),
 	RunE: runWarrantFile,
 }
@@ -77,8 +77,8 @@ var warrantListCmd = &cobra.Command{
 Use --all to include executed warrants.
 
 Examples:
-  gt warrant list
-  gt warrant list --all`,
+  lt warrant list
+  lt warrant list --all`,
 	RunE: runWarrantList,
 }
 
@@ -95,8 +95,8 @@ This will:
 Use --force to execute even if no warrant exists.
 
 Examples:
-  gt warrant execute gastown/polecats/alpha
-  gt warrant execute deacon/dogs/bravo --force`,
+  lt warrant execute gastown/polecats/alpha
+  lt warrant execute deacon/dogs/bravo --force`,
 	Args: cobra.ExactArgs(1),
 	RunE: runWarrantExecute,
 }
@@ -123,7 +123,7 @@ func init() {
 func getWarrantDir() (string, error) {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return "", fmt.Errorf("finding town root: %w", err)
+		return "", fmt.Errorf("finding HQ root: %w", err)
 	}
 	return filepath.Join(townRoot, "warrants"), nil
 }

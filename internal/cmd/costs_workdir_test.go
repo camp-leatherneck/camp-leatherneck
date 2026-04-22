@@ -31,17 +31,17 @@ func TestQuerySessionEvents_FindsEventsFromAllLocations(t *testing.T) {
 
 	// Skip if gt and bd are not installed
 	if _, err := exec.LookPath("gt"); err != nil {
-		t.Skip("gt not installed, skipping integration test")
+		t.Skip("lt not installed, skipping integration test")
 	}
 	if _, err := exec.LookPath("bd"); err != nil {
 		t.Skip("bd not installed, skipping integration test")
 	}
 
-	// Skip when running inside a Gas Town workspace - this integration test
+	// Skip when running inside a Camp Leatherneck workspace - this integration test
 	// creates a separate workspace and the subprocesses can interact with
 	// the parent workspace's daemon, causing hangs.
 	if os.Getenv("GT_TOWN_ROOT") != "" || os.Getenv("BD_ACTOR") != "" {
-		t.Skip("skipping integration test inside Gas Town workspace (use 'go test' outside workspace)")
+		t.Skip("skipping integration test inside Camp Leatherneck workspace (use 'go test' outside workspace)")
 	}
 
 	// Create a temporary directory structure
@@ -53,20 +53,20 @@ func TestQuerySessionEvents_FindsEventsFromAllLocations(t *testing.T) {
 		t.Fatalf("creating town directory: %v", err)
 	}
 
-	// Initialize a git repo (required for gt install)
+	// Initialize a git repo (required for lt install)
 	gitInitCmd := exec.Command("git", "init")
 	gitInitCmd.Dir = townRoot
 	if out, err := gitInitCmd.CombinedOutput(); err != nil {
 		t.Fatalf("git init: %v\n%s", err, out)
 	}
 
-	// Use gt install to set up the town
+	// Use lt install to set up the town
 	// Clear GT environment variables to isolate test from parent workspace
 	gtInstallCmd := exec.Command("gt", "install")
 	gtInstallCmd.Dir = townRoot
 	gtInstallCmd.Env = testutil.CleanGTEnv()
 	if out, err := gtInstallCmd.CombinedOutput(); err != nil {
-		t.Fatalf("gt install: %v\n%s", err, out)
+		t.Fatalf("lt install: %v\n%s", err, out)
 	}
 
 	// Create a bare repo to use as the rig source
@@ -100,12 +100,12 @@ func TestQuerySessionEvents_FindsEventsFromAllLocations(t *testing.T) {
 		}
 	}
 
-	// Add rig using gt rig add
+	// Add rig using lt rig add
 	rigAddCmd := exec.Command("gt", "rig", "add", "testrig", bareRepo, "--prefix=tr")
 	rigAddCmd.Dir = townRoot
 	rigAddCmd.Env = testutil.CleanGTEnv()
 	if out, err := rigAddCmd.CombinedOutput(); err != nil {
-		t.Fatalf("gt rig add: %v\n%s", err, out)
+		t.Fatalf("lt rig add: %v\n%s", err, out)
 	}
 
 	// Find the rig path
@@ -183,7 +183,7 @@ func TestQuerySessionEvents_FindsEventsFromAllLocations(t *testing.T) {
 		t.Error("Expected rig beads to have events")
 	}
 
-	// Save current directory and change to town root for query
+	// Save current directory and change to HQ root for query
 	origDir, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("getting current directory: %v", err)
@@ -195,7 +195,7 @@ func TestQuerySessionEvents_FindsEventsFromAllLocations(t *testing.T) {
 	}()
 
 	if err := os.Chdir(townRoot); err != nil {
-		t.Fatalf("changing to town root: %v", err)
+		t.Fatalf("changing to HQ root: %v", err)
 	}
 
 	// Verify workspace discovery works

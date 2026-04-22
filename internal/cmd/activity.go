@@ -29,9 +29,9 @@ var activityCmd = &cobra.Command{
 	Use:     "activity",
 	GroupID: GroupDiag,
 	Short:   "Emit and view activity events",
-	Long: `Emit and view activity events for the Gas Town activity feed.
+	Long: `Emit and view activity events for the Camp Leatherneck activity feed.
 
-Events are written to ~/gt/.events.jsonl and can be viewed with 'gt feed'.
+Events are written to ~/gt/.events.jsonl and can be viewed with 'lt feed'.
 
 Subcommands:
   emit    Emit an activity event`,
@@ -40,7 +40,7 @@ Subcommands:
 var activityEmitCmd = &cobra.Command{
 	Use:   "emit <event-type>",
 	Short: "Emit an activity event",
-	Long: `Emit an activity event to the Gas Town activity feed.
+	Long: `Emit an activity event to the Camp Leatherneck activity feed.
 
 Supported event types for witness patrol:
   patrol_started   - When witness begins patrol cycle
@@ -61,11 +61,11 @@ Common options:
   --message  Human-readable message
 
 Examples:
-  gt activity emit patrol_started --rig greenplace --count 3
-  gt activity emit polecat_checked --rig greenplace --polecat Toast --status working --issue gp-xyz
-  gt activity emit polecat_nudged --rig greenplace --polecat Toast --reason "idle for 10 minutes"
-  gt activity emit escalation_sent --rig greenplace --target Toast --to mayor --reason "unresponsive"
-  gt activity emit patrol_complete --rig greenplace --count 3 --message "All polecats healthy"`,
+  lt activity emit patrol_started --rig greenplace --count 3
+  lt activity emit polecat_checked --rig greenplace --polecat Toast --status working --issue gp-xyz
+  lt activity emit polecat_nudged --rig greenplace --polecat Toast --reason "idle for 10 minutes"
+  lt activity emit escalation_sent --rig greenplace --target Toast --to mayor --reason "unresponsive"
+  lt activity emit patrol_complete --rig greenplace --count 3 --message "All polecats healthy"`,
 	Args: cobra.ExactArgs(1),
 	RunE: runActivityEmit,
 }
@@ -90,10 +90,10 @@ func init() {
 func runActivityEmit(cmd *cobra.Command, args []string) error {
 	eventType := args[0]
 
-	// Validate we're in a Gas Town workspace
+	// Validate we're in a Camp Leatherneck workspace
 	_, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Auto-detect actor if not provided

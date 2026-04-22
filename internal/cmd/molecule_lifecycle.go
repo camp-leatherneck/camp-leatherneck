@@ -23,13 +23,13 @@ func runMoleculeBurn(cmd *cobra.Command, args []string) (retErr error) {
 		return fmt.Errorf("getting current directory: %w", err)
 	}
 
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
 		return fmt.Errorf("finding workspace: %w", err)
 	}
 	if townRoot == "" {
-		return fmt.Errorf("not in a Gas Town workspace")
+		return fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	// Determine target agent
@@ -157,13 +157,13 @@ func runMoleculeSquash(cmd *cobra.Command, args []string) (retErr error) {
 		return fmt.Errorf("getting current directory: %w", err)
 	}
 
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
 		return fmt.Errorf("finding workspace: %w", err)
 	}
 	if townRoot == "" {
-		return fmt.Errorf("not in a Gas Town workspace")
+		return fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	// Determine target agent
@@ -278,7 +278,7 @@ squashed_at: %s
 		}
 
 		// Create the digest bead (ephemeral to avoid git pollution)
-		// Per-cycle digests are aggregated daily by 'gt patrol digest'
+		// Per-cycle digests are aggregated daily by 'lt patrol digest'
 		digestIssue, err := b.Create(beads.CreateOptions{
 			Title:       digestTitle,
 			Description: digestDesc,

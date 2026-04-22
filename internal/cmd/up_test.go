@@ -326,7 +326,7 @@ func TestWaitForDoltReady_ServerListening(t *testing.T) {
 func TestWaitForDoltReady_GracefulDegradation(t *testing.T) {
 	// Verify that waitForDoltReady doesn't panic or error when Dolt is unreachable.
 	// The wrapper should log a warning and continue (graceful degradation).
-	// Uses a town root with no server metadata so it returns immediately.
+	// Uses a HQ root with no server metadata so it returns immediately.
 	townRoot := t.TempDir()
 	waitForDoltReady(townRoot) // Should not panic
 

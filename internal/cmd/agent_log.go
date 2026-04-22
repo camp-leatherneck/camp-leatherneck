@@ -27,7 +27,7 @@ var agentLogCmd = &cobra.Command{
 }
 
 func init() {
-	agentLogCmd.Flags().StringVar(&agentLogSession, "session", "", "Gas Town tmux session name (used as log tag)")
+	agentLogCmd.Flags().StringVar(&agentLogSession, "session", "", "Camp Leatherneck tmux session name (used as log tag)")
 	agentLogCmd.Flags().StringVar(&agentLogWorkDir, "work-dir", "", "Agent working directory (used to locate conversation log files)")
 	agentLogCmd.Flags().StringVar(&agentLogAgentType, "agent", "claudecode", "Agent type (claudecode, opencode)")
 	agentLogCmd.Flags().StringVar(&agentLogSince, "since", "", "Only watch JSONL files modified at or after this RFC3339 timestamp (filters out pre-existing Claude sessions)")
@@ -61,8 +61,8 @@ func runAgentLog(cmd *cobra.Command, args []string) error {
 
 	// Parse --since timestamp. When provided by activateAgentLogging, this is
 	// approximately the GT session start time, ensuring we only watch Claude
-	// instances spawned by this Gas Town session (not pre-existing user sessions
-	// or other Gas Town rigs running in the same work dir).
+	// instances spawned by this Camp Leatherneck session (not pre-existing user sessions
+	// or other Camp Leatherneck rigs running in the same work dir).
 	var since time.Time
 	if agentLogSince != "" {
 		since, err = time.Parse(time.RFC3339, agentLogSince)

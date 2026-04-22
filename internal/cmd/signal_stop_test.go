@@ -118,7 +118,7 @@ func TestStopStateRoundtrip(t *testing.T) {
 
 func TestStopStateDedupPreventsInfiniteLoop(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "test-state.json")
-	reason := "[gt signal stop] You have 1 unread message(s). Most recent from gastown/witness: \"NUDGE\""
+	reason := "[lt signal stop] You have 1 unread message(s). Most recent from gastown/witness: \"NUDGE\""
 
 	// First call: no saved state, should block
 	state := loadStopState(path)
@@ -134,7 +134,7 @@ func TestStopStateDedupPreventsInfiniteLoop(t *testing.T) {
 	}
 
 	// Condition changes: different reason, should block again
-	newReason := "[gt signal stop] Work slung to you: gt-abc — \"Fix bug\""
+	newReason := "[lt signal stop] Work slung to you: gt-abc — \"Fix bug\""
 	if state.LastReason == newReason {
 		t.Fatal("different reason should not match")
 	}

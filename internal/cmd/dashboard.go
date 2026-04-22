@@ -37,10 +37,10 @@ The dashboard shows real-time convoy status with:
 - Auto-refresh every 30 seconds via htmx
 
 Example:
-  gt dashboard                    # Start on default port 8080
-  gt dashboard --port 3000        # Start on port 3000
-  gt dashboard --bind 0.0.0.0     # Listen on all interfaces
-  gt dashboard --open             # Start and open browser`,
+  lt dashboard                    # Start on default port 8080
+  lt dashboard --port 3000        # Start on port 3000
+  lt dashboard --bind 0.0.0.0     # Listen on all interfaces
+  lt dashboard --open             # Start and open browser`,
 	RunE: runDashboard,
 }
 
@@ -70,7 +70,7 @@ func runDashboard(cmd *cobra.Command, args []string) error {
 	} else {
 		// In a workspace - run normal dashboard
 
-		// Set BEADS_DOLT_PORT and GT_DOLT_PORT so bd/gt subprocesses connect
+		// Set BEADS_DOLT_PORT and GT_DOLT_PORT so bd/lt subprocesses connect
 		// to the actual Dolt SQL server, not the dashboard's HTTP listen port.
 		// Without this, inherited env vars could point bd at the wrong port.
 		ensureDoltPortEnv(townRoot)

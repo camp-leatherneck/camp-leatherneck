@@ -38,7 +38,7 @@ func isNothingToCommit(err error) bool {
 
 // isTableNotFound returns true if the error indicates a missing table.
 // This happens when beads stores its data on a separate Dolt instance from
-// the gt Dolt server, so tables like issues/labels/dependencies don't exist
+// the lt Dolt server, so tables like issues/labels/dependencies don't exist
 // on the server the reaper connects to.
 func isTableNotFound(err error) bool {
 	if err == nil {
@@ -254,7 +254,7 @@ func Scan(db *sql.DB, dbName string, maxAge, purgeAge, mailDeleteAge, staleIssue
 	}
 
 	// Count mail candidates.
-	// The issues/labels tables may not exist on the gt Dolt server if beads
+	// The issues/labels tables may not exist on the lt Dolt server if beads
 	// stores its data on a separate Dolt instance. Skip gracefully.
 	mailQuery := "SELECT COUNT(*) FROM issues WHERE status = 'closed' AND closed_at < ? AND id IN (SELECT issue_id FROM labels WHERE label = 'gt:message')"
 	if err := db.QueryRowContext(ctx, mailQuery, now.Add(-mailDeleteAge)).Scan(&result.MailCandidates); err != nil {

@@ -27,11 +27,11 @@ KRC provides:
   - Statistics on ephemeral data lifecycle
 
 Examples:
-  gt krc stats              # Show event statistics
-  gt krc prune              # Remove expired events
-  gt krc prune --dry-run    # Preview what would be pruned
-  gt krc config             # Show TTL configuration
-  gt krc config set patrol_* 12h   # Set TTL for patrol events`,
+  lt krc stats              # Show event statistics
+  lt krc prune              # Remove expired events
+  lt krc prune --dry-run    # Preview what would be pruned
+  lt krc config             # Show TTL configuration
+  lt krc config set patrol_* 12h   # Set TTL for patrol events`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return cmd.Help()
 	},
@@ -73,10 +73,10 @@ Subcommands:
   reset                 Reset to default configuration
 
 Examples:
-  gt krc config                     # Show current config
-  gt krc config set patrol_* 12h    # Set patrol TTL to 12 hours
-  gt krc config set default 3d      # Set default TTL to 3 days
-  gt krc config reset               # Reset to defaults`,
+  lt krc config                     # Show current config
+  lt krc config set patrol_* 12h    # Set patrol TTL to 12 hours
+  lt krc config set default 3d      # Set default TTL to 3 days
+  lt krc config reset               # Reset to defaults`,
 	RunE: runKrcConfig,
 }
 
@@ -154,7 +154,7 @@ func init() {
 func runKrcStats(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	config, err := krc.LoadConfig(townRoot)
@@ -236,7 +236,7 @@ func runKrcStats(cmd *cobra.Command, args []string) error {
 func runKrcPrune(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	config, err := krc.LoadConfig(townRoot)
@@ -334,7 +334,7 @@ func runKrcPrune(cmd *cobra.Command, args []string) error {
 func runKrcConfig(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	config, err := krc.LoadConfig(townRoot)
@@ -377,7 +377,7 @@ func runKrcConfigSet(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	config, err := krc.LoadConfig(townRoot)
@@ -406,7 +406,7 @@ func runKrcConfigSet(cmd *cobra.Command, args []string) error {
 func runKrcConfigReset(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	config := krc.DefaultConfig()
@@ -506,7 +506,7 @@ func runKrcAutoPrune(townRoot string, config *krc.Config) error {
 func runKrcDecay(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	config, err := krc.LoadConfig(townRoot)
@@ -583,7 +583,7 @@ func runKrcDecay(cmd *cobra.Command, args []string) error {
 func runKrcAutoPruneStatus(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	config, err := krc.LoadConfig(townRoot)

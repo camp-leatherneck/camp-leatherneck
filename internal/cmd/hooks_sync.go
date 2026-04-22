@@ -33,8 +33,8 @@ For template-based agents (OpenCode, Gemini, Copilot, etc.):
 3. Overwrite if content differs
 
 Examples:
-  gt hooks sync             # Regenerate all hook/settings files
-  gt hooks sync --dry-run   # Show what would change without writing`,
+  lt hooks sync             # Regenerate all hook/settings files
+  lt hooks sync --dry-run   # Show what would change without writing`,
 	RunE: runHooksSync,
 }
 
@@ -46,7 +46,7 @@ func init() {
 func runHooksSync(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	targets, err := hooks.DiscoverTargets(townRoot)
@@ -156,7 +156,7 @@ func runHooksSync(cmd *cobra.Command, args []string) error {
 			useSettingsDir := preset.HooksUseSettingsDir
 
 			// Determine sync targets.
-			// - Town-level roles (mayor, deacon): the role dir IS the working directory.
+			// - HQ-level roles (mayor, deacon): the role dir IS the working directory.
 			// - Rig roles with useSettingsDir: one shared file in the role parent.
 			// - Rig roles without useSettingsDir (OpenCode, etc.): need files in each
 			//   individual worktree subdirectory.
@@ -283,7 +283,7 @@ func syncTarget(target hooks.Target, dryRun bool) (syncResult, error) {
 	// Update hooks section, preserving all other fields (including unknown ones)
 	current.Hooks = *expected
 
-	// Ensure enabledPlugins map exists with beads disabled (Gas Town standard)
+	// Ensure enabledPlugins map exists with beads disabled (Camp Leatherneck standard)
 	if current.EnabledPlugins == nil {
 		current.EnabledPlugins = make(map[string]bool)
 	}

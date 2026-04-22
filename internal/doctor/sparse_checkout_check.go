@@ -15,7 +15,7 @@ import (
 //
 // This check runs in both modes:
 //   - With --rig: checks only the specified rig
-//   - Without --rig: iterates over all rig directories in the town root
+//   - Without --rig: iterates over all rig directories in the HQ root
 type SparseCheckoutCheck struct {
 	FixableCheck
 	townRoot      string
@@ -71,7 +71,7 @@ func (c *SparseCheckoutCheck) Run(ctx *CheckContext) *CheckResult {
 		}
 	}
 
-	// Build details with relative paths from town root
+	// Build details with relative paths from HQ root
 	var details []string
 	for _, repoPath := range c.affectedRepos {
 		relPath, _ := filepath.Rel(c.townRoot, repoPath)
@@ -86,11 +86,11 @@ func (c *SparseCheckoutCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: fmt.Sprintf("%d repo(s) have legacy sparse checkout that should be removed", len(c.affectedRepos)),
 		Details: details,
-		FixHint: "Run 'gt doctor --fix' to remove sparse checkout and restore .claude/ files",
+		FixHint: "Run 'lt doctor --fix' to remove sparse checkout and restore .claude/ files",
 	}
 }
 
-// discoverRigPaths finds all rig directories in the town root.
+// discoverRigPaths finds all rig directories in the HQ root.
 // Skips known non-rig directories (mayor, deacon, daemon, .git, etc.).
 func (c *SparseCheckoutCheck) discoverRigPaths(townRoot string) []string {
 	entries, err := os.ReadDir(townRoot)

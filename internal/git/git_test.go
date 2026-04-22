@@ -1813,7 +1813,7 @@ func TestCleanExcludingRuntime(t *testing.T) {
 			want: true,
 		},
 		{
-			// CLAUDE.local.md is a Gas Town overlay file (gt-p35) that must not
+			// CLAUDE.local.md is a Camp Leatherneck overlay file (gt-p35) that must not
 			// block gt done or be auto-committed.
 			name: "CLAUDE.local.md is runtime artifact",
 			s: UncommittedWorkStatus{

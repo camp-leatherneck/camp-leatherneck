@@ -25,25 +25,25 @@ var peekCmd = &cobra.Command{
 	Short:   "View recent output from a polecat or crew session",
 	Long: `Capture and display recent terminal output from an agent session.
 
-This is the ergonomic alias for 'gt session capture'. Use it to check
+This is the ergonomic alias for 'lt session capture'. Use it to check
 what an agent is currently doing or has recently output.
 
 The nudge/peek pair provides the canonical interface for agent sessions:
-  gt nudge - send messages TO a session (reliable delivery)
-  gt peek  - read output FROM a session (capture-pane wrapper)
+  lt nudge - send messages TO a session (reliable delivery)
+  lt peek  - read output FROM a session (capture-pane wrapper)
 
 Supports polecats, crew workers, and town-level agents:
   - Polecats: rig/name format (e.g., greenplace/furiosa)
   - Crew: rig/crew/name format (e.g., beads/crew/dave)
-  - Town-level: mayor, deacon, boot (or hq/mayor, hq/deacon, hq/boot)
+  - HQ-level: mayor, deacon, boot (or hq/mayor, hq/deacon, hq/boot)
 
 Examples:
-  gt peek greenplace/furiosa         # Polecat: last 100 lines (default)
-  gt peek greenplace/furiosa 50      # Polecat: last 50 lines
-  gt peek beads/crew/dave            # Crew: last 100 lines
-  gt peek beads/crew/dave -n 200     # Crew: last 200 lines
-  gt peek mayor                      # Mayor: last 100 lines
-  gt peek deacon -n 50               # Deacon: last 50 lines`,
+  lt peek greenplace/furiosa         # Polecat: last 100 lines (default)
+  lt peek greenplace/furiosa 50      # Polecat: last 50 lines
+  lt peek beads/crew/dave            # Crew: last 100 lines
+  lt peek beads/crew/dave -n 200     # Crew: last 200 lines
+  lt peek mayor                      # Mayor: last 100 lines
+  lt peek deacon -n 50               # Deacon: last 50 lines`,
 	Args: cobra.RangeArgs(1, 2),
 	RunE: runPeek,
 }
@@ -74,7 +74,7 @@ func runPeek(cmd *cobra.Command, args []string) error {
 	if sessionName, ok := townAgentSessions[address]; ok {
 		_, err := workspace.FindFromCwdOrError()
 		if err != nil {
-			return fmt.Errorf("not in a Gas Town workspace: %w", err)
+			return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 		}
 		t := tmux.NewTmux()
 		output, err := t.CapturePane(sessionName, lines)
@@ -88,7 +88,7 @@ func runPeek(cmd *cobra.Command, args []string) error {
 	rigName, polecatName, err := parseAddress(address)
 	if err != nil {
 		if !strings.Contains(address, "/") {
-			return fmt.Errorf("not in a rig directory. Use full address format: gt peek <rig>/<polecat>")
+			return fmt.Errorf("not in a rig directory. Use full address format: lt peek <rig>/<polecat>")
 		}
 		return err
 	}
@@ -96,7 +96,7 @@ func runPeek(cmd *cobra.Command, args []string) error {
 	mgr, _, err := getSessionManager(rigName)
 	if err != nil {
 		if !strings.Contains(address, "/") {
-			return fmt.Errorf("not in a rig directory. Use full address format: gt peek <rig>/<polecat>")
+			return fmt.Errorf("not in a rig directory. Use full address format: lt peek <rig>/<polecat>")
 		}
 		return err
 	}

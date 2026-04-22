@@ -1,4 +1,4 @@
-// ABOUTME: Global state management for Gas Town enable/disable toggle.
+// ABOUTME: Global state management for Camp Leatherneck enable/disable toggle.
 // ABOUTME: Uses XDG-compliant paths for per-machine state storage.
 
 package state
@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// State represents the global Gas Town state.
+// State represents the global Camp Leatherneck state.
 type State struct {
 	Enabled          bool      `json:"enabled"`
 	Version          string    `json:"version"`
@@ -60,7 +60,7 @@ func StatePath() string {
 	return filepath.Join(StateDir(), "state.json")
 }
 
-// IsEnabled checks if Gas Town is globally enabled.
+// IsEnabled checks if Camp Leatherneck is globally enabled.
 // Priority: env override > state file > default (false)
 func IsEnabled() bool {
 	// Environment overrides take priority
@@ -108,7 +108,7 @@ func Save(s *State) error {
 	return atomicfile.WriteJSONWithPerm(StatePath(), s, 0600)
 }
 
-// Enable enables Gas Town globally.
+// Enable enables Camp Leatherneck globally.
 func Enable(version string) error {
 	s, err := Load()
 	if err != nil {
@@ -124,7 +124,7 @@ func Enable(version string) error {
 	return Save(s)
 }
 
-// Disable disables Gas Town globally.
+// Disable disables Camp Leatherneck globally.
 func Disable() error {
 	s, err := Load()
 	if err != nil {

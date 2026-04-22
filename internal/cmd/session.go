@@ -45,7 +45,7 @@ var sessionCmd = &cobra.Command{
 Sessions are tmux sessions running Claude for each polecat.
 Use the subcommands to start, stop, attach, and monitor sessions.
 
-TIP: To send messages to a running session, use 'gt nudge' (not 'session inject').
+TIP: To send messages to a running session, use 'lt nudge' (not 'session inject').
 The nudge command uses reliable delivery that works correctly with Claude Code.`,
 }
 
@@ -58,8 +58,8 @@ Creates a tmux session, navigates to the polecat's working directory,
 and launches claude. Optionally inject an initial issue to work on.
 
 Examples:
-  gt session start wyvern/Toast
-  gt session start wyvern/Toast --issue gt-123`,
+  lt session start wyvern/Toast
+  lt session start wyvern/Toast --issue gt-123`,
 	Args: cobra.ExactArgs(1),
 	RunE: runSessionStart,
 }
@@ -103,19 +103,19 @@ var sessionCaptureCmd = &cobra.Command{
 Returns the last N lines of terminal output. Useful for checking progress.
 
 Examples:
-  gt session capture wyvern/Toast        # Last 100 lines (default)
-  gt session capture wyvern/Toast 50     # Last 50 lines
-  gt session capture wyvern/Toast -n 50  # Same as above`,
+  lt session capture wyvern/Toast        # Last 100 lines (default)
+  lt session capture wyvern/Toast 50     # Last 50 lines
+  lt session capture wyvern/Toast -n 50  # Same as above`,
 	Args: cobra.RangeArgs(1, 2),
 	RunE: runSessionCapture,
 }
 
 var sessionInjectCmd = &cobra.Command{
 	Use:   "inject <rig>/<polecat>",
-	Short: "Send message to session (prefer 'gt nudge')",
+	Short: "Send message to session (prefer 'lt nudge')",
 	Long: `Send a message to a polecat session.
 
-NOTE: For sending messages to Claude sessions, use 'gt nudge' instead.
+NOTE: For sending messages to Claude sessions, use 'lt nudge' instead.
 It uses reliable delivery (literal mode + timing) that works correctly
 with Claude Code's input handling.
 
@@ -123,8 +123,8 @@ This command is a low-level primitive for file-based injection or
 cases where you need raw tmux send-keys behavior.
 
 Examples:
-  gt nudge greenplace/furiosa "Check your mail"     # Preferred
-  gt session inject wyvern/Toast -f prompt.txt   # For file injection`,
+  lt nudge greenplace/furiosa "Check your mail"     # Preferred
+  lt session inject wyvern/Toast -f prompt.txt   # For file injection`,
 	Args: cobra.ExactArgs(1),
 	RunE: runSessionInject,
 }
@@ -162,8 +162,8 @@ This command validates that:
 Use this for manual health checks or debugging session issues.
 
 Examples:
-  gt session check              # Check all rigs
-  gt session check greenplace      # Check specific rig`,
+  lt session check              # Check all rigs
+  lt session check greenplace      # Check specific rig`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runSessionCheck,
 }
@@ -262,7 +262,7 @@ func runSessionStart(cmd *cobra.Command, args []string) error {
 	}
 	if !found {
 		suggestions := suggest.FindSimilar(polecatName, r.Polecats, 3)
-		hint := fmt.Sprintf("Create with: gt polecat identity add %s %s", rigName, polecatName)
+		hint := fmt.Sprintf("Create with: lt polecat identity add %s %s", rigName, polecatName)
 		return fmt.Errorf("%s", suggest.FormatSuggestion("Polecat", polecatName, suggestions, hint))
 	}
 
@@ -277,7 +277,7 @@ func runSessionStart(cmd *cobra.Command, args []string) error {
 
 	fmt.Printf("%s Session started. Attach with: %s\n",
 		style.Bold.Render("✓"),
-		style.Dim.Render(fmt.Sprintf("gt session at %s/%s", rigName, polecatName)))
+		style.Dim.Render(fmt.Sprintf("lt session at %s/%s", rigName, polecatName)))
 
 	// Log wake event
 	if townRoot, err := workspace.FindFromCwd(); err == nil && townRoot != "" {
@@ -314,9 +314,9 @@ func runSessionStop(cmd *cobra.Command, args []string) error {
 	// Log kill event
 	if townRoot, err := workspace.FindFromCwd(); err == nil && townRoot != "" {
 		agent := fmt.Sprintf("%s/%s", rigName, polecatName)
-		reason := "gt session stop"
+		reason := "lt session stop"
 		if sessionForce {
-			reason = "gt session stop --force"
+			reason = "lt session stop --force"
 		}
 		logger := townlog.NewLogger(townRoot)
 		_ = logger.Log(townlog.EventKill, agent, reason)
@@ -359,10 +359,10 @@ type SessionListItem struct {
 }
 
 func runSessionList(cmd *cobra.Command, args []string) error {
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rigs config
@@ -553,7 +553,7 @@ func runSessionRestart(cmd *cobra.Command, args []string) error {
 
 	fmt.Printf("%s Session restarted. Attach with: %s\n",
 		style.Bold.Render("✓"),
-		style.Dim.Render(fmt.Sprintf("gt session at %s/%s", rigName, polecatName)))
+		style.Dim.Render(fmt.Sprintf("lt session at %s/%s", rigName, polecatName)))
 	return nil
 }
 
@@ -602,7 +602,7 @@ func runSessionStatus(cmd *cobra.Command, args []string) error {
 		fmt.Printf("  Uptime: %s\n", formatDuration(uptime))
 	}
 
-	fmt.Printf("\nAttach with: %s\n", style.Dim.Render(fmt.Sprintf("gt session at %s/%s", rigName, polecatName)))
+	fmt.Printf("\nAttach with: %s\n", style.Dim.Render(fmt.Sprintf("lt session at %s/%s", rigName, polecatName)))
 	return nil
 }
 
@@ -625,10 +625,10 @@ func formatDuration(d time.Duration) string {
 }
 
 func runSessionCheck(cmd *cobra.Command, args []string) error {
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rigs config
@@ -709,7 +709,7 @@ func runSessionCheck(cmd *cobra.Command, args []string) error {
 		style.Bold.Render("📊"), totalChecked, totalHealthy, totalCrashed)
 
 	if totalCrashed > 0 {
-		fmt.Printf("\n%s To restart crashed polecats: gt session restart <rig>/<polecat>\n",
+		fmt.Printf("\n%s To restart crashed polecats: lt session restart <rig>/<polecat>\n",
 			style.Dim.Render("Tip:"))
 	}
 

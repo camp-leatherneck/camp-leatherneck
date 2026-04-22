@@ -596,7 +596,7 @@ func TestInitAgentBeadsUsesRigBeadsDir(t *testing.T) {
 	}
 
 	// Rig-level agent beads (witness, refinery) are stored in rig beads.
-	// Town-level agents (mayor, deacon) are created by gt install in town beads.
+	// Town-level agents (mayor, deacon) are created by lt install in town beads.
 	// This test verifies that rig agent beads are created in the rig directory,
 	// using the resolved rig beads directory for BEADS_DIR.
 	townRoot := t.TempDir()

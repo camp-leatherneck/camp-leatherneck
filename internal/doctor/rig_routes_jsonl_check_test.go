@@ -206,7 +206,7 @@ func TestRigRoutesJSONLCheck_FindRigDirectories(t *testing.T) {
 		}
 	})
 
-	t.Run("excludes dirs whose .beads symlinks to town root .beads", func(t *testing.T) {
+	t.Run("excludes dirs whose .beads symlinks to HQ root .beads", func(t *testing.T) {
 		if runtime.GOOS == "windows" {
 			t.Skip("symlink creation requires elevated privileges on Windows")
 		}
@@ -223,7 +223,7 @@ func TestRigRoutesJSONLCheck_FindRigDirectories(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		// Create deacon dir with .beads symlinked to town root .beads
+		// Create deacon dir with .beads symlinked to HQ root .beads
 		deaconDir := filepath.Join(tmpDir, "deacon")
 		if err := os.MkdirAll(deaconDir, 0755); err != nil {
 			t.Fatal(err)

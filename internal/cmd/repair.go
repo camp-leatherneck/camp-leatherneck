@@ -15,7 +15,7 @@ var repairCmd = &cobra.Command{
 	Short:   "Repair database identity and configuration issues",
 	Long: `Repair common database identity mismatches and configuration issues.
 
-This is a focused version of 'gt doctor --fix' that targets the most common
+This is a focused version of 'lt doctor --fix' that targets the most common
 failure mode: metadata.json pointing to the wrong Dolt database after a crash,
 rig addition, or bd init conflict.
 
@@ -27,8 +27,8 @@ What it repairs:
   - Missing rig identity beads
   - Stale Dolt port in metadata.json
 
-For a full diagnostic, use 'gt doctor' instead.
-For a full diagnostic with auto-fix, use 'gt doctor --fix'.`,
+For a full diagnostic, use 'lt doctor' instead.
+For a full diagnostic with auto-fix, use 'lt doctor --fix'.`,
 	RunE: runRepair,
 }
 
@@ -39,7 +39,7 @@ func init() {
 func runRepair(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	ctx := &doctor.CheckContext{
@@ -84,7 +84,7 @@ func runRepair(cmd *cobra.Command, args []string) error {
 	if !hasIssues {
 		fmt.Println("\nAll identity checks passed — no repairs needed.")
 	} else {
-		fmt.Println("\nRepair complete. Run 'gt doctor' for a full diagnostic.")
+		fmt.Println("\nRepair complete. Run 'lt doctor' for a full diagnostic.")
 	}
 
 	return nil

@@ -37,20 +37,20 @@ var handoffCmd = &cobra.Command{
 This is the canonical way to end any agent session. It handles all roles:
 
   - Mayor, Crew, Witness, Refinery, Deacon: Respawns with fresh Claude instance
-  - Polecats: Calls 'gt done --status DEFERRED' (Witness handles lifecycle)
+  - Polecats: Calls 'lt done --status DEFERRED' (Witness handles lifecycle)
 
 When run without arguments, hands off the current session.
 When given a bead ID (gt-xxx, hq-xxx), hooks that work first, then restarts.
 When given a role name, hands off that role's session (and switches to it).
 
 Examples:
-  gt handoff                          # Hand off current session
-  gt handoff gt-abc                   # Hook bead, then restart
-  gt handoff gt-abc -s "Fix it"       # Hook with context, then restart
-  gt handoff -s "Context" -m "Notes"  # Hand off with custom message
-  gt handoff -c                       # Collect state into handoff message
-  gt handoff crew                     # Hand off crew session
-  gt handoff mayor                    # Hand off mayor session
+  lt handoff                          # Hand off current session
+  lt handoff gt-abc                   # Hook bead, then restart
+  lt handoff gt-abc -s "Fix it"       # Hook with context, then restart
+  lt handoff -s "Context" -m "Notes"  # Hand off with custom message
+  lt handoff -c                       # Collect state into handoff message
+  lt handoff crew                     # Hand off crew session
+  lt handoff mayor                    # Hand off mayor session
 
 The --collect (-c) flag gathers current state (hooked work, inbox, ready beads,
 in-progress items) and includes it in the handoff mail. This provides context
@@ -62,7 +62,7 @@ always does a full respawn regardless of role. This enables crew workers and
 polecats to get a fresh context window when the current one fills up.
 
 Any molecule on the hook will be auto-continued by the new session.
-The SessionStart hook runs 'gt prime' to restore context.`,
+The SessionStart hook runs 'lt prime' to restore context.`,
 	RunE: runHandoff,
 }
 
@@ -123,12 +123,12 @@ func runHandoff(cmd *cobra.Command, args []string) error {
 	// cycling preserves work state (the hook stays attached).
 	//
 	// Flow: collect state → send handoff mail → respawn pane (fresh Claude instance)
-	// The successor session picks up hooked work via SessionStart hook (gt prime --hook).
+	// The successor session picks up hooked work via SessionStart hook (lt prime --hook).
 	if handoffCycle {
 		return runHandoffCycle()
 	}
 
-	// Check if we're a polecat - polecats use gt done instead.
+	// Check if we're a polecat - polecats use lt done instead.
 	// Check GT_ROLE first: coordinators (mayor, witness, etc.) may have a stale
 	// GT_POLECAT in their environment from spawning polecats. Only block if the
 	// parsed role is actually polecat (handles compound forms like
@@ -150,10 +150,10 @@ func runHandoff(cmd *cobra.Command, args []string) error {
 		polecatName = name
 	}
 	if isPolecat {
-		fmt.Printf("%s Polecat detected (%s) - using gt done for handoff\n",
+		fmt.Printf("%s Polecat detected (%s) - using lt done for handoff\n",
 			style.Bold.Render("🐾"), polecatName)
 		// Polecats don't respawn themselves - Witness handles lifecycle
-		// Call gt done with DEFERRED status to preserve work state
+		// Call lt done with DEFERRED status to preserve work state
 		doneCmd := exec.Command("gt", "done", "--status", "DEFERRED")
 		doneCmd.Stdout = os.Stdout
 		doneCmd.Stderr = os.Stderr
@@ -216,7 +216,7 @@ func runHandoff(cmd *cobra.Command, args []string) error {
 
 	// Warn if workspace has uncommitted or unpushed work (wa-7967c).
 	// Note: this checks the caller's cwd, not the target session's workdir.
-	// For remote handoff (gt handoff <role>), the warning reflects the caller's
+	// For remote handoff (lt handoff <role>), the warning reflects the caller's
 	// workspace state. Checking the target session's workdir would require tmux
 	// pane introspection and is deferred to a future enhancement.
 	if !handoffNoGitCheck {
@@ -303,7 +303,7 @@ func runHandoff(cmd *cobra.Command, args []string) error {
 		if townRoot, trErr := workspace.FindFromCwd(); trErr == nil && townRoot != "" {
 			_ = LogHandoffNoPersist(townRoot, agent, handoffSubject, err)
 		}
-		fmt.Fprintf(os.Stderr, "The session was NOT respawned. Fix the issue and retry 'gt handoff'.\n")
+		fmt.Fprintf(os.Stderr, "The session was NOT respawned. Fix the issue and retry 'lt handoff'.\n")
 		return fmt.Errorf("handoff mail failed to persist (Dolt may be down): %w", err)
 	}
 	fmt.Printf("%s Sent handoff mail %s (auto-hooked)\n", style.Bold.Render("📬"), beadID)
@@ -327,7 +327,7 @@ func runHandoff(cmd *cobra.Command, args []string) error {
 	}
 
 	// Write handoff marker for successor detection (prevents handoff loop bug).
-	// The marker is cleared by gt prime after it outputs the warning.
+	// The marker is cleared by lt prime after it outputs the warning.
 	// This tells the new session "you're post-handoff, don't re-run /handoff"
 	if cwd, err := os.Getwd(); err == nil {
 		runtimeDir := filepath.Join(cwd, constants.DirRuntime)
@@ -347,7 +347,7 @@ func runHandoff(cmd *cobra.Command, args []string) error {
 	}
 
 	// NOTE: For self-handoff, we do NOT call KillPaneProcesses here.
-	// That would kill the gt handoff process itself before it can call RespawnPane,
+	// That would kill the lt handoff process itself before it can call RespawnPane,
 	// leaving the pane dead with no respawn. RespawnPane's -k flag handles killing
 	// atomically - tmux kills the old process and spawns the new one together.
 	// See: https://github.com/camp-leatherneck/camp-leatherneck/issues/859 (pane is dead bug)
@@ -361,7 +361,7 @@ func runHandoff(cmd *cobra.Command, args []string) error {
 	if paneWorkDir != "" {
 		if _, err := os.Stat(paneWorkDir); err != nil {
 			if townRoot := detectTownRootFromCwd(); townRoot != "" {
-				style.PrintWarning("pane working directory deleted, using town root")
+				style.PrintWarning("pane working directory deleted, using HQ root")
 				return t.RespawnPaneWithWorkDir(pane, townRoot, restartCmd)
 			}
 		}
@@ -450,7 +450,7 @@ func runHandoffAuto() error {
 //  3. Write handoff marker (prevents handoff loop)
 //  4. Respawn the tmux pane with a fresh Claude instance
 //
-// The successor session starts via SessionStart hook (gt prime --hook),
+// The successor session starts via SessionStart hook (lt prime --hook),
 // finds the hooked work, and continues from where we left off.
 func runHandoffCycle() error {
 	// Build subject
@@ -721,7 +721,7 @@ func resolvePathToSession(path string) (string, error) {
 		default:
 			// Not a known role - check if it's a crew member before assuming polecat.
 			// Crew members exist at <townRoot>/<rig>/crew/<name>.
-			// This fixes: gt sling gt-375 gastown/max failing because max is crew, not polecat.
+			// This fixes: lt sling gt-375 gastown/max failing because max is crew, not polecat.
 			townRoot := detectTownRootFromCwd()
 			if townRoot != "" {
 				crewPath := filepath.Join(townRoot, rig, "crew", second)
@@ -788,10 +788,10 @@ func buildRestartCommand(sessionName string) (string, error) {
 }
 
 func buildRestartCommandWithOpts(sessionName string, opts buildRestartCommandOpts) (string, error) {
-	// Detect town root from current directory
+	// Detect HQ root from current directory
 	townRoot := detectTownRootFromCwd()
 	if townRoot == "" {
-		return "", fmt.Errorf("cannot detect town root - run from within a Gas Town workspace")
+		return "", fmt.Errorf("cannot detect HQ root - run from within a Camp Leatherneck workspace")
 	}
 
 	// Determine the working directory for this session type
@@ -1047,8 +1047,8 @@ func sessionWorkDir(sessionName, townRoot string) (string, error) {
 
 	switch {
 	case sessionName == mayorSession:
-		// Mayor runs from ~/gt/mayor/, not town root.
-		// Tools use workspace.FindFromCwd() which walks UP to find town root.
+		// Mayor runs from ~/gt/mayor/, not HQ root.
+		// Tools use workspace.FindFromCwd() which walks UP to find HQ root.
 		return townRoot + "/mayor", nil
 
 	case sessionName == bootSession:
@@ -1104,7 +1104,7 @@ func sessionToGTRole(sessionName string) string {
 	return identity.GTRole()
 }
 
-// detectTownRootFromCwd walks up from the current directory to find the town root.
+// detectTownRootFromCwd walks up from the current directory to find the HQ root.
 // Falls back to GT_TOWN_ROOT or GT_ROOT env vars if cwd detection fails (broken state recovery).
 func detectTownRootFromCwd() string {
 	// Use workspace.FindFromCwd which handles both primary (mayor/town.json)
@@ -1114,7 +1114,7 @@ func detectTownRootFromCwd() string {
 		return townRoot
 	}
 
-	// Fallback: try environment variables for town root
+	// Fallback: try environment variables for HQ root
 	// GT_TOWN_ROOT is set by shell integration, GT_ROOT is set by session manager
 	// This enables handoff to work even when cwd detection fails due to
 	// detached HEAD, wrong branch, deleted worktree, etc.
@@ -1204,7 +1204,7 @@ func handoffRemoteSession(t *tmux.Tmux, targetSession, restartCmd string) error 
 		if paneWorkDir != "" {
 			if _, statErr := os.Stat(paneWorkDir); statErr != nil {
 				if townRoot := detectTownRootFromCwd(); townRoot != "" {
-					style.PrintWarning("pane working directory deleted, using town root")
+					style.PrintWarning("pane working directory deleted, using HQ root")
 					return t.RespawnPaneWithWorkDir(targetPane, townRoot, restartCmd)
 				}
 			}
@@ -1266,10 +1266,10 @@ func sendHandoffMail(subject, message string) (string, error) {
 	// Normalize identity to match mailbox query format
 	agentID = mail.AddressToIdentity(agentID)
 
-	// Detect town root for beads location
+	// Detect HQ root for beads location
 	townRoot := detectTownRootFromCwd()
 	if townRoot == "" {
-		return "", fmt.Errorf("cannot detect town root")
+		return "", fmt.Errorf("cannot detect HQ root")
 	}
 
 	// Build labels for mail metadata (matches mail router format)
@@ -1286,7 +1286,7 @@ func sendHandoffMail(subject, message string) (string, error) {
 		"--priority", "1", // high — handoffs should float above normal mail
 		"--labels", labels + ",gt:message",
 		"--actor", agentID,
-		// NOT ephemeral: handoff mail must be in issues table so gt hook can find it.
+		// NOT ephemeral: handoff mail must be in issues table so lt hook can find it.
 		// Ephemeral wisps are invisible to hook queries and may be reaped before successor reads.
 		"--silent", // Output only the bead ID
 		"--", subject,

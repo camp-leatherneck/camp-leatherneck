@@ -143,7 +143,7 @@ func TestPersistentPreRunLoadsAgentRegistry(t *testing.T) {
 	config.ResetRegistryForTesting()
 	t.Cleanup(config.ResetRegistryForTesting)
 
-	// Build a minimal fake town root with mayor/town.json (PrimaryMarker)
+	// Build a minimal fake HQ root with mayor/town.json (PrimaryMarker)
 	// and settings/agents.json containing a process_names override.
 	townRoot := t.TempDir()
 	if err := os.MkdirAll(filepath.Join(townRoot, "mayor"), 0755); err != nil {
@@ -175,7 +175,7 @@ func TestPersistentPreRunLoadsAgentRegistry(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// cd into the fake town root so workspace.FindFromCwd() finds it.
+	// cd into the fake HQ root so workspace.FindFromCwd() finds it.
 	origDir, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)

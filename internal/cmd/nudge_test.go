@@ -192,7 +192,7 @@ func TestSessionNameToAddress(t *testing.T) {
 			expected:    "",
 		},
 		{
-			name:        "gt prefix but no name",
+			name:        "lt prefix but no name",
 			sessionName: "gt-",
 			expected:    "",
 		},

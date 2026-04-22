@@ -43,7 +43,7 @@ type SessionConfig struct {
 	// Role is the agent role (e.g., "polecat", "mayor", "boot", "deacon").
 	Role string
 
-	// TownRoot is the root of the Gas Town workspace (e.g., ~/gt).
+	// TownRoot is the root of the Camp Leatherneck workspace (e.g., ~/gt).
 	TownRoot string
 
 	// RigPath is the rig directory path for config resolution.
@@ -126,7 +126,7 @@ type StartResult struct {
 	RunID string
 }
 
-// StartSession creates a tmux session following the standard Gas Town lifecycle.
+// StartSession creates a tmux session following the standard Camp Leatherneck lifecycle.
 //
 // The lifecycle handles:
 //  1. Resolve runtime config for the role

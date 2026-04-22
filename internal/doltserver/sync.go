@@ -96,7 +96,7 @@ func CommitWorkingSet(dbDir string) error {
 	}
 
 	// Commit (may fail with "nothing to commit" which is fine)
-	commitCmd := exec.Command("dolt", "commit", "-m", "gt dolt sync: auto-commit working changes")
+	commitCmd := exec.Command("dolt", "commit", "-m", "lt dolt sync: auto-commit working changes")
 	commitCmd.Dir = dbDir
 	setProcessGroup(commitCmd)
 	output, err := commitCmd.CombinedOutput()
@@ -342,7 +342,7 @@ func PushDatabaseSQL(townRoot, db, remote string, force bool) error {
 
 	// Commit working set
 	commitQuery := fmt.Sprintf(
-		"USE `%s`; CALL DOLT_COMMIT('-m', 'gt dolt sync: auto-commit working changes', '--allow-empty', '--author', 'Gas Town Sync <sync@gastown.local>')",
+		"USE `%s`; CALL DOLT_COMMIT('-m', 'lt dolt sync: auto-commit working changes', '--allow-empty', '--author', 'Camp Leatherneck Sync <sync@gastown.local>')",
 		db,
 	)
 	if err := serverExecSQL(townRoot, commitQuery); err != nil {

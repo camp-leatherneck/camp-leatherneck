@@ -21,8 +21,8 @@ type ProxyConfig struct {
 	// Defaults to ~/gt/.runtime/ca if empty.
 	CADir string `json:"ca_dir"`
 
-	// TownRoot is the Gas Town root directory (e.g. ~/gt).
-	// Defaults to $GT_TOWN or ~/gt if empty.
+	// TownRoot is the Camp Leatherneck root directory (e.g. ~/gt).
+	// Defaults to $GT_TOWN or ~/lt if empty.
 	TownRoot string `json:"town_root"`
 
 	// AllowedCommands is the list of binary names polecats may execute (e.g. ["gt","bd"]).

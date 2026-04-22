@@ -18,7 +18,7 @@ import (
 //     /Users/bob -> /home/bob), breaking all absolute gitdir references
 //
 // For the relocation case, the check infers the correct .repo.git path from
-// the current town root and stores it so Fix() can recreate the worktree.
+// the current HQ root and stores it so Fix() can recreate the worktree.
 type WorktreeGitdirCheck struct {
 	FixableCheck
 	townRoot        string
@@ -30,7 +30,7 @@ type brokenWorktree struct {
 	gitdirTarget      string // e.g., /Users/bob/gt/wyvern/.repo.git/worktrees/rig (stale)
 	rigPath           string // e.g., /home/bob/gt/wyvern
 	bareRepoPath      string // e.g., /Users/bob/gt/wyvern/.repo.git (from gitdir, may be stale)
-	correctedBareRepo string // e.g., /home/bob/gt/wyvern/.repo.git (inferred from town root)
+	correctedBareRepo string // e.g., /home/bob/gt/wyvern/.repo.git (inferred from HQ root)
 	reason            string // what's broken
 }
 
@@ -57,7 +57,7 @@ func (c *WorktreeGitdirCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusError,
-			Message: fmt.Sprintf("Cannot read town root: %v", err),
+			Message: fmt.Sprintf("Cannot read HQ root: %v", err),
 		}
 	}
 
@@ -107,7 +107,7 @@ func (c *WorktreeGitdirCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusError,
 		Message: fmt.Sprintf("%d worktree(s) with broken gitdir references", len(c.brokenWorktrees)),
 		Details: details,
-		FixHint: "Run 'gt doctor --fix' to re-create broken worktrees from .repo.git",
+		FixHint: "Run 'lt doctor --fix' to re-create broken worktrees from .repo.git",
 	}
 }
 
@@ -151,7 +151,7 @@ func (c *WorktreeGitdirCheck) checkRigWorktrees(rigPath, rigName string) {
 }
 
 // checkDeaconDogs scans deacon/dogs/<dogname>/<rigname>/ for cross-rig worktrees.
-// Each dog directory contains worktrees of various rigs, created by gt sling.
+// Each dog directory contains worktrees of various rigs, created by lt sling.
 func (c *WorktreeGitdirCheck) checkDeaconDogs(townRoot string) {
 	dogsDir := filepath.Join(townRoot, "deacon", "dogs")
 	dogEntries, err := os.ReadDir(dogsDir)
@@ -236,7 +236,7 @@ func (c *WorktreeGitdirCheck) checkWorktree(worktreePath, rigPath string) {
 			bareRepoPath = parts[0] + ".repo.git"
 		}
 
-		// Try to infer the correct bare repo path from the current town root.
+		// Try to infer the correct bare repo path from the current HQ root.
 		// The gitdir target has the form: <old_prefix>/<rigname>/.repo.git/worktrees/<wtname>
 		// We extract <rigname> and look for <townRoot>/<rigname>/.repo.git
 		correctedBareRepo := ""
@@ -258,7 +258,7 @@ func (c *WorktreeGitdirCheck) checkWorktree(worktreePath, rigPath string) {
 }
 
 // inferCorrectedBareRepo tries to find the correct .repo.git path by extracting
-// the rig name from the stale path and looking it up under the current town root.
+// the rig name from the stale path and looking it up under the current HQ root.
 func (c *WorktreeGitdirCheck) inferCorrectedBareRepo(staleBareRepoPath string) string {
 	// staleBareRepoPath looks like: /Users/bob/gt/testAnt/.repo.git
 	// We need to extract "testAnt" and check <townRoot>/testAnt/.repo.git
@@ -323,7 +323,7 @@ func (c *WorktreeGitdirCheck) Fix(ctx *CheckContext) error {
 
 		// Check if .repo.git exists
 		if _, err := os.Stat(repoPath); os.IsNotExist(err) {
-			errs = append(errs, fmt.Sprintf("%s: cannot fix (.repo.git does not exist at %s, needs re-clone via 'gt rig install')", bw.worktreePath, repoPath))
+			errs = append(errs, fmt.Sprintf("%s: cannot fix (.repo.git does not exist at %s, needs re-clone via 'lt rig install')", bw.worktreePath, repoPath))
 			continue
 		}
 

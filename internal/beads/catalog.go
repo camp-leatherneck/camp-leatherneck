@@ -21,7 +21,7 @@ type CatalogMolecule struct {
 
 // MoleculeCatalog provides hierarchical molecule template loading.
 // It loads molecules from multiple sources in priority order:
-// 1. Town-level: <town>/.beads/molecules.jsonl
+// 1. HQ-level: <town>/.beads/molecules.jsonl
 // 2. Rig-level: <town>/<rig>/.beads/molecules.jsonl
 // 3. Project-level: .beads/molecules.jsonl in current directory
 //
@@ -41,7 +41,7 @@ func NewMoleculeCatalog() *MoleculeCatalog {
 
 // LoadCatalog creates a catalog with all molecule sources loaded.
 // Parameters:
-//   - townRoot: Path to the Gas Town root (e.g., ~/gt). Empty to skip town-level.
+//   - townRoot: Path to the Camp Leatherneck root (e.g., ~/gt). Empty to skip town-level.
 //   - rigPath: Path to the rig directory (e.g., ~/gt/gastown). Empty to skip rig-level.
 //   - projectPath: Path to the project directory. Empty to skip project-level.
 //

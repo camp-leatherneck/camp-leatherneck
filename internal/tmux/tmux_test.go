@@ -2071,7 +2071,7 @@ func TestGetKeyBinding_SkipsGasTownBindings(t *testing.T) {
 	}
 	defer tm.KillSession("gt-test-bootstrap")
 
-	// Set a GT-style if-shell binding (contains both "if-shell" and "gt ")
+	// Set a GT-style if-shell binding (contains both "if-shell" and "lt ")
 	ifShell := fmt.Sprintf("echo '#{session_name}' | grep -Eq '%s'", sessionPrefixPattern())
 	_, _ = tm.run("bind-key", "-T", "prefix", "F11",
 		"if-shell", ifShell,
@@ -2080,7 +2080,7 @@ func TestGetKeyBinding_SkipsGasTownBindings(t *testing.T) {
 
 	result := tm.getKeyBinding("prefix", "F11")
 	if result != "" {
-		t.Errorf("expected empty string for Gas Town binding, got %q", result)
+		t.Errorf("expected empty string for Camp Leatherneck binding, got %q", result)
 	}
 
 	// Clean up
@@ -2096,7 +2096,7 @@ func TestGetKeyBinding_CapturesUserBinding(t *testing.T) {
 	}
 	defer tm.KillSession("gt-test-bootstrap")
 
-	// Set a user binding that doesn't contain "gt "
+	// Set a user binding that doesn't contain "lt "
 	_, _ = tm.run("bind-key", "-T", "prefix", "F11", "display-message", "hello")
 
 	result := tm.getKeyBinding("prefix", "F11")
@@ -2131,7 +2131,7 @@ func TestIsGTBinding_DetectsGasTownBindings(t *testing.T) {
 	ifShell := fmt.Sprintf("echo '#{session_name}' | grep -Eq '%s'", sessionPrefixPattern())
 	_, _ = tm.run("bind-key", "-T", "prefix", "F11",
 		"if-shell", ifShell,
-		"run-shell 'gt feed --window'",
+		"run-shell 'lt feed --window'",
 		"display-message hello")
 	if !tm.isGTBinding("prefix", "F11") {
 		t.Error("GT if-shell binding should be detected as GT binding")
@@ -2157,7 +2157,7 @@ func TestSetBindings_PreserveFallbackOnRepeatedCalls(t *testing.T) {
 	ifShell := fmt.Sprintf("echo '#{session_name}' | grep -Eq '%s'", sessionPrefixPattern())
 	_, _ = tm.run("bind-key", "-T", "prefix", "F11",
 		"if-shell", ifShell,
-		"run-shell 'gt feed --window'",
+		"run-shell 'lt feed --window'",
 		"display-message custom-user-cmd")
 
 	// Record the binding after first configuration
@@ -2178,7 +2178,7 @@ func TestSetBindings_PreserveFallbackOnRepeatedCalls(t *testing.T) {
 }
 
 func TestSessionPrefixPattern_WithTownRoot(t *testing.T) {
-	// Point at the real town root if available; otherwise skip.
+	// Point at the real HQ root if available; otherwise skip.
 	townRoot := os.Getenv("GT_ROOT")
 	if townRoot == "" {
 		t.Skip("GT_ROOT not set; skipping live rigs.json test")

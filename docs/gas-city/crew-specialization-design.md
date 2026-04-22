@@ -17,7 +17,7 @@ work be labeled, matched, and routed to specialized workers?
    requirements and executors declare capability profiles.
 
 2. **Gas City role format (w-gc-001, w-gc-002)** — the planned declarative
-   layer that formalizes Gas Town's hardcoded roles into portable, user-definable
+   layer that formalizes Camp Leatherneck's hardcoded roles into portable, user-definable
    schemas. PR #2518 prototypes a TOML parser. PR #2527 adds per-crew agent
    assignment.
 
@@ -58,7 +58,7 @@ This recurses at every scale:
 
 | Scale | Unit | Advertises | Delegates to |
 |-------|------|-----------|--------------|
-| Federation | Wasteland rig | Stamps, reputation | Its Gas Town |
+| Federation | Wasteland rig | Stamps, reputation | Its Camp Leatherneck |
 | Town | Mayor | Rig capabilities | Crew, polecats |
 | Crew | Specialist | Domain expertise | Sub-agents, tools |
 | Worker | Polecat | Task completion | Tools |
@@ -398,5 +398,5 @@ track_record:
 
 5. **What's the minimum viable version?** The full cellular model with recursive
    sub-agents and dynamic track records is the vision. What's the 80/20 slice
-   that delivers value with the beads tier system and existing Gas Town
+   that delivers value with the beads tier system and existing Camp Leatherneck
    primitives?

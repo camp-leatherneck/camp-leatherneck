@@ -680,7 +680,7 @@ func TestRigForIssue_TownLevelPrefix(t *testing.T) {
 }
 
 // ---------------------------------------------------------------------------
-// Helper: create a temporary town root with routes.jsonl and a gt stub
+// Helper: create a temporary HQ root with routes.jsonl and a gt stub
 // ---------------------------------------------------------------------------
 
 // setupTownRoot creates a temp directory with .beads/routes.jsonl mapping
@@ -811,12 +811,12 @@ func TestFeedNextReadyIssue_DispatchesFirstReadyIssue(t *testing.T) {
 	// Verify gt was called with the ready issue
 	logData, err := os.ReadFile(logPath)
 	if err != nil {
-		t.Fatalf("gt stub was not called (no log file): %v", err)
+		t.Fatalf("lt stub was not called (no log file): %v", err)
 	}
 	logStr := strings.TrimSpace(string(logData))
 	// Expected: "sling test-ready1 testrig --no-boot"
 	if !strings.Contains(logStr, "sling test-ready1 testrig --no-boot") {
-		t.Errorf("gt stub called with unexpected args: %q", logStr)
+		t.Errorf("lt stub called with unexpected args: %q", logStr)
 	}
 }
 
@@ -887,7 +887,7 @@ func TestFeedNextReadyIssue_SkipsEpicAndDispatchesTask(t *testing.T) {
 
 	logData, err := os.ReadFile(logPath)
 	if err != nil {
-		t.Fatalf("gt stub was not called (no log file): %v", err)
+		t.Fatalf("lt stub was not called (no log file): %v", err)
 	}
 	logStr := strings.TrimSpace(string(logData))
 	// Only the task should have been dispatched, not the epic
@@ -993,8 +993,8 @@ func TestFeedNextReadyIssue_SkipsBlockedIssue(t *testing.T) {
 		// If gt was not called at all, check if GetDependenciesWithMetadata
 		// failed (embedded Dolt nested query limitation). This means both
 		// isIssueBlocked and getConvoyTrackedIssues may fail.
-		t.Logf("gt stub not called; log messages: %v", *logMsgs)
-		t.Skipf("gt stub was not called — likely embedded Dolt nested query limitation")
+		t.Logf("lt stub not called; log messages: %v", *logMsgs)
+		t.Skipf("lt stub was not called — likely embedded Dolt nested query limitation")
 	}
 	logStr := strings.TrimSpace(string(logData))
 
@@ -1140,7 +1140,7 @@ func TestFeedNextReadyIssue_SkipsParkedRig(t *testing.T) {
 
 	// gt should NOT have been called
 	if _, err := os.ReadFile(logPath); err == nil {
-		t.Errorf("gt stub should not have been called for parked rig")
+		t.Errorf("lt stub should not have been called for parked rig")
 	}
 
 	// Verify "parked" appeared in log
@@ -1177,12 +1177,12 @@ func TestDispatchIssue_Success(t *testing.T) {
 
 	logData, err := os.ReadFile(logPath)
 	if err != nil {
-		t.Fatalf("gt stub log not written: %v", err)
+		t.Fatalf("lt stub log not written: %v", err)
 	}
 	logStr := strings.TrimSpace(string(logData))
 	expected := "sling test-abc myrig --no-boot"
 	if logStr != expected {
-		t.Errorf("gt stub called with %q, want %q", logStr, expected)
+		t.Errorf("lt stub called with %q, want %q", logStr, expected)
 	}
 }
 
@@ -1497,7 +1497,7 @@ func TestCheckConvoysForIssue_FeedsAfterStagedToOpenTransition(t *testing.T) {
 // Cross-rig fallback tests
 // ---------------------------------------------------------------------------
 
-// setupTownRootWithCrossRig creates a town root with routes for both "test-"
+// setupTownRootWithCrossRig creates a HQ root with routes for both "test-"
 // (local rig) and "oag-" (cross-rig) prefixes. The cross-rig prefix points
 // to a directory with a bd stub.
 func setupTownRootWithCrossRig(t *testing.T, bdExitCode int, bdOutput string) (townRoot string, bdLogPath string) {
@@ -1590,7 +1590,7 @@ func TestGetConvoyTrackedIssues_CrossRigFallback(t *testing.T) {
 		t.Fatalf("AddDependency: %v", err)
 	}
 
-	// Set up town root with cross-rig routes and bd stub returning "closed"
+	// Set up HQ root with cross-rig routes and bd stub returning "closed"
 	townRoot, _ := setupTownRootWithCrossRig(t, 0,
 		`[{"id":"oag-19dd9","status":"closed","assignee":"gastown/polecats/alpha","priority":2,"issue_type":"task"}]`)
 

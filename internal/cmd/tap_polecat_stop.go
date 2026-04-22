@@ -14,22 +14,22 @@ import (
 
 var tapPolecatStopCmd = &cobra.Command{
 	Use:   "polecat-stop-check",
-	Short: "Auto-run gt done on session Stop if polecat has pending work",
+	Short: "Auto-run lt done on session Stop if polecat has pending work",
 	Long: `Safety net for the "idle polecat" problem: polecats that finish work
-but forget to call gt done before the session ends.
+but forget to call lt done before the session ends.
 
 This command is designed to run from a Claude Code Stop hook. It checks:
 1. Whether this is a polecat session (GT_POLECAT env var)
-2. Whether gt done has already run (heartbeat state is "exiting" or "idle")
+2. Whether lt done has already run (heartbeat state is "exiting" or "idle")
 3. Whether the polecat has commits on its branch
 
 If the polecat has pending work that wasn't submitted, this command
-runs gt done to submit it. If gt done already ran or there's nothing
+runs lt done to submit it. If lt done already ran or there's nothing
 to submit, it exits silently.
 
 Exit codes:
-  0 - No action needed (not a polecat, already done, or gt done succeeded)
-  1 - gt done was attempted but failed`,
+  0 - No action needed (not a polecat, already done, or lt done succeeded)
+  1 - lt done was attempted but failed`,
 	RunE:         runTapPolecatStop,
 	SilenceUsage: true,
 }
@@ -50,7 +50,7 @@ func runTapPolecatStop(cmd *cobra.Command, args []string) error {
 		return nil // No session tracking — can't check state
 	}
 
-	// Find town root for heartbeat check
+	// Find HQ root for heartbeat check
 	townRoot, _, _ := workspace.FindFromCwdWithFallback()
 	if townRoot == "" {
 		townRoot = os.Getenv("GT_TOWN_ROOT")
@@ -59,12 +59,12 @@ func runTapPolecatStop(cmd *cobra.Command, args []string) error {
 		return nil // Can't find workspace — exit quietly
 	}
 
-	// Check heartbeat state: if already "exiting" or "idle", gt done already ran
+	// Check heartbeat state: if already "exiting" or "idle", lt done already ran
 	hb := polecat.ReadSessionHeartbeat(townRoot, sessionName)
 	if hb != nil {
 		state := hb.EffectiveState()
 		if state == polecat.HeartbeatExiting || state == polecat.HeartbeatIdle {
-			return nil // gt done already ran or polecat is idle — nothing to do
+			return nil // lt done already ran or polecat is idle — nothing to do
 		}
 	}
 
@@ -108,19 +108,19 @@ func runTapPolecatStop(cmd *cobra.Command, args []string) error {
 		return nil // No commits ahead — nothing to submit
 	}
 
-	// Polecat has pending work! Run gt done as a safety net.
+	// Polecat has pending work! Run lt done as a safety net.
 	fmt.Fprintf(os.Stderr, "\n")
 	fmt.Fprintf(os.Stderr, "⚠️  Polecat %s has %s unpushed commit(s) on branch %s\n", polecatName, ahead, branch)
-	fmt.Fprintf(os.Stderr, "   Auto-running gt done as safety net...\n")
+	fmt.Fprintf(os.Stderr, "   Auto-running lt done as safety net...\n")
 	fmt.Fprintf(os.Stderr, "\n")
 
-	// Find gt binary path
+	// Find lt binary path
 	gtBin, err := os.Executable()
 	if err != nil {
 		gtBin = "gt"
 	}
 
-	// Run gt done in the polecat's worktree context
+	// Run lt done in the polecat's worktree context
 	doneCmd := exec.Command(gtBin, "done")
 	doneCmd.Dir = cloneDir
 	doneCmd.Stdout = os.Stdout
@@ -129,7 +129,7 @@ func runTapPolecatStop(cmd *cobra.Command, args []string) error {
 	doneCmd.Env = os.Environ()
 
 	if err := doneCmd.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "⚠️  Auto gt done failed: %v\n", err)
+		fmt.Fprintf(os.Stderr, "⚠️  Auto lt done failed: %v\n", err)
 		fmt.Fprintf(os.Stderr, "   Witness will handle cleanup.\n")
 		// Don't return error — don't block session stop
 		return nil

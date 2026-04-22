@@ -78,10 +78,10 @@ func verifyFormulaExists(formulaName string) error {
 func runSlingFormula(ctx context.Context, args []string) error {
 	formulaName := args[0]
 
-	// Get town root early - needed for BEADS_DIR when running bd commands
+	// Get HQ root early - needed for BEADS_DIR when running bd commands
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 	townBeadsDir := filepath.Join(townRoot, ".beads")
 
@@ -197,7 +197,7 @@ func runSlingFormula(ctx context.Context, args []string) error {
 	_ = events.LogFeed(events.TypeSling, actor, payload)
 
 	// Update agent bead's hook_bead field (ZFC: agents track their current work)
-	// Note: formula slinging uses town root as workDir (no polecat-specific path)
+	// Note: formula slinging uses HQ root as workDir (no polecat-specific path)
 	updateAgentHookBead(targetAgent, wispRootID, "", townBeadsDir)
 
 	// Store all attachment fields in a single read-modify-write cycle.
@@ -219,7 +219,7 @@ func runSlingFormula(ctx context.Context, args []string) error {
 	}
 
 	// Start delayed dog session now that hook is set
-	// This ensures dog sees the hook when gt prime runs on session start
+	// This ensures dog sees the hook when lt prime runs on session start
 	if delayedDogInfo != nil {
 		pane, err := delayedDogInfo.StartDelayedSession()
 		if err != nil {
@@ -229,7 +229,7 @@ func runSlingFormula(ctx context.Context, args []string) error {
 	}
 
 	// Start spawned polecat session now that hook is set.
-	// This ensures polecat sees the wisp when gt prime runs on session start.
+	// This ensures polecat sees the wisp when lt prime runs on session start.
 	if resolved.NewPolecatInfo != nil {
 		pane, err := resolved.NewPolecatInfo.StartSession()
 		if err != nil {
@@ -248,7 +248,7 @@ func runSlingFormula(ctx context.Context, args []string) error {
 		return nil
 	}
 	if targetPane == "" {
-		fmt.Printf("%s No pane to nudge (agent will discover work via gt prime)\n", style.Dim.Render("○"))
+		fmt.Printf("%s No pane to nudge (agent will discover work via lt prime)\n", style.Dim.Render("○"))
 		return nil
 	}
 
@@ -272,7 +272,7 @@ func runSlingFormula(ctx context.Context, args []string) error {
 	if delayedDogInfo != nil {
 		dogSession := fmt.Sprintf("hq-dog-%s", delayedDogInfo.DogName)
 		if err := t.NudgeSession(dogSession, prompt); err != nil {
-			fmt.Printf("%s Could not nudge dog %s: %v (will discover work via gt prime)\n",
+			fmt.Printf("%s Could not nudge dog %s: %v (will discover work via lt prime)\n",
 				style.Dim.Render("○"), delayedDogInfo.DogName, err)
 		} else {
 			fmt.Printf("%s Nudged dog %s\n", style.Bold.Render("▶"), delayedDogInfo.DogName)
@@ -283,7 +283,7 @@ func runSlingFormula(ctx context.Context, args []string) error {
 	if err := t.NudgePane(targetPane, prompt); err != nil {
 		// Graceful fallback for no-tmux mode
 		fmt.Printf("%s Could not nudge (no tmux?): %v\n", style.Dim.Render("○"), err)
-		fmt.Printf("  Agent will discover work via gt prime / bd show\n")
+		fmt.Printf("  Agent will discover work via lt prime / bd show\n")
 	} else {
 		fmt.Printf("%s Nudged to start\n", style.Bold.Render("▶"))
 	}

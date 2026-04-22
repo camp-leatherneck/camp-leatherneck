@@ -185,7 +185,7 @@ func (c *PrefixMismatchCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: fmt.Sprintf("%d prefix mismatch(es) between rigs.json and routes.jsonl", len(mismatches)),
 		Details: details,
-		FixHint: "Run 'gt doctor --fix' to update rigs.json with correct prefixes",
+		FixHint: "Run 'lt doctor --fix' to update rigs.json with correct prefixes",
 	}
 }
 
@@ -311,7 +311,7 @@ func (r *realDBPrefixGetter) GetDBPrefix(rigPath string) (string, error) {
 // Unlike PrefixMismatchCheck (rigs.json ↔ routes.jsonl), this check verifies
 // the actual database configuration matches the routing table.
 //
-// Rigs that redirect to a shared database (e.g. the town root's .beads) are
+// Rigs that redirect to a shared database (e.g. the HQ root's .beads) are
 // skipped. Their database prefix is owned by the route that provides the
 // canonical database, not by the redirecting rig. Attempting to "fix" these
 // would overwrite the shared database's prefix with the rig's prefix.
@@ -382,14 +382,14 @@ func (c *DatabasePrefixCheck) Run(ctx *CheckContext) *CheckResult {
 		getter = &realDBPrefixGetter{}
 	}
 
-	// Resolve the town root's canonical beads directory so we can detect
+	// Resolve the HQ root's canonical beads directory so we can detect
 	// rigs that redirect to the shared town database.
 	townBeadsDir, _ := filepath.Abs(beads.ResolveBeadsDir(ctx.TownRoot))
 
 	var problems []string
 
 	for _, route := range routes {
-		// Skip town root route
+		// Skip HQ root route
 		if route.Path == "." || route.Path == "" {
 			continue
 		}
@@ -402,8 +402,8 @@ func (c *DatabasePrefixCheck) Run(ctx *CheckContext) *CheckResult {
 			continue
 		}
 
-		// Skip rigs whose beads redirect resolves to the town root database.
-		// These rigs share the town DB; the prefix is owned by the town root
+		// Skip rigs whose beads redirect resolves to the HQ root database.
+		// These rigs share the town DB; the prefix is owned by the HQ root
 		// route, not by this rig. "Fixing" them would overwrite the shared
 		// database's issue_prefix with the rig's route prefix.
 		absRigBeadsDir, _ := filepath.Abs(rigBeadsDir)
@@ -443,7 +443,7 @@ func (c *DatabasePrefixCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:   StatusWarning,
 		Message:  fmt.Sprintf("%d database prefix mismatch(es) with routes.jsonl", len(c.mismatches)),
 		Details:  problems,
-		FixHint:  "Run 'gt doctor --fix' to update database configs to match routes.jsonl",
+		FixHint:  "Run 'lt doctor --fix' to update database configs to match routes.jsonl",
 		Category: c.Category(),
 	}
 }

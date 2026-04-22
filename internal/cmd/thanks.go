@@ -75,10 +75,10 @@ var gastownContributors = map[string]int{
 
 var thanksCmd = &cobra.Command{
 	Use:     "thanks",
-	Short:   "Thank the human contributors to Gas Town",
+	Short:   "Thank the human contributors to Camp Leatherneck",
 	GroupID: GroupDiag,
 	Long: `Display acknowledgments to all the humans who have contributed
-to the Gas Town project. This command celebrates the collaborative
+to the Camp Leatherneck project. This command celebrates the collaborative
 effort behind the multi-agent workspace manager.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		printThanksPage()
@@ -126,7 +126,7 @@ func printThanksPage() {
 
 	// build header content
 	title := thanksTitleStyle.Render("THANK YOU!")
-	subtitle := thanksSubtitleStyle.Render("To all the humans who contributed to Gas Town")
+	subtitle := thanksSubtitleStyle.Render("To all the humans who contributed to Camp Leatherneck")
 	headerContent := title + "\n\n" + subtitle
 
 	// render header in bordered box

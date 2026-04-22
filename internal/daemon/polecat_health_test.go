@@ -78,7 +78,7 @@ func writeFakeBDWithHookBead(t *testing.T, dir, agentState, hookBeadID, hookBead
 // attempt to restart a polecat in agent_state=spawning when recently updated.
 // This is the regression test for the double-spawn bug (issue #1752): the daemon
 // heartbeat fires during the window between bead creation (hook_bead set atomically
-// by gt sling) and the actual tmux session launch, causing a second Claude process.
+// by lt sling) and the actual tmux session launch, causing a second Claude process.
 func TestCheckPolecatHealth_SkipsSpawning(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("test uses Unix shell script mocks for tmux and bd")
@@ -143,7 +143,7 @@ func TestCheckPolecatHealth_DetectsCrashedPolecat(t *testing.T) {
 
 // TestCheckPolecatHealth_SpawningGuardExpires verifies that the spawning guard
 // has a time-bound: polecats stuck in agent_state=spawning for more than 5 minutes
-// are treated as crashed (gt sling may have failed during spawn).
+// are treated as crashed (lt sling may have failed during spawn).
 func TestCheckPolecatHealth_SpawningGuardExpires(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("test uses Unix shell script mocks for tmux and bd")
@@ -248,7 +248,7 @@ func TestCheckPolecatHealth_SkipsClosedHookBead(t *testing.T) {
 
 // TestCheckPolecatHealth_NotifiesWitnessOnCrash verifies that when a polecat
 // crash is detected, the daemon sends a notification to the witness via
-// `gt mail send` with a CRASHED_POLECAT subject. Restart is deferred to the
+// `lt mail send` with a CRASHED_POLECAT subject. Restart is deferred to the
 // stuck-agent-dog plugin for context-aware recovery.
 func TestCheckPolecatHealth_NotifiesWitnessOnCrash(t *testing.T) {
 	if runtime.GOOS == "windows" {
@@ -286,14 +286,14 @@ func TestCheckPolecatHealth_NotifiesWitnessOnCrash(t *testing.T) {
 		t.Fatalf("expected CRASH DETECTED, got: %q", got)
 	}
 
-	// Verify gt mail send was called with CRASHED_POLECAT subject
+	// Verify lt mail send was called with CRASHED_POLECAT subject
 	logData, err := os.ReadFile(gtLog)
 	if err != nil {
 		t.Fatalf("reading gt invocation log: %v", err)
 	}
 	invocations := string(logData)
 	if !strings.Contains(invocations, "mail send") {
-		t.Errorf("expected gt mail send invocation, got: %q", invocations)
+		t.Errorf("expected lt mail send invocation, got: %q", invocations)
 	}
 	if !strings.Contains(invocations, "CRASHED_POLECAT") {
 		t.Errorf("expected CRASHED_POLECAT in mail subject, got: %q", invocations)
@@ -345,7 +345,7 @@ func TestCheckPolecatHealth_SkipsDonePolecat(t *testing.T) {
 // TestCheckPolecatHealth_SkipsNukedPolecat verifies that checkPolecatHealth does
 // NOT fire CRASH DETECTED when a polecat has been nuked (agent_state=nuked) even
 // if its hook_bead (work bead) is still open. This is the regression test for
-// bug #2795: `gt polecat nuke --force` sets agent_state=nuked on the agent bead
+// bug #2795: `lt polecat nuke --force` sets agent_state=nuked on the agent bead
 // but leaves the work bead open, causing repeated false RECOVERY_NEEDED alerts
 // on every heartbeat cycle.
 func TestCheckPolecatHealth_SkipsNukedPolecat(t *testing.T) {
@@ -410,7 +410,7 @@ func writeFakeTmuxIdleSession(t *testing.T, dir string) {
 
 // TestReapIdlePolecat_SkipsActiveAgent verifies that reapIdlePolecat does NOT kill
 // a polecat whose hook_bead is missing but whose agent process is still running.
-// This is the regression test for GH#3342: a failed gt sling rollback can clear
+// This is the regression test for GH#3342: a failed lt sling rollback can clear
 // the hook while the agent is actively working, causing the daemon to incorrectly
 // reap the session.
 func TestReapIdlePolecat_SkipsActiveAgent(t *testing.T) {

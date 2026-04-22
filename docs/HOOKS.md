@@ -1,10 +1,10 @@
-# Gas Town Hooks Management
+# Camp Leatherneck Hooks Management
 
-Centralized hook management for Gas Town workspaces.
+Centralized hook management for Camp Leatherneck workspaces.
 
 ## Overview
 
-Gas Town manages context injection for all supported agents. The mechanism varies by agent:
+Camp Leatherneck manages context injection for all supported agents. The mechanism varies by agent:
 
 | Agent | Hook mechanism | Managed file |
 |-------|---------------|-------------|
@@ -19,7 +19,7 @@ Gas Town manages context injection for all supported agents. The mechanism varie
 > delivered in Copilot's JSON format rather than Claude's `settings.json` format.
 > The `gt hooks` commands below apply to Claude Code (and Gemini) only.
 
-Gas Town manages `.claude/settings.json` files in gastown-managed parent directories
+Camp Leatherneck manages `.claude/settings.json` files in gastown-managed parent directories
 and passes them to Claude Code via the `--settings` flag. This keeps customer repos
 clean while providing role-specific hook configuration. The hooks system provides
 a single source of truth with a base config and per-role/per-rig overrides.
@@ -194,8 +194,8 @@ Additional hooks exist in settings.json files but are not yet in the registry:
    with empty hooks list), but there is no convenience wrapper yet.
 
 4. **Private hooks (settings.local.json)** — Claude Code supports
-   `settings.local.json` for personal overrides. Gas Town doesn't manage
-   these yet. Low priority since Gas Town is primarily agent-operated.
+   `settings.local.json` for personal overrides. Camp Leatherneck doesn't manage
+   these yet. Low priority since Camp Leatherneck is primarily agent-operated.
 
 5. **Hook ordering** — No action needed currently. The merge chain
    (base -> override) produces deterministic order, and per-matcher merge

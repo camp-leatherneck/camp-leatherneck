@@ -32,7 +32,7 @@ func TestStalledPolecatCheck_EmptyTownRoot(t *testing.T) {
 	result := check.Run(ctx)
 
 	if result.Status != StatusOK {
-		t.Errorf("Status = %v, want OK for empty town root", result.Status)
+		t.Errorf("Status = %v, want OK for empty HQ root", result.Status)
 	}
 }
 

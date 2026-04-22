@@ -48,14 +48,14 @@ type AgentFields struct {
 	// See internal/config/roles/*.toml and config-based-roles.md.
 
 	// Completion metadata fields (gt-x7t9).
-	// Written by gt done, read by witness survey-workers to discover
+	// Written by lt done, read by witness survey-workers to discover
 	// completion state from beads instead of POLECAT_DONE mail.
 	ExitType       string // COMPLETED, ESCALATED, DEFERRED, PHASE_COMPLETE (see witness.ExitType*)
 	MRID           string // MR bead ID (if MR was created)
 	Branch         string // Polecat working branch name
 	MRFailed       bool   // True when MR creation was attempted but failed
 	PushFailed     bool   // True when branch push to origin failed (gas-556)
-	CompletionTime string // RFC3339 timestamp of when gt done was called
+	CompletionTime string // RFC3339 timestamp of when lt done was called
 }
 
 // Notification level constants
@@ -218,7 +218,7 @@ func (b *Beads) CreateAgentBead(id, title string, fields *AgentFields) (*Issue, 
 	// Don't bail out — try the bd create calls anyway (GH#1769).
 	_ = EnsureCustomTypes(targetDir)
 
-	// For routed cross-rig bead IDs, run bd from the town root so bd's own
+	// For routed cross-rig bead IDs, run bd from the HQ root so bd's own
 	// prefix router resolves the target once. Running from a rig worktree with
 	// a routed BEADS_DIR can double-stack the path for imported rigs.
 	target := b
@@ -547,7 +547,7 @@ func (b *Beads) UpdateAgentNotificationLevel(id string, level string) error {
 	return b.UpdateAgentDescriptionFields(id, AgentFieldUpdates{NotificationLevel: &level})
 }
 
-// CompletionMetadata holds the fields written by gt done to record
+// CompletionMetadata holds the fields written by lt done to record
 // polecat work completion on the agent bead. The witness survey-workers
 // step reads these fields to discover completion state from beads
 // instead of POLECAT_DONE mail (nudge-over-mail redesign, gt-x7t9).
@@ -562,7 +562,7 @@ type CompletionMetadata struct {
 }
 
 // UpdateAgentCompletion atomically writes all completion metadata fields
-// to an agent bead. Called by gt done to record completion state.
+// to an agent bead. Called by lt done to record completion state.
 func (b *Beads) UpdateAgentCompletion(id string, meta *CompletionMetadata) error {
 	mrFailed := meta.MRFailed
 	pushFailed := meta.PushFailed

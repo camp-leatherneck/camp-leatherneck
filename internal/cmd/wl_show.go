@@ -22,14 +22,14 @@ var wlShowCmd = &cobra.Command{
 	Short: "Show full details of a wanted item",
 	Long: `Display all fields of a single wanted item from the wl-commons database.
 
-Unlike 'gt wl browse' which truncates titles and omits descriptions,
-'gt wl show' displays every field of the item.
+Unlike 'lt wl browse' which truncates titles and omits descriptions,
+'lt wl show' displays every field of the item.
 
-The local wl-commons database is queried directly (kept in sync by gt wl sync).
+The local wl-commons database is queried directly (kept in sync by lt wl sync).
 
 EXAMPLES:
-  gt wl show w-abc123             # Display all fields
-  gt wl show w-abc123 --json      # JSON output`,
+  lt wl show w-abc123             # Display all fields
+  lt wl show w-abc123 --json      # JSON output`,
 	Args: cobra.ExactArgs(1),
 	RunE: runWLShow,
 }
@@ -44,7 +44,7 @@ func runWLShow(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Fast path: query through the Dolt server if the database is registered.
@@ -92,7 +92,7 @@ func runWLShow(cmd *cobra.Command, args []string) error {
 // Returns (cloneDir, tmpDir, err). If tmpDir is non-empty, caller must
 // defer os.RemoveAll(tmpDir) — a temporary clone was created.
 func resolveWLCommonsClone(townRoot, doltPath string) (cloneDir, tmpDir string, err error) {
-	// Try wasteland config (set by gt wl join).
+	// Try wasteland config (set by lt wl join).
 	if cfg, cfgErr := wasteland.LoadConfig(townRoot); cfgErr == nil && cfg.LocalDir != "" {
 		if _, statErr := os.Stat(filepath.Join(cfg.LocalDir, ".dolt")); statErr == nil {
 			return cfg.LocalDir, "", nil
@@ -116,7 +116,7 @@ func resolveWLCommonsClone(townRoot, doltPath string) (cloneDir, tmpDir string, 
 	if cfg, cfgErr := wasteland.LoadConfig(townRoot); cfgErr == nil && cfg.Upstream != "" {
 		remote = cfg.Upstream
 	}
-	fmt.Fprintf(os.Stderr, "No local wl-commons clone found. Cloning temporarily.\nRun 'gt wl sync' to keep a persistent local copy.\n\n")
+	fmt.Fprintf(os.Stderr, "No local wl-commons clone found. Cloning temporarily.\nRun 'lt wl sync' to keep a persistent local copy.\n\n")
 	tmpDir, err = os.MkdirTemp("", "wl-show-*")
 	if err != nil {
 		return "", "", fmt.Errorf("creating temp directory: %w", err)

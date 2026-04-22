@@ -7,21 +7,21 @@ author: Scribe
 
 # Camp Leatherneck Architecture
 
-Camp Leatherneck is a **layered fork** of [Gas Town](https://github.com/steveyegge/gastown). The engine is Gas Town, unchanged. Camp Leatherneck sits on top as a persona and doctrine overlay. This doc explains the seam so contributors know which side of it a given change belongs on.
+Camp Leatherneck is a **layered fork** of [Camp Leatherneck](https://github.com/steveyegge/gastown). The engine is Camp Leatherneck, unchanged. Camp Leatherneck sits on top as a persona and doctrine overlay. This doc explains the seam so contributors know which side of it a given change belongs on.
 
-For engine internals (rig lifecycle, bead schema, merge queue, Dolt wiring, tmux session model), read the upstream Gas Town [`README.md`](../README.md) and [`docs/overview.md`](./overview.md). Do not re-document them here.
+For engine internals (rig lifecycle, bead schema, merge queue, Dolt wiring, tmux session model), read the upstream Camp Leatherneck [`README.md`](../README.md) and [`docs/overview.md`](./overview.md). Do not re-document them here.
 
 ## The Fork-C model
 
 We use a **Fork-C layered fork**. The rules:
 
 - User-facing surface — binary name, display strings, prime banners, default status-left, role vocabulary — is ours to rename.
-- Internal Go identifiers, CLI role-slot names (`mayor`, `deacon`, `refinery`, `witness`, `boot`), package paths, and protocol formats are Gas Town's and stay unchanged.
+- Internal Go identifiers, CLI role-slot names (`mayor`, `deacon`, `refinery`, `witness`, `boot`), package paths, and protocol formats are Camp Leatherneck's and stay unchanged.
 - This keeps `git merge upstream/main` almost always trivial. Upstream conflicts, when they happen, live in `README.md`, `templates/`, and embedded directive files — not in engine code.
 
 The fork is on GitHub at `camp-leatherneck/camp-leatherneck`. Upstream is `steveyegge/gastown`.
 
-## What Camp Leatherneck inherits from Gas Town
+## What Camp Leatherneck inherits from Camp Leatherneck
 
 Everything that makes the system work:
 
@@ -40,8 +40,8 @@ If you want to understand how any of that works, read upstream. We did not touch
 
 The overlay:
 
-- **Marine persona layer** — 23 personas mapped onto Gas Town's role slots. See [`PERSONAS.md`](./PERSONAS.md). `gt mayor` routes to the **LT** persona; `gt deacon` routes to **Top**; `gt refinery` routes to **Gunny**; etc.
-- **Two new standing roles** — **Fire Watch** (Pvt, keeps Top alive) and **RTO** (Sgt, maintains `~/Desktop/sitrep.md`). Not present in stock Gas Town.
+- **Marine persona layer** — 23 personas mapped onto Camp Leatherneck's role slots. See [`PERSONAS.md`](./PERSONAS.md). `gt mayor` routes to the **LT** persona; `gt deacon` routes to **Top**; `gt refinery` routes to **Gunny**; etc.
+- **Two new standing roles** — **Fire Watch** (Pvt, keeps Top alive) and **RTO** (Sgt, maintains `~/Desktop/sitrep.md`). Not present in stock Camp Leatherneck.
 - **Self-Correction Loop** — the meta-discipline for encoding LT's mistakes into durable rules. See [`SELF-CORRECTION.md`](./SELF-CORRECTION.md).
 - **Diagnostic Discipline** — four rules that counter premature-alarm reflexes. See [`DIAGNOSTIC-DISCIPLINE.md`](./DIAGNOSTIC-DISCIPLINE.md).
 - **Sitrep generator** — a launchd-scheduled synthesizer that fuses `gt feed`, `bd ready`, mail, convoy, and MQ into a <30-second read.
@@ -61,7 +61,7 @@ The overlay:
 |    Self-Correction Loop + Diagnostic Discipline      |
 |    RTO cron + Fire Watch liveness                    |
 +------------------------------------------------------+
-|  Gas Town engine  (github.com/steveyegge/gastown)    |
+|  Camp Leatherneck engine  (github.com/steveyegge/gastown)    |
 |    rigs, polecats, beads, MQ, Dolt, tmux             |
 |    `gt` CLI, role daemons, hook system               |
 |    internal/cmd/*.go, Go module path unchanged       |
@@ -90,5 +90,5 @@ If upstream ships a feature that duplicates something we built in the overlay (e
 - [`DIAGNOSTIC-DISCIPLINE.md`](./DIAGNOSTIC-DISCIPLINE.md) — anti-alarmism rules
 - [`ITERATIVE-LEARNING.md`](./ITERATIVE-LEARNING.md) — how the overlay grows itself
 - [`MIGRATION.md`](./MIGRATION.md) — moving from `~/gt/` to Camp Leatherneck
-- Upstream [`README.md`](../README.md) — Gas Town engine overview
+- Upstream [`README.md`](../README.md) — Camp Leatherneck engine overview
 - [`NOTICE`](../NOTICE) — attribution

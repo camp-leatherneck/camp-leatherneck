@@ -312,7 +312,7 @@ func runMqIntegrationCreate(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Find current rig
@@ -419,7 +419,7 @@ func runMqIntegrationCreate(cmd *cobra.Command, args []string) error {
 	fmt.Printf("  Branch: %s\n", branchName)
 	fmt.Printf("  From:   %s\n", baseBranchDisplay)
 	fmt.Printf("\n  Future MRs for this epic's children can target:\n")
-	fmt.Printf("    gt mq submit --epic %s\n", epicID)
+	fmt.Printf("    lt mq submit --epic %s\n", epicID)
 
 	return nil
 }
@@ -436,7 +436,7 @@ func runMqIntegrationLand(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Find current rig
@@ -809,7 +809,7 @@ func runMqIntegrationStatus(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Find current rig
@@ -1030,7 +1030,7 @@ func printIntegrationStatus(output *IntegrationStatusOutput) error {
 			fmt.Printf("  Auto-land: %s\n", style.Bold.Render("enabled"))
 		} else {
 			fmt.Printf("  Auto-land: %s\n", style.Dim.Render("disabled"))
-			fmt.Printf("  Run: gt mq integration land %s\n", output.Epic)
+			fmt.Printf("  Run: lt mq integration land %s\n", output.Epic)
 		}
 	} else {
 		if output.ChildrenTotal == 0 {

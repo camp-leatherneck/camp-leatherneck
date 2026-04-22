@@ -35,14 +35,14 @@ The mountain label opts a convoy into enhanced stall detection,
 skip-after-N-failures, and active progress monitoring.
 
 Use subcommands to manage active mountains:
-  gt mountain status [id]    Show mountain progress
-  gt mountain pause <id>     Pause a mountain (stop dispatching)
-  gt mountain resume <id>    Resume a paused mountain
-  gt mountain cancel <id>    Cancel (remove mountain label)
+  lt mountain status [id]    Show mountain progress
+  lt mountain pause <id>     Pause a mountain (stop dispatching)
+  lt mountain resume <id>    Resume a paused mountain
+  lt mountain cancel <id>    Cancel (remove mountain label)
 
 Examples:
-  gt mountain gt-epic-auth       Activate mountain on an epic
-  gt mountain --force gt-epic-x  Launch even with staging warnings`,
+  lt mountain gt-epic-auth       Activate mountain on an epic
+  lt mountain --force gt-epic-x  Launch even with staging warnings`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMountain,
 }
@@ -66,7 +66,7 @@ var mountainPauseCmd = &cobra.Command{
 	Long: `Pause an active mountain. Keeps the mountain label but stops
 new wave dispatch. Active polecats continue their current work.
 
-Resume with 'gt mountain resume'.`,
+Resume with 'lt mountain resume'.`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMountainPause,
 }
@@ -105,7 +105,7 @@ func init() {
 	rootCmd.AddCommand(mountainCmd)
 }
 
-// runMountain implements `gt mountain <epic-id>`.
+// runMountain implements `lt mountain <epic-id>`.
 // Stages a convoy from the epic, adds the mountain label, and launches Wave 1.
 func runMountain(cmd *cobra.Command, args []string) error {
 	epicID := args[0]
@@ -222,7 +222,7 @@ func runMountain(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("resolve town root: %w", err)
+		return fmt.Errorf("resolve HQ root: %w", err)
 	}
 
 	if err := checkBlockedRigsForLaunch(dag, townRoot, mountainForce); err != nil {
@@ -264,7 +264,7 @@ func runMountain(cmd *cobra.Command, args []string) error {
 
 	fmt.Printf("\nMountain active. ConvoyManager will feed subsequent waves.\n")
 	fmt.Printf("Deacon will audit progress every ~10 minutes.\n")
-	fmt.Printf("Check status: gt mountain status %s\n", convoyID)
+	fmt.Printf("Check status: lt mountain status %s\n", convoyID)
 
 	return nil
 }
@@ -328,7 +328,7 @@ func showAllMountainStatus(townBeads string) error {
 
 	if len(convoys) == 0 {
 		fmt.Println("No active mountains.")
-		fmt.Println("Activate with: gt mountain <epic-id>")
+		fmt.Println("Activate with: lt mountain <epic-id>")
 		return nil
 	}
 
@@ -658,7 +658,7 @@ func runMountainPause(cmd *cobra.Command, args []string) error {
 
 	fmt.Printf("Mountain %s paused.\n", convoyID)
 	fmt.Printf("Active polecats will finish their current work.\n")
-	fmt.Printf("Resume with: gt mountain resume %s\n", convoyID)
+	fmt.Printf("Resume with: lt mountain resume %s\n", convoyID)
 	return nil
 }
 
@@ -705,6 +705,6 @@ func runMountainCancel(cmd *cobra.Command, args []string) error {
 
 	fmt.Printf("Mountain canceled on %s.\n", convoyID)
 	fmt.Printf("Convoy remains open for manual management.\n")
-	fmt.Printf("Check convoy status: gt convoy status %s\n", convoyID)
+	fmt.Printf("Check convoy status: lt convoy status %s\n", convoyID)
 	return nil
 }

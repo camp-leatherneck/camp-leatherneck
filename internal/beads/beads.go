@@ -329,7 +329,7 @@ type Beads struct {
 	// for closing the store.
 	store beadsdk.Storage
 
-	// Lazy-cached town root for routing resolution.
+	// Lazy-cached HQ root for routing resolution.
 	// Populated on first call to getTownRoot() to avoid filesystem walk on every operation.
 	townRoot     string
 	townRootOnce sync.Once
@@ -371,9 +371,9 @@ func (b *Beads) getActor() string {
 	return os.Getenv("BD_ACTOR")
 }
 
-// getTownRoot returns the Gas Town root directory, using lazy caching.
-// The town root is found by walking up from workDir looking for mayor/town.json.
-// Returns empty string if not in a Gas Town project.
+// getTownRoot returns the Camp Leatherneck root directory, using lazy caching.
+// The HQ root is found by walking up from workDir looking for mayor/town.json.
+// Returns empty string if not in a Camp Leatherneck project.
 // Thread-safe: uses sync.Once to prevent races on concurrent access.
 func (b *Beads) getTownRoot() string {
 	b.townRootOnce.Do(func() {
@@ -635,7 +635,7 @@ func filterBeadsEnv(environ []string) []string {
 }
 
 // translateDoltPort ensures BEADS_DOLT_PORT and BEADS_DOLT_SERVER_HOST are set
-// when their GT_ counterparts are present. Gas Town uses GT_DOLT_PORT and
+// when their GT_ counterparts are present. Camp Leatherneck uses GT_DOLT_PORT and
 // GT_DOLT_HOST; beads uses BEADS_DOLT_PORT and BEADS_DOLT_SERVER_HOST. This
 // translation prevents bd subprocesses from falling back to localhost:3307
 // when a test or daemon has set GT_DOLT_* to alternate values.
@@ -891,7 +891,7 @@ func isJSONBytes(b []byte) bool {
 }
 
 // ListMergeRequests returns merge-request beads from both the issues table
-// and the wisps table. MRs are created as ephemeral (wisps) by gt mq submit,
+// and the wisps table. MRs are created as ephemeral (wisps) by lt mq submit,
 // but bd list only queries the issues table. This method queries the wisps
 // table via bd sql --json to get full data including labels and assignee.
 func (b *Beads) ListMergeRequests(opts ListOptions) ([]*Issue, error) {
@@ -990,7 +990,7 @@ func (b *Beads) ListByAssignee(assignee string) ([]*Issue, error) {
 // Returns nil if no matching issue is assigned.
 func (b *Beads) GetAssignedIssue(assignee string) (*Issue, error) {
 	// Check all active work statuses: open, in_progress, and hooked
-	// "hooked" status is set by gt sling when work is attached to an agent's hook
+	// "hooked" status is set by lt sling when work is attached to an agent's hook
 	for _, status := range []string{"open", "in_progress", StatusHooked} {
 		issues, err := b.List(ListOptions{
 			Status:   status,
@@ -1515,7 +1515,7 @@ func (b *Beads) CloseWithReason(reason string, ids ...string) error {
 }
 
 // ForceCloseWithReason closes one or more issues with --force, bypassing
-// dependency checks. Used by gt done where the polecat is about to be nuked
+// dependency checks. Used by lt done where the polecat is about to be nuked
 // and open molecule wisps should not block issue closure.
 func (b *Beads) ForceCloseWithReason(reason string, ids ...string) error {
 	if len(ids) == 0 {
@@ -1525,7 +1525,7 @@ func (b *Beads) ForceCloseWithReason(reason string, ids ...string) error {
 	// In-process store close doesn't enforce dependency checks (no --force
 	// needed). Note: this means the store path bypasses the dependency
 	// validation that the CLI's --force flag overrides. Callers relying on
-	// ForceCloseWithReason (e.g., gt done nuking polecat wisps) are already
+	// ForceCloseWithReason (e.g., lt done nuking polecat wisps) are already
 	// accepting that deps may remain dangling, so this is intentional.
 	if b.store != nil {
 		return b.storeClose(reason, runtime.SessionIDFromEnv(), ids...)
@@ -1614,18 +1614,18 @@ func (b *Beads) IsBeadsRepo() bool {
 	return err == nil && info.IsDir()
 }
 
-// primeContent is the Gas Town PRIME.md content that provides essential context
+// primeContent is the Camp Leatherneck PRIME.md content that provides essential context
 // for crew workers. This is the fallback if the SessionStart hook fails.
-const primeContent = `# Gas Town Worker Context
+const primeContent = `# Camp Leatherneck Worker Context
 
-> **Context Recovery**: Run ` + "`gt prime`" + ` for full context after compaction or new session.
+> **Context Recovery**: Run ` + "`lt prime`" + ` for full context after compaction or new session.
 
 ## The Propulsion Principle (GUPP)
 
 **If you find work on your hook, YOU RUN IT.**
 
 No confirmation. No waiting. No announcements. The hook having work IS the assignment.
-This is physics, not politeness. Gas Town is a steam engine - you are a piston.
+This is physics, not politeness. Camp Leatherneck is a steam engine - you are a piston.
 
 **Failure mode we're preventing:**
 - Agent starts with work on hook
@@ -1635,16 +1635,16 @@ This is physics, not politeness. Gas Town is a steam engine - you are a piston.
 
 ## Startup Protocol
 
-1. Check your hook: ` + "`gt mol status`" + `
+1. Check your hook: ` + "`lt mol status`" + `
 2. If work is hooked → EXECUTE (no announcement, no waiting)
-3. If hook empty → Check mail: ` + "`gt mail inbox`" + `
+3. If hook empty → Check mail: ` + "`lt mail inbox`" + `
 4. Still nothing? Wait for user instructions
 
 ## Key Commands
 
-- ` + "`gt prime`" + ` - Get full role context (run after compaction)
-- ` + "`gt mol status`" + ` - Check your hooked work
-- ` + "`gt mail inbox`" + ` - Check for messages
+- ` + "`lt prime`" + ` - Get full role context (run after compaction)
+- ` + "`lt mol status`" + ` - Check your hooked work
+- ` + "`lt mail inbox`" + ` - Check for messages
 - ` + "`bd ready`" + ` - Find available work (no blockers)
 
 ## Session Close Protocol
@@ -1654,13 +1654,13 @@ Before signaling completion:
 2. git add <files> (stage code changes)
 3. git commit -m "..." (commit code)
 4. git push (push to remote)
-5. ` + "`gt done`" + ` (submit to merge queue and exit)
+5. ` + "`lt done`" + ` (submit to merge queue and exit)
 
-**Polecats MUST call ` + "`gt done`" + ` - this submits work and exits the session.**
+**Polecats MUST call ` + "`lt done`" + ` - this submits work and exits the session.**
 `
 
-// ProvisionPrimeMD writes the Gas Town PRIME.md file to the specified beads directory.
-// This provides essential Gas Town context (GUPP, startup protocol) as a fallback
+// ProvisionPrimeMD writes the Camp Leatherneck PRIME.md file to the specified beads directory.
+// This provides essential Camp Leatherneck context (GUPP, startup protocol) as a fallback
 // if the SessionStart hook fails. The PRIME.md is read by bd prime.
 //
 // The beadsDir should be the actual beads directory (after following any redirect).

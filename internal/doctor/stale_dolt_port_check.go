@@ -118,7 +118,7 @@ func (c *StaleDoltPortCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: fmt.Sprintf("%d stale port file(s), %d stale metadata.json(s), %d stale config dir(s)", len(c.stalePorts), len(c.staleMetadata), len(staleConfigs)),
 		Details: details,
-		FixHint: "Run 'gt doctor --fix' to fix port inconsistencies",
+		FixHint: "Run 'lt doctor --fix' to fix port inconsistencies",
 	}
 }
 
@@ -173,7 +173,7 @@ func (c *StaleDoltPortCheck) getCorrectPort(ctx *CheckContext) int {
 }
 
 // findPortFiles finds all dolt-server.port files in known locations.
-// Avoids filepath.Walk over the entire town root, which is extremely slow
+// Avoids filepath.Walk over the entire HQ root, which is extremely slow
 // on Docker bind mounts (macOS VirtioFS).
 func (c *StaleDoltPortCheck) findPortFiles(townRoot string) []string {
 	var files []string
@@ -234,7 +234,7 @@ func (c *StaleDoltPortCheck) findStaleDoltConfigs(townRoot string, correctPort i
 func (c *StaleDoltPortCheck) findMetadataFiles(townRoot string) []string {
 	var files []string
 
-	// Town root metadata
+	// HQ root metadata
 	townMeta := filepath.Join(townRoot, ".beads", "metadata.json")
 	if _, err := os.Stat(townMeta); err == nil {
 		files = append(files, townMeta)

@@ -64,13 +64,13 @@ func setupTestRigForSettings(t *testing.T) (string, string) {
 		t.Fatalf("save rig config: %v", err)
 	}
 
-	// Change to town root so workspace.FindFromCwdOrError works
+	// Change to HQ root so workspace.FindFromCwdOrError works
 	oldCwd, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("get current directory: %v", err)
 	}
 	if err := os.Chdir(townRoot); err != nil {
-		t.Fatalf("chdir to town root: %v", err)
+		t.Fatalf("chdir to HQ root: %v", err)
 	}
 	t.Cleanup(func() {
 		os.Chdir(oldCwd)

@@ -1,4 +1,4 @@
-// Package cmd provides polecat spawning utilities for gt sling.
+// Package cmd provides polecat spawning utilities for lt sling.
 package cmd
 
 import (
@@ -58,13 +58,13 @@ type SlingSpawnOptions struct {
 }
 
 // SpawnPolecatForSling creates a fresh polecat and optionally starts its session.
-// This is used by gt sling when the target is a rig name.
+// This is used by lt sling when the target is a rig name.
 // The caller (sling) handles hook attachment and nudging.
 func SpawnPolecatForSling(rigName string, opts SlingSpawnOptions) (*SpawnedPolecatInfo, error) {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return nil, fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return nil, fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rig config
@@ -121,8 +121,8 @@ func SpawnPolecatForSling(rigName string, opts SlingSpawnOptions) (*SpawnedPolec
 			maxRespawns := config.LoadOperationalConfig(townRoot).GetWitnessConfig().MaxBeadRespawnsV()
 			return nil, fmt.Errorf("respawn limit reached for %s (%d attempts). "+
 				"This bead keeps failing — investigate before re-dispatching.\n"+
-				"Override: gt sling %s %s --force\n"+
-				"Reset:    gt sling respawn-reset %s",
+				"Override: lt sling %s %s --force\n"+
+				"Reset:    lt sling respawn-reset %s",
 				opts.HookBead, maxRespawns,
 				opts.HookBead, rigName, opts.HookBead)
 		}
@@ -142,7 +142,7 @@ func SpawnPolecatForSling(rigName string, opts SlingSpawnOptions) (*SpawnedPolec
 		}
 		if dirCount >= maxPolecatDirsPerRig {
 			return nil, fmt.Errorf("rig %s has %d polecat directories (max %d). "+
-				"Nuke idle polecats first: gt polecat nuke %s/<name> --force",
+				"Nuke idle polecats first: lt polecat nuke %s/<name> --force",
 				rigName, dirCount, maxPolecatDirsPerRig, rigName)
 		}
 	}
@@ -284,7 +284,7 @@ func SpawnPolecatForSling(rigName string, opts SlingSpawnOptions) (*SpawnedPolec
 	if err := verifyWorktreeExists(polecatObj.ClonePath); err != nil {
 		// Clean up the partial state before returning error
 		_ = polecatMgr.Remove(polecatName, true) // force=true to clean up partial state
-		return nil, fmt.Errorf("worktree verification failed for %s: %w\nHint: try 'gt polecat nuke %s/%s --force' to clean up",
+		return nil, fmt.Errorf("worktree verification failed for %s: %w\nHint: try 'lt polecat nuke %s/%s --force' to clean up",
 			polecatName, err, rigName, polecatName)
 	}
 
@@ -318,7 +318,7 @@ func SpawnPolecatForSling(rigName string, opts SlingSpawnOptions) (*SpawnedPolec
 
 // StartSession starts the tmux session for a spawned polecat.
 // This is called after the molecule/bead is attached, so the polecat
-// sees its work when gt prime runs on session start.
+// sees its work when lt prime runs on session start.
 // Returns the pane ID after session start.
 func (s *SpawnedPolecatInfo) StartSession() (string, error) {
 	if s.SessionStarted() {
@@ -327,7 +327,7 @@ func (s *SpawnedPolecatInfo) StartSession() (string, error) {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return "", fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return "", fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load rig config

@@ -44,10 +44,10 @@ func (h *DefaultRefineryHandler) SetOutput(w io.Writer) {
 // When a polecat's work is verified and ready, the Refinery acknowledges receipt.
 //
 // Belt-and-suspenders: if the message indicates this is from an owned+direct
-// convoy, the Refinery skips processing. These MRs shouldn't exist (gt done
+// convoy, the Refinery skips processing. These MRs shouldn't exist (lt done
 // skips MR creation for owned+direct), but this guards against edge cases.
 //
-// NOTE: The merge-request bead is created by `gt done`, so we no longer need
+// NOTE: The merge-request bead is created by `lt done`, so we no longer need
 // to add to the mrqueue here. The Refinery queries beads directly for ready MRs.
 func (h *DefaultRefineryHandler) HandleMergeReady(payload *MergeReadyPayload) error {
 	_, _ = fmt.Fprintf(h.Output, "[Refinery] MERGE_READY received for polecat %s\n", payload.Polecat)
@@ -62,7 +62,7 @@ func (h *DefaultRefineryHandler) HandleMergeReady(payload *MergeReadyPayload) er
 		return nil
 	}
 
-	// The merge-request bead is created by `gt done` with gt:merge-request label.
+	// The merge-request bead is created by `lt done` with gt:merge-request label.
 	// The Refinery queries beads directly via ReadyWithType("merge-request").
 	// No need to add to mrqueue - that was a duplicate tracking file.
 	_, _ = fmt.Fprintf(h.Output, "[Refinery] ✓ Work verified - Refinery will pick up MR via beads query\n")

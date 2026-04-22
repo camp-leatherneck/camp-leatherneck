@@ -22,11 +22,11 @@ func runMoleculeAttach(cmd *cobra.Command, args []string) error {
 	b := beads.New(workDir)
 
 	if len(args) == 2 {
-		// Explicit: gt mol attach <pinned-bead-id> <molecule-id>
+		// Explicit: lt mol attach <pinned-bead-id> <molecule-id>
 		pinnedBeadID = args[0]
 		moleculeID = args[1]
 	} else {
-		// Auto-detect: gt mol attach <molecule-id>
+		// Auto-detect: lt mol attach <molecule-id>
 		// Find the agent's pinned handoff bead (same pattern as mol burn/squash)
 		moleculeID = args[0]
 
@@ -40,7 +40,7 @@ func runMoleculeAttach(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("finding workspace: %w", err)
 		}
 		if townRoot == "" {
-			return fmt.Errorf("not in a Gas Town workspace")
+			return fmt.Errorf("not in a Camp Leatherneck workspace")
 		}
 
 		roleInfo, err := GetRoleWithContext(cwd, townRoot)

@@ -1427,7 +1427,7 @@ func TestDetectOrphanedMolecules_WithMockBd(t *testing.T) {
 
 	tmpDir := t.TempDir()
 
-	// Create town structure: tmpDir is the "town root"
+	// Create town structure: tmpDir is the "HQ root"
 	rigName := "testrig"
 	polecatsDir := filepath.Join(tmpDir, rigName, "polecats")
 	if err := os.MkdirAll(polecatsDir, 0755); err != nil {
@@ -1850,7 +1850,7 @@ func TestZombieAgentSelfReportedStuck_Classification(t *testing.T) {
 }
 
 func TestNotifyRefineryMergeReady_EmitsChannelEvent(t *testing.T) {
-	// Create a fake town root with the workspace marker so workspace.Find recognizes it
+	// Create a fake HQ root with the workspace marker so workspace.Find recognizes it
 	townRoot := t.TempDir()
 	if err := os.MkdirAll(filepath.Join(townRoot, "mayor"), 0755); err != nil {
 		t.Fatal(err)

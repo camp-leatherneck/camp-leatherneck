@@ -52,7 +52,7 @@ func parseBranchName(branch string) branchInfo {
 		}
 		// Modern polecat branch format: polecat/<worker>-<timestamp>
 		// The second part is "worker-timestamp", not an issue ID.
-		// Don't try to extract an issue ID - gt done will use hook_bead fallback.
+		// Don't try to extract an issue ID - lt done will use hook_bead fallback.
 		if len(parts) == 2 {
 			// Extract worker name from "worker-timestamp" format
 			workerPart := parts[1]
@@ -79,7 +79,7 @@ func runMqSubmit(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Find current rig
@@ -94,7 +94,7 @@ func runMqSubmit(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("getting current directory: %w", err)
 	}
 
-	// When gt is invoked via shell alias (cd ~/gt && gt), cwd is the town
+	// When lt is invoked via shell alias (cd ~/gt && gt), cwd is the town
 	// root, not the polecat's worktree. Reconstruct actual path.
 	if cwd == townRoot {
 		// Gate polecat cwd switch on GT_ROLE: coordinators may have stale GT_POLECAT.
@@ -170,9 +170,9 @@ func runMqSubmit(cmd *cobra.Command, args []string) error {
 		target = resolveIntegrationBranchName(bd, rigPath, mqSubmitEpic)
 	} else {
 		// Check for explicit --base-branch override in formula vars on the source issue.
-		// When gt sling dispatches with --base-branch, the value is persisted in
+		// When lt sling dispatches with --base-branch, the value is persisted in
 		// the bead's formula_vars field. Without this check, MRs created via
-		// gt mq submit always target the rig's default branch (usually main),
+		// lt mq submit always target the rig's default branch (usually main),
 		// even when the polecat was working against a feature branch.
 		if sourceIssue, showErr := bd.Show(issueID); showErr == nil {
 			if af := beads.ParseAttachmentFields(sourceIssue); af != nil {
@@ -281,7 +281,7 @@ func runMqSubmit(cmd *cobra.Command, args []string) error {
 
 		// gt-gpy: Validate MR bead landed in the rig's database (warning only).
 		if prefixErr := beads.ValidateRigPrefix(townRoot, rigName, mrIssue.ID); prefixErr != nil {
-			style.PrintWarning("MR bead prefix mismatch: %v\nThe refinery may not find this MR — check 'gt mq list %s'", prefixErr, rigName)
+			style.PrintWarning("MR bead prefix mismatch: %v\nThe refinery may not find this MR — check 'lt mq list %s'", prefixErr, rigName)
 		}
 
 		// Nudge refinery to pick up the new MR
@@ -347,7 +347,7 @@ func runMqSubmit(cmd *cobra.Command, args []string) error {
 		if err := polecatCleanup(rigName, worker, townRoot); err != nil {
 			// Non-fatal: warn but return success (MR was created)
 			style.PrintWarning("Could not auto-cleanup: %v", err)
-			fmt.Println(style.Dim.Render("  You may need to run 'gt handoff --shutdown' manually"))
+			fmt.Println(style.Dim.Render("  You may need to run 'lt handoff --shutdown' manually"))
 			return nil
 		}
 		// polecatCleanup may timeout while waiting, but MR was already created
@@ -454,7 +454,7 @@ Time: %s
 Please verify state and execute lifecycle action.
 `, worker, time.Now().Format(time.RFC3339))
 
-	// Send via gt mail
+	// Send via lt mail
 	cmd := exec.Command("gt", "mail", "send", manager,
 		"-s", subject,
 		"-m", body,
@@ -486,13 +486,13 @@ Please verify state and execute lifecycle action.
 			fmt.Printf("%s Still waiting (%v elapsed)...\n", style.Dim.Render("◌"), elapsed)
 			if elapsed >= 2*time.Minute {
 				fmt.Println(style.Dim.Render("  Hint: If witness isn't responding, you may need to:"))
-				fmt.Println(style.Dim.Render("  - Check if witness is running: gt rig status"))
+				fmt.Println(style.Dim.Render("  - Check if witness is running: lt rig status"))
 				fmt.Println(style.Dim.Render("  - Use Ctrl+C to abort and manually exit"))
 			}
 		case <-timeout:
 			fmt.Printf("%s Timeout waiting for polecat retirement\n", style.WarningPrefix)
 			fmt.Println(style.Dim.Render("  The polecat may have already terminated, or witness is unresponsive."))
-			fmt.Println(style.Dim.Render("  You can verify with: gt polecat status"))
+			fmt.Println(style.Dim.Render("  You can verify with: lt polecat status"))
 			return nil // Don't fail the MR submission just because cleanup timed out
 		}
 	}

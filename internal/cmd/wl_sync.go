@@ -22,7 +22,7 @@ var wlSyncCmd = &cobra.Command{
 	RunE:  runWLSync,
 	Long: `Sync your local wl-commons fork with the upstream hop/wl-commons.
 
-If you have a local fork of wl-commons (created by gt wl join), this pulls
+If you have a local fork of wl-commons (created by lt wl join), this pulls
 the latest changes from upstream.
 
 Schema evolution is handled automatically based on semantic versioning:
@@ -30,9 +30,9 @@ Schema evolution is handled automatically based on semantic versioning:
   - MAJOR version bump (e.g. 1.0 → 2.0): requires --upgrade flag
 
 EXAMPLES:
-  gt wl sync                # Pull upstream changes
-  gt wl sync --dry-run      # Show what would change
-  gt wl sync --upgrade      # Proceed through a MAJOR schema version bump`,
+  lt wl sync                # Pull upstream changes
+  lt wl sync --dry-run      # Show what would change
+  lt wl sync --upgrade      # Proceed through a MAJOR schema version bump`,
 }
 
 func init() {
@@ -45,7 +45,7 @@ func init() {
 func runWLSync(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	doltPath, err := exec.LookPath("dolt")
@@ -53,7 +53,7 @@ func runWLSync(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("dolt not found in PATH — install from https://docs.dolthub.com/introduction/installation")
 	}
 
-	// Try loading wasteland config first (set by gt wl join)
+	// Try loading wasteland config first (set by lt wl join)
 	forkDir := ""
 	if cfg, err := wasteland.LoadConfig(townRoot); err == nil {
 		forkDir = cfg.LocalDir
@@ -65,7 +65,7 @@ func runWLSync(cmd *cobra.Command, args []string) error {
 	}
 
 	if forkDir == "" {
-		return fmt.Errorf("no local wl-commons fork found\n\nJoin a wasteland first: gt wl join <org/db>")
+		return fmt.Errorf("no local wl-commons fork found\n\nJoin a wasteland first: lt wl join <org/db>")
 	}
 
 	fmt.Printf("Local fork: %s\n", style.Dim.Render(forkDir))

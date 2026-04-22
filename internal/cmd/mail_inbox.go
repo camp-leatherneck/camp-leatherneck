@@ -20,7 +20,7 @@ func getMailbox(address string) (*mail.Mailbox, error) {
 	// All mail uses town beads (two-level architecture)
 	workDir, err := findMailWorkDir()
 	if err != nil {
-		return nil, fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return nil, fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Get mailbox
@@ -78,7 +78,7 @@ func runMailInbox(cmd *cobra.Command, args []string) error {
 		}
 		// Ack after output so JSON reflects accurate read-time state.
 		if ackErr := mailbox.AcknowledgeDeliveries(address, messages); ackErr != nil {
-			fmt.Fprintf(os.Stderr, "gt mail inbox: delivery ack failed: %v\n", ackErr)
+			fmt.Fprintf(os.Stderr, "lt mail inbox: delivery ack failed: %v\n", ackErr)
 		}
 		return nil
 	}
@@ -114,7 +114,7 @@ func runMailInbox(cmd *cobra.Command, args []string) error {
 			wispMarker = " " + style.Dim.Render("(wisp)")
 		}
 
-		// Show 1-based index for easy reference with 'gt mail read <n>'
+		// Show 1-based index for easy reference with 'lt mail read <n>'
 		indexStr := style.Dim.Render(fmt.Sprintf("%d.", i+1))
 		fmt.Printf("  %s %s %s%s%s%s\n", indexStr, readMarker, msg.Subject, typeMarker, priorityMarker, wispMarker)
 		fmt.Printf("      %s from %s\n",
@@ -126,7 +126,7 @@ func runMailInbox(cmd *cobra.Command, args []string) error {
 
 	// Ack after output so human-readable display is not delayed by bd subprocesses.
 	if ackErr := mailbox.AcknowledgeDeliveries(address, messages); ackErr != nil {
-		fmt.Fprintf(os.Stderr, "gt mail inbox: delivery ack failed: %v\n", ackErr)
+		fmt.Fprintf(os.Stderr, "lt mail inbox: delivery ack failed: %v\n", ackErr)
 	}
 
 	return nil
@@ -134,7 +134,7 @@ func runMailInbox(cmd *cobra.Command, args []string) error {
 
 func runMailRead(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
-		return fmt.Errorf("message ID or index required\n\nRun 'gt mail inbox' to list messages and their IDs")
+		return fmt.Errorf("message ID or index required\n\nRun 'lt mail inbox' to list messages and their IDs")
 	}
 	msgRef := args[0]
 
@@ -169,7 +169,7 @@ func runMailRead(cmd *cobra.Command, args []string) error {
 
 	// Mark as read when viewed (adds "read" label, does not close/archive).
 	// Handoff messages are preserved via the hook mechanism, so marking
-	// read here is safe — hooked mail is found via gt hook, not the inbox.
+	// read here is safe — hooked mail is found via lt hook, not the inbox.
 	if err := mailbox.MarkReadOnly(msgID); err != nil {
 		// Non-fatal: message was retrieved, just couldn't mark
 		style.PrintWarning("could not mark message as read: %v", err)
@@ -184,7 +184,7 @@ func runMailRead(cmd *cobra.Command, args []string) error {
 		}
 		// Ack after output so JSON reflects accurate read-time state.
 		if ackErr := mailbox.AcknowledgeDeliveries(address, []*mail.Message{msg}); ackErr != nil {
-			fmt.Fprintf(os.Stderr, "gt mail read: delivery ack failed: %v\n", ackErr)
+			fmt.Fprintf(os.Stderr, "lt mail read: delivery ack failed: %v\n", ackErr)
 		}
 		return nil
 	}
@@ -221,7 +221,7 @@ func runMailRead(cmd *cobra.Command, args []string) error {
 
 	// Ack after output (non-fatal).
 	if ackErr := mailbox.AcknowledgeDeliveries(address, []*mail.Message{msg}); ackErr != nil {
-		fmt.Fprintf(os.Stderr, "gt mail read: delivery ack failed: %v\n", ackErr)
+		fmt.Fprintf(os.Stderr, "lt mail read: delivery ack failed: %v\n", ackErr)
 	}
 
 	return nil

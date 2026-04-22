@@ -9,7 +9,7 @@ import (
 )
 
 // TestFixWorkDir_HQ verifies that Fix() resolves the "hq" rig name to the
-// town root directory, not townRoot/hq. When the Dolt detection path finds
+// HQ root directory, not townRoot/hq. When the Dolt detection path finds
 // misplaced ephemerals in the "hq" database, the rigName is "hq" — Fix() must
 // map this to TownRoot (same as Run does). Regression test for GH#2127.
 func TestFixWorkDir_HQ(t *testing.T) {
@@ -90,7 +90,7 @@ func TestGetRigPathForPrefix_RoutesResolution(t *testing.T) {
 		wantPath string
 	}{
 		{
-			name:     "hq prefix resolves to town root",
+			name:     "hq prefix resolves to HQ root",
 			prefix:   "hq-",
 			wantPath: tmpDir,
 		},
@@ -100,7 +100,7 @@ func TestGetRigPathForPrefix_RoutesResolution(t *testing.T) {
 			wantPath: filepath.Join(tmpDir, "sallaWork/mayor/rig"),
 		},
 		{
-			name:     "gt prefix resolves to custom path",
+			name:     "lt prefix resolves to custom path",
 			prefix:   "gt-",
 			wantPath: filepath.Join(tmpDir, "gastown/mayor/rig"),
 		},
@@ -159,7 +159,7 @@ func TestRigDirResolution_Logic(t *testing.T) {
 		{
 			dbName:  "hq",
 			wantDir: tmpDir,
-			desc:    "hq database maps to town root via route path='.'",
+			desc:    "hq database maps to HQ root via route path='.'",
 		},
 		{
 			dbName:  "sw",

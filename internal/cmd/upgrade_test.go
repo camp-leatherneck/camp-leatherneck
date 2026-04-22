@@ -10,12 +10,12 @@ import (
 func TestGenerateCLAUDEMD(t *testing.T) {
 	content := generateCLAUDEMD()
 
-	// Must contain the Gas Town header
+	// Must contain the Camp Leatherneck header
 	if content == "" {
 		t.Fatal("generateCLAUDEMD returned empty string")
 	}
-	if content[0:10] != "# Gas Town" {
-		t.Errorf("expected content to start with '# Gas Town', got: %q", content[:10])
+	if content[0:10] != "# Camp Leatherneck" {
+		t.Errorf("expected content to start with '# Camp Leatherneck', got: %q", content[:10])
 	}
 
 	// Must contain identity anchoring instructions
@@ -31,7 +31,7 @@ func TestGenerateCLAUDEMD(t *testing.T) {
 func TestUpgradeCLAUDEMD_CreatesMissingFile(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	// Test with a "town root" that has no CLAUDE.md
+	// Test with a "HQ root" that has no CLAUDE.md
 	upgradeDryRun = false
 	upgradeVerbose = false
 

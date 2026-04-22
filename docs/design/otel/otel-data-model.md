@@ -1,6 +1,6 @@
 # OpenTelemetry Data Model
 
-Complete schema of all telemetry events emitted by Gas Town. Each event consists of:
+Complete schema of all telemetry events emitted by Camp Leatherneck. Each event consists of:
 
 1. **Log record** (→ any OTLP v1.x+ backend, defaults to VictoriaLogs) with full structured attributes
 2. **Metric counter** (→ any OTLP v1.x+ backend, defaults to VictoriaMetrics) for aggregation

@@ -614,7 +614,7 @@ func TestDryRunSkipsSideEffects(t *testing.T) {
 		t.Fatalf("write marker: %v", err)
 	}
 
-	// Run gt prime --dry-run --explain
+	// Run lt prime --dry-run --explain
 	cmd := exec.Command(gtBin, "prime", "--dry-run", "--explain")
 	cmd.Dir = townRoot
 	output, _ := cmd.CombinedOutput()

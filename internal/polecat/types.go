@@ -11,7 +11,7 @@ import "time"
 //   - Working: Session active, doing assigned work (normal operation)
 //   - Idle: Work completed, session killed, sandbox preserved for reuse
 //   - Stalled: Session stopped unexpectedly, was never nudged back to life
-//   - Zombie: Session called 'gt done' but cleanup failed - tried to die but couldn't
+//   - Zombie: Session called 'lt done' but cleanup failed - tried to die but couldn't
 //
 // The distinction matters: idle polecats completed their work successfully and
 // are ready for new assignments. Stalled polecats failed mid-work. Zombies
@@ -33,12 +33,12 @@ const (
 
 	// StateIdle means the polecat completed its work and the session was killed,
 	// but the sandbox (worktree) is preserved for reuse. An idle polecat has no
-	// hook_bead and no active session. It can be reassigned via gt sling without
+	// hook_bead and no active session. It can be reassigned via lt sling without
 	// creating a new worktree.
 	StateIdle State = "idle"
 
 	// StateDone means the polecat has completed its assigned work and called
-	// 'gt done'. This is normally a transient state - the session should exit
+	// 'lt done'. This is normally a transient state - the session should exit
 	// immediately after. If a polecat remains in StateDone, it's a "zombie":
 	// the cleanup failed and the session is stuck.
 	StateDone State = "done"

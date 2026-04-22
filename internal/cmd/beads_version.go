@@ -1,4 +1,4 @@
-// Package cmd provides CLI commands for the gt tool.
+// Package cmd provides CLI commands for the lt tool.
 package cmd
 
 import (

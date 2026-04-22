@@ -23,7 +23,7 @@ type DispatchResult struct {
 }
 
 // dispatchTaskDirect dispatches a single task to its rig.
-// In production, this delegates to gt sling. Tests override this variable
+// In production, this delegates to lt sling. Tests override this variable
 // with a stub to avoid spawning real processes.
 var dispatchTaskDirect = func(townRoot, beadID, rig string) error {
 	cmd := exec.Command("gt", "sling", beadID, rig)
@@ -31,7 +31,7 @@ var dispatchTaskDirect = func(townRoot, beadID, rig string) error {
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("gt sling %s %s: %w\nstderr: %s", beadID, rig, err, strings.TrimSpace(stderr.String()))
+		return fmt.Errorf("lt sling %s %s: %w\nstderr: %s", beadID, rig, err, strings.TrimSpace(stderr.String()))
 	}
 	return nil
 }
@@ -151,7 +151,7 @@ func checkBlockedRigsForLaunch(dag *ConvoyDAG, townRoot string, force bool) erro
 		details = append(details, fmt.Sprintf("  %s: %s", rig, strings.Join(beadIDs, ", ")))
 	}
 
-	return fmt.Errorf("cannot launch: %d target rig(s) are parked or docked:\n%s\n\nUse 'gt rig unpark' or 'gt rig undock' to restore, or --force to proceed anyway",
+	return fmt.Errorf("cannot launch: %d target rig(s) are parked or docked:\n%s\n\nUse 'lt rig unpark' or 'lt rig undock' to restore, or --force to proceed anyway",
 		len(rigs), strings.Join(details, "\n"))
 }
 
@@ -199,7 +199,7 @@ func renderLaunchOutput(convoyID string, waves []Wave, results []DispatchResult,
 	b.WriteString("\n")
 
 	// Section 2: Monitor command hint.
-	fmt.Fprintf(&b, "  Monitor: gt convoy status %s\n", convoyID)
+	fmt.Fprintf(&b, "  Monitor: lt convoy status %s\n", convoyID)
 	b.WriteString("\n")
 
 	// Section 3: Wave summary.
@@ -254,7 +254,7 @@ func renderLaunchOutput(convoyID string, waves []Wave, results []DispatchResult,
 	b.WriteString("\n")
 
 	// Section 5: TUI hint.
-	b.WriteString("  Hint: gt convoy -i for interactive monitoring\n")
+	b.WriteString("  Hint: lt convoy -i for interactive monitoring\n")
 	b.WriteString("\n")
 
 	// Section 6: Daemon explanation.
@@ -263,7 +263,7 @@ func renderLaunchOutput(convoyID string, waves []Wave, results []DispatchResult,
 	return b.String()
 }
 
-// runConvoyLaunch is the handler for `gt convoy launch`.
+// runConvoyLaunch is the handler for `lt convoy launch`.
 func runConvoyLaunch(cmd *cobra.Command, args []string) error {
 	// Step 1: Validate args.
 	if err := validateStageArgs(args); err != nil {
@@ -305,7 +305,7 @@ func runConvoyLaunch(cmd *cobra.Command, args []string) error {
 
 			townRoot, err := workspace.FindFromCwdOrError()
 			if err != nil {
-				return fmt.Errorf("resolve town root for dispatch: %w", err)
+				return fmt.Errorf("resolve HQ root for dispatch: %w", err)
 			}
 
 			// Check for parked/docked rigs before dispatch (gt-4owfd.1, #2120)

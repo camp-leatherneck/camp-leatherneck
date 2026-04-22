@@ -1,4 +1,4 @@
-// Package cmd provides CLI commands for the gt tool.
+// Package cmd provides CLI commands for the lt tool.
 package cmd
 
 import (
@@ -32,8 +32,8 @@ Patrol cycles (Deacon, Witness, Refinery) create ephemeral per-cycle digests.
 This command aggregates them into permanent daily summaries.
 
 Examples:
-  gt patrol digest --yesterday  # Aggregate yesterday's patrol digests
-  gt patrol digest --dry-run    # Preview what would be aggregated`,
+  lt patrol digest --yesterday  # Aggregate yesterday's patrol digests
+  lt patrol digest --dry-run    # Preview what would be aggregated`,
 }
 
 var patrolDigestCmd = &cobra.Command{
@@ -49,9 +49,9 @@ The resulting digest bead is permanent (synced via git) and provides
 an audit trail without per-cycle ephemeral pollution.
 
 Examples:
-  gt patrol digest --yesterday   # Digest yesterday's patrols (for daily patrol)
-  gt patrol digest --date 2026-01-15
-  gt patrol digest --yesterday --dry-run`,
+  lt patrol digest --yesterday   # Digest yesterday's patrols (for daily patrol)
+  lt patrol digest --date 2026-01-15
+  lt patrol digest --yesterday --dry-run`,
 	RunE: runPatrolDigest,
 }
 

@@ -21,12 +21,12 @@ type Backup struct {
 	Metadata map[string]interface{}
 }
 
-// FindBackups finds all migration backup directories in the town root.
+// FindBackups finds all migration backup directories in the HQ root.
 // Returns them sorted newest-first by timestamp suffix.
 func FindBackups(townRoot string) ([]Backup, error) {
 	entries, err := os.ReadDir(townRoot)
 	if err != nil {
-		return nil, fmt.Errorf("reading town root: %w", err)
+		return nil, fmt.Errorf("reading HQ root: %w", err)
 	}
 
 	const prefix = "migration-backup-"

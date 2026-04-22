@@ -1,4 +1,4 @@
-// Package quota manages Claude Code account quota rotation for Gas Town.
+// Package quota manages Claude Code account quota rotation for Camp Leatherneck.
 //
 // When sessions hit rate limits, the overseer can scan for blocked sessions
 // and rotate them to available accounts. State is persisted to mayor/quota.json
@@ -26,7 +26,7 @@ type Manager struct {
 	townRoot string
 }
 
-// NewManager creates a new quota manager for the given town root.
+// NewManager creates a new quota manager for the given HQ root.
 func NewManager(townRoot string) *Manager {
 	return &Manager{townRoot: townRoot}
 }

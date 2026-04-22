@@ -1,7 +1,7 @@
-// Package estop provides emergency stop functionality for Gas Town.
+// Package estop provides emergency stop functionality for Camp Leatherneck.
 //
 // The E-stop is a town-wide mechanism to pause all agent work. It uses a
-// sentinel file (ESTOP) at the town root. When present, all agents should
+// sentinel file (ESTOP) at the HQ root. When present, all agents should
 // be frozen (SIGTSTP) and the daemon should not restart them.
 //
 // The Mayor is exempt from E-stop so it can coordinate recovery.
@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-// FileName is the sentinel file name at the town root.
+// FileName is the sentinel file name at the HQ root.
 const FileName = "ESTOP"
 
 // TriggerManual is the prefix for a human-triggered E-stop.
@@ -66,7 +66,7 @@ func Deactivate(townRoot string, onlyAuto bool) error {
 	if onlyAuto {
 		info := Read(townRoot)
 		if info != nil && info.Trigger == TriggerManual {
-			return fmt.Errorf("E-stop was manually triggered — use 'gt thaw' to clear")
+			return fmt.Errorf("E-stop was manually triggered — use 'lt thaw' to clear")
 		}
 	}
 	err := os.Remove(FilePath(townRoot))

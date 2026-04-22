@@ -1,4 +1,4 @@
-// ABOUTME: Command to completely uninstall Gas Town from the system.
+// ABOUTME: Command to completely uninstall Camp Leatherneck from the system.
 // ABOUTME: Removes shell integration, wrappers, state, and optionally workspace.
 
 package cmd
@@ -25,8 +25,8 @@ var (
 var uninstallCmd = &cobra.Command{
 	Use:     "uninstall",
 	GroupID: GroupConfig,
-	Short:   "Remove Gas Town from the system",
-	Long: `Completely remove Gas Town from the system.
+	Short:   "Remove Camp Leatherneck from the system",
+	Long: `Completely remove Camp Leatherneck from the system.
 
 By default, removes:
   - Shell integration (~/.zshrc or ~/.bashrc)
@@ -40,9 +40,9 @@ The workspace (e.g., ~/gt) is NOT removed unless --workspace is specified.
 Use --force to skip confirmation prompts.
 
 Examples:
-  gt uninstall                    # Remove Gas Town, keep workspace
-  gt uninstall --workspace        # Also remove workspace directory
-  gt uninstall --force            # Skip confirmation`,
+  lt uninstall                    # Remove Camp Leatherneck, keep workspace
+  lt uninstall --workspace        # Also remove workspace directory
+  lt uninstall --force            # Skip confirmation`,
 	RunE: runUninstall,
 }
 
@@ -56,7 +56,7 @@ func init() {
 
 func runUninstall(cmd *cobra.Command, args []string) error {
 	if !uninstallForce {
-		fmt.Println("This will remove Gas Town from your system.")
+		fmt.Println("This will remove Camp Leatherneck from your system.")
 		fmt.Println()
 		fmt.Println("The following will be removed:")
 		fmt.Printf("  • Shell integration (%s)\n", shell.RCFilePath(shell.DetectShell()))
@@ -87,7 +87,7 @@ func runUninstall(cmd *cobra.Command, args []string) error {
 	var errors []string
 
 	fmt.Println()
-	fmt.Println("Removing Gas Town...")
+	fmt.Println("Removing Camp Leatherneck...")
 
 	if err := shell.Remove(); err != nil {
 		errors = append(errors, fmt.Sprintf("shell integration: %v", err))
@@ -140,11 +140,11 @@ func runUninstall(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Println()
-	fmt.Printf("%s Gas Town has been uninstalled\n", style.Success.Render("✓"))
+	fmt.Printf("%s Camp Leatherneck has been uninstalled\n", style.Success.Render("✓"))
 	fmt.Println()
 	fmt.Println("To reinstall, run:")
 	fmt.Printf("  %s\n", style.Dim.Render("go install github.com/camp-leatherneck/camp-leatherneck/cmd/gt@latest"))
-	fmt.Printf("  %s\n", style.Dim.Render("gt install ~/gt --shell"))
+	fmt.Printf("  %s\n", style.Dim.Render("lt install ~/gt --shell"))
 
 	return nil
 }

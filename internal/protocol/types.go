@@ -246,7 +246,7 @@ type PolecatDonePayload struct {
 	// MergeStrategy is the convoy's merge strategy (direct, mr, local).
 	MergeStrategy string `json:"merge_strategy,omitempty"`
 
-	// Errors contains any non-fatal errors encountered during gt done.
+	// Errors contains any non-fatal errors encountered during lt done.
 	Errors string `json:"errors,omitempty"`
 }
 

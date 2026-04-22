@@ -21,7 +21,7 @@ var (
 	cmdNameOnce sync.Once
 )
 
-// CmdName returns the Gas Town CLI command name.
+// CmdName returns the Camp Leatherneck CLI command name.
 // Defaults to "gt", but can be overridden with GT_COMMAND env var.
 // This allows coexistence with other tools that use "gt" (e.g., Graphite).
 func CmdName() string {
@@ -116,8 +116,8 @@ type HandoffData struct {
 
 // SupervisorData contains information for rendering supervisor templates.
 type SupervisorData struct {
-	GTPath   string // Path to the gt binary
-	TownRoot string // Path to the Gas Town workspace
+	GTPath   string // Path to the lt binary
+	TownRoot string // Path to the Camp Leatherneck workspace
 }
 
 // New creates a new Templates instance.
@@ -176,7 +176,7 @@ func (t *Templates) MessageNames() []string {
 }
 
 // CreateMayorCLAUDEmd creates the Mayor's CLAUDE.md file at the specified directory.
-// This is used by both gt install and gt doctor --fix.
+// This is used by both lt install and lt doctor --fix.
 //
 // Returns (created bool, error) - created is false if file already exists.
 // Existing files are preserved to respect user customizations.
@@ -213,20 +213,20 @@ func CreateMayorCLAUDEmd(mayorDir, townRoot, townName, mayorSession, deaconSessi
 }
 
 // PolecatLifecycleMarker is a unique string present in the polecat CLAUDE.md
-// template. Used to detect whether a CLAUDE.md file contains the Gas Town
+// template. Used to detect whether a CLAUDE.md file contains the Camp Leatherneck
 // overlay (vs. project-specific content). If an existing CLAUDE.md lacks this
 // marker, polecat lifecycle instructions are appended — the agent won't know
-// to call `gt done` otherwise.
+// to call `lt done` otherwise.
 const PolecatLifecycleMarker = "IDLE POLECAT HERESY"
 
 // CreatePolecatCLAUDEmd writes the polecat CLAUDE.md template to the worktree.
-// This is the primary mechanism for polecats to learn about `gt done` and other
+// This is the primary mechanism for polecats to learn about `lt done` and other
 // lifecycle commands — the file persists across compaction and session restarts.
 //
 // If the worktree already has a tracked CLAUDE.md (e.g., from the rig's repo),
 // polecat lifecycle instructions are written to CLAUDE.local.md instead. This
 // avoids creating uncommitted changes in the tracked CLAUDE.md, which the
-// gt done auto-save safety net would otherwise commit onto the polecat's branch,
+// lt done auto-save safety net would otherwise commit onto the polecat's branch,
 // polluting the PR diff with hundreds of lines of agent context.
 //
 // If no CLAUDE.md exists, the full template is written to CLAUDE.md.
@@ -313,7 +313,7 @@ func MissingCommandsFor(workspacePath, agent string) []string {
 func ProvisionSupervisor(townRoot string) (string, error) {
 	gtPath, err := os.Executable()
 	if err != nil {
-		return "", fmt.Errorf("finding gt executable: %w", err)
+		return "", fmt.Errorf("finding lt executable: %w", err)
 	}
 
 	data := SupervisorData{

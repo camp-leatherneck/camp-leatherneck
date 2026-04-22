@@ -44,10 +44,10 @@ tasks, cleaned up on completion — but the identity persists.
 A polecat is either:
   - Working: Actively doing assigned work
   - Stalled: Session crashed mid-work (needs Witness intervention)
-  - Zombie: Finished but gt done failed (needs cleanup)
+  - Zombie: Finished but lt done failed (needs cleanup)
   - Nuked: Session ended, identity persists (ready for next assignment)
 
-Self-cleaning model: When work completes, the polecat runs 'gt done',
+Self-cleaning model: When work completes, the polecat runs 'lt done',
 which pushes the branch, submits to the merge queue, and exits. The
 Witness then nukes the sandbox. The polecat's identity (agent bead)
 persists with agent_state=nuked, preserving work history.
@@ -71,26 +71,26 @@ all polecats with their states:
   - stuck: Needs assistance
 
 Examples:
-  gt polecat list greenplace
-  gt polecat list --all
-  gt polecat list greenplace --json`,
+  lt polecat list greenplace
+  lt polecat list --all
+  lt polecat list greenplace --json`,
 	RunE: runPolecatList,
 }
 
 var polecatAddCmd = &cobra.Command{
 	Use:        "add <rig> <name>",
 	Short:      "Add a new polecat to a rig (DEPRECATED)",
-	Deprecated: "use 'gt polecat identity add' instead. This command will be removed in v1.0.",
+	Deprecated: "use 'lt polecat identity add' instead. This command will be removed in v1.0.",
 	Long: `Add a new polecat to a rig.
 
-DEPRECATED: Use 'gt polecat identity add' instead. This command will be removed in v1.0.
+DEPRECATED: Use 'lt polecat identity add' instead. This command will be removed in v1.0.
 
 Creates a polecat directory, clones the rig repo, creates a work branch,
 and initializes state.
 
 Example:
-  gt polecat identity add greenplace Toast  # Preferred
-  gt polecat add greenplace Toast           # Deprecated`,
+  lt polecat identity add greenplace Toast  # Preferred
+  lt polecat add greenplace Toast           # Deprecated`,
 	Args: cobra.ExactArgs(2),
 	RunE: runPolecatAdd,
 }
@@ -105,10 +105,10 @@ Warns if uncommitted changes exist.
 Use --force to bypass checks.
 
 Examples:
-  gt polecat remove greenplace/Toast
-  gt polecat remove greenplace/Toast greenplace/Furiosa
-  gt polecat remove greenplace --all
-  gt polecat remove greenplace --all --force`,
+  lt polecat remove greenplace/Toast
+  lt polecat remove greenplace/Toast greenplace/Furiosa
+  lt polecat remove greenplace --all
+  lt polecat remove greenplace --all --force`,
 	Args: cobra.MinimumNArgs(1),
 	RunE: runPolecatRemove,
 }
@@ -129,8 +129,8 @@ NOTE: The argument is <rig>/<polecat> — a single argument with a slash
 separator, NOT two separate arguments. For example: greenplace/Toast
 
 Examples:
-  gt polecat status greenplace/Toast
-  gt polecat status greenplace/Toast --json`,
+  lt polecat status greenplace/Toast
+  lt polecat status greenplace/Toast --json`,
 	Args: cobra.ExactArgs(1),
 	RunE: runPolecatStatus,
 }
@@ -161,8 +161,8 @@ This command removes orphaned branches:
   - Old timestamped branches (keeps only the current one per polecat)
 
 Examples:
-  gt polecat gc greenplace
-  gt polecat gc greenplace --dry-run`,
+  lt polecat gc greenplace
+  lt polecat gc greenplace --dry-run`,
 	Args: cobra.ExactArgs(1),
 	RunE: runPolecatGC,
 }
@@ -187,11 +187,11 @@ Use --force to bypass safety checks (LOSES WORK).
 Use --dry-run to see what would happen and safety check status.
 
 Examples:
-  gt polecat nuke greenplace/Toast
-  gt polecat nuke greenplace/Toast greenplace/Furiosa
-  gt polecat nuke greenplace --all
-  gt polecat nuke greenplace --all --dry-run
-  gt polecat nuke greenplace/Toast --force  # bypass safety checks`,
+  lt polecat nuke greenplace/Toast
+  lt polecat nuke greenplace/Toast greenplace/Furiosa
+  lt polecat nuke greenplace --all
+  lt polecat nuke greenplace --all --dry-run
+  lt polecat nuke greenplace/Toast --force  # bypass safety checks`,
 	Args: cobra.MinimumNArgs(1),
 	RunE: runPolecatNuke,
 }
@@ -210,8 +210,8 @@ Checks:
   - Stashes: stashed changes
 
 Examples:
-  gt polecat git-state greenplace/Toast
-  gt polecat git-state greenplace/Toast --json`,
+  lt polecat git-state greenplace/Toast
+  lt polecat git-state greenplace/Toast --json`,
 	Args: cobra.ExactArgs(1),
 	RunE: runPolecatGitState,
 }
@@ -230,8 +230,8 @@ This prevents accidental data loss when cleaning up dormant polecats.
 The Witness should escalate NEEDS_RECOVERY and NEEDS_MQ_SUBMIT cases to the Mayor.
 
 Examples:
-  gt polecat check-recovery greenplace/Toast
-  gt polecat check-recovery greenplace/Toast --json`,
+  lt polecat check-recovery greenplace/Toast
+  lt polecat check-recovery greenplace/Toast --json`,
 	Args: cobra.ExactArgs(1),
 	RunE: runPolecatCheckRecovery,
 }
@@ -261,11 +261,11 @@ Use --cleanup to automatically nuke stale polecats that are safe to remove.
 Use --dry-run with --cleanup to see what would be cleaned.
 
 Examples:
-  gt polecat stale greenplace
-  gt polecat stale greenplace --threshold 50
-  gt polecat stale greenplace --json
-  gt polecat stale greenplace --cleanup
-  gt polecat stale greenplace --cleanup --dry-run`,
+  lt polecat stale greenplace
+  lt polecat stale greenplace --threshold 50
+  lt polecat stale greenplace --json
+  lt polecat stale greenplace --cleanup
+  lt polecat stale greenplace --cleanup --dry-run`,
 	Args: cobra.ExactArgs(1),
 	RunE: runPolecatStale,
 }
@@ -287,9 +287,9 @@ Use --dry-run to preview what would be pruned.
 Use --remote to also prune remote polecat branches on origin.
 
 Examples:
-  gt polecat prune greenplace
-  gt polecat prune greenplace --dry-run
-  gt polecat prune greenplace --remote`,
+  lt polecat prune greenplace
+  lt polecat prune greenplace --dry-run
+  lt polecat prune greenplace --remote`,
 	Args: cobra.ExactArgs(1),
 	RunE: runPolecatPrune,
 }
@@ -300,7 +300,7 @@ var polecatPoolInitCmd = &cobra.Command{
 	Long: `Initialize a persistent polecat pool for a rig.
 
 Creates N polecats with identities and worktrees in IDLE state,
-ready for immediate work assignment via gt sling.
+ready for immediate work assignment via lt sling.
 
 Pool size is determined by (in priority order):
   1. --size flag
@@ -315,9 +315,9 @@ Existing polecats are preserved — only new ones are created
 to reach the target pool size.
 
 Examples:
-  gt polecat pool-init gastown
-  gt polecat pool-init gastown --size 6
-  gt polecat pool-init gastown --dry-run`,
+  lt polecat pool-init gastown
+  lt polecat pool-init gastown --size 6
+  lt polecat pool-init gastown --dry-run`,
 	Args: cobra.ExactArgs(1),
 	RunE: runPolecatPoolInit,
 }
@@ -396,7 +396,7 @@ func effectivePolecatState(item PolecatListItem) polecat.State {
 	state := item.State
 	// A running session overrides both "done" and "idle" — the polecat is working.
 	// "idle" can be stale when a polecat is reused (cross-rig beads, stale heartbeat,
-	// or beads query timing), and "done" can be stale when gt done didn't complete.
+	// or beads query timing), and "done" can be stale when lt done didn't complete.
 	if item.SessionRunning && (state == polecat.StateDone || state == polecat.StateIdle) {
 		return polecat.StateWorking
 	}
@@ -551,7 +551,7 @@ func runPolecatList(cmd *cobra.Command, args []string) error {
 
 func runPolecatAdd(cmd *cobra.Command, args []string) error {
 	// Emit deprecation warning
-	fmt.Fprintf(os.Stderr, "%s 'gt polecat add' is deprecated. Use 'gt polecat identity add' instead.\n",
+	fmt.Fprintf(os.Stderr, "%s 'lt polecat add' is deprecated. Use 'lt polecat identity add' instead.\n",
 		style.Warning.Render("Warning:"))
 	fmt.Fprintf(os.Stderr, "         This command will be removed in v1.0.\n\n")
 
@@ -1337,7 +1337,7 @@ func nukePolecatFull(polecatName, rigName string, mgr *polecat.Manager, r *rig.R
 	// Step 4: Delete local branch (if we know it)
 	// Local branch can always be deleted (worktree is already gone).
 	// Remote branch is never deleted during nuke — the refinery owns
-	// remote branch cleanup after successful merge (gt mq post-merge).
+	// remote branch cleanup after successful merge (lt mq post-merge).
 	// This prevents the race where nuke deletes the branch before the
 	// refinery has a chance to merge it. (gt-v5ku)
 	if branchToDelete != "" {

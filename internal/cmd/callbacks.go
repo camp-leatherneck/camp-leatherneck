@@ -120,7 +120,7 @@ func init() {
 func runCallbacksProcess(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Get Mayor's mailbox
@@ -492,12 +492,12 @@ func handleSling(townRoot string, msg *mail.Message, dryRun bool) (string, error
 		return fmt.Sprintf("would sling %s to %s", beadID, targetRig), nil
 	}
 
-	// Log the sling (actual spawn happens via gt sling command)
+	// Log the sling (actual spawn happens via lt sling command)
 	logCallback(townRoot, fmt.Sprintf("sling_request: bead %s to rig %s", beadID, targetRig))
 
 	// Note: We don't actually spawn here - that would be done by the Deacon
 	// executing the sling command based on this request.
-	return fmt.Sprintf("logged sling request: %s to %s (execute with: gt sling %s %s)",
+	return fmt.Sprintf("logged sling request: %s to %s (execute with: lt sling %s %s)",
 		beadID, targetRig, beadID, targetRig), nil
 }
 

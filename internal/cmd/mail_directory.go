@@ -25,8 +25,8 @@ Shows agent addresses, group addresses, queue addresses, channel addresses,
 and well-known special addresses.
 
 Examples:
-  gt mail directory              # List all addresses
-  gt mail directory --json       # JSON output`,
+  lt mail directory              # List all addresses
+  lt mail directory --json       # JSON output`,
 	Args: cobra.NoArgs,
 	RunE: runMailDirectory,
 }
@@ -45,7 +45,7 @@ func init() {
 func runMailDirectory(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	b := beads.New(townRoot)

@@ -10,8 +10,8 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
 )
 
-// setupTestTownForTheme creates a minimal Gas Town workspace for theme tests.
-// Returns the town root directory. Caller should chdir into it and restore afterwards.
+// setupTestTownForTheme creates a minimal Camp Leatherneck workspace for theme tests.
+// Returns the HQ root directory. Caller should chdir into it and restore afterwards.
 func setupTestTownForTheme(t *testing.T) string {
 	t.Helper()
 
@@ -66,7 +66,7 @@ func TestSaveRigTheme_PreservesRoleThemes(t *testing.T) {
 		t.Fatalf("save initial settings: %v", err)
 	}
 
-	// Chdir into the town root so workspace.FindFromCwd works
+	// Chdir into the HQ root so workspace.FindFromCwd works
 	origCwd, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("getwd: %v", err)

@@ -210,7 +210,7 @@ func (s *BeadRedispatchState) RecordEscalation() {
 // available polecat, or escalating to Mayor if the bead has failed too many times.
 //
 // Parameters:
-//   - townRoot: the Gas Town workspace root
+//   - townRoot: the Camp Leatherneck workspace root
 //   - beadID: the recovered bead to re-dispatch
 //   - sourceRig: the rig from which the bead was recovered (empty = auto-detect from prefix)
 //   - maxAttempts: max re-dispatches before escalating (0 = use default)
@@ -305,7 +305,7 @@ func Redispatch(townRoot, beadID, sourceRig string, maxAttempts int, cooldown ti
 	// Determine agent override from model escalation config (if any).
 	escalationAgent := resolveAgentForRedispatch(townRoot, targetRig, beadState)
 
-	// Re-dispatch via gt sling
+	// Re-dispatch via lt sling
 	err = slingBead(townRoot, beadID, targetRig, escalationAgent)
 	if err != nil {
 		result.Action = "error"
@@ -444,7 +444,7 @@ func resolveAgentForRedispatch(townRoot, targetRig string, beadState *BeadRedisp
 	return ""
 }
 
-// slingBead dispatches a bead to a rig via gt sling.
+// slingBead dispatches a bead to a rig via lt sling.
 // If agent is non-empty, passes --agent <agent> to override the rig's default.
 func slingBead(townRoot, beadID, rig, agent string) error {
 	args := []string{"sling", beadID, rig, "--force", "--no-convoy"}

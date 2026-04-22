@@ -34,13 +34,13 @@ var refineryCmd = &cobra.Command{
 	Long: `Manage the Gunny - the per-rig merge queue processor.
 
 The Gunny serializes all merges to main for a rig:
-  - Receives MRs submitted by polecats (via gt done)
+  - Receives MRs submitted by polecats (via lt done)
   - Rebases work branches onto latest main
   - Runs validation (tests, builds, checks)
   - Merges to main when clear
   - If conflict: spawns FRESH polecat to re-implement (original is gone)
 
-Work flows: Polecat completes → gt done → MR in queue → Gunny merges.
+Work flows: Polecat completes → lt done → MR in queue → Gunny merges.
 The polecat is already nuked by the time the Gunny processes.
 
 One Gunny per rig. Persistent agent that processes work as it arrives.
@@ -111,8 +111,8 @@ or manual intervention.
 If rig is not specified, infers it from the current directory.
 
 Examples:
-  gt refinery attach greenplace
-  gt refinery attach          # infer rig from cwd`,
+  lt refinery attach greenplace
+  lt refinery attach          # infer rig from cwd`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runRefineryAttach,
 }
@@ -126,8 +126,8 @@ Stops the current session (if running) and starts a fresh one.
 If rig is not specified, infers it from the current directory.
 
 Examples:
-  gt refinery restart greenplace
-  gt refinery restart          # infer rig from cwd`,
+  lt refinery restart greenplace
+  lt refinery restart          # infer rig from cwd`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runRefineryRestart,
 }
@@ -145,8 +145,8 @@ The worker ID is automatically determined from the GT_REFINERY_WORKER
 environment variable, or defaults to "refinery-1".
 
 Examples:
-  gt refinery claim gt-abc123
-  GT_REFINERY_WORKER=refinery-2 gt refinery claim gt-abc123`,
+  lt refinery claim gt-abc123
+  GT_REFINERY_WORKER=refinery-2 lt refinery claim gt-abc123`,
 	Args: cobra.ExactArgs(1),
 	RunE: runRefineryClaim,
 }
@@ -160,7 +160,7 @@ Called when processing fails and the MR should be retried by another worker.
 This clears the claim so other workers can pick up the MR.
 
 Examples:
-  gt refinery release gt-abc123`,
+  lt refinery release gt-abc123`,
 	Args: cobra.ExactArgs(1),
 	RunE: runRefineryRelease,
 }
@@ -175,8 +175,8 @@ claims (worker may have crashed). Useful for parallel refinery workers
 to find work.
 
 Examples:
-  gt refinery unclaimed
-  gt refinery unclaimed --json`,
+  lt refinery unclaimed
+  lt refinery unclaimed --json`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runRefineryUnclaimed,
 }
@@ -199,9 +199,9 @@ including timestamps, assignees, and branch existence. Designed for
 agent-side queue health analysis.
 
 Examples:
-  gt refinery ready
-  gt refinery ready --json
-  gt refinery ready --all --json`,
+  lt refinery ready
+  lt refinery ready --json
+  lt refinery ready --all --json`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runRefineryReady,
 }
@@ -218,8 +218,8 @@ Shows MRs waiting for conflict resolution or other blocking tasks to complete.
 When the blocking task closes, the MR will appear in 'ready'.
 
 Examples:
-  gt refinery blocked
-  gt refinery blocked --json`,
+  lt refinery blocked
+  lt refinery blocked --json`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runRefineryBlocked,
 }
@@ -276,11 +276,11 @@ func getRefineryManager(rigName string) (*refinery.Manager, *rig.Rig, string, er
 	if rigName == "" {
 		townRoot, err := workspace.FindFromCwdOrError()
 		if err != nil {
-			return nil, nil, "", fmt.Errorf("not in a Gas Town workspace: %w", err)
+			return nil, nil, "", fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 		}
 		rigName, err = inferRigFromCwd(townRoot)
 		if err != nil {
-			return nil, nil, "", fmt.Errorf("could not determine rig: %w\nUsage: gt refinery <command> <rig>", err)
+			return nil, nil, "", fmt.Errorf("could not determine rig: %w\nUsage: lt refinery <command> <rig>", err)
 		}
 	}
 
@@ -324,7 +324,7 @@ func runRefineryStart(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("%s Refinery started for %s\n", style.Bold.Render("✓"), rigName)
-	fmt.Printf("  %s\n", style.Dim.Render("Use 'gt refinery status' to check progress"))
+	fmt.Printf("  %s\n", style.Dim.Render("Use 'lt refinery status' to check progress"))
 	return nil
 }
 
@@ -553,7 +553,7 @@ func runRefineryRestart(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("%s Refinery restarted for %s\n", style.Bold.Render("✓"), rigName)
-	fmt.Printf("  %s\n", style.Dim.Render("Use 'gt refinery attach' to connect"))
+	fmt.Printf("  %s\n", style.Dim.Render("Use 'lt refinery attach' to connect"))
 	return nil
 }
 
@@ -572,7 +572,7 @@ func runRefineryClaim(cmd *cobra.Command, args []string) error {
 	// Find beads from current working directory
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 	rigName, err := inferRigFromCwd(townRoot)
 	if err != nil {
@@ -599,7 +599,7 @@ func runRefineryRelease(cmd *cobra.Command, args []string) error {
 	// Find beads from current working directory
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 	rigName, err := inferRigFromCwd(townRoot)
 	if err != nil {

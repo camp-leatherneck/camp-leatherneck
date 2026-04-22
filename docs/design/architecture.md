@@ -1,10 +1,10 @@
-# Gas Town Architecture
+# Camp Leatherneck Architecture
 
-Technical architecture for Gas Town multi-agent workspace management.
+Technical architecture for Camp Leatherneck multi-agent workspace management.
 
 ## Two-Level Beads Architecture
 
-Gas Town uses a two-level beads architecture to separate organizational coordination
+Camp Leatherneck uses a two-level beads architecture to separate organizational coordination
 from project implementation work.
 
 | Level | Location | Prefix | Purpose |
@@ -276,10 +276,10 @@ See [dolt-storage.md](dolt-storage.md) for full details.
 
 ## Deployment Artifacts
 
-Gas Town and Beads are distributed through multiple channels. Tag pushes (`v*`)
+Camp Leatherneck and Beads are distributed through multiple channels. Tag pushes (`v*`)
 trigger GitHub Actions release workflows that build and publish everything.
 
-### Gas Town (`gt`)
+### Camp Leatherneck (`gt`)
 
 | Channel | Artifact | Trigger |
 |---------|----------|---------|

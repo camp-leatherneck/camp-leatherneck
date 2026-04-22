@@ -67,10 +67,10 @@ TTLs by wisp type:
   default (untyped):            24h
 
 Examples:
-  gt compact              # Run compaction
-  gt compact --dry-run    # Preview what would happen
-  gt compact --verbose    # Show each wisp decision
-  gt compact --json       # Machine-readable output`,
+  lt compact              # Run compaction
+  lt compact --dry-run    # Preview what would happen
+  lt compact --verbose    # Show each wisp decision
+  lt compact --json       # Machine-readable output`,
 	RunE: runCompact,
 }
 
@@ -176,7 +176,7 @@ type compactIssue struct {
 func runCompact(cmd *cobra.Command, args []string) error {
 	now := time.Now().UTC()
 
-	// Resolve working directory and town root
+	// Resolve working directory and HQ root
 	workDir, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("getting working dir: %w", err)

@@ -37,13 +37,13 @@ func inferRigFromCwd(townRoot string) (string, error) {
 	return "", fmt.Errorf("could not infer rig from current directory")
 }
 
-// inferRigFromCrewName scans all rigs in the town root for a crew member
+// inferRigFromCrewName scans all rigs in the HQ root for a crew member
 // with the given name. Returns the rig name if the crew member is unique
 // across all rigs. Returns an error if not found or ambiguous.
 func inferRigFromCrewName(townRoot, crewName string) (string, error) {
 	entries, err := os.ReadDir(townRoot)
 	if err != nil {
-		return "", fmt.Errorf("reading town root: %w", err)
+		return "", fmt.Errorf("reading HQ root: %w", err)
 	}
 
 	var matches []string

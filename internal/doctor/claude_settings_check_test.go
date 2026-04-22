@@ -48,7 +48,7 @@ func createValidSettings(t *testing.T, path string) {
 					"hooks": []any{
 						map[string]any{
 							"type":    "command",
-							"command": "/usr/local/bin/gt prime --hook",
+							"command": "/usr/local/bin/lt prime --hook",
 						},
 					},
 				},
@@ -59,7 +59,7 @@ func createValidSettings(t *testing.T, path string) {
 					"hooks": []any{
 						map[string]any{
 							"type":    "command",
-							"command": "gt costs record --session $CLAUDE_SESSION_ID",
+							"command": "lt costs record --session $CLAUDE_SESSION_ID",
 						},
 					},
 				},
@@ -94,7 +94,7 @@ func createStaleSettings(t *testing.T, path string, missingElements ...string) {
 					"hooks": []any{
 						map[string]any{
 							"type":    "command",
-							"command": "/usr/local/bin/gt prime --hook",
+							"command": "/usr/local/bin/lt prime --hook",
 						},
 					},
 				},
@@ -105,7 +105,7 @@ func createStaleSettings(t *testing.T, path string, missingElements ...string) {
 					"hooks": []any{
 						map[string]any{
 							"type":    "command",
-							"command": "gt costs record --session $CLAUDE_SESSION_ID",
+							"command": "lt costs record --session $CLAUDE_SESSION_ID",
 						},
 					},
 				},
@@ -305,7 +305,7 @@ func TestClaudeSettingsCheck_MissingHooks(t *testing.T) {
 func TestClaudeSettingsCheck_MissingSessionStartPrime(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	// Create mayor settings.json missing gt prime in SessionStart (content validation)
+	// Create mayor settings.json missing lt prime in SessionStart (content validation)
 	mayorSettings := filepath.Join(tmpDir, "mayor", ".claude", "settings.json")
 	createStaleSettings(t, mayorSettings, "PATH")
 
@@ -878,14 +878,14 @@ func TestClaudeSettingsCheck_FixPreservesTrackedCleanFiles(t *testing.T) {
 
 // NOTE: TestClaudeSettingsCheck_DetectsStaleCLAUDEmdAtTownRoot and
 // TestClaudeSettingsCheck_FixMovesCLAUDEmdToMayor were removed because
-// CLAUDE.md at town root is now intentionally created by gt install.
-// It serves as an identity anchor for Mayor/Deacon who run from the town root.
+// CLAUDE.md at HQ root is now intentionally created by lt install.
+// It serves as an identity anchor for Mayor/Deacon who run from the HQ root.
 // See install.go createTownRootAgentMDs() for details.
 
 func TestClaudeSettingsCheck_GitIgnoredFilesNotFlagged(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	// Initialize git repo at town root
+	// Initialize git repo at HQ root
 	initTestGitRepo(t, tmpDir)
 
 	// Create .gitignore with CLAUDE.md
@@ -895,7 +895,7 @@ func TestClaudeSettingsCheck_GitIgnoredFilesNotFlagged(t *testing.T) {
 	}
 	gitAddAndCommit(t, tmpDir, gitignorePath)
 
-	// Create CLAUDE.md at town root (wrong location but gitignored)
+	// Create CLAUDE.md at HQ root (wrong location but gitignored)
 	claudeMdPath := filepath.Join(tmpDir, "CLAUDE.md")
 	if err := os.WriteFile(claudeMdPath, []byte("# Mayor Context\n"), 0644); err != nil {
 		t.Fatal(err)
@@ -922,7 +922,7 @@ func TestClaudeSettingsCheck_TownRootSettingsWarnsInsteadOfKilling(t *testing.T)
 		t.Fatal(err)
 	}
 
-	// Create settings.json at town root (wrong location - pollutes all agents)
+	// Create settings.json at HQ root (wrong location - pollutes all agents)
 	staleTownRootDir := filepath.Join(tmpDir, ".claude")
 	if err := os.MkdirAll(staleTownRootDir, 0755); err != nil {
 		t.Fatal(err)
@@ -933,8 +933,8 @@ func TestClaudeSettingsCheck_TownRootSettingsWarnsInsteadOfKilling(t *testing.T)
 		"env": {"PATH": "/usr/bin"},
 		"enabledPlugins": ["claude-code-expert"],
 		"hooks": {
-			"SessionStart": [{"matcher": "", "hooks": [{"type": "command", "command": "gt prime"}]}],
-			"Stop": [{"matcher": "", "hooks": [{"type": "command", "command": "gt handoff"}]}]
+			"SessionStart": [{"matcher": "", "hooks": [{"type": "command", "command": "lt prime"}]}],
+			"Stop": [{"matcher": "", "hooks": [{"type": "command", "command": "lt handoff"}]}]
 		}
 	}`
 	if err := os.WriteFile(staleTownRootSettings, []byte(settingsContent), 0644); err != nil {
@@ -947,7 +947,7 @@ func TestClaudeSettingsCheck_TownRootSettingsWarnsInsteadOfKilling(t *testing.T)
 	// Run to detect
 	result := check.Run(ctx)
 	if result.Status != StatusError {
-		t.Fatalf("expected StatusError for town root settings, got %v", result.Status)
+		t.Fatalf("expected StatusError for HQ root settings, got %v", result.Status)
 	}
 
 	// Verify it's flagged as wrong location
@@ -970,12 +970,12 @@ func TestClaudeSettingsCheck_TownRootSettingsWarnsInsteadOfKilling(t *testing.T)
 
 	// Verify stale file was deleted
 	if _, err := os.Stat(staleTownRootSettings); !os.IsNotExist(err) {
-		t.Error("expected settings.json at town root to be deleted")
+		t.Error("expected settings.json at HQ root to be deleted")
 	}
 
 	// Verify .claude directory was cleaned up (best-effort)
 	if _, err := os.Stat(staleTownRootDir); !os.IsNotExist(err) {
-		t.Error("expected .claude directory at town root to be deleted")
+		t.Error("expected .claude directory at HQ root to be deleted")
 	}
 }
 
@@ -1257,7 +1257,7 @@ func TestClaudeSettingsCheck_MissingFileOnlyMessage(t *testing.T) {
 	}
 
 	// Fix hint should mention restart for missing files
-	if !strings.Contains(result.FixHint, "gt up --restore") {
+	if !strings.Contains(result.FixHint, "lt up --restore") {
 		t.Errorf("expected fix hint to mention 'gt up --restore', got %q", result.FixHint)
 	}
 }

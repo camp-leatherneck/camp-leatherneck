@@ -23,7 +23,7 @@ var doctorCmd = &cobra.Command{
 	Use:     "doctor",
 	GroupID: GroupDiag,
 	Short:   "Run health checks on the workspace",
-	Long: `Run diagnostic checks on the Gas Town workspace.
+	Long: `Run diagnostic checks on the Camp Leatherneck workspace.
 
 Doctor checks for common configuration issues, missing files,
 and other problems that could affect workspace operation.
@@ -36,14 +36,14 @@ Workspace checks:
   - mayor-exists             Check mayor/ directory structure
   - disk-space               Check filesystem has sufficient free space
 
-Town root protection:
-  - town-git                 Verify town root is under version control
-  - town-root-branch         Verify town root is on main branch (fixable)
+HQ root protection:
+  - town-git                 Verify HQ root is under version control
+  - HQ-branch         Verify HQ root is on main branch (fixable)
   - foreign-remotes          Detect git remotes from unrelated repos (fixable)
   - pre-checkout-hook        Verify pre-checkout hook prevents branch switches (fixable)
 
 Infrastructure checks:
-  - stale-binary             Check if gt binary is up to date with repo
+  - stale-binary             Check if lt binary is up to date with repo
   - beads-binary             Check that beads (bd) is installed and meets minimum version
   - daemon                   Check if daemon is running (fixable)
   - boot-health              Check Boot watchdog health (vet mode)
@@ -74,7 +74,7 @@ Migration checks (fixable):
 
 Rig checks (with --rig flag):
   - rig-is-git-repo          Verify rig is a valid git repository
-  - git-exclude-configured   Check .git/info/exclude has Gas Town dirs (fixable)
+  - git-exclude-configured   Check .git/info/exclude has Camp Leatherneck dirs (fixable)
   - bare-repo-exists         Verify .repo.git exists when worktrees depend on it (fixable)
   - witness-exists           Verify witness/ structure exists (fixable)
   - refinery-exists          Verify refinery/ structure exists (fixable)
@@ -94,7 +94,7 @@ Formula overlay checks (fixable):
   - overlay-health           Check formula overlay step IDs are valid (fixable)
 
 Migration checks:
-  - town-claude-md           Check town-root CLAUDE.md matches embedded version (fixable)
+  - town-claude-md           Check HQ CLAUDE.md matches embedded version (fixable)
 
 Session hook checks:
   - session-hooks            Check settings.json use session-start.sh
@@ -134,10 +134,10 @@ func init() {
 }
 
 func runDoctor(cmd *cobra.Command, args []string) error {
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Create check context
@@ -164,7 +164,7 @@ func runDoctor(cmd *cobra.Command, args []string) error {
 
 	// Infrastructure prerequisites — these must pass before any check that
 	// shells out to bd/dolt or queries the database. Order matters:
-	// 1. gt binary freshness
+	// 1. lt binary freshness
 	// 2. bd binary exists
 	// 3. dolt binary exists
 	// 4. Dolt server is reachable (everything downstream depends on this)
@@ -253,7 +253,7 @@ func runDoctor(cmd *cobra.Command, args []string) error {
 	// Priming subsystem check
 	d.Register(doctor.NewPrimingCheck())
 
-	// Town-root CLAUDE.md version check (migration check for behavioral norms)
+	// HQ CLAUDE.md version check (migration check for behavioral norms)
 	d.Register(doctor.NewTownCLAUDEmdCheck())
 
 	// Crew workspace checks

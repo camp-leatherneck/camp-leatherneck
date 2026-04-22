@@ -1,4 +1,4 @@
-// ABOUTME: Doctor check for Gas Town global state configuration.
+// ABOUTME: Doctor check for Camp Leatherneck global state configuration.
 // ABOUTME: Validates that state directories and shell integration are properly configured.
 
 package doctor
@@ -21,7 +21,7 @@ func NewGlobalStateCheck() *GlobalStateCheck {
 	return &GlobalStateCheck{
 		BaseCheck: BaseCheck{
 			CheckName:        "global-state",
-			CheckDescription: "Validates Gas Town global state and shell integration",
+			CheckDescription: "Validates Camp Leatherneck global state and shell integration",
 			CheckCategory:    CategoryCore,
 		},
 	}
@@ -41,7 +41,7 @@ func (c *GlobalStateCheck) Run(ctx *CheckContext) *CheckResult {
 	if err != nil {
 		if os.IsNotExist(err) {
 			result.Message = "Global state not initialized"
-			result.FixHint = "Run: gt enable"
+			result.FixHint = "Run: lt enable"
 			result.Status = StatusWarning
 			return result
 		}
@@ -52,10 +52,10 @@ func (c *GlobalStateCheck) Run(ctx *CheckContext) *CheckResult {
 	}
 
 	if s.Enabled {
-		details = append(details, "Gas Town: enabled")
+		details = append(details, "Camp Leatherneck: enabled")
 	} else {
-		details = append(details, "Gas Town: disabled")
-		warnings = append(warnings, "Gas Town is disabled globally")
+		details = append(details, "Camp Leatherneck: disabled")
+		warnings = append(warnings, "Camp Leatherneck is disabled globally")
 	}
 
 	if s.Version != "" {
@@ -87,14 +87,14 @@ func (c *GlobalStateCheck) Run(ctx *CheckContext) *CheckResult {
 	if len(errors) > 0 {
 		result.Status = StatusError
 		result.Message = errors[0]
-		result.FixHint = "Run: gt shell install"
+		result.FixHint = "Run: lt shell install"
 	} else if len(warnings) > 0 {
 		result.Status = StatusWarning
 		result.Message = warnings[0]
 		if !s.Enabled {
-			result.FixHint = "Run: gt enable"
+			result.FixHint = "Run: lt enable"
 		} else {
-			result.FixHint = "Run: gt shell install"
+			result.FixHint = "Run: lt shell install"
 		}
 	} else {
 		result.Message = "Global state healthy"
@@ -104,15 +104,15 @@ func (c *GlobalStateCheck) Run(ctx *CheckContext) *CheckResult {
 }
 
 func hasShellIntegration(rcPath string) bool {
-	// Look for official marker (from gt shell install) or manual sourcing of the hook script.
-	markers := []string{"Gas Town Integration", "shell-hook.sh"}
+	// Look for official marker (from lt shell install) or manual sourcing of the hook script.
+	markers := []string{"Camp Leatherneck Integration", "shell-hook.sh"}
 	return checkSourceChain(rcPath, markers, make(map[string]bool), 0)
 }
 
 // checkSourceChain reads filePath, checks for any marker string, and
 // recursively follows source/. directives found in the file. This handles
 // users with modular shell configs (e.g. .zshrc sources profile-specific
-// files that source the Gas Town hook script).
+// files that source the Camp Leatherneck hook script).
 func checkSourceChain(filePath string, markers []string, visited map[string]bool, depth int) bool {
 	if depth > 5 {
 		return false

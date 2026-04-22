@@ -127,18 +127,18 @@ Priority levels:
 Use --urgent as shortcut for --priority 0.
 
 Examples:
-  gt mail send greenplace/Toast -s "Status check" -m "How's that bug fix going?"
-  gt mail send mayor/ -s "Work complete" -m "Finished gt-abc"
-  gt mail send gastown/ -s "All hands" -m "Swarm starting" --notify
-  gt mail send greenplace/Toast -s "Task" -m "Fix bug" --type task --priority 1
-  gt mail send greenplace/Toast -s "Urgent" -m "Help!" --urgent
-  gt mail send mayor/ -s "Re: Status" -m "Done" --reply-to msg-abc123
-  gt mail send --self -s "Handoff" -m "Context for next session"
-  gt mail send greenplace/Toast -s "Update" -m "Progress report" --cc overseer
-  gt mail send list:oncall -s "Alert" -m "System down"
+  lt mail send greenplace/Toast -s "Status check" -m "How's that bug fix going?"
+  lt mail send mayor/ -s "Work complete" -m "Finished gt-abc"
+  lt mail send gastown/ -s "All hands" -m "Swarm starting" --notify
+  lt mail send greenplace/Toast -s "Task" -m "Fix bug" --type task --priority 1
+  lt mail send greenplace/Toast -s "Urgent" -m "Help!" --urgent
+  lt mail send mayor/ -s "Re: Status" -m "Done" --reply-to msg-abc123
+  lt mail send --self -s "Handoff" -m "Context for next session"
+  lt mail send greenplace/Toast -s "Update" -m "Progress report" --cc overseer
+  lt mail send list:oncall -s "Alert" -m "System down"
 
   # Read body from stdin (avoids shell quoting issues):
-  gt mail send mayor/ -s "Update" --stdin <<'BODY'
+  lt mail send mayor/ -s "Update" --stdin <<'BODY'
   Message with 'quotes' and "quotes" and $variables.
   BODY`,
 	Args: cobra.MaximumNArgs(1),
@@ -157,12 +157,12 @@ By default, shows all messages. Use --unread to filter to unread only,
 or --all to explicitly show all messages (read and unread).
 
 Examples:
-  gt mail inbox                       # Current context (auto-detected)
-  gt mail inbox --all                 # Explicitly show all messages
-  gt mail inbox --unread              # Show only unread messages
-  gt mail inbox mayor/                # Mayor's inbox
-  gt mail inbox greenplace/Toast         # Polecat's inbox
-  gt mail inbox --identity greenplace/Toast  # Explicit polecat identity`,
+  lt mail inbox                       # Current context (auto-detected)
+  lt mail inbox --all                 # Explicitly show all messages
+  lt mail inbox --unread              # Show only unread messages
+  lt mail inbox mayor/                # Mayor's inbox
+  lt mail inbox greenplace/Toast         # Polecat's inbox
+  lt mail inbox --identity greenplace/Toast  # Explicit polecat identity`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runMailInbox,
 }
@@ -173,14 +173,14 @@ var mailReadCmd = &cobra.Command{
 	Long: `Read a specific message (does not mark as read).
 
 You can specify a message by its ID or by its numeric index from the inbox.
-The index corresponds to the number shown in 'gt mail inbox' (1-based).
+The index corresponds to the number shown in 'lt mail inbox' (1-based).
 
 Examples:
-  gt mail read hq-abc123    # Read by message ID
-  gt mail read 3            # Read the 3rd message in inbox
+  lt mail read hq-abc123    # Read by message ID
+  lt mail read 3            # Read the 3rd message in inbox
 
-Use 'gt mail inbox' to list messages and their IDs.
-Use 'gt mail mark-read' to mark messages as read.`,
+Use 'lt mail inbox' to list messages and their IDs.
+Use 'lt mail mark-read' to mark messages as read.`,
 	Aliases: []string{"show"},
 	Args:    cobra.MaximumNArgs(1),
 	RunE:    runMailRead,
@@ -204,8 +204,8 @@ var mailDeleteCmd = &cobra.Command{
 This closes the messages in beads.
 
 Examples:
-  gt mail delete hq-abc123
-  gt mail delete hq-abc123 hq-def456 hq-ghi789`,
+  lt mail delete hq-abc123
+  lt mail delete hq-abc123 hq-def456 hq-ghi789`,
 	Args: cobra.MinimumNArgs(1),
 	RunE: runMailDelete,
 }
@@ -220,10 +220,10 @@ Removes the messages from your inbox by closing them in beads.
 Use --stale to archive messages sent before your current session started.
 
 Examples:
-	gt mail archive hq-abc123
-	gt mail archive hq-abc123 hq-def456 hq-ghi789
-	gt mail archive --stale
-	gt mail archive --stale --dry-run`,
+	lt mail archive hq-abc123
+	lt mail archive hq-abc123 hq-def456 hq-ghi789
+	lt mail archive --stale
+	lt mail archive --stale --dry-run`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		return nil
 	},
@@ -246,9 +246,9 @@ The message remains in your inbox (unlike archive which closes/removes it).
 Use --all to mark all unread messages as read (silences hook re-notifications).
 
 Examples:
-  gt mail mark-read hq-abc123
-  gt mail mark-read hq-abc123 hq-def456
-  gt mail mark-read --all`,
+  lt mail mark-read hq-abc123
+  lt mail mark-read hq-abc123 hq-def456
+  lt mail mark-read --all`,
 	RunE: runMailMarkRead,
 }
 
@@ -260,8 +260,8 @@ var mailMarkUnreadCmd = &cobra.Command{
 This removes the 'read' label from the message.
 
 Examples:
-  gt mail mark-unread hq-abc123
-  gt mail mark-unread hq-abc123 hq-def456`,
+  lt mail mark-unread hq-abc123
+  lt mail mark-unread hq-abc123 hq-def456`,
 	Args: cobra.MinimumNArgs(1),
 	RunE: runMailMarkUnread,
 }
@@ -282,9 +282,9 @@ Exit codes (--inject mode):
 Use --identity for polecats to explicitly specify their identity.
 
 Examples:
-  gt mail check                           # Simple check (auto-detect identity)
-  gt mail check --inject                  # For hooks
-  gt mail check --identity greenplace/Toast  # Explicit polecat identity`,
+  lt mail check                           # Simple check (auto-detect identity)
+  lt mail check --inject                  # For hooks
+  lt mail check --identity greenplace/Toast  # Explicit polecat identity`,
 	RunE: runMailCheck,
 }
 
@@ -296,7 +296,7 @@ var mailThreadCmd = &cobra.Command{
 Shows messages in chronological order (oldest first).
 
 Examples:
-  gt mail thread thread-abc123`,
+  lt mail thread thread-abc123`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMailThread,
 }
@@ -314,9 +314,9 @@ This is a convenience command that automatically:
 The message body can be provided as a positional argument or via -m flag.
 
 Examples:
-  gt mail reply msg-abc123 "Thanks, working on it now"
-  gt mail reply msg-abc123 -m "Thanks, working on it now"
-  gt mail reply msg-abc123 -s "Custom subject" -m "Reply body"`,
+  lt mail reply msg-abc123 "Thanks, working on it now"
+  lt mail reply msg-abc123 -m "Thanks, working on it now"
+  lt mail reply msg-abc123 -s "Custom subject" -m "Reply body"`,
 	Args: cobra.RangeArgs(1, 2),
 	RunE: runMailReply,
 }
@@ -327,7 +327,7 @@ var mailClaimCmd = &cobra.Command{
 	Long: `Claim the oldest unclaimed message from a work queue.
 
 SYNTAX:
-  gt mail claim [queue-name]
+  lt mail claim [queue-name]
 
 BEHAVIOR:
 1. If queue specified, claim from that queue
@@ -340,8 +340,8 @@ The caller must match the queue's claim_pattern (stored in the queue bead).
 Pattern examples: "*" (anyone), "gastown/polecats/*" (specific rig crew).
 
 Examples:
-  gt mail claim work-requests   # Claim from specific queue
-  gt mail claim                 # Claim from any eligible queue`,
+  lt mail claim work-requests   # Claim from specific queue
+  lt mail claim                 # Claim from any eligible queue`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runMailClaim,
 }
@@ -352,7 +352,7 @@ var mailReleaseCmd = &cobra.Command{
 	Long: `Release a previously claimed message back to its queue.
 
 SYNTAX:
-  gt mail release <message-id>
+  lt mail release <message-id>
 
 BEHAVIOR:
 1. Find the message by ID
@@ -367,7 +367,7 @@ ERROR CASES:
 - Caller did not claim this message
 
 Examples:
-  gt mail release hq-abc123    # Release a claimed message`,
+  lt mail release hq-abc123    # Release a claimed message`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMailRelease,
 }
@@ -378,8 +378,8 @@ var mailClearCmd = &cobra.Command{
 	Long: `Clear (delete) all messages from an inbox.
 
 SYNTAX:
-  gt mail clear              # Clear your own inbox
-  gt mail clear <target>     # Clear another agent's inbox
+  lt mail clear              # Clear your own inbox
+  lt mail clear <target>     # Clear another agent's inbox
 
 BEHAVIOR:
 1. List all messages in the target inbox
@@ -389,9 +389,9 @@ BEHAVIOR:
 Use case: Town quiescence - reset all inboxes across workers efficiently.
 
 Examples:
-  gt mail clear                      # Clear your inbox
-  gt mail clear gastown/polecats/joe # Clear joe's inbox
-  gt mail clear mayor/               # Clear mayor's inbox`,
+  lt mail clear                      # Clear your inbox
+  lt mail clear gastown/polecats/joe # Clear joe's inbox
+  lt mail clear mayor/               # Clear mayor's inbox`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runMailClear,
 }
@@ -402,7 +402,7 @@ var mailSearchCmd = &cobra.Command{
 	Long: `Search inbox for messages matching a pattern.
 
 SYNTAX:
-  gt mail search <query> [flags]
+  lt mail search <query> [flags]
 
 The query is a regular expression pattern. Search is case-insensitive by default.
 
@@ -416,11 +416,11 @@ FLAGS:
 By default, searches both subject and body text.
 
 Examples:
-  gt mail search "urgent"                    # Find messages with "urgent"
-  gt mail search "status.*check" --subject   # Regex in subjects only
-  gt mail search "error" --from witness      # From witness, containing "error"
-  gt mail search "handoff" --archive         # Include archived messages
-  gt mail search "" --from mayor/            # All messages from mayor`,
+  lt mail search "urgent"                    # Find messages with "urgent"
+  lt mail search "status.*check" --subject   # Regex in subjects only
+  lt mail search "error" --from witness      # From witness, containing "error"
+  lt mail search "handoff" --archive         # Include archived messages
+  lt mail search "" --from mayor/            # All messages from mayor`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMailSearch,
 }
@@ -431,28 +431,28 @@ var mailAnnouncesCmd = &cobra.Command{
 	Long: `List available announce channels or read messages from a channel.
 
 SYNTAX:
-  gt mail announces              # List all announce channels
-  gt mail announces <channel>    # Read messages from a channel
+  lt mail announces              # List all announce channels
+  lt mail announces <channel>    # Read messages from a channel
 
 Announce channels are bulletin boards defined in ~/gt/config/messaging.json.
 Messages are broadcast to readers and persist until retention limit is reached.
 Unlike regular mail, announce messages are NOT removed when read.
 
-BEHAVIOR for 'gt mail announces':
+BEHAVIOR for 'lt mail announces':
 - Loads messaging.json
 - Lists all announce channel names
 - Shows reader patterns and retain_count for each
 
-BEHAVIOR for 'gt mail announces <channel>':
+BEHAVIOR for 'lt mail announces <channel>':
 - Validates channel exists
 - Queries beads for messages with announce_channel=<channel>
 - Displays in reverse chronological order (newest first)
 - Does NOT mark as read or remove messages
 
 Examples:
-  gt mail announces              # List all channels
-  gt mail announces alerts       # Read messages from 'alerts' channel
-  gt mail announces --json       # List channels as JSON`,
+  lt mail announces              # List all channels
+  lt mail announces alerts       # Read messages from 'alerts' channel
+  lt mail announces --json       # List channels as JSON`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runMailAnnounces,
 }

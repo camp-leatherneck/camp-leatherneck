@@ -21,7 +21,7 @@ import (
 
 // CommandRequest is the JSON request body for /api/run.
 type CommandRequest struct {
-	// Command is the gt command to run (without the "gt" prefix).
+	// Command is the lt command to run (without the "gt" prefix).
 	// Example: "status --json" or "mail inbox"
 	Command string `json:"command"`
 	// Timeout in seconds (optional; see WebTimeoutsConfig for defaults)
@@ -46,7 +46,7 @@ type CommandListResponse struct {
 
 // APIHandler handles API requests for the dashboard.
 type APIHandler struct {
-	// gtPath is the path to the gt binary. If empty, uses "gt" from PATH.
+	// gtPath is the path to the lt binary. If empty, uses "gt" from PATH.
 	gtPath string
 	// workDir is the working directory for command execution.
 	workDir string
@@ -65,7 +65,7 @@ type APIHandler struct {
 
 const optionsCacheTTL = 30 * time.Second
 
-// maxConcurrentCommands limits how many gt subprocesses can run at once.
+// maxConcurrentCommands limits how many lt subprocesses can run at once.
 // handleOptions alone spawns 7; allow headroom for other concurrent handlers.
 const maxConcurrentCommands = 12
 
@@ -74,7 +74,7 @@ func NewAPIHandler(defaultRunTimeout, maxRunTimeout time.Duration, csrfToken str
 	if csrfToken == "" {
 		log.Printf("WARNING: APIHandler created with empty CSRF token — POST requests will not be protected")
 	}
-	// Use PATH lookup for gt binary. Do NOT use os.Executable() here - during
+	// Use PATH lookup for lt binary. Do NOT use os.Executable() here - during
 	// tests it returns the test binary, causing fork bombs when executed.
 	workDir, _ := os.Getwd()
 	return &APIHandler{
@@ -146,7 +146,7 @@ func (h *APIHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// handleRun executes a gt command and returns the result.
+// handleRun executes a lt command and returns the result.
 func (h *APIHandler) handleRun(w http.ResponseWriter, r *http.Request) {
 	var req CommandRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -224,7 +224,7 @@ func (h *APIHandler) handleCommands(w http.ResponseWriter, _ *http.Request) {
 	_ = json.NewEncoder(w).Encode(resp)
 }
 
-// runGtCommand executes a gt command with the given args.
+// runGtCommand executes a lt command with the given args.
 func (h *APIHandler) runGtCommand(ctx context.Context, timeout time.Duration, args []string) (string, error) {
 	// Apply timeout first so it bounds both semaphore wait and command execution.
 	ctx, cancel := context.WithTimeout(ctx, timeout)
@@ -590,7 +590,7 @@ func (h *APIHandler) handleMailSend(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// parseMailInboxText parses text output from "gt mail inbox".
+// parseMailInboxText parses text output from "lt mail inbox".
 func parseMailInboxText(output string) []MailMessage {
 	var messages []MailMessage
 	lines := strings.Split(output, "\n")
@@ -640,7 +640,7 @@ func parseMailInboxText(output string) []MailMessage {
 	return messages
 }
 
-// parseMailReadOutput parses the output from "gt mail read <id>".
+// parseMailReadOutput parses the output from "lt mail read <id>".
 func parseMailReadOutput(output string, msgID string) MailMessage {
 	msg := MailMessage{ID: msgID}
 	lines := strings.Split(output, "\n")
@@ -819,7 +819,7 @@ func (h *APIHandler) handleOptions(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(resp)
 }
 
-// parseRigListOutput extracts rig names from the text output of "gt rig list".
+// parseRigListOutput extracts rig names from the text output of "lt rig list".
 // Example output:
 //
 //	Rigs in /Users/foo/gt:
@@ -926,7 +926,7 @@ func parseCrewListOutput(output string) []string {
 	return crew
 }
 
-// parseAgentsFromStatus extracts agents with status from "gt status --json" output.
+// parseAgentsFromStatus extracts agents with status from "lt status --json" output.
 func parseAgentsFromStatus(jsonStr string) []OptionItem {
 	var status struct {
 		Agents []struct {
@@ -1705,7 +1705,7 @@ func (h *APIHandler) handleCrew(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
 	defer cancel()
 
-	// Run gt crew list --all --json to get crew across all rigs
+	// Run lt crew list --all --json to get crew across all rigs
 	output, err := h.runGtCommand(ctx, 10*time.Second, []string{"crew", "list", "--all", "--json"})
 
 	resp := CrewResponse{
@@ -1828,7 +1828,7 @@ func (h *APIHandler) isClaudeRunningInSession(ctx context.Context, sessionName s
 }
 
 // paneCurrentCommandIsAgent returns true if tmux #{pane_current_command} names a known
-// Gas Town agent (claude/codex/opencode/cursor-agent/copilot/node, or cursor-agent as "agent").
+// Camp Leatherneck agent (claude/codex/opencode/cursor-agent/copilot/node, or cursor-agent as "agent").
 func paneCurrentCommandIsAgent(output string) bool {
 	output = strings.ToLower(strings.TrimSpace(output))
 	if output == "" {
@@ -1910,7 +1910,7 @@ func (h *APIHandler) handleReady(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
 	defer cancel()
 
-	// Run gt ready --json to get ready work
+	// Run lt ready --json to get ready work
 	output, err := h.runGtCommand(ctx, 12*time.Second, []string{"ready", "--json"})
 
 	resp := ReadyResponse{
@@ -1924,7 +1924,7 @@ func (h *APIHandler) handleReady(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse the JSON output from gt ready
+	// Parse the JSON output from lt ready
 	var readyData struct {
 		Sources []struct {
 			Name   string `json:"name"`
@@ -2243,7 +2243,7 @@ func (h *APIHandler) handleRigAdd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Run gt rig add
+	// Run lt rig add
 	ctx, cancel := context.WithTimeout(r.Context(), 60*time.Second)
 	defer cancel()
 

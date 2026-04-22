@@ -71,9 +71,9 @@ var roleHomeCmd = &cobra.Command{
 If no role is specified, shows the home for the current role.
 
 Examples:
-  gt role home           # Home for current role
-  gt role home mayor     # Home for mayor
-  gt role home witness   # Home for witness (requires --rig)`,
+  lt role home           # Home for current role
+  lt role home mayor     # Home for mayor
+  lt role home witness   # Home for witness (requires --rig)`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runRoleHome,
 }
@@ -90,11 +90,11 @@ This is useful for debugging role detection issues.`,
 var roleListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all known roles",
-	Long: `List all known Gas Town agent roles and their descriptions.
+	Long: `List all known Camp Leatherneck agent roles and their descriptions.
 
 Roles include mayor, deacon, witness, refinery, polecat, and crew.
 Each role has a specific scope and responsibilities within the
-Gas Town multi-agent architecture.`,
+Camp Leatherneck multi-agent architecture.`,
 	RunE: runRoleList,
 }
 
@@ -107,8 +107,8 @@ Role is determined from GT_ROLE environment variable or current working director
 This is a read-only command that displays the current role's env vars.
 
 Examples:
-  eval $(gt role env)    # Export current role's env vars
-  gt role env            # View what would be exported`,
+  eval $(lt role env)    # Export current role's env vars
+  lt role env            # View what would be exported`,
 	RunE: runRoleEnv,
 }
 
@@ -119,12 +119,12 @@ var roleDefCmd = &cobra.Command{
 
 Role configuration is layered:
   1. Built-in defaults (embedded in binary)
-  2. Town-level overrides (<town>/roles/<role>.toml)
+  2. HQ-level overrides (<town>/roles/<role>.toml)
   3. Rig-level overrides (<rig>/roles/<role>.toml)
 
 Examples:
-  gt role def witness    # Show witness role definition
-  gt role def crew       # Show crew role definition`,
+  lt role def witness    # Show witness role definition
+  lt role def crew       # Show crew role definition`,
 	Args: cobra.ExactArgs(1),
 	RunE: runRoleDef,
 }
@@ -162,13 +162,13 @@ func GetRole() (RoleInfo, error) {
 		return RoleInfo{}, fmt.Errorf("finding workspace: %w", err)
 	}
 	if townRoot == "" {
-		return RoleInfo{}, fmt.Errorf("not in a Gas Town workspace")
+		return RoleInfo{}, fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	return GetRoleWithContext(cwd, townRoot)
 }
 
-// GetRoleWithContext returns role info given explicit cwd and town root.
+// GetRoleWithContext returns role info given explicit cwd and HQ root.
 func GetRoleWithContext(cwd, townRoot string) (RoleInfo, error) {
 	info := RoleInfo{
 		TownRoot: townRoot,
@@ -249,7 +249,7 @@ func detectRole(cwd, townRoot string) RoleInfo {
 		Source:   "cwd",
 	}
 
-	// Get relative path from town root
+	// Get relative path from HQ root
 	relPath, err := filepath.Rel(townRoot, cwd)
 	if err != nil {
 		return ctx
@@ -259,7 +259,7 @@ func detectRole(cwd, townRoot string) RoleInfo {
 	relPath = filepath.ToSlash(relPath)
 	parts := strings.Split(relPath, "/")
 
-	// Town root is a neutral location — don't infer any role from it.
+	// HQ root is a neutral location — don't infer any role from it.
 	// The mayor's actual home is mayor/ (matched below).
 	if relPath == "." || relPath == "" {
 		return ctx
@@ -518,7 +518,7 @@ func runRoleHome(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("finding workspace: %w", err)
 	}
 	if townRoot == "" {
-		return fmt.Errorf("not in a Gas Town workspace")
+		return fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	// Validate flag combinations: --polecat requires --rig to prevent strange merges
@@ -571,7 +571,7 @@ func runRoleDetect(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("finding workspace: %w", err)
 	}
 	if townRoot == "" {
-		return fmt.Errorf("not in a Gas Town workspace")
+		return fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	ctx := detectRole(cwd, townRoot)
@@ -633,7 +633,7 @@ func runRoleEnv(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("finding workspace: %w", err)
 	}
 	if townRoot == "" {
-		return fmt.Errorf("not in a Gas Town workspace")
+		return fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	// Get current role (read-only - from env vars or cwd)
@@ -699,7 +699,7 @@ func runRoleDef(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("unknown role %q - valid roles: %s", roleName, strings.Join(validRoles, ", "))
 	}
 
-	// Determine town root and rig path
+	// Determine HQ root and rig path
 	townRoot, _ := workspace.FindFromCwd()
 	rigPath := ""
 	if townRoot != "" {

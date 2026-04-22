@@ -42,7 +42,7 @@ func (c *ThemeCheck) Run(ctx *CheckContext) *CheckResult {
 		}
 	}
 
-	// Check for Gas Town sessions
+	// Check for Camp Leatherneck sessions
 	var gtSessions []string
 	for _, s := range sessions {
 		if session.IsKnownSession(s) {
@@ -54,7 +54,7 @@ func (c *ThemeCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: "No Gas Town sessions running",
+			Message: "No Camp Leatherneck sessions running",
 		}
 	}
 
@@ -81,7 +81,7 @@ func (c *ThemeCheck) Run(ctx *CheckContext) *CheckResult {
 			Status:  StatusWarning,
 			Message: fmt.Sprintf("%d session(s) have outdated theme format", len(needsUpdate)),
 			Details: details,
-			FixHint: "Run 'gt theme apply --all' or 'gt doctor --fix'",
+			FixHint: "Run 'lt theme apply --all' or 'lt doctor --fix'",
 		}
 	}
 

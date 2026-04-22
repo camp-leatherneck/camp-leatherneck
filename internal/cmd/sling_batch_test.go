@@ -676,7 +676,7 @@ func TestResolveRigFromBeadIDs_TownLevelPrefix_Errors(t *testing.T) {
 		t.Fatalf("mkdir: %v", err)
 	}
 
-	// hq- maps to town root (path=".")
+	// hq- maps to HQ root (path=".")
 	routesContent := `{"prefix":"hq-","path":"."}` + "\n"
 	if err := os.WriteFile(filepath.Join(beadsDir, "routes.jsonl"), []byte(routesContent), 0644); err != nil {
 		t.Fatalf("write routes: %v", err)

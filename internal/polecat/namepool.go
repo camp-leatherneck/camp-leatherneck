@@ -117,7 +117,7 @@ type NamePool struct {
 	// stateFile is the path to persist pool state.
 	stateFile string
 
-	// townRoot is the town root directory, used to resolve custom theme files.
+	// townRoot is the HQ root directory, used to resolve custom theme files.
 	townRoot string
 }
 
@@ -153,7 +153,7 @@ func NewNamePoolWithConfig(rigPath, rigName, theme string, customNames []string,
 	}
 }
 
-// SetTownRoot sets the town root for custom theme resolution.
+// SetTownRoot sets the HQ root for custom theme resolution.
 func (p *NamePool) SetTownRoot(townRoot string) {
 	p.townRoot = townRoot
 }
@@ -397,7 +397,7 @@ func (p *NamePool) SetTheme(theme string) error {
 		}
 		newNames = resolved
 	} else {
-		return fmt.Errorf("unknown theme: %s (use 'gt namepool themes' to list available themes)", theme)
+		return fmt.Errorf("unknown theme: %s (use 'lt namepool themes' to list available themes)", theme)
 	}
 
 	// Preserve names that exist in both themes

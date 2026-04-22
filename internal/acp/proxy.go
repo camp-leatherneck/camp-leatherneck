@@ -82,7 +82,7 @@ type Proxy struct {
 	stderrLastLogTime    atomic.Int64
 }
 
-// SetTownRoot sets the town root for logging important events to town.log.
+// SetTownRoot sets the HQ root for logging important events to town.log.
 func (p *Proxy) SetTownRoot(townRoot string) {
 	p.townRoot = townRoot
 }

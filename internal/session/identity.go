@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// Role represents the type of Gas Town agent.
+// Role represents the type of Camp Leatherneck agent.
 type Role string
 
 const (
@@ -20,7 +20,7 @@ const (
 	RoleDog      Role = "dog"
 )
 
-// AgentIdentity represents a parsed Gas Town agent identity.
+// AgentIdentity represents a parsed Camp Leatherneck agent identity.
 type AgentIdentity struct {
 	Role   Role   // mayor, deacon, witness, refinery, crew, polecat, dog
 	Rig    string // rig name (empty for mayor/deacon/dog)

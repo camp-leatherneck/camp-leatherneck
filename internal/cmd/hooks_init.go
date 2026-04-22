@@ -20,11 +20,11 @@ This scans all managed .claude/settings.json files in the workspace,
 finds hooks that are common across all targets (becomes the base config),
 and identifies per-target differences (becomes overrides).
 
-After init, run 'gt hooks diff' to verify no changes would be made.
+After init, run 'lt hooks diff' to verify no changes would be made.
 
 Examples:
-  gt hooks init             # Bootstrap base and overrides
-  gt hooks init --dry-run   # Show what would be written without writing`,
+  lt hooks init             # Bootstrap base and overrides
+  lt hooks init --dry-run   # Show what would be written without writing`,
 	RunE: runHooksInit,
 }
 
@@ -36,12 +36,12 @@ func init() {
 func runHooksInit(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Check if base config already exists
 	if _, err := hooks.LoadBase(); err == nil {
-		return fmt.Errorf("base config already exists at %s\nUse 'gt hooks base' to edit it", hooks.BasePath())
+		return fmt.Errorf("base config already exists at %s\nUse 'lt hooks base' to edit it", hooks.BasePath())
 	}
 
 	// Discover all targets and load their current settings
@@ -145,7 +145,7 @@ func runHooksInit(cmd *cobra.Command, args []string) error {
 		fmt.Printf("%s Created override %s\n", style.Success.Render("✓"), o.key)
 	}
 
-	fmt.Printf("\nVerify with: %s\n", style.Dim.Render("gt hooks diff"))
+	fmt.Printf("\nVerify with: %s\n", style.Dim.Render("lt hooks diff"))
 	return nil
 }
 

@@ -162,7 +162,7 @@ func (m *Manager) exists(name string) bool {
 }
 
 // lockCrew acquires an exclusive file lock for a specific crew worker.
-// This prevents concurrent gt processes from racing on the same crew worker's
+// This prevents concurrent lt processes from racing on the same crew worker's
 // filesystem operations (Add, Remove, Rename, Start).
 // Caller must defer fl.Unlock().
 func (m *Manager) lockCrew(name string) (*flock.Flock, error) {
@@ -277,9 +277,9 @@ func (m *Manager) addLocked(name string, createBranch bool) (*CrewWorker, error)
 		style.PrintWarning("could not set up shared beads: %v", err)
 	}
 
-	// Provision PRIME.md with Gas Town context for this worker.
+	// Provision PRIME.md with Camp Leatherneck context for this worker.
 	// This is the fallback if SessionStart hook fails - ensures crew workers
-	// always have GUPP and essential Gas Town context.
+	// always have GUPP and essential Camp Leatherneck context.
 	if err := beads.ProvisionPrimeMDForWorktree(crewPath); err != nil {
 		// Non-fatal - crew can still work via hook, warn but don't fail
 		style.PrintWarning("could not provision PRIME.md: %v", err)
@@ -299,7 +299,7 @@ func (m *Manager) addLocked(name string, createBranch bool) (*CrewWorker, error)
 		style.PrintWarning("could not run setup hooks: %v", err)
 	}
 
-	// Ensure .gitignore has required Gas Town patterns
+	// Ensure .gitignore has required Camp Leatherneck patterns
 	if err := rig.EnsureGitignorePatterns(crewPath); err != nil {
 		// Non-fatal - log warning but continue
 		style.PrintWarning("could not update .gitignore: %v", err)
@@ -315,13 +315,13 @@ func (m *Manager) addLocked(name string, createBranch bool) (*CrewWorker, error)
 		style.PrintWarning("could not install runtime settings: %v", err)
 	}
 
-	// NOTE: Slash commands (.claude/commands/) are provisioned at town level by gt install.
+	// NOTE: Slash commands (.claude/commands/) are provisioned at town level by lt install.
 	// All agents inherit them via Claude's directory traversal - no per-workspace copies needed.
 
 	// NOTE: We intentionally do NOT write to CLAUDE.md here.
-	// Gas Town context is injected ephemerally via SessionStart hook (gt prime).
+	// Camp Leatherneck context is injected ephemerally via SessionStart hook (lt prime).
 	// Writing to CLAUDE.md would overwrite project instructions and leak
-	// Gas Town internals into the project repo when workers commit/push.
+	// Camp Leatherneck internals into the project repo when workers commit/push.
 
 	// Create crew worker state
 	now := time.Now()
@@ -737,7 +737,7 @@ func (m *Manager) Start(name string, opts StartOptions) error {
 
 	// Build startup command (also includes env vars via 'exec env' for
 	// WaitForCommand detection — belt and suspenders with -e flags)
-	// SessionStart hook handles context loading (gt prime --hook)
+	// SessionStart hook handles context loading (lt prime --hook)
 	//
 	// IMPORTANT: All validation and command building happens BEFORE killing
 	// any existing session, so a validation failure cannot leave the user
@@ -752,7 +752,7 @@ func (m *Manager) Start(name string, opts StartOptions) error {
 
 		// Resume mode: build command without prompt, then append resume flag.
 		// No beacon is passed as prompt - the resumed session already has context.
-		// The SessionStart hook still fires and injects Gas Town metadata.
+		// The SessionStart hook still fires and injects Camp Leatherneck metadata.
 		claudeCmd, err = config.BuildCrewStartupCommandWithAgentOverride(m.rig.Name, name, m.rig.Path, "", opts.AgentOverride)
 		if err != nil {
 			return fmt.Errorf("building resume command: %w", err)

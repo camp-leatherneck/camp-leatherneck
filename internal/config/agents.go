@@ -1,4 +1,4 @@
-// Package config provides configuration types and serialization for Gas Town.
+// Package config provides configuration types and serialization for Camp Leatherneck.
 package config
 
 import (
@@ -124,7 +124,7 @@ type AgentPresetInfo struct {
 	HooksSettingsFile string `json:"hooks_settings_file,omitempty"`
 
 	// HooksInformational indicates hooks are instructions-only (not executable lifecycle hooks).
-	// For these providers, Gas Town sends startup fallback commands via nudge.
+	// For these providers, Camp Leatherneck sends startup fallback commands via nudge.
 	HooksInformational bool `json:"hooks_informational,omitempty"`
 
 	// HooksUseSettingsDir indicates the agent supports a separate settings directory
@@ -640,7 +640,7 @@ func ListAgentPresets() []string {
 }
 
 // BuiltInAgentPresetSummary returns a sorted, comma-separated list of built-in preset names
-// for CLI help text (gt config agent list, default-agent, --provider, etc.).
+// for CLI help text (lt config agent list, default-agent, --provider, etc.).
 func BuiltInAgentPresetSummary() string {
 	names := ListAgentPresets()
 	sort.Strings(names)

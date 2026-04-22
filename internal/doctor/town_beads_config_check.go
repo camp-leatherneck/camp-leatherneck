@@ -57,7 +57,7 @@ func (c *TownBeadsConfigCheck) Run(ctx *CheckContext) *CheckResult {
 			Status:   StatusError,
 			Message:  "Missing town .beads/config.yaml",
 			Details:  []string{"Fix will create config.yaml without modifying existing metadata or configs."},
-			FixHint:  "Run 'gt doctor --fix' to create config.yaml",
+			FixHint:  "Run 'lt doctor --fix' to create config.yaml",
 			Category: c.CheckCategory,
 		}
 	} else if err != nil {
@@ -72,7 +72,7 @@ func (c *TownBeadsConfigCheck) Run(ctx *CheckContext) *CheckResult {
 	return &CheckResult{
 		Name:     c.Name(),
 		Status:   StatusOK,
-		Message:  "Town beads config.yaml present",
+		Message:  "HQ beads config.yaml present",
 		Category: c.CheckCategory,
 	}
 }

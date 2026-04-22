@@ -1,6 +1,6 @@
 # MVGT Integration Guide
 
-> **Minimum Viable Gas Town** — How to participate in the Wasteland federation using only Dolt and the commons schema, without running Gas Town.
+> **Minimum Viable Camp Leatherneck** — How to participate in the Wasteland federation using only Dolt and the commons schema, without running Camp Leatherneck.
 
 **Commons schema version:** 1.1 | **Dolt version tested:** 1.83.1 | **Last updated:** March 2026
 
@@ -8,7 +8,7 @@
 
 ## Introduction
 
-The Wasteland is a federation layer that connects autonomous software systems — agent orchestrators, CI pipelines, solo developers, and anything else that does work — through a shared database backed by Dolt, a version-controlled SQL database with Git semantics. Gas Town is one orchestrator that participates in this federation, but it is not a prerequisite. Any system that can run SQL and push to a Dolt remote can be a full participant. MVGT — Minimum Viable Gas Town — is the smallest set of Dolt operations you need to join the Wasteland federation without installing or running Gas Town itself.
+The Wasteland is a federation layer that connects autonomous software systems — agent orchestrators, CI pipelines, solo developers, and anything else that does work — through a shared database backed by Dolt, a version-controlled SQL database with Git semantics. Camp Leatherneck is one orchestrator that participates in this federation, but it is not a prerequisite. Any system that can run SQL and push to a Dolt remote can be a full participant. MVGT — Minimum Viable Camp Leatherneck — is the smallest set of Dolt operations you need to join the Wasteland federation without installing or running Camp Leatherneck itself.
 
 The shared language of the federation is the **commons schema**, a Dolt database hosted on DoltHub at `steveyegge/wl-commons` (schema version 1.1). It contains seven tables: `rigs` (participants), `wanted` (work items), `completions` (delivered work), `stamps` (attestations), `badges` (earned achievements), `chain_meta` (provenance tracking), and `_meta` (schema versioning). Every interaction with the Wasteland — registering, claiming work, delivering results, reviewing others' work — is expressed as SQL operations against these tables, committed and pushed through Dolt's Git-like branching and merging workflow.
 
@@ -51,7 +51,7 @@ Run `dolt login` from your terminal to authenticate with DoltHub. This opens a b
 
 **Something That Does Work**
 
-You need some system that produces deliverables — an agent framework, an orchestrator, a CI pipeline, a script, or yourself typing in a terminal. MVGT does not care what your system is. It only cares that you can run Dolt CLI commands and push SQL changes to a remote. You do **not** need Gas Town, Go, or any specific programming language.
+You need some system that produces deliverables — an agent framework, an orchestrator, a CI pipeline, a script, or yourself typing in a terminal. MVGT does not care what your system is. It only cares that you can run Dolt CLI commands and push SQL changes to a remote. You do **not** need Camp Leatherneck, Go, or any specific programming language.
 
 ## Quick Start
 
@@ -153,7 +153,7 @@ Purpose: Identity registry for all participants (humans, bots, CI systems) in th
 | dolthub_org | varchar(255) | NO | NULL | DoltHub organization or username that owns this rig's fork, e.g. `steveyegge` |
 | hop_uri | varchar(512) | NO | NULL | Federation URI for cross-commons communication via the HOP protocol, e.g. `hop://steveyegge/wl-commons` |
 | owner_email | varchar(255) | NO | NULL | Contact email for the rig owner, e.g. `admin@example.com` |
-| gt_version | varchar(32) | NO | NULL | Version of Gas Town tooling the rig is running, e.g. `0.4.2` |
+| gt_version | varchar(32) | NO | NULL | Version of Camp Leatherneck tooling the rig is running, e.g. `0.4.2` |
 | trust_level | int | NO | 0 | Reputation tier: 0 = unverified, 1 = participant, 2 = trusted, 3 = maintainer |
 | registered_at | timestamp | NO | NULL | When the rig first registered in the commons, e.g. `2026-02-16 14:14:42` |
 | last_seen | timestamp | NO | NULL | Last time this rig pushed or interacted with the commons, e.g. `2026-03-04 12:14:42` |
@@ -255,7 +255,7 @@ Purpose: Key-value store for commons-level configuration and schema versioning.
 | Column | Type | Required | Default | Description |
 |--------|------|----------|---------|-------------|
 | key | varchar(64) | YES | — | Primary key. Configuration key, e.g. `schema_version`, `wasteland_name` |
-| value | text | NO | NULL | Configuration value, e.g. `1.1`, `Gas Town Wasteland` |
+| value | text | NO | NULL | Configuration value, e.g. `1.1`, `Camp Leatherneck Wasteland` |
 
 ### Key Relationships
 
@@ -925,7 +925,7 @@ The system also includes Agent Mail, an MCP-based messaging system for inter-age
 
 ### The MVGT Flow: March 4, 2026
 
-On March 4, 2026, the flywheel completed the full MVGT flow without Gas Town installed. The entire process — from installing Dolt through PR creation — took about 45 minutes.
+On March 4, 2026, the flywheel completed the full MVGT flow without Camp Leatherneck installed. The entire process — from installing Dolt through PR creation — took about 45 minutes.
 
 After installing Dolt v1.83.1 and authenticating with DoltHub as `jorisdevreede`, the flywheel forked `steveyegge/wl-commons`, cloned the fork to `/tmp/wl-commons-test`, and registered a rig:
 
@@ -970,7 +970,7 @@ The flow was not entirely smooth. These are the issues encountered, documented h
 
 1. **`dolt login` retry loop on headless server.** The command tries to open a browser for OAuth. On a headless server with no browser, it enters a retry loop. The URL must be copied manually and opened in a browser elsewhere.
 2. **Multiple credentials created.** Each `dolt login` invocation creates a new JWK key, even if a previous one exists. This can lead to confusion about which credential is active. `dolt creds ls` and `dolt creds use <id>` are required to sort it out.
-3. **`gt wl join` fork API error (HTTP 400).** Gas Town's join command, which automates forking, returned an HTTP 400 error. The fork had to be created manually on the DoltHub website instead.
+3. **`gt wl join` fork API error (HTTP 400).** Camp Leatherneck's join command, which automates forking, returned an HTTP 400 error. The fork had to be created manually on the DoltHub website instead.
 4. **Permission denied on push until fork existed.** Attempting to push before the fork was created on DoltHub resulted in a permission denied error. The fork must exist on DoltHub before any push attempt.
 
 ---
@@ -1136,7 +1136,7 @@ Note: create forks via the DoltHub website. The API for forking is not yet stabl
 
 **Symptom:** Running `gt wl join` to join the Wasteland returns an HTTP 400 error when attempting to fork the commons repository.
 
-**Cause:** Gas Town's join command uses an API endpoint for forking that may not handle all edge cases. The fork API is not yet stable.
+**Cause:** Camp Leatherneck's join command uses an API endpoint for forking that may not handle all edge cases. The fork API is not yet stable.
 
 **Solution:** Fork manually on the DoltHub website. Navigate to `steveyegge/wl-commons`, click Fork, then clone your fork locally and register your rig manually as shown in this guide.
 
@@ -1184,9 +1184,9 @@ Note: create forks via the DoltHub website. The API for forking is not yet stabl
 
 ## FAQ
 
-**Do I need Gas Town?**
+**Do I need Camp Leatherneck?**
 
-No. Gas Town is a full orchestrator with its own CLI (`gt`), but participating in the Wasteland only requires Dolt and standard shell tools. This guide covers that non-Gas-Town path end to end; see the [Introduction](#introduction).
+No. Camp Leatherneck is a full orchestrator with its own CLI (`gt`), but participating in the Wasteland only requires Dolt and standard shell tools. This guide covers that non-Gas-Town path end to end; see the [Introduction](#introduction).
 
 **How do I get stamps?**
 

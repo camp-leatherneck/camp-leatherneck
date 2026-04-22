@@ -133,7 +133,7 @@ func computeFileHash(path string) (string, error) {
 }
 
 // ProvisionFormulas creates the .beads/formulas/ directory with embedded formulas.
-// This is called during gt install for fresh installations.
+// This is called during lt install for fresh installations.
 // If a formula already exists, it is skipped (no overwrite).
 // Returns the number of formulas provisioned.
 func ProvisionFormulas(beadsPath string) (int, error) {
@@ -258,7 +258,7 @@ func CheckFormulaHealth(beadsPath string) (*HealthReport, error) {
 				status.Status = "modified"
 				report.Modified++
 			} else {
-				// File exists but not tracked (e.g., from older gt version)
+				// File exists but not tracked (e.g., from older lt version)
 				// Safe to update since we have no record of user modification
 				status.Status = "untracked"
 				report.Untracked++
@@ -318,7 +318,7 @@ func UpdateFormulas(beadsPath string) (updated, skipped, reinstalled int, err er
 			// Tracked file was modified by user - skip
 			isModified = true
 		} else {
-			// Untracked file (e.g., from older gt version) - safe to update
+			// Untracked file (e.g., from older lt version) - safe to update
 			shouldInstall = true
 		}
 

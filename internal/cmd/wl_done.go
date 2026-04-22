@@ -30,8 +30,8 @@ A completion ID is generated as c-<hash> where hash is derived from the
 wanted ID, rig handle, and timestamp.
 
 Examples:
-  gt wl done w-abc123 --evidence 'https://github.com/org/repo/pull/123'
-  gt wl done w-abc123 --evidence 'commit abc123def'`,
+  lt wl done w-abc123 --evidence 'https://github.com/org/repo/pull/123'
+  lt wl done w-abc123 --evidence 'commit abc123def'`,
 	Args: cobra.ExactArgs(1),
 	RunE: runWlDone,
 }
@@ -48,7 +48,7 @@ func runWlDone(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	wlCfg, err := wasteland.LoadConfig(townRoot)
@@ -63,7 +63,7 @@ func runWlDone(cmd *cobra.Command, args []string) error {
 	if !doltserver.DatabaseExists(townRoot, dbName) {
 		// Fallback for wl-commons clone-based workspaces (join creates .wasteland clone).
 		if wlCfg.LocalDir == "" {
-			return fmt.Errorf("database %q not found\nJoin a wasteland first with: gt wl join <org/db>", dbName)
+			return fmt.Errorf("database %q not found\nJoin a wasteland first with: lt wl join <org/db>", dbName)
 		}
 		if err := submitDoneInLocalClone(wlCfg.LocalDir, wantedID, rigHandle, wlDoneEvidence, completionID); err != nil {
 			return err

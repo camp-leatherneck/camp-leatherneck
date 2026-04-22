@@ -63,7 +63,7 @@ var primeCmd = &cobra.Command{
 	Long: `Detect the agent role from the current directory and output context.
 
 Role detection:
-  - Town root → Neutral (no role inferred; use GT_ROLE)
+  - HQ root → Neutral (no role inferred; use GT_ROLE)
   - mayor/ or <rig>/mayor/ → Mayor context
   - <rig>/witness/rig/ → Witness context
   - <rig>/refinery/rig/ → Refinery context
@@ -85,12 +85,12 @@ HOOK MODE (--hook):
   Source resolution: GT_HOOK_SOURCE env var, then stdin JSON "source" field.
 
   Claude Code integration (in .claude/settings.json):
-    "SessionStart": [{"hooks": [{"type": "command", "command": "gt prime --hook"}]}]
+    "SessionStart": [{"hooks": [{"type": "command", "command": "lt prime --hook"}]}]
     Claude sends JSON on stdin: {"session_id":"uuid","source":"startup|resume|compact"}
 
   Gemini CLI / other runtimes (in .gemini/settings.json):
-    "SessionStart": "export GT_SESSION_ID=$(uuidgen) GT_HOOK_SOURCE=startup && gt prime --hook"
-    "PreCompress":  "export GT_HOOK_SOURCE=compact && gt prime --hook"
+    "SessionStart": "export GT_SESSION_ID=$(uuidgen) GT_HOOK_SOURCE=startup && lt prime --hook"
+    "PreCompress":  "export GT_HOOK_SOURCE=compact && lt prime --hook"
     Set GT_SESSION_ID + GT_HOOK_SOURCE as env vars to skip the stdin read entirely.`,
 	RunE: runPrime,
 }
@@ -176,13 +176,13 @@ func runPrime(cmd *cobra.Command, args []string) (retErr error) {
 	// P0: Fetch work context once — used for both OTel attribution and output.
 	// injectWorkContext sets GT_WORK_RIG/BEAD/MOL in the current process env and
 	// in the tmux session env so all subsequent subprocesses (bd, mail, …) carry
-	// the correct work attribution until the next gt prime overwrites it.
+	// the correct work attribution until the next lt prime overwrites it.
 	hookedBead, hookErr := findAgentWork(ctx)
 	if hookErr != nil {
 		// Database error during hook query — NOT the same as "no work assigned".
-		// Emit a loud warning so the agent does NOT run gt done / close the bead.
-		// This prevents the destructive cycle: DB error → "no work" → gt done → bead lost. (GH#2638)
-		fmt.Fprintf(os.Stderr, "\n%s\n", style.Bold.Render("## ⚠️  DATABASE ERROR — DO NOT RUN gt done ⚠️"))
+		// Emit a loud warning so the agent does NOT run lt done / close the bead.
+		// This prevents the destructive cycle: DB error → "no work" → lt done → bead lost. (GH#2638)
+		fmt.Fprintf(os.Stderr, "\n%s\n", style.Bold.Render("## ⚠️  DATABASE ERROR — DO NOT RUN lt done ⚠️"))
 		fmt.Fprintf(os.Stderr, "Hook query failed: %v\n", hookErr)
 		fmt.Fprintf(os.Stderr, "This is a database connectivity error, NOT an empty hook.\n")
 		fmt.Fprintf(os.Stderr, "Your work may still be assigned. Do NOT close any beads.\n")
@@ -242,10 +242,10 @@ func runPrimeCompactResume(ctx RoleContext) {
 
 	fmt.Println("\n---")
 	fmt.Println()
-	fmt.Println("**Continue your current task.** If you've lost context, run `gt prime` for full reload.")
+	fmt.Println("**Continue your current task.** If you've lost context, run `lt prime` for full reload.")
 
-	// Remind polecats about gt done — after compaction the agent may have lost
-	// the formula checklist and forgotten that gt done is required to submit work.
+	// Remind polecats about lt done — after compaction the agent may have lost
+	// the formula checklist and forgotten that lt done is required to submit work.
 	// Without this, polecats finish implementation and sit at the prompt forever.
 	if ctx.Role == RolePolecat {
 		fmt.Printf("\n**IMPORTANT**: When all work is complete (code committed, tests pass), run `%s done` to submit to the merge queue.\n", cli.Name())
@@ -263,7 +263,7 @@ func validatePrimeFlags() error {
 	return nil
 }
 
-// resolvePrimeWorkspace finds the cwd and town root for prime.
+// resolvePrimeWorkspace finds the cwd and HQ root for prime.
 // Returns empty townRoot (not an error) when not in a workspace and not enabled.
 func resolvePrimeWorkspace() (cwd, townRoot string, err error) {
 	cwd, err = os.Getwd()
@@ -282,7 +282,7 @@ func resolvePrimeWorkspace() (cwd, townRoot string, err error) {
 		if !state.IsEnabled() {
 			return cwd, "", nil // Signal caller to exit silently
 		}
-		return "", "", fmt.Errorf("not in a Gas Town workspace")
+		return "", "", fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	return cwd, townRoot, nil
@@ -351,7 +351,7 @@ func signalAgentReady() {
 // a brief identity confirmation plus hook/work status.
 //
 // This also returns true for compaction-triggered handoff cycles (crew workers).
-// When PreCompact runs "gt handoff --cycle --reason compaction", the new session
+// When PreCompact runs "lt handoff --cycle --reason compaction", the new session
 // gets source="startup" but the handoff marker carries reason="compaction".
 // Without this, the new session runs full prime with AUTONOMOUS WORK MODE,
 // causing the agent to re-initialize instead of continuing. (GH#1965)
@@ -390,11 +390,11 @@ func setupPrimeSession(ctx RoleContext, roleInfo RoleInfo) error {
 		ensureBeadsRedirect(ctx)
 	}
 	repairSessionEnv(ctx, roleInfo)
-	// Only emit session_start when gt prime is running as a SessionStart or
-	// PreCompact hook. Bare gt prime calls (e.g. an agent reading another
+	// Only emit session_start when lt prime is running as a SessionStart or
+	// PreCompact hook. Bare lt prime calls (e.g. an agent reading another
 	// agent's context) must not emit session_start — doing so logs a spurious
 	// event with the target agent's persisted session_id, which pollutes the
-	// event stream and can confuse gt seance discovery.
+	// event stream and can confuse lt seance discovery.
 	if primeHookMode {
 		emitSessionEvent(ctx)
 	}
@@ -403,7 +403,7 @@ func setupPrimeSession(ctx RoleContext, roleInfo RoleInfo) error {
 
 // repairSessionEnv checks if the tmux session is missing identity env vars
 // and re-injects them from the current role context. This self-heals sessions
-// that were created through non-standard paths or older gt versions. GH#3006.
+// that were created through non-standard paths or older lt versions. GH#3006.
 func repairSessionEnv(ctx RoleContext, roleInfo RoleInfo) {
 	if os.Getenv("TMUX") == "" {
 		return
@@ -494,13 +494,13 @@ func outputRoleContext(ctx RoleContext) (string, error) {
 	return formula, nil
 }
 
-// runPrimeExternalTools runs bd prime, memory injection, and gt mail check --inject.
+// runPrimeExternalTools runs bd prime, memory injection, and lt mail check --inject.
 // Skipped in dry-run mode with explain output.
 func runPrimeExternalTools(cwd string) {
 	if primeDryRun {
 		explain(true, "bd prime: skipped in dry-run mode")
 		explain(true, "memory injection: skipped in dry-run mode")
-		explain(true, "gt mail check --inject: skipped in dry-run mode")
+		explain(true, "lt mail check --inject: skipped in dry-run mode")
 		return
 	}
 	runBdPrime(cwd)
@@ -597,7 +597,7 @@ func runMemoryInject() {
 	}
 }
 
-// runMailCheckInject runs `gt mail check --inject` and outputs the result.
+// runMailCheckInject runs `lt mail check --inject` and outputs the result.
 // This injects any pending mail into the agent's context.
 func runMailCheckInject(workDir string) {
 	cmd := exec.Command("gt", "mail", "check", "--inject")
@@ -610,7 +610,7 @@ func runMailCheckInject(workDir string) {
 	if err := cmd.Run(); err != nil {
 		// Skip if mail check fails, but log stderr for debugging
 		if errMsg := strings.TrimSpace(stderr.String()); errMsg != "" {
-			fmt.Fprintf(os.Stderr, "gt mail check: %s\n", errMsg)
+			fmt.Fprintf(os.Stderr, "lt mail check: %s\n", errMsg)
 		}
 		return
 	}
@@ -653,10 +653,10 @@ func hasWorkflowAttachment(attachment *beads.AttachmentFields) bool {
 }
 
 // findAgentWork looks up hooked or in-progress beads assigned to this agent.
-// Primary: reads hook_bead from the agent bead (same strategy as detectSessionState/gt hook).
+// Primary: reads hook_bead from the agent bead (same strategy as detectSessionState/lt hook).
 // Fallback: queries by assignee for agents without an agent bead.
 // For polecats and crew, retries up to 3 times with 2-second delays to handle
-// the timing race where hook state hasn't propagated by the time gt prime runs.
+// the timing race where hook state hasn't propagated by the time lt prime runs.
 // See: https://github.com/camp-leatherneck/camp-leatherneck/issues/1438
 //
 // Returns (nil, nil) if no work is found.
@@ -670,7 +670,7 @@ func findAgentWork(ctx RoleContext) (*beads.Issue, error) {
 
 	// Polecats, crew, and dogs use a retry loop to handle the timing race
 	// where the hook write (status=hooked + assignee) hasn't propagated to
-	// new Dolt connections by the time gt prime runs on session startup.
+	// new Dolt connections by the time lt prime runs on session startup.
 	// Dogs are especially affected since dispatch is fire-and-forget. (GH#2748)
 	// Uses exponential backoff: 500ms, 1s, 2s, 4s, 8s (total ~15.5s max).
 	// See: https://github.com/camp-leatherneck/camp-leatherneck/issues/2389
@@ -759,7 +759,7 @@ func findAgentWorkOnce(ctx RoleContext, agentID string) (*beads.Issue, error) {
 		}
 	}
 
-	// Town-level fallback: rig-level agents (polecats, crew) may have hooked
+	// HQ-level fallback: rig-level agents (polecats, crew) may have hooked
 	// HQ beads (hq-* prefix) stored in townRoot/.beads, not the rig's database.
 	// Matches the fallback in molecule_status.go and unsling.go. (gt-dtq7)
 	if len(hookedBeads) == 0 && !isTownLevelRole(agentID) && ctx.TownRoot != "" {
@@ -777,7 +777,7 @@ func findAgentWorkOnce(ctx RoleContext, agentID string) (*beads.Issue, error) {
 		}); err == nil && len(townIP) > 0 {
 			hookedBeads = townIP
 		}
-		// Town-level fallback errors are non-fatal — rig-level query succeeded
+		// HQ-level fallback errors are non-fatal — rig-level query succeeded
 	}
 
 	if len(hookedBeads) == 0 {
@@ -808,7 +808,7 @@ func outputAutonomousDirective(ctx RoleContext, hookedBead *beads.Issue, hasMole
 	fmt.Printf("%s\n\n", style.Bold.Render("## 🚨 AUTONOMOUS WORK MODE 🚨"))
 	fmt.Println("Work is on your hook. After announcing your role, begin IMMEDIATELY.")
 	fmt.Println()
-	fmt.Println("This is physics, not politeness. Gas Town is a steam engine - you are a piston.")
+	fmt.Println("This is physics, not politeness. Camp Leatherneck is a steam engine - you are a piston.")
 	fmt.Println("Every moment you wait is a moment the engine stalls. Other agents may be")
 	fmt.Println("blocked waiting on YOUR output. The hook IS your assignment. RUN IT.")
 	fmt.Println()
@@ -827,7 +827,7 @@ func outputAutonomousDirective(ctx RoleContext, hookedBead *beads.Issue, hasMole
 		fmt.Println("3. Begin execution - no waiting for user input")
 	}
 
-	// Polecats MUST call gt done — this is the single most important instruction.
+	// Polecats MUST call lt done — this is the single most important instruction.
 	// Without it, work lands but sessions accumulate and the merge queue stalls.
 	if ctx.Role == RolePolecat {
 		fmt.Println()
@@ -919,7 +919,7 @@ func outputMoleculeWorkflow(ctx RoleContext, attachment *beads.AttachmentFields)
 // Ralph mode is designed for long, iterative workflows (e.g., quality improvement
 // loops) that benefit from committing progress incrementally. The agent works
 // through formula steps iteratively, committing after each meaningful change,
-// and calls gt done when all acceptance criteria are met or no further progress
+// and calls lt done when all acceptance criteria are met or no further progress
 // can be made.
 func outputRalphLoopDirective(ctx RoleContext, attachment *beads.AttachmentFields) {
 	fmt.Printf("%s\n\n", style.Bold.Render("## RALPH LOOP MODE (ITERATIVE WORKFLOW)"))
@@ -1072,7 +1072,7 @@ func acquireIdentityLock(ctx RoleContext) error {
 
 			fmt.Printf("To resolve:\n")
 			fmt.Printf("  1. Find the other session and close it, OR\n")
-			fmt.Printf("  2. Run: gt doctor --fix (cleans stale locks)\n")
+			fmt.Printf("  2. Run: lt doctor --fix (cleans stale locks)\n")
 			fmt.Printf("  3. If lock is stale: rm %s/.runtime/agent.lock\n", ctx.WorkDir)
 			fmt.Println()
 
@@ -1085,7 +1085,7 @@ func acquireIdentityLock(ctx RoleContext) error {
 }
 
 // getAgentBeadID returns the agent bead ID for the current role.
-// Town-level agents (mayor, deacon) use hq- prefix; rig-scoped agents use the rig's prefix.
+// HQ-level agents (mayor, deacon) use hq- prefix; rig-scoped agents use the rig's prefix.
 // Returns empty string for unknown roles.
 func getAgentBeadID(ctx RoleContext) string {
 	switch ctx.Role {
@@ -1148,7 +1148,7 @@ func ensureBeadsRedirect(ctx RoleContext) {
 // hooked bead and persists it in two places so all subsequent subprocesses carry it:
 //
 //  1. Current process env (GT_WORK_RIG/BEAD/MOL via os.Setenv) — inherited by bd, mail,
-//     and any other subprocess spawned from this gt prime invocation (e.g. bd prime).
+//     and any other subprocess spawned from this lt prime invocation (e.g. bd prime).
 //
 //  2. Tmux session env (via tmux set-environment) — inherited by future processes
 //     spawned in the session after a handoff or compaction (e.g. new Claude Code instance).

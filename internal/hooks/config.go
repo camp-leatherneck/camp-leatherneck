@@ -1,4 +1,4 @@
-// Package hooks provides centralized Claude Code hook management for Gas Town.
+// Package hooks provides centralized Claude Code hook management for Camp Leatherneck.
 //
 // It manages a base hook configuration and per-role/per-rig overrides,
 // generating .claude/settings.json files for all agents in the workspace.
@@ -203,16 +203,16 @@ func Merge(base, override *HooksConfig) *HooksConfig {
 //
 // Crew workers get auto-session-cycling on PreCompact: instead of compacting
 // context (which degrades quality), the session is replaced with a fresh one.
-// The successor picks up hooked work via SessionStart hook (gt prime --hook).
+// The successor picks up hooked work via SessionStart hook (lt prime --hook).
 func DefaultOverrides() map[string]*HooksConfig {
 	pathSetup := pathSetupCmd()
 
 	return map[string]*HooksConfig{
-		// Polecats: auto-run gt done on session Stop (gas-lob).
+		// Polecats: auto-run lt done on session Stop (gas-lob).
 		// Catches the "idle polecat" problem: polecats that finish work but
-		// forget to call gt done before the session ends. The polecat-stop-check
+		// forget to call lt done before the session ends. The polecat-stop-check
 		// command is idempotent — it checks heartbeat state and branch commits
-		// before deciding whether to run gt done.
+		// before deciding whether to run lt done.
 		"polecats": {
 			Stop: []HookEntry{
 				{
@@ -220,7 +220,7 @@ func DefaultOverrides() map[string]*HooksConfig {
 					Hooks: []Hook{
 						{
 							Type:    "command",
-							Command: hookChain(pathSetup, "gt tap polecat-stop-check"),
+							Command: hookChain(pathSetup, "lt tap polecat-stop-check"),
 						},
 					},
 				},
@@ -237,7 +237,7 @@ func DefaultOverrides() map[string]*HooksConfig {
 					Hooks: []Hook{
 						{
 							Type:    "command",
-							Command: hookChain(pathSetup, "gt handoff --cycle --reason compaction"),
+							Command: hookChain(pathSetup, "lt handoff --cycle --reason compaction"),
 						},
 					},
 				},
@@ -406,7 +406,7 @@ func ComputeExpected(target string) (*HooksConfig, error) {
 func DiscoverTargets(townRoot string) ([]Target, error) {
 	var targets []Target
 
-	// Town-level targets (mayor/deacon cwd IS the settings dir)
+	// HQ-level targets (mayor/deacon cwd IS the settings dir)
 	targets = append(targets, Target{
 		Path: filepath.Join(townRoot, "mayor", ".claude", "settings.json"),
 		Key:  "mayor",
@@ -505,7 +505,7 @@ type RoleLocation struct {
 func DiscoverRoleLocations(townRoot string) ([]RoleLocation, error) {
 	var locations []RoleLocation
 
-	// Town-level roles
+	// HQ-level roles
 	for _, role := range []string{"mayor", "deacon"} {
 		dir := filepath.Join(townRoot, role)
 		if info, err := os.Stat(dir); err == nil && info.IsDir() {
@@ -653,7 +653,7 @@ func (c *HooksConfig) AddEntry(eventType string, entry HookEntry) bool {
 	return true
 }
 
-// gtPrimaryDir returns the highest-priority .gt config directory.
+// gtPrimaryDir returns the highest-priority .lt config directory.
 // If GT_HOME is set, returns $GT_HOME/.gt; otherwise returns ~/.gt.
 // This is the target for all write operations and the first location checked
 // during cascaded reads.
@@ -680,7 +680,7 @@ func gtConfigDirs() []string {
 	primary := gtPrimaryDir()
 	dirs := []string{primary}
 
-	// Add ~/.gt as a lower-priority fallback only when GT_HOME redirects
+	// Add ~/.lt as a lower-priority fallback only when GT_HOME redirects
 	// the primary dir away from the user's home directory.
 	if os.Getenv("GT_HOME") != "" {
 		home, err := os.UserHomeDir()
@@ -746,14 +746,14 @@ func LoadOverride(target string) (*HooksConfig, error) {
 	return nil, os.ErrNotExist
 }
 
-// SaveBase writes the base hooks configuration to the primary .gt directory
-// ($GT_HOME/.gt if set, otherwise ~/.gt).
+// SaveBase writes the base hooks configuration to the primary .lt directory
+// ($GT_HOME/.lt if set, otherwise ~/.gt).
 func SaveBase(cfg *HooksConfig) error {
 	return saveConfig(BasePath(), cfg)
 }
 
 // SaveOverride writes an override configuration for the given target to the
-// primary .gt directory.
+// primary .lt directory.
 func SaveOverride(target string, cfg *HooksConfig) error {
 	return saveConfig(OverridePath(target), cfg)
 }
@@ -809,7 +809,7 @@ func ValidTarget(target string) bool {
 }
 
 // DefaultBase returns a sensible default base configuration.
-// This includes PATH setup and gt prime hooks that all agents need.
+// This includes PATH setup and lt prime hooks that all agents need.
 func DefaultBase() *HooksConfig {
 	pathSetup := pathSetupCmd()
 
@@ -819,42 +819,42 @@ func DefaultBase() *HooksConfig {
 				Matcher: "Bash(gh pr create*)",
 				Hooks: []Hook{{
 					Type:    "command",
-					Command: hookChain(pathSetup, "gt tap guard pr-workflow"),
+					Command: hookChain(pathSetup, "lt tap guard pr-workflow"),
 				}},
 			},
 			{
 				Matcher: "Bash(git checkout -b*)",
 				Hooks: []Hook{{
 					Type:    "command",
-					Command: hookChain(pathSetup, "gt tap guard pr-workflow"),
+					Command: hookChain(pathSetup, "lt tap guard pr-workflow"),
 				}},
 			},
 			{
 				Matcher: "Bash(git switch -c*)",
 				Hooks: []Hook{{
 					Type:    "command",
-					Command: hookChain(pathSetup, "gt tap guard pr-workflow"),
+					Command: hookChain(pathSetup, "lt tap guard pr-workflow"),
 				}},
 			},
 			{
 				Matcher: "Bash(rm -rf /*)",
 				Hooks: []Hook{{
 					Type:    "command",
-					Command: hookChain(pathSetup, "gt tap guard dangerous-command"),
+					Command: hookChain(pathSetup, "lt tap guard dangerous-command"),
 				}},
 			},
 			{
 				Matcher: "Bash(git push --force*)",
 				Hooks: []Hook{{
 					Type:    "command",
-					Command: hookChain(pathSetup, "gt tap guard dangerous-command"),
+					Command: hookChain(pathSetup, "lt tap guard dangerous-command"),
 				}},
 			},
 			{
 				Matcher: "Bash(git push -f*)",
 				Hooks: []Hook{{
 					Type:    "command",
-					Command: hookChain(pathSetup, "gt tap guard dangerous-command"),
+					Command: hookChain(pathSetup, "lt tap guard dangerous-command"),
 				}},
 			},
 		},
@@ -864,7 +864,7 @@ func DefaultBase() *HooksConfig {
 				Hooks: []Hook{
 					{
 						Type:    "command",
-						Command: hookChain(pathSetup, "gt prime --hook"),
+						Command: hookChain(pathSetup, "lt prime --hook"),
 					},
 				},
 			},
@@ -875,7 +875,7 @@ func DefaultBase() *HooksConfig {
 				Hooks: []Hook{
 					{
 						Type:    "command",
-						Command: hookChain(pathSetup, "gt prime --hook"),
+						Command: hookChain(pathSetup, "lt prime --hook"),
 					},
 				},
 			},
@@ -886,7 +886,7 @@ func DefaultBase() *HooksConfig {
 				Hooks: []Hook{
 					{
 						Type:    "command",
-						Command: hookChain(pathSetup, "gt mail check --inject"),
+						Command: hookChain(pathSetup, "lt mail check --inject"),
 					},
 				},
 			},
@@ -897,7 +897,7 @@ func DefaultBase() *HooksConfig {
 				Hooks: []Hook{
 					{
 						Type:    "command",
-						Command: hookChain(pathSetup, "gt costs record &"),
+						Command: hookChain(pathSetup, "lt costs record &"),
 					},
 				},
 			},
@@ -986,7 +986,7 @@ func pathSetupCmd() string {
 	return `export PATH="$HOME/go/bin:$HOME/.local/bin:$PATH"`
 }
 
-// hookChain joins a path setup command with a gt command using an
+// hookChain joins a path setup command with a lt command using an
 // OS-appropriate separator (&& for bash, ; for PowerShell).
 func hookChain(parts ...string) string {
 	sep := " && "

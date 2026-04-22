@@ -73,7 +73,7 @@ func (c *WispGCCheck) Run(ctx *CheckContext) *CheckResult {
 			Status:  StatusWarning,
 			Message: fmt.Sprintf("%d abandoned wisp(s) found (>1h old)", totalAbandoned),
 			Details: details,
-			FixHint: "Run 'gt doctor --fix' to garbage collect orphaned wisps",
+			FixHint: "Run 'lt doctor --fix' to garbage collect orphaned wisps",
 		}
 	}
 

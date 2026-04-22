@@ -221,7 +221,7 @@ func TestLoadOperationalConfig_NonexistentDir(t *testing.T) {
 func TestLoadOperationalConfig_WithConfig(t *testing.T) {
 	t.Parallel()
 
-	// Create temp town root with settings/config.json
+	// Create temp HQ root with settings/config.json
 	dir := t.TempDir()
 	settingsDir := filepath.Join(dir, "settings")
 	if err := os.MkdirAll(settingsDir, 0755); err != nil {

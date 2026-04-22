@@ -19,7 +19,7 @@ func NewDaemonCheck() *DaemonCheck {
 		FixableCheck: FixableCheck{
 			BaseCheck: BaseCheck{
 				CheckName:        "daemon",
-				CheckDescription: "Check if Gas Town daemon is running",
+				CheckDescription: "Check if Camp Leatherneck daemon is running",
 				CheckCategory:    CategoryInfrastructure,
 			},
 		},
@@ -62,7 +62,7 @@ func (c *DaemonCheck) Run(ctx *CheckContext) *CheckResult {
 		Name:    c.Name(),
 		Status:  StatusWarning,
 		Message: "Daemon is not running",
-		FixHint: "Run 'gt daemon start' or 'gt doctor --fix'",
+		FixHint: "Run 'lt daemon start' or 'lt doctor --fix'",
 	}
 }
 
@@ -72,7 +72,7 @@ func (c *DaemonCheck) Fix(ctx *CheckContext) error {
 		return ErrSkippedNoStart
 	}
 
-	// Find gt executable
+	// Find lt executable
 	gtPath, err := os.Executable()
 	if err != nil {
 		return err

@@ -29,7 +29,7 @@ type PatrolConfig struct {
 // maxStalePurgePerRun caps the number of stale patrol beads cleaned up in a
 // single findActivePatrol call. Without a cap, N accumulated orphans produce
 // N×K sequential Dolt queries (K = closeDescendants depth), overwhelming the
-// server when multiple patrol agents call gt patrol report concurrently (gt-18dzn6p).
+// server when multiple patrol agents call lt patrol report concurrently (gt-18dzn6p).
 // Remaining stale beads are cleaned by burnPreviousPatrolWisps at cycle end.
 const maxStalePurgePerRun = 5
 
@@ -294,7 +294,7 @@ func autoSpawnPatrol(cfg PatrolConfig) (string, error) {
 		return "", fmt.Errorf("created wisp but could not parse ID from output")
 	}
 
-	// Hook the wisp to the agent so gt mol status sees it
+	// Hook the wisp to the agent so lt mol status sees it
 	if err := BdCmd("update", patrolID, "--status=hooked", "--assignee="+cfg.Assignee).
 		WithAutoCommit().
 		WithBeadsDir(resolvedBeadsDir).

@@ -45,14 +45,14 @@ a predecessor session with full context. You can ask questions directly:
   - "What did you try that didn't work?"
 
 DISCOVERY:
-  gt seance                     # List recent sessions from events
-  gt seance --role crew         # Filter by role type
-  gt seance --rig gastown       # Filter by rig
-  gt seance --recent 10         # Last N sessions
+  lt seance                     # List recent sessions from events
+  lt seance --role crew         # Filter by role type
+  lt seance --rig gastown       # Filter by rig
+  lt seance --recent 10         # Last N sessions
 
 THE SEANCE (talk to predecessor):
-  gt seance --talk <session-id>              # Interactive conversation
-  gt seance --talk <id> -p "Where is X?"     # One-shot question
+  lt seance --talk <session-id>              # Interactive conversation
+  lt seance --talk <id> -p "Where is X?"     # One-shot question
 
 The --talk flag spawns: claude --fork-session --resume <id>
 This loads the predecessor's full context without modifying their session.
@@ -95,7 +95,7 @@ func runSeance(cmd *cobra.Command, args []string) error {
 func runSeanceList() error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil || townRoot == "" {
-		return fmt.Errorf("not in a Gas Town workspace")
+		return fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	// Read session events from our event stream
@@ -185,8 +185,8 @@ func runSeanceList() error {
 	}
 
 	fmt.Printf("\n%s\n", style.Bold.Render("Talk to a predecessor:"))
-	fmt.Printf("  gt seance --talk <session-id>\n")
-	fmt.Printf("  gt seance --talk <session-id> -p \"Where did you put X?\"\n")
+	fmt.Printf("  lt seance --talk <session-id>\n")
+	fmt.Printf("  lt seance --talk <session-id> -p \"Where did you put X?\"\n")
 
 	return nil
 }

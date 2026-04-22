@@ -1,4 +1,4 @@
-// Package townlog provides centralized logging for Gas Town agent lifecycle events.
+// Package townlog provides centralized logging for Camp Leatherneck agent lifecycle events.
 package townlog
 
 import (
@@ -69,7 +69,7 @@ func logPath(townRoot string) string {
 	return filepath.Join(logDir(townRoot), "town.log")
 }
 
-// NewLogger creates a new Logger for the given town root.
+// NewLogger creates a new Logger for the given HQ root.
 func NewLogger(townRoot string) *Logger {
 	return &Logger{
 		logPath: logPath(townRoot),

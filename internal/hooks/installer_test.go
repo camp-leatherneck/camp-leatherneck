@@ -99,7 +99,7 @@ func TestInstallForRole_UpgradesStaleExportPath(t *testing.T) {
 	os.MkdirAll(filepath.Dir(hooksPath), 0755)
 
 	// Write a stale file with the legacy "export PATH=" pattern
-	os.WriteFile(hooksPath, []byte(`export PATH=/usr/local/bin:$PATH && gt hook`), 0644)
+	os.WriteFile(hooksPath, []byte(`export PATH=/usr/local/bin:$PATH && lt hook`), 0644)
 
 	err := InstallForRole("opencode", dir, dir, "crew", ".opencode/plugins", "gastown.js", false)
 	if err != nil {
@@ -420,7 +420,7 @@ func TestInstallForRole_CodexRoleAware(t *testing.T) {
 		t.Error("codex interactive: content mismatch")
 	}
 	if !strings.Contains(string(got), "costs record >/dev/null 2>&1 &") {
-		t.Error("codex interactive: stop hook should silence gt costs record output")
+		t.Error("codex interactive: stop hook should silence lt costs record output")
 	}
 
 	dir2 := t.TempDir()
@@ -438,7 +438,7 @@ func TestInstallForRole_CodexRoleAware(t *testing.T) {
 		t.Error("codex autonomous: content mismatch")
 	}
 	if !strings.Contains(string(got), "costs record >/dev/null 2>&1 &") {
-		t.Error("codex autonomous: stop hook should silence gt costs record output")
+		t.Error("codex autonomous: stop hook should silence lt costs record output")
 	}
 }
 

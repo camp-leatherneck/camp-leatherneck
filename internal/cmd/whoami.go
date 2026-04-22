@@ -23,9 +23,9 @@ Identity is determined by:
 Use --identity flag with mail commands to override.
 
 Examples:
-  gt whoami                      # Show current identity
-  gt mail inbox                  # Check inbox for current identity
-  gt mail inbox --identity mayor/  # Check Mayor's inbox instead`,
+  lt whoami                      # Show current identity
+  lt mail inbox                  # Check inbox for current identity
+  lt mail inbox --identity mayor/  # Check Mayor's inbox instead`,
 	RunE: runWhoami,
 }
 

@@ -11,7 +11,7 @@ import (
 
 // IdleTimeoutCheck verifies that all rigs have dolt.idle-timeout set to "0"
 // to prevent per-rig idle-monitors from spawning duplicate Dolt servers.
-// Gas Town uses a centralized Dolt server managed by systemd.
+// Camp Leatherneck uses a centralized Dolt server managed by systemd.
 type IdleTimeoutCheck struct {
 	FixableCheck
 }
@@ -102,7 +102,7 @@ func (c *IdleTimeoutCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: fmt.Sprintf("%d rig(s) missing dolt.idle-timeout: \"0\"", len(missing)),
 		Details: missing,
-		FixHint: "Run 'gt doctor --fix' to add idle-timeout config to all rigs",
+		FixHint: "Run 'lt doctor --fix' to add idle-timeout config to all rigs",
 	}
 }
 

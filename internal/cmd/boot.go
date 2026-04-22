@@ -102,7 +102,7 @@ func init() {
 func getBootManager() (*boot.Boot, error) {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return nil, fmt.Errorf("finding town root: %w", err)
+		return nil, fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	return boot.New(townRoot), nil
@@ -284,7 +284,7 @@ func runBootTriage(cmd *cobra.Command, args []string) error {
 func runDegradedTriage(b *boot.Boot) (action, target string, err error) {
 	// Abort triage if a shutdown is in progress. Without this check, Boot could
 	// detect Deacon as "down" during the graceful shutdown window and restart it,
-	// creating a zombie Deacon that survives gt down.
+	// creating a zombie Deacon that survives lt down.
 	townRoot, _ := workspace.FindFromCwd()
 	if townRoot != "" && daemon.IsShutdownInProgress(townRoot) {
 		return "nothing", "shutdown-in-progress", nil
@@ -320,7 +320,7 @@ func runDegradedTriage(b *boot.Boot) (action, target string, err error) {
 			}
 			return "start", "deacon-restarted", nil
 		}
-		return "error", "deacon-missing", fmt.Errorf("cannot find town root to start deacon")
+		return "error", "deacon-missing", fmt.Errorf("cannot find HQ root to start deacon")
 	}
 
 	// Deacon session exists — in degraded mode, that's all we can check

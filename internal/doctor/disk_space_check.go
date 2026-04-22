@@ -24,7 +24,7 @@ func NewDiskSpaceCheck() *DiskSpaceCheck {
 	}
 }
 
-// Run checks disk space at the town root.
+// Run checks disk space at the HQ root.
 func (c *DiskSpaceCheck) Run(ctx *CheckContext) *CheckResult {
 	info, err := util.GetDiskSpace(ctx.TownRoot)
 	if err != nil {
@@ -49,9 +49,9 @@ func (c *DiskSpaceCheck) Run(ctx *CheckContext) *CheckResult {
 					util.FormatBytesHuman(info.TotalBytes),
 					info.UsedPercent),
 				"Disk space exhaustion causes: Dolt data loss, polecat session death, lost commits",
-				"Free up space immediately, then run 'gt doctor --fix' to recover",
+				"Free up space immediately, then run 'lt doctor --fix' to recover",
 			},
-			FixHint: "Free disk space, then run 'gt doctor --fix'",
+			FixHint: "Free disk space, then run 'lt doctor --fix'",
 		}
 
 	case util.DiskSpaceWarning:

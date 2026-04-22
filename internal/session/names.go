@@ -48,7 +48,7 @@ func PolecatSessionName(rigPrefix, name string) string {
 }
 
 // OverseerSessionName returns the session name for the human operator.
-// The overseer is the human who controls Gas Town, not an AI agent.
+// The overseer is the human who controls Camp Leatherneck, not an AI agent.
 func OverseerSessionName() string {
 	return HQPrefix + "overseer"
 }

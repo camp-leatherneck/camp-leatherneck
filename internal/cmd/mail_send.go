@@ -40,7 +40,7 @@ func runMailSend(cmd *cobra.Command, args []string) error {
 		}
 		townRoot, err := workspace.FindFromCwd()
 		if err != nil || townRoot == "" {
-			return fmt.Errorf("not in a Gas Town workspace")
+			return fmt.Errorf("not in a Camp Leatherneck workspace")
 		}
 		roleInfo, err := GetRoleWithContext(cwd, townRoot)
 		if err != nil {
@@ -68,7 +68,7 @@ func runMailSend(cmd *cobra.Command, args []string) error {
 	// All mail uses town beads (two-level architecture)
 	workDir, err := findMailWorkDir()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Determine sender (--from overrides auto-detection, for relay/bridge use)

@@ -44,7 +44,7 @@ and syncs completions to beads at task boundaries.
 | Teammate cycling | WORKAROUND | Handoff + respawn pattern |
 | Token cost acceptable | CONDITIONAL | Sonnet teammates reduce cost |
 | gt/bd command access | GO | PATH via SessionStart hook |
-| Task list with dependencies | GO | Native match to Gas Town workflow |
+| Task list with dependencies | GO | Native match to Camp Leatherneck workflow |
 
 5/8 clear GO. 2 require workarounds (viable mitigations). 1 conditional on Phase 1 cost validation.
 
@@ -248,7 +248,7 @@ Task({
 ```yaml
 ---
 name: polecat
-description: Gas Town polecat worker agent (persistent identity, ephemeral sessions)
+description: Camp Leatherneck polecat worker agent (persistent identity, ephemeral sessions)
 model: sonnet
 hooks:
   SessionStart:
@@ -271,7 +271,7 @@ hooks:
           command: "gt signal stop"
 ---
 
-You are a Gas Town polecat (persistent identity, ephemeral sessions).
+You are a Camp Leatherneck polecat (persistent identity, ephemeral sessions).
 
 ## Startup
 1. `cd` to your assigned worktree (given in your spawn prompt)
@@ -571,7 +571,7 @@ exit 0
 
 ### The Natural Mapping
 
-| Gas Town | AT Equivalent |
+| Camp Leatherneck | AT Equivalent |
 |----------|--------------|
 | Convoy | AT team lifecycle |
 | Convoy issues | AT tasks |
@@ -779,7 +779,7 @@ sync lag), and the Witness can relay immediately.
 ```yaml
 ---
 name: witness-lead
-description: Gas Town Witness operating as AT team lead
+description: Camp Leatherneck Witness operating as AT team lead
 model: opus
 permissionMode: delegate
 hooks:
@@ -798,7 +798,7 @@ hooks:
           command: "gt signal stop"
 ---
 
-You are the Gas Town Witness for this rig.
+You are the Camp Leatherneck Witness for this rig.
 
 ## Role
 You coordinate polecat workers. You NEVER implement code directly.

@@ -86,7 +86,7 @@ exit 0
 	}
 	t.Cleanup(func() { _ = os.Chdir(cwd) })
 	if err := os.Chdir(townRoot); err != nil {
-		t.Fatalf("chdir town root: %v", err)
+		t.Fatalf("chdir HQ root: %v", err)
 	}
 
 	started, errs := startPolecatsWithWork(townRoot, rigName)
@@ -127,7 +127,7 @@ exit 0
 	}
 	t.Cleanup(func() { _ = os.Chdir(cwd) })
 	if err := os.Chdir(townRoot); err != nil {
-		t.Fatalf("chdir town root: %v", err)
+		t.Fatalf("chdir HQ root: %v", err)
 	}
 
 	output := captureStdout(t, func() {

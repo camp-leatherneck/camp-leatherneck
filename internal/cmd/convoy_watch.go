@@ -43,10 +43,10 @@ The watcher list is stored in the convoy's description fields and processed
 by notifyConvoyCompletion when the convoy closes.
 
 Examples:
-  gt convoy watch hq-cv-abc                    # Mail notification to caller
-  gt convoy watch hq-cv-abc --nudge            # Nudge notification to caller
-  gt convoy watch hq-cv-abc --addr gastown/crew/mel  # Mail notification to mel
-  gt convoy watch hq-cv-abc --nudge --addr mayor/    # Nudge mayor on completion`,
+  lt convoy watch hq-cv-abc                    # Mail notification to caller
+  lt convoy watch hq-cv-abc --nudge            # Nudge notification to caller
+  lt convoy watch hq-cv-abc --addr gastown/crew/mel  # Mail notification to mel
+  lt convoy watch hq-cv-abc --nudge --addr mayor/    # Nudge mayor on completion`,
 	Args:         cobra.ExactArgs(1),
 	SilenceUsage: true,
 	RunE:         runConvoyWatch,
@@ -60,8 +60,8 @@ var convoyUnwatchCmd = &cobra.Command{
 Removes from both mail and nudge watcher lists.
 
 Examples:
-  gt convoy unwatch hq-cv-abc                        # Remove caller from watchers
-  gt convoy unwatch hq-cv-abc --addr gastown/crew/mel # Remove mel from watchers`,
+  lt convoy unwatch hq-cv-abc                        # Remove caller from watchers
+  lt convoy unwatch hq-cv-abc --addr gastown/crew/mel # Remove mel from watchers`,
 	Args:         cobra.ExactArgs(1),
 	SilenceUsage: true,
 	RunE:         runConvoyUnwatch,

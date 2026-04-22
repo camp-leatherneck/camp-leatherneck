@@ -55,13 +55,13 @@ func runDoltFlatten(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Verify server is running.
 	running, _, err := doltserver.IsRunning(townRoot)
 	if err != nil || !running {
-		return fmt.Errorf("Dolt server is not running — start with 'gt dolt start'")
+		return fmt.Errorf("Dolt server is not running — start with 'lt dolt start'")
 	}
 
 	config := doltserver.DefaultConfig(townRoot)

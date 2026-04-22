@@ -37,12 +37,12 @@ Channels are pub/sub streams where messages are broadcast to subscribers.
 Messages are retained according to the channel's retention policy.
 
 Examples:
-  gt mail channel              # List all channels
-  gt mail channel alerts       # View messages from 'alerts' channel
-  gt mail channel list         # Alias for listing channels
-  gt mail channel show alerts  # Same as: gt mail channel alerts
-  gt mail channel create alerts --retain-count=100
-  gt mail channel delete alerts`,
+  lt mail channel              # List all channels
+  lt mail channel alerts       # View messages from 'alerts' channel
+  lt mail channel list         # Alias for listing channels
+  lt mail channel show alerts  # Same as: lt mail channel alerts
+  lt mail channel create alerts --retain-count=100
+  lt mail channel delete alerts`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runMailChannel,
 }
@@ -160,7 +160,7 @@ func runMailChannel(cmd *cobra.Command, args []string) error {
 func runChannelList(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	b := beads.New(townRoot)
@@ -177,7 +177,7 @@ func runChannelList(cmd *cobra.Command, args []string) error {
 
 	if len(channels) == 0 {
 		fmt.Println("No channels defined.")
-		fmt.Println("\nCreate one with: gt mail channel create <name>")
+		fmt.Println("\nCreate one with: lt mail channel create <name>")
 		return nil
 	}
 
@@ -204,7 +204,7 @@ func runChannelShow(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	b := beads.New(townRoot)
@@ -282,7 +282,7 @@ func runChannelCreate(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	createdBy := os.Getenv("BD_ACTOR")
@@ -329,7 +329,7 @@ func runChannelDelete(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	b := beads.New(townRoot)
@@ -361,7 +361,7 @@ func runChannelSubscribe(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	b := beads.New(townRoot)
@@ -401,7 +401,7 @@ func runChannelUnsubscribe(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	b := beads.New(townRoot)
@@ -441,7 +441,7 @@ func runChannelSubscribers(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	b := beads.New(townRoot)

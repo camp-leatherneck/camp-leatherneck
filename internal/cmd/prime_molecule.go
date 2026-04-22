@@ -274,7 +274,7 @@ func outputMoleculeContext(ctx RoleContext) {
 
 // outputDeaconPatrolContext shows patrol molecule status for the Deacon.
 // Deacon uses wisps (Wisp:true issues in main .beads/) for patrol cycles.
-// Deacon is a town-level role, so it uses town root beads (not rig beads).
+// Deacon is a town-level role, so it uses HQ root beads (not rig beads).
 func outputDeaconPatrolContext(ctx RoleContext) {
 	// Check if Deacon is paused - if so, output PAUSED message and skip patrol context
 	paused, state, err := deacon.IsPaused(ctx.TownRoot)
@@ -286,7 +286,7 @@ func outputDeaconPatrolContext(ctx RoleContext) {
 	cfg := PatrolConfig{
 		RoleName:        "deacon",
 		PatrolMolName:   constants.MolDeaconPatrol,
-		BeadsDir:        ctx.TownRoot, // Town-level role uses town root beads
+		BeadsDir:        ctx.TownRoot, // HQ-level role uses HQ root beads
 		Assignee:        "deacon",
 		HeaderEmoji:     "🔄",
 		HeaderTitle:     "Patrol Status (Wisp-based)",
@@ -418,7 +418,7 @@ func buildRefineryPatrolVars(ctx RoleContext) []string {
 	}
 
 	// Fallback: read command vars from rig identity bead labels.
-	// This is the path for rigs using `gt rig config set --global` (bead layer).
+	// This is the path for rigs using `lt rig config set --global` (bead layer).
 	// We use native bd routing (no explicit BEADS_DIR) to avoid dolt database
 	// name mismatches that occur when bypassing the routing system.
 	if rigCfg != nil && rigCfg.Beads != nil && rigCfg.Beads.Prefix != "" {

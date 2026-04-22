@@ -685,7 +685,7 @@ func TestCurator_StartErrorPersistsAcrossCalls(t *testing.T) {
 
 	err1 := curator.Start()
 	if err1 == nil {
-		t.Fatal("first Start() should have failed with a non-existent town root")
+		t.Fatal("first Start() should have failed with a non-existent HQ root")
 	}
 
 	// Second call must return the same error, not nil.

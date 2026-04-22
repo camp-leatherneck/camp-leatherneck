@@ -1,4 +1,4 @@
-// Package cmd provides CLI commands for the gt tool.
+// Package cmd provides CLI commands for the lt tool.
 package cmd
 
 import (
@@ -46,24 +46,24 @@ var costsCmd = &cobra.Command{
 	Use:     "costs",
 	GroupID: GroupDiag,
 	Short:   "Show costs for running Claude sessions",
-	Long: `Display costs for Claude Code sessions in Gas Town.
+	Long: `Display costs for Claude Code sessions in Camp Leatherneck.
 
 Costs are calculated from Claude Code transcript files in
 $CLAUDE_CONFIG_DIR/projects/ (defaults to ~/.claude/projects/) by summing
 token usage from assistant messages and applying model-specific pricing.
 
 Examples:
-  gt costs              # Live costs from running sessions
-  gt costs --today      # Today's costs from log file (not yet digested)
-  gt costs --week       # This week's costs from digest beads + today's log
-  gt costs --by-role    # Breakdown by role (polecat, witness, etc.)
-  gt costs --by-rig     # Breakdown by rig
-  gt costs --json       # Output as JSON
-  gt costs -v           # Show debug output for failures
+  lt costs              # Live costs from running sessions
+  lt costs --today      # Today's costs from log file (not yet digested)
+  lt costs --week       # This week's costs from digest beads + today's log
+  lt costs --by-role    # Breakdown by role (polecat, witness, etc.)
+  lt costs --by-rig     # Breakdown by rig
+  lt costs --json       # Output as JSON
+  lt costs -v           # Show debug output for failures
 
 Subcommands:
-  gt costs record       # Record session cost to local log file (Stop hook)
-  gt costs digest       # Aggregate log entries into daily digest bead (Deacon patrol)`,
+  lt costs record       # Record session cost to local log file (Stop hook)
+  lt costs digest       # Aggregate log entries into daily digest bead (Deacon patrol)`,
 	RunE: runCosts,
 }
 
@@ -79,12 +79,12 @@ and calculates the cost based on model pricing, then appends it to
 ~/.gt/costs.jsonl. This is a simple append operation that never fails
 due to database availability.
 
-Session costs are aggregated daily by 'gt costs digest' into a single
+Session costs are aggregated daily by 'lt costs digest' into a single
 permanent "Cost Report YYYY-MM-DD" bead for audit purposes.
 
 Examples:
-  gt costs record --session gt-gastown-toast
-  gt costs record --session gt-gastown-toast --work-item gt-abc123`,
+  lt costs record --session gt-gastown-toast
+  lt costs record --session gt-gastown-toast --work-item gt-abc123`,
 	RunE: runCostsRecord,
 }
 
@@ -101,9 +101,9 @@ The resulting digest bead is permanent (synced via git) and provides
 an audit trail without log-in-database pollution.
 
 Examples:
-  gt costs digest --yesterday   # Digest yesterday's costs (default for patrol)
-  gt costs digest --date 2026-01-07  # Digest a specific date
-  gt costs digest --yesterday --dry-run  # Preview without changes`,
+  lt costs digest --yesterday   # Digest yesterday's costs (default for patrol)
+  lt costs digest --date 2026-01-07  # Digest a specific date
+  lt costs digest --yesterday --dry-run  # Preview without changes`,
 	RunE: runCostsDigest,
 }
 
@@ -236,7 +236,7 @@ func runLiveCosts() error {
 	var total float64
 
 	for _, sess := range sessions {
-		// Only process Gas Town sessions
+		// Only process Camp Leatherneck sessions
 		if !session.IsKnownSession(sess) {
 			continue
 		}
@@ -403,10 +403,10 @@ type EventListItem struct {
 // It queries both town-level beads and all rig-level beads to find all session events.
 // Errors from individual locations are logged (if verbose) but don't fail the query.
 func querySessionEvents() []CostEntry {
-	// Discover town root for cwd-based bd discovery
+	// Discover HQ root for cwd-based bd discovery
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		// Not in a Gas Town workspace - return empty list
+		// Not in a Camp Leatherneck workspace - return empty list
 		return nil
 	}
 
@@ -841,7 +841,7 @@ func outputCostsJSON(output CostsOutput) error {
 
 func outputCostsHuman(costs []SessionCost, total float64) error {
 	if len(costs) == 0 {
-		fmt.Println(style.Dim.Render("No Gas Town sessions found"))
+		fmt.Println(style.Dim.Render("No Camp Leatherneck sessions found"))
 		return nil
 	}
 
@@ -952,7 +952,7 @@ func runCostsRecord(cmd *cobra.Command, args []string) error {
 		session = detectCurrentTmuxSession()
 	}
 	if session == "" {
-		// Not a Gas Town session (e.g., Claude Code launched outside gt agent system).
+		// Not a Camp Leatherneck session (e.g., Claude Code launched outside lt agent system).
 		// Exit silently — no costs to record.
 		if costsVerbose {
 			fmt.Fprintf(os.Stderr, "[costs] no session context found, skipping costs record\n")
@@ -1069,7 +1069,7 @@ func deriveSessionName() string {
 		return session.CrewSessionName(session.PrefixFor(rig), crew)
 	}
 
-	// Town-level roles (mayor, deacon)
+	// HQ-level roles (mayor, deacon)
 	if parsedRole == RoleMayor {
 		return session.MayorSessionName()
 	}
@@ -1107,7 +1107,7 @@ func detectCurrentTmuxSession() string {
 	}
 
 	session := strings.TrimSpace(string(output))
-	// Only return if it looks like a Gas Town session
+	// Only return if it looks like a Camp Leatherneck session
 	// Accept both gt- (rig sessions) and hq- (town-level sessions like hq-mayor)
 	if strings.HasPrefix(session, constants.SessionPrefix) || strings.HasPrefix(session, constants.HQSessionPrefix) {
 		return session

@@ -103,7 +103,7 @@ func emitUpJSON(w io.Writer, services []ServiceStatus) error {
 }
 
 // maxConcurrentAgentStarts limits parallel agent startups to avoid resource
-// exhaustion. Each agent start spawns a tmux session and runs gt prime, so
+// exhaustion. Each agent start spawns a tmux session and runs lt prime, so
 // more than ~10 concurrent starts can saturate CPU and cause timeouts.
 const maxConcurrentAgentStarts = 10
 
@@ -120,10 +120,10 @@ var daemonStartupGrace = func() time.Duration {
 var upCmd = &cobra.Command{
 	Use:     "up",
 	GroupID: GroupServices,
-	Short:   "Bring up all Gas Town services",
-	Long: `Start all Gas Town long-lived services.
+	Short:   "Bring up all Camp Leatherneck services",
+	Long: `Start all Camp Leatherneck long-lived services.
 
-This is the idempotent "boot" command for Gas Town. It ensures all
+This is the idempotent "boot" command for Camp Leatherneck. It ensures all
 infrastructure agents are running:
 
   • Dolt       - Shared SQL database server for beads
@@ -140,7 +140,7 @@ Use --restore to also start:
   • Crew       - Per rig settings (settings/config.json crew.startup)
   • Polecats   - Those with pinned beads (work attached)
 
-Running 'gt up' multiple times is safe - it only starts services that
+Running 'lt up' multiple times is safe - it only starts services that
 aren't already running.`,
 	RunE: runUp,
 }
@@ -161,7 +161,7 @@ func init() {
 func runUp(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Ensure lifecycle defaults are configured. On first run this creates
@@ -174,7 +174,7 @@ func runUp(cmd *cobra.Command, args []string) error {
 	}
 
 	// Load daemon.json env vars so services (Dolt, etc.) use the right config.
-	// The daemon does this too, but gt up starts services before the daemon.
+	// The daemon does this too, but lt up starts services before the daemon.
 	if patrolCfg := daemon.LoadPatrolConfig(townRoot); patrolCfg != nil {
 		for k, v := range patrolCfg.Env {
 			os.Setenv(k, v)
@@ -315,7 +315,7 @@ func runUp(cmd *cobra.Command, args []string) error {
 	}
 
 	// Ensure Dolt server is fully ready before starting agents that depend on it.
-	// Witnesses and refineries run bd commands on startup (via gt prime → patrol_helpers)
+	// Witnesses and refineries run bd commands on startup (via lt prime → patrol_helpers)
 	// that connect to the Dolt SQL server. Without this gate, they race the server
 	// and get "connection refused" errors. (gt-zou1n)
 	// Only wait if Dolt was actually started (or detected running). If it failed or
@@ -502,7 +502,7 @@ func disableCurrentAgentDND(townRoot string) (bool, error) {
 
 // ensureDaemon starts the daemon if not running.
 func ensureDaemon(townRoot string) error {
-	// GH#2656: Don't restart the daemon while gt down is running.
+	// GH#2656: Don't restart the daemon while lt down is running.
 	// GH#2907: If the sentinel's PID is dead, remove stale sentinel.
 	sentinelPath := filepath.Join(townRoot, ShutdownSentinel)
 	if data, err := os.ReadFile(sentinelPath); err == nil {
@@ -562,7 +562,7 @@ func ensureDaemon(townRoot string) error {
 		if msg := readDaemonStartupFailure(townRoot, cmd.Process.Pid); msg != "" {
 			return fmt.Errorf("daemon failed to start: %s", msg)
 		}
-		return fmt.Errorf("daemon failed to start (check logs with 'gt daemon logs')")
+		return fmt.Errorf("daemon failed to start (check logs with 'lt daemon logs')")
 	}
 
 	return nil
@@ -1000,10 +1000,10 @@ func startPolecatsWithWork(townRoot, rigName string) ([]string, map[string]error
 	return started, errors
 }
 
-// doltReadyTimeout is how long gt up waits for the Dolt SQL server to accept
+// doltReadyTimeout is how long lt up waits for the Dolt SQL server to accept
 // connections before proceeding with witness/refinery startup. 10 seconds is
 // generous: doltserver.Start() already retries for 5s, so this covers the case
-// where the daemon (not gt up) started Dolt and it's still initializing.
+// where the daemon (not lt up) started Dolt and it's still initializing.
 const doltReadyTimeout = 10 * time.Second
 
 // waitForDoltReady waits for the Dolt SQL server to be reachable before
@@ -1021,7 +1021,7 @@ func waitForDoltReady(townRoot string) {
 // worktree directory removed). For each orphan, the bead is reset to open
 // and the deacon is notified for re-dispatch.
 //
-// This runs during gt up after Dolt is ready, before witnesses start their
+// This runs during lt up after Dolt is ready, before witnesses start their
 // own patrol. It catches the crash-recovery case where polecats die and
 // their beads are never re-slung. (gas-udp)
 func recoverOrphanedBeads(townRoot string, rigs []string, prefetchedRigs map[string]*rig.Rig) []ServiceStatus {

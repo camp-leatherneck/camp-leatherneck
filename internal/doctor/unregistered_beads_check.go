@@ -8,7 +8,7 @@ import (
 	"sort"
 )
 
-// UnregisteredBeadsDirsCheck detects directories in the town root that have
+// UnregisteredBeadsDirsCheck detects directories in the HQ root that have
 // .beads/metadata.json files pointing to Dolt databases but aren't registered
 // in rigs.json. These orphan directories cause phantom database creation on
 // the Dolt server whenever any bd command probes them.
@@ -30,7 +30,7 @@ func NewUnregisteredBeadsDirsCheck() *UnregisteredBeadsDirsCheck {
 	}
 }
 
-// knownSystemDirs are directories at town root that are expected to exist
+// knownSystemDirs are directories at HQ root that are expected to exist
 // without being registered in rigs.json.
 var knownSystemDirs = map[string]bool{
 	"mayor":     true,
@@ -52,13 +52,13 @@ func (c *UnregisteredBeadsDirsCheck) Run(ctx *CheckContext) *CheckResult {
 
 	var details []string
 
-	// Scan town root for directories with .beads/metadata.json
+	// Scan HQ root for directories with .beads/metadata.json
 	entries, err := os.ReadDir(ctx.TownRoot)
 	if err != nil {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusWarning,
-			Message: "Could not read town root directory",
+			Message: "Could not read HQ root directory",
 			Details: []string{err.Error()},
 		}
 	}
@@ -100,7 +100,7 @@ func (c *UnregisteredBeadsDirsCheck) Run(ctx *CheckContext) *CheckResult {
 			Status:  StatusWarning,
 			Message: fmt.Sprintf("%d unregistered directory(ies) with beads metadata", len(details)),
 			Details: details,
-			FixHint: "Remove stale directories or register them as rigs with 'gt rig add'",
+			FixHint: "Remove stale directories or register them as rigs with 'lt rig add'",
 		}
 	}
 

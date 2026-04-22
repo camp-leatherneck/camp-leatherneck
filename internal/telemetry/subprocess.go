@@ -31,7 +31,7 @@ func buildGTResourceAttrs() string {
 	if v := os.Getenv("GT_RUN"); v != "" {
 		attrs = append(attrs, "gt.run_id="+v)
 	}
-	// Work context — set by gt prime via injectWorkContext; identifies the rig,
+	// Work context — set by lt prime via injectWorkContext; identifies the rig,
 	// bead, and molecule the agent is currently processing.
 	if v := os.Getenv("GT_WORK_RIG"); v != "" {
 		attrs = append(attrs, "gt.work_rig="+v)
@@ -54,7 +54,7 @@ func buildGTResourceAttrs() string {
 //   - BD_OTEL_METRICS_URL      — bd's own metrics var (mirrors GT_OTEL_METRICS_URL)
 //   - BD_OTEL_LOGS_URL         — bd's own logs var   (mirrors GT_OTEL_LOGS_URL)
 //
-// Called once at gt startup (Execute) when telemetry is active.
+// Called once at lt startup (Execute) when telemetry is active.
 // No-op when GT_OTEL_METRICS_URL is not set.
 func SetProcessOTELAttrs() {
 	metricsURL := os.Getenv(EnvMetricsURL)

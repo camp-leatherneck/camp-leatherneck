@@ -1205,11 +1205,11 @@ func (e *Engineer) HandleMRInfoSuccess(mr *MRInfo, result ProcessResult) {
 	// 1. Close source issue with reference to MR.
 	// Use ForceCloseWithReason to bypass dependency checks — the source issue
 	// may have an attached molecule (wisp) whose open steps would block a
-	// normal close. This matches how gt done handles closures.
+	// normal close. This matches how lt done handles closures.
 	if mr.SourceIssue != "" {
 		closeReason := fmt.Sprintf("Merged in %s", mr.ID)
 		if err := e.beads.ForceCloseWithReason(closeReason, mr.SourceIssue); err != nil {
-			// Check if already closed (by polecat's gt done) — that's fine
+			// Check if already closed (by polecat's lt done) — that's fine
 			if issue, showErr := e.beads.Show(mr.SourceIssue); showErr == nil && beads.IssueStatus(issue.Status).IsTerminal() {
 				_, _ = fmt.Fprintf(e.output, "[Engineer] Source issue already closed: %s\n", mr.SourceIssue)
 			} else {
@@ -1307,7 +1307,7 @@ func (e *Engineer) HandleMRInfoFailure(mr *MRInfo, result ProcessResult) {
 
 	// Branch-not-found: the remote branch doesn't exist. This can mean either
 	// the branch was cleanly cherry-picked to target, OR the polecat's work was
-	// lost (e.g., worktree in /tmp wiped by reboot before gt done pushed).
+	// lost (e.g., worktree in /tmp wiped by reboot before lt done pushed).
 	// Escalate to mayor so lost work can be re-dispatched (gas-556).
 	if result.BranchNotFound {
 		_, _ = fmt.Fprintf(e.output, "[Engineer] MR %s: branch %s not found on remote — escalating to mayor (possible work loss)\n", mr.ID, mr.Branch)
@@ -1333,7 +1333,7 @@ func (e *Engineer) HandleMRInfoFailure(mr *MRInfo, result ProcessResult) {
 	}
 	polecatName := strings.TrimPrefix(mr.Worker, "polecats/")
 	nudgeTarget := fmt.Sprintf("%s/%s", e.rig.Name, polecatName)
-	nudgeMsg := fmt.Sprintf("MERGE_FAILED: branch=%s issue=%s type=%s error=%s — fix and resubmit with 'gt done'",
+	nudgeMsg := fmt.Sprintf("MERGE_FAILED: branch=%s issue=%s type=%s error=%s — fix and resubmit with 'lt done'",
 		mr.Branch, mr.SourceIssue, failureType, result.Error)
 	nudgeCmd := exec.Command("gt", "nudge", nudgeTarget, nudgeMsg)
 	util.SetDetachedProcessGroup(nudgeCmd)
@@ -1623,7 +1623,7 @@ func (e *Engineer) ListReadyMRs() ([]*MRInfo, error) {
 		}
 
 		// Belt-and-suspenders: skip MRs labeled gt:owned-direct.
-		// These MRs shouldn't exist (gt done skips MR creation for owned+direct
+		// These MRs shouldn't exist (lt done skips MR creation for owned+direct
 		// convoys), but if one slips through, the refinery should not process it.
 		if beads.HasLabel(issue, "gt:owned-direct") {
 			_, _ = fmt.Fprintf(e.output, "[Engineer] Skipping MR %s: owned+direct convoy (belt-and-suspenders)\n", issue.ID)
@@ -1861,13 +1861,13 @@ func (e *Engineer) ReleaseMR(mrID string) error {
 //
 // When a source issue is closed by a merge, any convoy tracking that issue may
 // now be complete (all tracked issues closed). This method:
-//  1. Runs `gt convoy check` to auto-close completed convoys and notify subscribers
+//  1. Runs `lt convoy check` to auto-close completed convoys and notify subscribers
 //  2. For completed convoys with integration branches (swarms), triggers landing
 //  3. Cleans up stale polecat branches from completed work
 //
 // All operations are best-effort: failures are logged but don't affect merge success.
 func (e *Engineer) postMergeConvoyCheck(mr *MRInfo) {
-	// Find town root from rig path (rig is at ~/gt/<rigname>, town is ~/gt)
+	// Find HQ root from rig path (rig is at ~/gt/<rigname>, town is ~/gt)
 	townRoot := filepath.Dir(e.rig.Path)
 	townBeads := filepath.Join(townRoot, ".beads")
 
@@ -1876,7 +1876,7 @@ func (e *Engineer) postMergeConvoyCheck(mr *MRInfo) {
 		return
 	}
 
-	// Step 1: Run `gt convoy check` to auto-close completed convoys.
+	// Step 1: Run `lt convoy check` to auto-close completed convoys.
 	// This handles cross-rig convoy completion: convoys in town beads (hq-*)
 	// tracking issues in rig beads (gt-*) won't auto-close via bd close alone.
 	closedConvoys := e.checkAndCloseCompletedConvoys(townRoot, townBeads)
@@ -2106,7 +2106,7 @@ func (e *Engineer) landConvoySwarm(townRoot string, convoy convoyInfo) {
 
 	_, _ = fmt.Fprintf(e.output, "[Engineer] Landing integration branch %s for convoy %s...\n", integrationBranch, convoy.ID)
 
-	// Use gt swarm land to perform the landing
+	// Use lt swarm land to perform the landing
 	landCmd := exec.Command("gt", "swarm", "land", moleculeID)
 	util.SetDetachedProcessGroup(landCmd)
 	landCmd.Dir = townRoot

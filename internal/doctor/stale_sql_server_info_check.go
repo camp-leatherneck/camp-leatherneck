@@ -37,7 +37,7 @@ func (c *StaleSQLServerInfoCheck) Run(ctx *CheckContext) *CheckResult {
 	c.staleFiles = nil
 
 	// Find sql-server.info files in known .beads/dolt/.dolt/ locations.
-	// Avoids filepath.Walk over the entire town root, which is extremely slow
+	// Avoids filepath.Walk over the entire HQ root, which is extremely slow
 	// on Docker bind mounts (macOS VirtioFS).
 	var details []string
 

@@ -14,7 +14,7 @@ type GlobalEnvAccessor interface {
 }
 
 // TmuxGlobalEnvCheck verifies that GT_TOWN_ROOT is set in the tmux global
-// environment. This is needed for run-shell subprocesses (e.g., gt cycle
+// environment. This is needed for run-shell subprocesses (e.g., lt cycle
 // next/prev) where CWD is $HOME and process env vars aren't available.
 type TmuxGlobalEnvCheck struct {
 	FixableCheck
@@ -67,7 +67,7 @@ func (c *TmuxGlobalEnvCheck) Run(ctx *CheckContext) *CheckResult {
 				"The daemon sets GT_TOWN_ROOT in tmux global env for run-shell subprocesses.",
 				"Without it, prefix-based cycle groups (prefix+n/p) fail when CWD is $HOME.",
 			},
-			FixHint: "Run 'gt doctor --fix' to set GT_TOWN_ROOT in tmux global env",
+			FixHint: "Run 'lt doctor --fix' to set GT_TOWN_ROOT in tmux global env",
 		}
 	}
 
@@ -80,7 +80,7 @@ func (c *TmuxGlobalEnvCheck) Run(ctx *CheckContext) *CheckResult {
 				"The daemon sets GT_TOWN_ROOT in tmux global env for run-shell subprocesses.",
 				"Without it, prefix-based cycle groups (prefix+n/p) fail when CWD is $HOME.",
 			},
-			FixHint: "Run 'gt doctor --fix' to set GT_TOWN_ROOT in tmux global env",
+			FixHint: "Run 'lt doctor --fix' to set GT_TOWN_ROOT in tmux global env",
 		}
 	}
 

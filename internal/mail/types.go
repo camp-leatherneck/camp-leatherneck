@@ -51,7 +51,7 @@ type Delivery string
 
 const (
 	// DeliveryQueue creates the message in the mailbox for periodic checking.
-	// This is the default delivery mode. Agent checks with `gt mail check`.
+	// This is the default delivery mode. Agent checks with `lt mail check`.
 	DeliveryQueue Delivery = "queue"
 
 	// DeliveryInterrupt injects a system-reminder directly into the agent's session.
@@ -556,7 +556,7 @@ func normalizeAddress(s string) string {
 		return "overseer"
 	}
 
-	// Town-level agents: mayor and deacon keep trailing slash
+	// HQ-level agents: mayor and deacon keep trailing slash
 	if s == "mayor" || s == "mayor/" {
 		return "mayor/"
 	}

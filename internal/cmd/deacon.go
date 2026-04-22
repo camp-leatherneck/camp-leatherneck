@@ -90,7 +90,7 @@ its session name. The Deacon is the town-level watchdog that
 receives heartbeats from the daemon.
 
 Examples:
-  gt deacon status`,
+  lt deacon status`,
 	RunE: runDeaconStatus,
 }
 
@@ -114,8 +114,8 @@ The heartbeat signals to the daemon that the Deacon is alive and working.
 Call this at the start of each wake cycle to prevent daemon pokes.
 
 Examples:
-  gt deacon heartbeat                    # Touch heartbeat with timestamp
-  gt deacon heartbeat "checking mayor"   # Touch with action description`,
+  lt deacon heartbeat                    # Touch heartbeat with timestamp
+  lt deacon heartbeat "checking mayor"   # Touch with action description`,
 	RunE: runDeaconHeartbeat,
 }
 
@@ -139,9 +139,9 @@ Exit codes:
   2 - Agent should be force-killed (consecutive failures exceeded)
 
 Examples:
-  gt deacon health-check gastown/polecats/max
-  gt deacon health-check gastown/witness --timeout=60s
-  gt deacon health-check deacon --failures=5`,
+  lt deacon health-check gastown/polecats/max
+  lt deacon health-check gastown/witness --timeout=60s
+  lt deacon health-check deacon --failures=5`,
 	Args: cobra.ExactArgs(1),
 	RunE: runDeaconHealthCheck,
 }
@@ -160,14 +160,14 @@ It performs the force-kill protocol:
 4. Notify mayor (optional, for visibility)
 
 After force-kill, the agent is 'asleep'. Normal wake mechanisms apply:
-- gt rig boot restarts it
+- lt rig boot restarts it
 - Or stays asleep until next activity trigger
 
 This respects the cooldown period - won't kill if recently killed.
 
 Examples:
-  gt deacon force-kill gastown/polecats/max
-  gt deacon force-kill gastown/witness --reason="unresponsive for 90s"`,
+  lt deacon force-kill gastown/polecats/max
+  lt deacon force-kill gastown/witness --reason="unresponsive for 90s"`,
 	Args: cobra.ExactArgs(1),
 	RunE: runDeaconForceKill,
 }
@@ -194,9 +194,9 @@ This command finds hooked beads older than the threshold (default: 1 hour),
 checks if the assignee agent is still alive, and unhooks them if not.
 
 Examples:
-  gt deacon stale-hooks                 # Find and unhook stale beads
-  gt deacon stale-hooks --dry-run       # Preview what would be unhooked
-  gt deacon stale-hooks --max-age=30m   # Use 30 minute threshold`,
+  lt deacon stale-hooks                 # Find and unhook stale beads
+  lt deacon stale-hooks --dry-run       # Preview what would be unhooked
+  lt deacon stale-hooks --max-age=30m   # Use 30 minute threshold`,
 	RunE: runDeaconStaleHooks,
 }
 
@@ -211,12 +211,12 @@ When paused, the Deacon:
 - Will not take any autonomous actions
 - Will display a PAUSED message on startup
 
-The pause state persists across session restarts. Use 'gt deacon resume'
+The pause state persists across session restarts. Use 'lt deacon resume'
 to allow the Deacon to work again.
 
 Examples:
-  gt deacon pause                           # Pause with no reason
-  gt deacon pause --reason="testing"        # Pause with a reason`,
+  lt deacon pause                           # Pause with no reason
+  lt deacon pause --reason="testing"        # Pause with a reason`,
 	RunE: runDeaconPause,
 }
 
@@ -246,7 +246,7 @@ This is safe because:
 - These orphans are children of the tmux server with no TTY
 
 Example:
-  gt deacon cleanup-orphans`,
+  lt deacon cleanup-orphans`,
 	RunE: runDeaconCleanupOrphans,
 }
 
@@ -267,11 +267,11 @@ A process is a zombie if:
 - It's older than 60 seconds
 
 This catches "ghost" processes that have a TTY (from a dead tmux session)
-but are no longer part of any active Gas Town session.
+but are no longer part of any active Camp Leatherneck session.
 
 Examples:
-  gt deacon zombie-scan           # Find and kill zombies
-  gt deacon zombie-scan --dry-run # Just list zombies, don't kill`,
+  lt deacon zombie-scan           # Find and kill zombies
+  lt deacon zombie-scan --dry-run # Just list zombies, don't kill`,
 	RunE: runDeaconZombieScan,
 }
 
@@ -286,7 +286,7 @@ handles the re-dispatch:
 
 1. Checks re-dispatch state (how many times this bead has been re-dispatched)
 2. Rate-limits to prevent thrashing (cooldown between re-dispatches)
-3. If under the limit: runs 'gt sling <bead> <rig>' to re-dispatch
+3. If under the limit: runs 'lt sling <bead> <rig>' to re-dispatch
 4. If over the limit: escalates to Mayor instead of re-slinging
 
 Exit codes:
@@ -296,10 +296,10 @@ Exit codes:
   3 - Bead skipped (already claimed or non-open status)
 
 Examples:
-  gt deacon redispatch gt-abc123                    # Auto-detect rig from prefix
-  gt deacon redispatch gt-abc123 --rig gastown      # Explicit target rig
-  gt deacon redispatch gt-abc123 --max-attempts 5   # Allow 5 attempts before escalation
-  gt deacon redispatch gt-abc123 --cooldown 10m     # 10 minute cooldown between attempts`,
+  lt deacon redispatch gt-abc123                    # Auto-detect rig from prefix
+  lt deacon redispatch gt-abc123 --rig gastown      # Explicit target rig
+  lt deacon redispatch gt-abc123 --max-attempts 5   # Allow 5 attempts before escalation
+  lt deacon redispatch gt-abc123 --cooldown 10m     # 10 minute cooldown between attempts`,
 	Args: cobra.ExactArgs(1),
 	RunE: runDeaconRedispatch,
 }
@@ -327,9 +327,9 @@ A convoy is "stranded" when it is open AND either:
 - Has tracked issues but none are ready (needs agent review)
 
 This command:
-1. Runs 'gt convoy stranded --json' to find stranded convoys
-2. For feedable convoys (ready_count > 0): dispatches a dog via gt sling
-3. For empty convoys (tracked_count == 0): auto-closes via gt convoy check
+1. Runs 'lt convoy stranded --json' to find stranded convoys
+2. For feedable convoys (ready_count > 0): dispatches a dog via lt sling
+3. For empty convoys (tracked_count == 0): auto-closes via lt convoy check
 4. For tracked-but-not-ready convoys: surfaces raw data for deacon review
 5. Rate limits to avoid spawning too many dogs at once
 
@@ -340,10 +340,10 @@ Rate limiting:
 This is called by the Deacon during patrol. Run manually for debugging.
 
 Examples:
-  gt deacon feed-stranded                  # Feed stranded convoys
-  gt deacon feed-stranded --max-feeds 5    # Allow up to 5 feeds per cycle
-  gt deacon feed-stranded --cooldown 5m    # 5 minute per-convoy cooldown
-  gt deacon feed-stranded --json           # Machine-readable output`,
+  lt deacon feed-stranded                  # Feed stranded convoys
+  lt deacon feed-stranded --max-feeds 5    # Allow up to 5 feeds per cycle
+  lt deacon feed-stranded --cooldown 5m    # 5 minute per-convoy cooldown
+  lt deacon feed-stranded --json           # Machine-readable output`,
 	RunE: runDeaconFeedStranded,
 }
 
@@ -478,7 +478,7 @@ func runDeaconStart(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("checking session: %w", err)
 	}
 	if running {
-		return fmt.Errorf("Deacon session already running. Attach with: gt deacon attach")
+		return fmt.Errorf("Deacon session already running. Attach with: lt deacon attach")
 	}
 
 	if err := startDeaconSession(t, sessionName, deaconAgentOverride); err != nil {
@@ -487,7 +487,7 @@ func runDeaconStart(cmd *cobra.Command, args []string) error {
 
 	fmt.Printf("%s Deacon session started. Attach with: %s\n",
 		style.Bold.Render("✓"),
-		style.Dim.Render("gt deacon attach"))
+		style.Dim.Render("lt deacon attach"))
 
 	return nil
 }
@@ -497,10 +497,10 @@ func startDeaconSession(t *tmux.Tmux, sessionName, agentOverride string) error {
 	// Find workspace root
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
-	// Deacon runs from its own directory (for correct role detection by gt prime)
+	// Deacon runs from its own directory (for correct role detection by lt prime)
 	deaconDir := filepath.Join(townRoot, "deacon")
 
 	// Ensure deacon directory exists
@@ -526,7 +526,7 @@ func startDeaconSession(t *tmux.Tmux, sessionName, agentOverride string) error {
 		Recipient: "deacon",
 		Sender:    "daemon",
 		Topic:     "patrol",
-	}, "I am Deacon. First run `gt deacon heartbeat`. Then check gt hook, and if it is empty run `gt sling mol-deacon-patrol deacon`, then execute the hook it creates.")
+	}, "I am Deacon. First run `lt deacon heartbeat`. Then check lt hook, and if it is empty run `lt sling mol-deacon-patrol deacon`, then execute the hook it creates.")
 	startupCmd, err := config.BuildStartupCommandFromConfig(config.AgentEnvConfig{
 		Role:             "deacon",
 		TownRoot:         townRoot,
@@ -717,7 +717,7 @@ func runDeaconStatus(cmd *cobra.Command, args []string) error {
 		fmt.Printf("  Paused at: %s\n", pauseState.PausedAt.Format(time.RFC3339))
 		fmt.Printf("  Paused by: %s\n", pauseState.PausedBy)
 		fmt.Println()
-		fmt.Printf("Resume with: %s\n", style.Dim.Render("gt deacon resume"))
+		fmt.Printf("Resume with: %s\n", style.Dim.Render("lt deacon resume"))
 		fmt.Println()
 	}
 
@@ -743,7 +743,7 @@ func runDeaconStatus(cmd *cobra.Command, args []string) error {
 		fmt.Printf("%s Deacon session is %s\n",
 			style.Dim.Render("○"),
 			"not running")
-		fmt.Printf("\nStart with: %s\n", style.Dim.Render("gt deacon start"))
+		fmt.Printf("\nStart with: %s\n", style.Dim.Render("lt deacon start"))
 	}
 
 	// Heartbeat info (shown after session status)
@@ -768,7 +768,7 @@ func runDeaconStatus(cmd *cobra.Command, args []string) error {
 	}
 
 	if running {
-		fmt.Printf("\nAttach with: %s\n", style.Dim.Render("gt deacon attach"))
+		fmt.Printf("\nAttach with: %s\n", style.Dim.Render("lt deacon attach"))
 	}
 
 	return nil
@@ -800,14 +800,14 @@ func runDeaconRestart(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("%s Deacon restarted\n", style.Bold.Render("✓"))
-	fmt.Printf("  %s\n", style.Dim.Render("Use 'gt deacon attach' to connect"))
+	fmt.Printf("  %s\n", style.Dim.Render("Use 'lt deacon attach' to connect"))
 	return nil
 }
 
 func runDeaconHeartbeat(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Check if Deacon is paused - if so, refuse to update heartbeat
@@ -816,7 +816,7 @@ func runDeaconHeartbeat(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("checking pause state: %w", err)
 	}
 	if paused {
-		fmt.Printf("%s Deacon is paused. Use 'gt deacon resume' to unpause.\n", style.Bold.Render("⏸️"))
+		fmt.Printf("%s Deacon is paused. Use 'lt deacon resume' to unpause.\n", style.Bold.Render("⏸️"))
 		if state.Reason != "" {
 			fmt.Printf("  Reason: %s\n", state.Reason)
 		}
@@ -850,7 +850,7 @@ func runDeaconHealthCheck(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load health check state
@@ -990,7 +990,7 @@ func runDeaconForceKill(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load health check state
@@ -1063,7 +1063,7 @@ func runDeaconForceKill(cmd *cobra.Command, args []string) error {
 
 	fmt.Printf("%s Force-killed agent %s (total kills: %d)\n",
 		style.Bold.Render("✓"), agent, agentState.ForceKillCount)
-	fmt.Printf("  %s\n", style.Dim.Render("Agent is now 'asleep'. Use 'gt rig boot' to restart."))
+	fmt.Printf("  %s\n", style.Dim.Render("Agent is now 'asleep'. Use 'lt rig boot' to restart."))
 
 	return nil
 }
@@ -1072,7 +1072,7 @@ func runDeaconForceKill(cmd *cobra.Command, args []string) error {
 func runDeaconHealthState(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	state, err := deacon.LoadHealthCheckState(townRoot)
@@ -1117,7 +1117,7 @@ func runDeaconHealthState(cmd *cobra.Command, args []string) error {
 
 // agentAddressToIDs converts an agent address to bead ID and session name.
 // Supports formats: "gastown/polecats/max", "gastown/witness", "deacon", "mayor"
-// Note: Town-level agents (Mayor, Deacon) use hq- prefix bead IDs stored in town beads.
+// Note: HQ-level agents (Mayor, Deacon) use hq- prefix bead IDs stored in town beads.
 func agentAddressToIDs(address string) (beadID, sessionName string, err error) {
 	switch address {
 	case constants.RoleDeacon:
@@ -1179,7 +1179,7 @@ func getAgentBeadUpdateTime(townRoot, beadID string) (time.Time, error) {
 	return time.Parse(time.RFC3339, issues[0].UpdatedAt)
 }
 
-// sendMail sends a mail message using gt mail send.
+// sendMail sends a mail message using lt mail send.
 func sendMail(townRoot, to, subject, body string) {
 	cmd := exec.Command("gt", "mail", "send", to, "-s", subject, "-m", body)
 	cmd.Dir = townRoot
@@ -1200,7 +1200,7 @@ func updateAgentBeadState(townRoot, agent, state, _ string) { // reason unused b
 func runDeaconStaleHooks(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	cfg := &deacon.StaleHookConfig{
@@ -1294,7 +1294,7 @@ func runDeaconStaleHooks(cmd *cobra.Command, args []string) error {
 func runDeaconPause(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Check if already paused
@@ -1322,7 +1322,7 @@ func runDeaconPause(cmd *cobra.Command, args []string) error {
 	fmt.Printf("  Pause file: %s\n", deacon.GetPauseFile(townRoot))
 	fmt.Println()
 	fmt.Printf("The Deacon will not perform any patrol actions until resumed.\n")
-	fmt.Printf("Resume with: %s\n", style.Dim.Render("gt deacon resume"))
+	fmt.Printf("Resume with: %s\n", style.Dim.Render("lt deacon resume"))
 
 	return nil
 }
@@ -1331,7 +1331,7 @@ func runDeaconPause(cmd *cobra.Command, args []string) error {
 func runDeaconResume(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Check if paused
@@ -1489,7 +1489,7 @@ func runDeaconRedispatch(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	result := deacon.Redispatch(townRoot, beadID, redispatchRig, redispatchMaxAttempts, redispatchCooldown)
@@ -1533,7 +1533,7 @@ func runDeaconRedispatch(cmd *cobra.Command, args []string) error {
 func runDeaconRedispatchState(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	state, err := deacon.LoadRedispatchState(townRoot)
@@ -1579,7 +1579,7 @@ func runDeaconRedispatchState(cmd *cobra.Command, args []string) error {
 func runDeaconFeedStranded(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	result := deacon.FeedStranded(townRoot, feedStrandedMaxFeeds, feedStrandedCooldown)
@@ -1629,7 +1629,7 @@ func runDeaconFeedStranded(cmd *cobra.Command, args []string) error {
 func runDeaconFeedStrandedState(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	state, err := deacon.LoadFeedStrandedState(townRoot)

@@ -24,7 +24,7 @@ func checkRigNotParkedOrDocked(rigName string) error {
 	}
 
 	if IsRigParked(townRoot, rigName) {
-		return fmt.Errorf("rig '%s' is parked - use 'gt rig unpark %s' first", rigName, rigName)
+		return fmt.Errorf("rig '%s' is parked - use 'lt rig unpark %s' first", rigName, rigName)
 	}
 
 	prefix := "gt"
@@ -33,19 +33,19 @@ func checkRigNotParkedOrDocked(rigName string) error {
 	}
 
 	if IsRigDocked(townRoot, rigName, prefix) {
-		return fmt.Errorf("rig '%s' is docked - use 'gt rig undock %s' first", rigName, rigName)
+		return fmt.Errorf("rig '%s' is docked - use 'lt rig undock %s' first", rigName, rigName)
 	}
 
 	return nil
 }
 
-// getRig finds the town root and retrieves the specified rig.
+// getRig finds the HQ root and retrieves the specified rig.
 // This is the common boilerplate extracted from get*Manager functions.
-// Returns the town root path and rig instance.
+// Returns the HQ root path and rig instance.
 func getRig(rigName string) (string, *rig.Rig, error) {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return "", nil, fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return "", nil, fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	rigsConfigPath := constants.MayorRigsPath(townRoot)
@@ -100,9 +100,9 @@ func hasRigBeadLabel(townRoot, rigName, label string) bool {
 // convoy stage) to check rig availability.
 //
 // Parked vs docked asymmetry: parked state is checked in both the wisp layer
-// (ephemeral, set by "gt rig park") and bead labels (persistent fallback for
+// (ephemeral, set by "lt rig park") and bead labels (persistent fallback for
 // when wisp state is lost during cleanup). Docked state is bead-label only
-// because "gt rig dock" never writes to wisp — it persists exclusively via
+// because "lt rig dock" never writes to wisp — it persists exclusively via
 // the rig identity bead's status:docked label.
 func IsRigParkedOrDocked(townRoot, rigName string) (bool, string) {
 	// Check wisp layer first (fast, local) — only relevant for parked state
@@ -160,12 +160,12 @@ func rigBeadsPrefix(townRoot, rigPath, rigName string) string {
 	return ""
 }
 
-// getAllRigs discovers all rigs in the current Gas Town workspace.
+// getAllRigs discovers all rigs in the current Camp Leatherneck workspace.
 // Returns the list of rigs and any error.
 func getAllRigs() ([]*rig.Rig, error) {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return nil, fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return nil, fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	rigsConfigPath := filepath.Join(townRoot, "mayor", "rigs.json")

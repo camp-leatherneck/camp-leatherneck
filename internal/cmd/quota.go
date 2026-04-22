@@ -38,16 +38,16 @@ var quotaCmd = &cobra.Command{
 	GroupID: GroupServices,
 	Short:   "Manage account quota rotation",
 	RunE:    requireSubcommand,
-	Long: `Manage Claude Code account quota rotation for Gas Town.
+	Long: `Manage Claude Code account quota rotation for Camp Leatherneck.
 
 When sessions hit rate limits, quota commands help detect blocked sessions
 and rotate them to available accounts from the pool.
 
 Commands:
-  gt quota status            Show account quota status
-  gt quota scan              Detect rate-limited sessions
-  gt quota rotate            Swap blocked sessions to available accounts
-  gt quota clear             Mark account(s) as available again`,
+  lt quota status            Show account quota status
+  lt quota scan              Detect rate-limited sessions
+  lt quota rotate            Swap blocked sessions to available accounts
+  lt quota clear             Mark account(s) as available again`,
 }
 
 var quotaStatusCmd = &cobra.Command{
@@ -59,8 +59,8 @@ Displays which accounts are available, rate-limited, or in cooldown,
 along with timestamps for limit detection and estimated reset times.
 
 Examples:
-  gt quota status           # Text output
-  gt quota status --json    # JSON output`,
+  lt quota status           # Text output
+  lt quota status --json    # JSON output`,
 	RunE: runQuotaStatus,
 }
 
@@ -78,7 +78,7 @@ type QuotaStatusItem struct {
 func runQuotaStatus(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	// Load accounts
@@ -87,7 +87,7 @@ func runQuotaStatus(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		fmt.Println("No accounts configured.")
 		fmt.Println("\nTo add an account:")
-		fmt.Println("  gt account add <handle>")
+		fmt.Println("  lt account add <handle>")
 		return nil
 	}
 
@@ -206,7 +206,7 @@ var (
 var quotaScanCmd = &cobra.Command{
 	Use:   "scan",
 	Short: "Detect rate-limited sessions",
-	Long: `Scan all Gas Town tmux sessions for rate-limit indicators.
+	Long: `Scan all Camp Leatherneck tmux sessions for rate-limit indicators.
 
 Captures recent pane output from each session and checks for rate-limit
 messages. Reports which sessions are blocked and which account they use.
@@ -214,16 +214,16 @@ messages. Reports which sessions are blocked and which account they use.
 Use --update to automatically update quota state with detected limits.
 
 Examples:
-  gt quota scan              # Report rate-limited sessions
-  gt quota scan --update     # Report and update quota state
-  gt quota scan --json       # JSON output`,
+  lt quota scan              # Report rate-limited sessions
+  lt quota scan --update     # Report and update quota state
+  lt quota scan --json       # JSON output`,
 	RunE: runQuotaScan,
 }
 
 func runQuotaScan(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	// Load accounts config
@@ -369,32 +369,32 @@ it hits its rate limit. This is useful for switching idle sessions while
 it's not disruptive.
 
 The rotation process:
-  1. Scans all Gas Town sessions for rate-limit indicators
+  1. Scans all Camp Leatherneck sessions for rate-limit indicators
   2. Selects available accounts (LRU order)
   3. Swaps macOS Keychain credentials (same config dir preserved)
   4. Restarts blocked sessions via respawn-pane
   5. Sends /resume to recover conversation context
 
 Examples:
-  gt quota rotate                    # Rotate all blocked sessions
-  gt quota rotate --from work        # Preemptively rotate sessions on 'work' account
-  gt quota rotate --from work --idle # Only rotate idle sessions on 'work' account
-  gt quota rotate --dry-run          # Show plan without executing
-  gt quota rotate --json             # JSON output`,
+  lt quota rotate                    # Rotate all blocked sessions
+  lt quota rotate --from work        # Preemptively rotate sessions on 'work' account
+  lt quota rotate --from work --idle # Only rotate idle sessions on 'work' account
+  lt quota rotate --dry-run          # Show plan without executing
+  lt quota rotate --json             # JSON output`,
 	RunE: runQuotaRotate,
 }
 
 func runQuotaRotate(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	// Load accounts config (required for rotation)
 	accountsPath := constants.MayorAccountsPath(townRoot)
 	acctCfg, err := config.LoadAccountsConfig(accountsPath)
 	if err != nil {
-		return fmt.Errorf("no accounts configured (run 'gt account add' first): %w", err)
+		return fmt.Errorf("no accounts configured (run 'lt account add' first): %w", err)
 	}
 	if len(acctCfg.Accounts) < 2 {
 		return fmt.Errorf("need at least 2 accounts for rotation (have %d)", len(acctCfg.Accounts))
@@ -598,16 +598,16 @@ var quotaClearCmd = &cobra.Command{
 When no handles are specified, all limited accounts are cleared.
 
 Examples:
-  gt quota clear              # Clear all limited accounts
-  gt quota clear work         # Clear a specific account
-  gt quota clear work personal`,
+  lt quota clear              # Clear all limited accounts
+  lt quota clear work         # Clear a specific account
+  lt quota clear work personal`,
 	RunE: runQuotaClear,
 }
 
 func runQuotaClear(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	mgr := quota.NewManager(townRoot)
@@ -814,23 +814,23 @@ var quotaWatchCmd = &cobra.Command{
 	Short: "Monitor sessions and rotate proactively before hard 429",
 	Long: `Continuously monitor sessions for approaching rate limits and rotate proactively.
 
-Polls all Gas Town sessions on the specified interval, checking for both
+Polls all Camp Leatherneck sessions on the specified interval, checking for both
 hard rate limits and near-limit warning signals via pane pattern matching.
 
 When a session is detected as approaching its limit, rotation is triggered
 before the hard 429 hits.
 
 Examples:
-  gt quota watch                      # Watch with default 5m interval
-  gt quota watch --interval 2m        # Custom interval
-  gt quota watch --dry-run            # Show detections without rotating`,
+  lt quota watch                      # Watch with default 5m interval
+  lt quota watch --interval 2m        # Custom interval
+  lt quota watch --dry-run            # Show detections without rotating`,
 	RunE: runQuotaWatch,
 }
 
 func runQuotaWatch(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	accountsPath := constants.MayorAccountsPath(townRoot)

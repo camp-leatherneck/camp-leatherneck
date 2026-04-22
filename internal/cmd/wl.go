@@ -26,12 +26,12 @@ var wlCmd = &cobra.Command{
 	RunE:    requireSubcommand,
 	Long: `Manage Wasteland federation — join communities, post work, earn reputation.
 
-The Wasteland is a federation of Gas Towns via DoltHub. Each rig has a
+The Wasteland is a federation of Camp Leathernecks via DoltHub. Each rig has a
 sovereign fork of a shared commons database containing the wanted board
 (open work), rig registry, and validated completions.
 
 Getting started:
-  gt wl join steveyegge/wl-commons   # Join the default wasteland
+  lt wl join steveyegge/wl-commons   # Join the default wasteland
 
 See https://github.com/camp-leatherneck/camp-leatherneck for more information.`,
 }
@@ -55,9 +55,9 @@ Required environment variables:
   DOLTHUB_ORG    - Your DoltHub organization name
 
 Examples:
-  gt wl join steveyegge/wl-commons
-  gt wl join steveyegge/wl-commons --handle my-rig
-  gt wl join steveyegge/wl-commons --display-name "Alice's Workshop"`,
+  lt wl join steveyegge/wl-commons
+  lt wl join steveyegge/wl-commons --handle my-rig
+  lt wl join steveyegge/wl-commons --display-name "Alice's Workshop"`,
 	Args: cobra.ExactArgs(1),
 	RunE: runWlJoin,
 }
@@ -90,10 +90,10 @@ func runWlJoin(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("DOLTHUB_ORG environment variable is required\n\nSet this to your DoltHub organization name")
 	}
 
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Fast path: check if already joined before loading town config.
@@ -106,7 +106,7 @@ func runWlJoin(cmd *cobra.Command, args []string) error {
 			fmt.Printf("  Local: %s\n", existing.LocalDir)
 			return nil
 		}
-		return fmt.Errorf("already joined to %s; run gt wl leave first", existing.Upstream)
+		return fmt.Errorf("already joined to %s; run lt wl leave first", existing.Upstream)
 	}
 
 	// Load town config for identity (only needed for fresh join)
@@ -149,6 +149,6 @@ func runWlJoin(cmd *cobra.Command, args []string) error {
 	fmt.Printf("  Handle: %s\n", cfg.RigHandle)
 	fmt.Printf("  Fork: %s/%s\n", cfg.ForkOrg, cfg.ForkDB)
 	fmt.Printf("  Local: %s\n", cfg.LocalDir)
-	fmt.Printf("\n  %s\n", style.Dim.Render("Next: gt wl browse  — browse the wanted board"))
+	fmt.Printf("\n  %s\n", style.Dim.Render("Next: lt wl browse  — browse the wanted board"))
 	return nil
 }

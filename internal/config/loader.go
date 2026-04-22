@@ -2055,14 +2055,14 @@ func inferAgentName(rc *RuntimeConfig) string {
 // for starting an LLM session. It resolves the agent config and builds the command.
 func GetRuntimeCommand(rigPath string) string {
 	if rigPath == "" {
-		// Try to detect town root from cwd for town-level agents (mayor, deacon)
+		// Try to detect HQ root from cwd for town-level agents (mayor, deacon)
 		townRoot, err := findTownRootFromCwd()
 		if err != nil {
 			return DefaultRuntimeConfig().BuildCommand()
 		}
 		return ResolveAgentConfig(townRoot, "").BuildCommand()
 	}
-	// Derive town root from rig path (rig is typically ~/gt/<rigname>)
+	// Derive HQ root from rig path (rig is typically ~/gt/<rigname>)
 	townRoot := filepath.Dir(rigPath)
 	return ResolveAgentConfig(townRoot, rigPath).BuildCommand()
 }
@@ -2093,7 +2093,7 @@ func GetRuntimeCommandWithAgentOverride(rigPath, agentOverride string) (string, 
 // GetRuntimeCommandWithPrompt returns the full command with an initial prompt.
 func GetRuntimeCommandWithPrompt(rigPath, prompt string) string {
 	if rigPath == "" {
-		// Try to detect town root from cwd for town-level agents (mayor, deacon)
+		// Try to detect HQ root from cwd for town-level agents (mayor, deacon)
 		townRoot, err := findTownRootFromCwd()
 		if err != nil {
 			return DefaultRuntimeConfig().BuildCommandWithPrompt(prompt)
@@ -2127,7 +2127,7 @@ func GetRuntimeCommandWithPromptAndAgentOverride(rigPath, prompt, agentOverride 
 	return rc.BuildCommandWithPrompt(prompt), nil
 }
 
-// findTownRootFromCwd locates the town root by walking up from cwd.
+// findTownRootFromCwd locates the HQ root by walking up from cwd.
 // It looks for the mayor/town.json marker file.
 // Returns empty string and no error if not found (caller should use defaults).
 func findTownRootFromCwd() (string, error) {
@@ -2151,7 +2151,7 @@ func findTownRootFromCwd() (string, error) {
 
 		parent := filepath.Dir(current)
 		if parent == current {
-			return "", fmt.Errorf("town root not found (no %s marker)", marker)
+			return "", fmt.Errorf("HQ root not found (no %s marker)", marker)
 		}
 		current = parent
 	}
@@ -2190,7 +2190,7 @@ func ExtractSimpleRole(gtRole string) string {
 
 // BuildStartupCommand builds a full startup command with environment exports.
 // envVars is a map of environment variable names to values.
-// rigPath is optional - if empty, uses envVars["GT_ROOT"] to find town root,
+// rigPath is optional - if empty, uses envVars["GT_ROOT"] to find HQ root,
 // falling back to cwd detection if GT_ROOT is not set.
 // prompt is optional - if provided, appended as the initial prompt.
 //
@@ -2207,7 +2207,7 @@ func BuildStartupCommand(envVars map[string]string, rigPath, prompt string) stri
 	role := ExtractSimpleRole(envVars["GT_ROLE"])
 
 	if rigPath != "" {
-		// Derive town root from rig path
+		// Derive HQ root from rig path
 		townRoot = filepath.Dir(rigPath)
 		if role == "crew" && envVars["GT_CREW"] != "" {
 			// Per-worker agent resolution: check worker_agents before role_agents
@@ -2383,7 +2383,7 @@ func SanitizeAgentEnv(resolvedEnv, callerEnv map[string]string) {
 	}
 
 	// CLAUDECODE is set by Claude Code v2.x on startup and triggers nested session
-	// detection. When gt sling is invoked from within a Claude Code session, tmux
+	// detection. When lt sling is invoked from within a Claude Code session, tmux
 	// inherits this variable into its global environment, causing new polecat sessions
 	// to fail with "Nested sessions share runtime resources and will crash all active
 	// sessions." Clear it unless the caller explicitly provides it.
@@ -2457,8 +2457,8 @@ func BuildStartupCommandWithAgentOverride(envVars map[string]string, rigPath, pr
 			var err error
 			townRoot, err = findTownRootFromCwd()
 			if err != nil {
-				// Can't find town root from cwd - but if agentOverride is specified,
-				// try to use the preset directly. This allows `gt deacon start --agent codex`
+				// Can't find HQ root from cwd - but if agentOverride is specified,
+				// try to use the preset directly. This allows `lt deacon start --agent codex`
 				// to work even when run from outside the town directory.
 				if agentOverride != "" {
 					if preset := GetAgentPresetByName(agentOverride); preset != nil {

@@ -8,7 +8,7 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/tmux"
 )
 
-// ZombieSessionCheck detects tmux sessions that are valid Gas Town sessions
+// ZombieSessionCheck detects tmux sessions that are valid Camp Leatherneck sessions
 // but have no Claude/node process running inside (zombies).
 // These occur when Claude exits or crashes but the tmux session remains.
 type ZombieSessionCheck struct {
@@ -29,7 +29,7 @@ func NewZombieSessionCheck() *ZombieSessionCheck {
 	}
 }
 
-// Run checks for zombie Gas Town sessions (tmux alive but Claude dead).
+// Run checks for zombie Camp Leatherneck sessions (tmux alive but Claude dead).
 func (c *ZombieSessionCheck) Run(ctx *CheckContext) *CheckResult {
 	t := tmux.NewTmux()
 
@@ -51,7 +51,7 @@ func (c *ZombieSessionCheck) Run(ctx *CheckContext) *CheckResult {
 		}
 	}
 
-	// Check each Gas Town session for zombie status
+	// Check each Camp Leatherneck session for zombie status
 	var zombies []string
 	var healthyCount int
 
@@ -60,7 +60,7 @@ func (c *ZombieSessionCheck) Run(ctx *CheckContext) *CheckResult {
 			continue
 		}
 
-		// Only check Gas Town sessions
+		// Only check Camp Leatherneck sessions
 		if !session.IsKnownSession(sess) {
 			continue
 		}
@@ -85,7 +85,7 @@ func (c *ZombieSessionCheck) Run(ctx *CheckContext) *CheckResult {
 	if len(zombies) == 0 {
 		msg := "No zombie sessions found"
 		if healthyCount > 0 {
-			msg = fmt.Sprintf("All %d Gas Town sessions have running Claude processes", healthyCount)
+			msg = fmt.Sprintf("All %d Camp Leatherneck sessions have running Claude processes", healthyCount)
 		}
 		return &CheckResult{
 			Name:    c.Name(),
@@ -104,7 +104,7 @@ func (c *ZombieSessionCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: fmt.Sprintf("Found %d zombie session(s)", len(zombies)),
 		Details: details,
-		FixHint: "Run 'gt doctor --fix' to kill zombie sessions",
+		FixHint: "Run 'lt doctor --fix' to kill zombie sessions",
 	}
 }
 
@@ -133,7 +133,7 @@ func (c *ZombieSessionCheck) Fix(ctx *CheckContext) error {
 
 		// Log pre-death event for audit trail
 		_ = events.LogFeed(events.TypeSessionDeath, sess,
-			events.SessionDeathPayload(sess, "unknown", "zombie cleanup", "gt doctor"))
+			events.SessionDeathPayload(sess, "unknown", "zombie cleanup", "lt doctor"))
 
 		// Use KillSessionWithProcesses to ensure all descendant processes are killed.
 		if err := t.KillSessionWithProcesses(sess); err != nil {

@@ -11,9 +11,9 @@ import (
 )
 
 // ErrNotFound indicates no workspace was found.
-var ErrNotFound = errors.New("not in a Gas Town workspace")
+var ErrNotFound = errors.New("not in a Camp Leatherneck workspace")
 
-// Markers used to detect a Gas Town workspace.
+// Markers used to detect a Camp Leatherneck workspace.
 const (
 	// PrimaryMarker is the main config file that identifies a workspace.
 	// The town.json file lives in mayor/ along with other mayor config.
@@ -25,7 +25,7 @@ const (
 	SecondaryMarker = "mayor"
 )
 
-// Find locates the town root by walking up from the given directory.
+// Find locates the HQ root by walking up from the given directory.
 // It prefers mayor/town.json over mayor/ directory as workspace marker.
 // Always continues to the outermost workspace, correctly handling nested
 // workspace structures (e.g., rig directories with their own mayor/town.json).
@@ -43,7 +43,7 @@ func Find(startDir string) (string, error) {
 		// Always keep updating primaryMatch and secondaryMatch to find the outermost
 		// directory with the respective markers. This handles nested workspace
 		// structures where inner workspaces (e.g., rig directories or worktrees)
-		// have their own mayor/town.json, ensuring we return the actual town root.
+		// have their own mayor/town.json, ensuring we return the actual HQ root.
 		if _, err := os.Stat(filepath.Join(current, PrimaryMarker)); err == nil {
 			primaryMatch = current
 		}
@@ -75,7 +75,7 @@ func FindOrError(startDir string) (string, error) {
 	return root, nil
 }
 
-// FindFromCwd locates the town root from the current working directory.
+// FindFromCwd locates the HQ root from the current working directory.
 func FindFromCwd() (string, error) {
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -114,7 +114,7 @@ func FindFromCwdOrError() (string, error) {
 
 // FindFromCwdWithFallback is like FindFromCwdOrError but returns (townRoot, cwd, error).
 // If getcwd fails, returns (townRoot, "", nil) using GT_TOWN_ROOT fallback.
-// This is useful for commands like `gt done` that need to continue even if the
+// This is useful for commands like `lt done` that need to continue even if the
 // working directory is deleted (e.g., polecat worktree nuked by Witness).
 func FindFromCwdWithFallback() (townRoot string, cwd string, err error) {
 	cwd, err = os.Getwd()
@@ -136,7 +136,7 @@ func FindFromCwdWithFallback() (townRoot string, cwd string, err error) {
 	return townRoot, cwd, nil
 }
 
-// IsWorkspace checks if the given directory is a Gas Town workspace root.
+// IsWorkspace checks if the given directory is a Camp Leatherneck workspace root.
 // A directory is a workspace if it has a primary marker (mayor/town.json)
 // or a secondary marker (mayor/ directory).
 func IsWorkspace(dir string) (bool, error) {
@@ -163,7 +163,7 @@ func IsWorkspace(dir string) (bool, error) {
 
 // GetTownName loads the town name from the workspace's town.json config.
 // This is used for generating unique tmux session names that avoid collisions
-// when running multiple Gas Town instances.
+// when running multiple Camp Leatherneck instances.
 func GetTownName(townRoot string) (string, error) {
 	townConfigPath := filepath.Join(townRoot, PrimaryMarker)
 	townConfig, err := config.LoadTownConfig(townConfigPath)
@@ -173,7 +173,7 @@ func GetTownName(townRoot string) (string, error) {
 	return townConfig.Name, nil
 }
 
-// GetTownNameFromCwd locates the town root from the current working directory
+// GetTownNameFromCwd locates the HQ root from the current working directory
 // and returns the town name from its configuration.
 func GetTownNameFromCwd() (string, error) {
 	townRoot, err := FindFromCwdOrError()

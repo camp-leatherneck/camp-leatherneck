@@ -9,7 +9,7 @@
 //	GT_OTEL_LOGS_URL     (default: http://localhost:9428/insert/opentelemetry/v1/logs)
 //
 // Telemetry is best-effort: initialization errors are returned but do not
-// affect normal gt operation — callers should log and continue.
+// affect normal lt operation — callers should log and continue.
 //
 // Init is idempotent: multiple calls return the same provider.
 package telemetry

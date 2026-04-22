@@ -71,7 +71,7 @@ func runGTCmdOutput(t *testing.T, binary, dir string, env []string, args ...stri
 	cmd.Stderr = &stderr
 	out, err := cmd.Output()
 	if err != nil {
-		t.Fatalf("gt %v failed: %v\nstdout:\n%s\nstderr:\n%s", args, err, out, stderr.String())
+		t.Fatalf("lt %v failed: %v\nstdout:\n%s\nstderr:\n%s", args, err, out, stderr.String())
 	}
 	return string(out)
 }
@@ -258,8 +258,8 @@ func createTestBeadOfType(t *testing.T, dir, title, issueType string) string {
 	return issue.ID
 }
 
-// slingToScheduler runs `gt sling <bead> <rig> --hook-raw-bead` in deferred mode.
-// The test setup (configureScheduler) sets max_polecats > 0, so gt sling
+// slingToScheduler runs `lt sling <bead> <rig> --hook-raw-bead` in deferred mode.
+// The test setup (configureScheduler) sets max_polecats > 0, so lt sling
 // automatically defers dispatch without a --scheduler flag.
 // Uses --hook-raw-bead to skip formula cooking (no formula infrastructure
 // in integration tests).

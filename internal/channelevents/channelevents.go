@@ -46,8 +46,8 @@ func Emit(channel, eventType string, payloadPairs []string) (string, error) {
 	return emitToDir(eventDir, channel, eventType, payloadPairs)
 }
 
-// EmitToTown creates an event file using an explicit town root.
-// Used by internal callers that already know the town root.
+// EmitToTown creates an event file using an explicit HQ root.
+// Used by internal callers that already know the HQ root.
 func EmitToTown(townRoot, channel, eventType string, payloadPairs []string) (string, error) {
 	if !ValidChannelName.MatchString(channel) {
 		return "", fmt.Errorf("invalid channel name %q: must match [a-zA-Z0-9_-]", channel)

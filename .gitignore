@@ -96,3 +96,8 @@ CLAUDE.local.md
 
 # Fork research notes (private — not for public upstream)
 docs/fork-info/
+
+# Local build artifacts
+/lt
+/lt-proxy-client
+/lt-proxy-server

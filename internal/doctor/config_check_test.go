@@ -108,14 +108,14 @@ func TestSessionHookCheck_UsesSessionStartScript(t *testing.T) {
 		want     bool
 	}{
 		{
-			name:     "bare gt prime fails",
-			content:  `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "gt prime"}]}]}}`,
+			name:     "bare lt prime fails",
+			content:  `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "lt prime"}]}]}}`,
 			hookType: "SessionStart",
 			want:     false,
 		},
 		{
-			name:     "gt prime --hook passes",
-			content:  `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "gt prime --hook"}]}]}}`,
+			name:     "lt prime --hook passes",
+			content:  `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "lt prime --hook"}]}]}}`,
 			hookType: "SessionStart",
 			want:     true,
 		},
@@ -127,49 +127,49 @@ func TestSessionHookCheck_UsesSessionStartScript(t *testing.T) {
 		},
 		{
 			name:     "no SessionStart hook passes",
-			content:  `{"hooks": {"Stop": [{"hooks": [{"type": "command", "command": "gt handoff"}]}]}}`,
+			content:  `{"hooks": {"Stop": [{"hooks": [{"type": "command", "command": "lt handoff"}]}]}}`,
 			hookType: "SessionStart",
 			want:     true,
 		},
 		{
 			name:     "PreCompact with --hook passes",
-			content:  `{"hooks": {"PreCompact": [{"hooks": [{"type": "command", "command": "gt prime --hook"}]}]}}`,
+			content:  `{"hooks": {"PreCompact": [{"hooks": [{"type": "command", "command": "lt prime --hook"}]}]}}`,
 			hookType: "PreCompact",
 			want:     true,
 		},
 		{
-			name:     "PreCompact bare gt prime fails",
-			content:  `{"hooks": {"PreCompact": [{"hooks": [{"type": "command", "command": "gt prime"}]}]}}`,
+			name:     "PreCompact bare lt prime fails",
+			content:  `{"hooks": {"PreCompact": [{"hooks": [{"type": "command", "command": "lt prime"}]}]}}`,
 			hookType: "PreCompact",
 			want:     false,
 		},
 		{
-			name:     "gt prime --hook with extra flags passes",
-			content:  `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "gt prime --hook --verbose"}]}]}}`,
+			name:     "lt prime --hook with extra flags passes",
+			content:  `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "lt prime --hook --verbose"}]}]}}`,
 			hookType: "SessionStart",
 			want:     true,
 		},
 		{
-			name:     "gt prime with --hook not first still passes",
-			content:  `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "gt prime --verbose --hook"}]}]}}`,
+			name:     "lt prime with --hook not first still passes",
+			content:  `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "lt prime --verbose --hook"}]}]}}`,
 			hookType: "SessionStart",
 			want:     true,
 		},
 		{
-			name:     "gt prime with other flags but no --hook fails",
-			content:  `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "gt prime --verbose"}]}]}}`,
+			name:     "lt prime with other flags but no --hook fails",
+			content:  `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "lt prime --verbose"}]}]}}`,
 			hookType: "SessionStart",
 			want:     false,
 		},
 		{
-			name:     "both session-start.sh and gt prime passes (session-start.sh wins)",
-			content:  `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "bash session-start.sh && gt prime"}]}]}}`,
+			name:     "both session-start.sh and lt prime passes (session-start.sh wins)",
+			content:  `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "bash session-start.sh && lt prime"}]}]}}`,
 			hookType: "SessionStart",
 			want:     true,
 		},
 		{
-			name:     "gt prime --hookup is NOT valid (false positive check)",
-			content:  `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "gt prime --hookup"}]}]}}`,
+			name:     "lt prime --hookup is NOT valid (false positive check)",
+			content:  `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "lt prime --hookup"}]}]}}`,
 			hookType: "SessionStart",
 			want:     false,
 		},
@@ -186,7 +186,7 @@ func TestSessionHookCheck_UsesSessionStartScript(t *testing.T) {
 }
 
 func TestSessionHookCheck_Run(t *testing.T) {
-	t.Run("mayor bare gt prime warns", func(t *testing.T) {
+	t.Run("mayor bare lt prime warns", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		// Settings must be at mayor/.claude/settings.json
 		claudeDir := filepath.Join(tmpDir, "mayor", ".claude")
@@ -194,7 +194,7 @@ func TestSessionHookCheck_Run(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "gt prime"}]}]}}`
+		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "lt prime"}]}]}}`
 		if err := os.WriteFile(filepath.Join(claudeDir, "settings.json"), []byte(settings), 0644); err != nil {
 			t.Fatal(err)
 		}
@@ -208,7 +208,7 @@ func TestSessionHookCheck_Run(t *testing.T) {
 		}
 	})
 
-	t.Run("mayor gt prime --hook passes", func(t *testing.T) {
+	t.Run("mayor lt prime --hook passes", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		// Settings must be at mayor/.claude/settings.json
 		claudeDir := filepath.Join(tmpDir, "mayor", ".claude")
@@ -216,7 +216,7 @@ func TestSessionHookCheck_Run(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "gt prime --hook"}]}]}}`
+		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "lt prime --hook"}]}]}}`
 		if err := os.WriteFile(filepath.Join(claudeDir, "settings.json"), []byte(settings), 0644); err != nil {
 			t.Fatal(err)
 		}
@@ -244,7 +244,7 @@ func TestSessionHookCheck_Run(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "gt prime --hook"}]}]}}`
+		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "lt prime --hook"}]}]}}`
 		if err := os.WriteFile(filepath.Join(claudeDir, "settings.json"), []byte(settings), 0644); err != nil {
 			t.Fatal(err)
 		}
@@ -258,7 +258,7 @@ func TestSessionHookCheck_Run(t *testing.T) {
 		}
 	})
 
-	t.Run("witness bare gt prime warns", func(t *testing.T) {
+	t.Run("witness bare lt prime warns", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		// Create rig structure with witness
@@ -272,7 +272,7 @@ func TestSessionHookCheck_Run(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "gt prime"}]}]}}`
+		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "lt prime"}]}]}}`
 		if err := os.WriteFile(filepath.Join(claudeDir, "settings.json"), []byte(settings), 0644); err != nil {
 			t.Fatal(err)
 		}
@@ -282,7 +282,7 @@ func TestSessionHookCheck_Run(t *testing.T) {
 		result := check.Run(ctx)
 
 		if result.Status != StatusWarning {
-			t.Errorf("expected StatusWarning for witness bare gt prime, got %v", result.Status)
+			t.Errorf("expected StatusWarning for witness bare lt prime, got %v", result.Status)
 		}
 	})
 
@@ -294,7 +294,7 @@ func TestSessionHookCheck_Run(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "gt prime --hook"}]}], "PreCompact": [{"hooks": [{"type": "command", "command": "gt prime"}]}]}}`
+		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "lt prime --hook"}]}], "PreCompact": [{"hooks": [{"type": "command", "command": "lt prime"}]}]}}`
 		if err := os.WriteFile(filepath.Join(claudeDir, "settings.json"), []byte(settings), 0644); err != nil {
 			t.Fatal(err)
 		}
@@ -325,7 +325,7 @@ func TestSessionHookCheck_Run(t *testing.T) {
 }
 
 func TestSessionHookCheck_Fix(t *testing.T) {
-	t.Run("fixes bare gt prime to gt prime --hook", func(t *testing.T) {
+	t.Run("fixes bare lt prime to lt prime --hook", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		// Create mayor/.claude/ directory (SessionHookCheck looks for settings.json in agent dirs)
 		claudeDir := filepath.Join(tmpDir, "mayor", ".claude")
@@ -333,8 +333,8 @@ func TestSessionHookCheck_Fix(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		// Create settings.json with bare gt prime (should be gt prime --hook)
-		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "gt prime"}]}]}}`
+		// Create settings.json with bare lt prime (should be lt prime --hook)
+		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "lt prime"}]}]}}`
 		settingsPath := filepath.Join(claudeDir, "settings.json")
 		if err := os.WriteFile(settingsPath, []byte(settings), 0644); err != nil {
 			t.Fatal(err)
@@ -366,8 +366,8 @@ func TestSessionHookCheck_Fix(t *testing.T) {
 			t.Fatal(err)
 		}
 		content := string(data)
-		if !strings.Contains(content, "gt prime --hook") {
-			t.Errorf("expected 'gt prime --hook' in fixed file, got: %s", content)
+		if !strings.Contains(content, "lt prime --hook") {
+			t.Errorf("expected 'lt prime --hook' in fixed file, got: %s", content)
 		}
 	})
 
@@ -379,7 +379,7 @@ func TestSessionHookCheck_Fix(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "gt prime && echo done"}]}], "PreCompact": [{"hooks": [{"type": "command", "command": "gt prime"}]}]}}`
+		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "lt prime && echo done"}]}], "PreCompact": [{"hooks": [{"type": "command", "command": "lt prime"}]}]}}`
 		settingsPath := filepath.Join(claudeDir, "settings.json")
 		if err := os.WriteFile(settingsPath, []byte(settings), 0644); err != nil {
 			t.Fatal(err)
@@ -408,8 +408,8 @@ func TestSessionHookCheck_Fix(t *testing.T) {
 		}
 		content := string(data)
 		// Both hooks should now have --hook
-		if strings.Count(content, "gt prime --hook") != 2 {
-			t.Errorf("expected 2 occurrences of 'gt prime --hook', got content: %s", content)
+		if strings.Count(content, "lt prime --hook") != 2 {
+			t.Errorf("expected 2 occurrences of 'lt prime --hook', got content: %s", content)
 		}
 	})
 
@@ -421,7 +421,7 @@ func TestSessionHookCheck_Fix(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "gt prime --hook"}]}]}}`
+		settings := `{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "lt prime --hook"}]}]}}`
 		settingsPath := filepath.Join(claudeDir, "settings.json")
 		if err := os.WriteFile(settingsPath, []byte(settings), 0644); err != nil {
 			t.Fatal(err)

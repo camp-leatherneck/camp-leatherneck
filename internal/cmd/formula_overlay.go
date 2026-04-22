@@ -18,16 +18,16 @@ Subcommands:
   list    List all overlay files
 
 File layout:
-  Town-level: <townRoot>/formula-overlays/<formula>.toml
+  HQ-level: <townRoot>/formula-overlays/<formula>.toml
   Rig-level:  <townRoot>/<rig>/formula-overlays/<formula>.toml
 
 Resolution: If a rig-level overlay exists, it takes full precedence
 (town-level is not merged).
 
 Examples:
-  gt formula overlay show mol-polecat-work
-  gt formula overlay edit mol-polecat-work --rig gastown
-  gt formula overlay list`,
+  lt formula overlay show mol-polecat-work
+  lt formula overlay edit mol-polecat-work --rig gastown
+  lt formula overlay list`,
 	RunE: requireSubcommand,
 }
 

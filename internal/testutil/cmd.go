@@ -11,7 +11,7 @@ import (
 // the correct Dolt server. BEADS_DOLT_PORT and BEADS_DOLT_SERVER_HOST (prefix
 // BEADS_, not BD_) pass through implicitly since only BD_* is stripped.
 //
-// Use this when setting cmd.Env on bd/gt subprocess calls in tests.
+// Use this when setting cmd.Env on bd/lt subprocess calls in tests.
 // If you do NOT set cmd.Env, the process env (including GT_DOLT_PORT) is
 // inherited automatically — no need for this function in that case.
 func CleanGTEnv(extraEnv ...string) []string {
@@ -39,7 +39,7 @@ func NewBDCommand(args ...string) *exec.Cmd {
 	return exec.Command("bd", args...)
 }
 
-// NewGTCommand creates an exec.Command for the gt CLI with GT_DOLT_PORT
+// NewGTCommand creates an exec.Command for the lt CLI with GT_DOLT_PORT
 // automatically propagated. The command inherits the full process environment
 // (which includes GT_DOLT_PORT set by TestMain).
 //
@@ -50,7 +50,7 @@ func NewGTCommand(args ...string) *exec.Cmd {
 
 // NewIsolatedBDCommand creates an exec.Command for the bd CLI with GT_*/BD_*
 // env stripped except GT_DOLT_PORT and BEADS_DOLT_PORT. Use this when you need
-// to isolate a subprocess from the parent Gas Town workspace but still route
+// to isolate a subprocess from the parent Camp Leatherneck workspace but still route
 // to the test Dolt server.
 func NewIsolatedBDCommand(args ...string) *exec.Cmd {
 	cmd := exec.Command("bd", args...)
@@ -58,9 +58,9 @@ func NewIsolatedBDCommand(args ...string) *exec.Cmd {
 	return cmd
 }
 
-// NewIsolatedGTCommand creates an exec.Command for the gt CLI with GT_*/BD_*
+// NewIsolatedGTCommand creates an exec.Command for the lt CLI with GT_*/BD_*
 // env stripped except GT_DOLT_PORT and BEADS_DOLT_PORT. Use this when you need
-// to isolate a subprocess from the parent Gas Town workspace but still route
+// to isolate a subprocess from the parent Camp Leatherneck workspace but still route
 // to the test Dolt server.
 func NewIsolatedGTCommand(args ...string) *exec.Cmd {
 	cmd := exec.Command("gt", args...)

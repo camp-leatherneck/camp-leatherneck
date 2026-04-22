@@ -39,7 +39,7 @@ This command runs as a long-lived background process. It exits when:
   - It receives SIGTERM (from StopPoller or session teardown)
   - The poll loop encounters an unrecoverable error
 
-Normally launched automatically by 'gt crew start' for non-Claude agents.
+Normally launched automatically by 'lt crew start' for non-Claude agents.
 Not intended for direct user invocation.`,
 	Args: cobra.ExactArgs(1),
 	RunE: runNudgePoller,
@@ -50,7 +50,7 @@ func runNudgePoller(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("cannot find town root: %w", err)
+		return fmt.Errorf("cannot find HQ root: %w", err)
 	}
 
 	pollInterval, err := time.ParseDuration(nudgePollerIntervalFlag)

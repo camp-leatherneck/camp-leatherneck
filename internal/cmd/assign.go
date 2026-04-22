@@ -20,22 +20,22 @@ var assignCmd = &cobra.Command{
 	Short:   "Create a bead and hook it to a crew member",
 	Long: `Create a new bead and immediately hook it to a crew member.
 
-This is a shortcut for "bd create" + "gt hook". The crew member name
+This is a shortcut for "bd create" + "lt hook". The crew member name
 is short-form (just the name), and the rig is resolved in order:
 --rig flag, current directory, or by scanning all rigs for the crew
-member name. This means "gt assign dave ..." works from anywhere in
+member name. This means "lt assign dave ..." works from anywhere in
 the town if dave exists in exactly one rig.
 
 The crew member must exist (the directory <rig>/crew/<name> must be
 present) or the command will error.
 
 Examples:
-  gt assign monet "Fix the auth token refresh bug"
-  gt assign monet "Review error handling" -d "The retry logic looks wrong"
-  gt assign monet "Fix auth bug" --type bug --priority 1
-  gt assign monet "Fix auth bug" --nudge
-  gt assign monet "Fix auth bug" --label important
-  gt assign monet "Fix auth bug" --rig beads   # Explicit rig override`,
+  lt assign monet "Fix the auth token refresh bug"
+  lt assign monet "Review error handling" -d "The retry logic looks wrong"
+  lt assign monet "Fix auth bug" --type bug --priority 1
+  lt assign monet "Fix auth bug" --nudge
+  lt assign monet "Fix auth bug" --label important
+  lt assign monet "Fix auth bug" --rig beads   # Explicit rig override`,
 	Args: cobra.MinimumNArgs(2),
 	RunE: runAssign,
 }
@@ -68,10 +68,10 @@ func runAssign(_ *cobra.Command, args []string) error {
 	crewName := args[0]
 	title := strings.Join(args[1:], " ")
 
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	// Determine rig

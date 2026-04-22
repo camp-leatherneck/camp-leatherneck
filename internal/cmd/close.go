@@ -30,12 +30,12 @@ completion. If all tracked issues in a convoy are closed, the convoy
 is auto-closed.
 
 Examples:
-  gt close gt-abc              # Close bead gt-abc
-  gt close gt-abc gt-def       # Close multiple beads
-  gt close --reason "Done"     # Close with reason
-  gt close --comment "Done"    # Same as --reason (alias)
-  gt close --force             # Force close pinned beads
-  gt close gt-abc --cascade    # Close gt-abc and all its children`,
+  lt close gt-abc              # Close bead gt-abc
+  lt close gt-abc gt-def       # Close multiple beads
+  lt close --reason "Done"     # Close with reason
+  lt close --comment "Done"    # Same as --reason (alias)
+  lt close --force             # Force close pinned beads
+  lt close gt-abc --cascade    # Close gt-abc and all its children`,
 	DisableFlagParsing: true, // Pass all flags through to bd close
 	RunE:               runClose,
 }

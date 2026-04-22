@@ -18,7 +18,7 @@ var directiveListCmd = &cobra.Command{
 Shows each directive file with its scope (town or rig) and role.
 
 Examples:
-  gt directive list`,
+  lt directive list`,
 	RunE: runDirectiveList,
 }
 
@@ -29,7 +29,7 @@ func init() {
 func runDirectiveList(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	type entry struct {
@@ -40,7 +40,7 @@ func runDirectiveList(cmd *cobra.Command, args []string) error {
 
 	var entries []entry
 
-	// Town-level directives
+	// HQ-level directives
 	townDir := filepath.Join(townRoot, "directives")
 	if files, err := os.ReadDir(townDir); err == nil {
 		for _, f := range files {
@@ -89,7 +89,7 @@ func runDirectiveList(cmd *cobra.Command, args []string) error {
 
 	if len(entries) == 0 {
 		fmt.Println("No directive files found.")
-		fmt.Println("\nUse 'gt directive edit <role>' to create one.")
+		fmt.Println("\nUse 'lt directive edit <role>' to create one.")
 		return nil
 	}
 

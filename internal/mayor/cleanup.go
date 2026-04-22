@@ -133,10 +133,10 @@ func NewCleanupVetoChecker(townRoot string) *CleanupVetoChecker {
 func NewCleanupVetoCheckerFromWorkDir(workDir string) (*CleanupVetoChecker, error) {
 	townRoot, err := workspace.Find(workDir)
 	if err != nil {
-		return nil, fmt.Errorf("finding town root: %w", err)
+		return nil, fmt.Errorf("finding HQ root: %w", err)
 	}
 	if townRoot == "" {
-		return nil, fmt.Errorf("not in a Gas Town workspace")
+		return nil, fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 	return NewCleanupVetoChecker(townRoot), nil
 }

@@ -44,7 +44,7 @@ func runCrewAt(cmd *cobra.Command, args []string) error {
 		detected, err := detectCrewFromCwd()
 		if err != nil {
 			// Try to show available crew members if we can detect the rig
-			hint := "\n\nUsage: gt crew at <name>"
+			hint := "\n\nUsage: lt crew at <name>"
 			if crewRig != "" {
 				if mgr, _, mgrErr := getCrewManager(crewRig); mgrErr == nil {
 					if members, listErr := mgr.List(); listErr == nil && len(members) > 0 {
@@ -100,7 +100,7 @@ func runCrewAt(cmd *cobra.Command, args []string) error {
 	// Resolve account for runtime config
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return fmt.Errorf("finding town root: %w", err)
+		return fmt.Errorf("finding HQ root: %w", err)
 	}
 	accountsPath := constants.MayorAccountsPath(townRoot)
 	claudeConfigDir, accountHandle, err := config.ResolveAccountConfigDir(accountsPath, crewAccount)
@@ -220,8 +220,8 @@ func runCrewAt(cmd *cobra.Command, args []string) error {
 		}
 
 		// Build startup beacon for predecessor discovery via /resume
-		// Use FormatStartupBeacon instead of bare "gt prime" which confuses agents
-		// The SessionStart hook handles context injection (gt prime --hook)
+		// Use FormatStartupBeacon instead of bare "lt prime" which confuses agents
+		// The SessionStart hook handles context injection (lt prime --hook)
 		address := session.BeaconRecipient("crew", name, r.Name)
 		beacon := session.FormatStartupBeacon(session.BeaconConfig{
 			Recipient: address,
@@ -291,7 +291,7 @@ func runCrewAt(cmd *cobra.Command, args []string) error {
 			}
 
 			// Build startup beacon for predecessor discovery via /resume
-			// Use FormatStartupBeacon instead of bare "gt prime" which confuses agents
+			// Use FormatStartupBeacon instead of bare "lt prime" which confuses agents
 			address := session.BeaconRecipient("crew", name, r.Name)
 			beacon := session.FormatStartupBeacon(session.BeaconConfig{
 				Recipient: address,
@@ -382,7 +382,7 @@ func runCrewAt(cmd *cobra.Command, args []string) error {
 
 	// Outside tmux: attach unless --detached flag is set
 	if crewDetached {
-		fmt.Printf("Started %s/%s. Run 'gt crew at %s' to attach.\n", r.Name, name, name)
+		fmt.Printf("Started %s/%s. Run 'lt crew at %s' to attach.\n", r.Name, name, name)
 		return nil
 	}
 

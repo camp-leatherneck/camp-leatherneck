@@ -21,7 +21,7 @@ import (
 // Dolt databases on the shared server.
 var routingTestCounter atomic.Int32
 
-// setupRoutingTestTown creates a minimal Gas Town with multiple rigs for testing routing.
+// setupRoutingTestTown creates a minimal Camp Leatherneck with multiple rigs for testing routing.
 // Uses fixed prefixes (hq, gt, tr) — suitable for tests that don't create Dolt databases.
 // Returns townRoot.
 func setupRoutingTestTown(t *testing.T) string {
@@ -29,7 +29,7 @@ func setupRoutingTestTown(t *testing.T) string {
 	return setupRoutingTestTownWithPrefixes(t, "hq", "gt", "tr")
 }
 
-// setupRoutingTestTownWithPrefixes creates a minimal Gas Town with multiple rigs,
+// setupRoutingTestTownWithPrefixes creates a minimal Camp Leatherneck with multiple rigs,
 // using the given prefixes for routes and beads config. Use unique prefixes when
 // tests create Dolt databases to avoid collisions.
 // Returns townRoot.
@@ -41,7 +41,7 @@ func setupRoutingTestTownWithPrefixes(t *testing.T, hqPrefix, gtPrefix, trPrefix
 		t.Fatalf("EvalSymlinks: %v", err)
 	}
 
-	// Create mayor/town.json so FindTownRoot() can detect this as a Gas Town root
+	// Create mayor/town.json so FindTownRoot() can detect this as a Camp Leatherneck root
 	mayorDir := filepath.Join(townRoot, "mayor")
 	if err := os.MkdirAll(mayorDir, 0755); err != nil {
 		t.Fatalf("mkdir mayor: %v", err)
@@ -189,7 +189,7 @@ func hasIssueID(issues []*beads.Issue, id string) bool {
 }
 
 // TestBeadsRoutingFromTownRoot verifies that bd show routes to correct rig
-// based on issue ID prefix when run from town root.
+// based on issue ID prefix when run from HQ root.
 func TestBeadsRoutingFromTownRoot(t *testing.T) {
 	// Skip if bd is not available
 	if _, err := exec.LookPath("bd"); err != nil {

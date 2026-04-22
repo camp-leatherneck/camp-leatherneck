@@ -34,13 +34,13 @@ import (
 //
 // Background: beads v0.62 removed built-in multi-rig routing from bd — all bd
 // commands now operate on the local database only. Cross-rig resolution must
-// happen in gt before invoking bd, by setting the correct working directory
+// happen in lt before invoking bd, by setting the correct working directory
 // (and stripping BEADS_DIR). This function reads routes.jsonl from the town-level
 // .beads directory and resolves the bead's prefix to the owning rig.
 //
 // PR #3166 (steveyegge/gastown) will replace bd shell-outs with the Go module
 // Storage API, making this function unnecessary. Until then, this is the
-// routing bridge between gt and the routing-free bd CLI.
+// routing bridge between lt and the routing-free bd CLI.
 func resolveBeadDir(beadID string) string {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
@@ -399,7 +399,7 @@ func injectStartPrompt(pane, beadID, subject, args string) error {
 		prompt = fmt.Sprintf("Work slung: %s. Start working on it now - run `"+cli.Name()+" hook` to see the hook, then begin.", beadID)
 	}
 
-	// Use the reliable nudge pattern (same as gt nudge / tmux.NudgeSession)
+	// Use the reliable nudge pattern (same as lt nudge / tmux.NudgeSession)
 	t := tmux.NewTmux()
 	return t.NudgePane(pane, prompt)
 }
@@ -521,7 +521,7 @@ func detectActor() string {
 
 // agentIDToBeadID converts an agent ID to its corresponding agent bead ID.
 // Uses canonical naming: prefix-rig-role-name
-// Town-level agents (Mayor, Deacon) use hq- prefix and are stored in town beads.
+// HQ-level agents (Mayor, Deacon) use hq- prefix and are stored in town beads.
 // Rig-level agents use the rig's configured prefix (default "gt-").
 // townRoot is needed to look up the rig's configured prefix.
 func agentIDToBeadID(agentID, townRoot string) string {
@@ -586,7 +586,7 @@ func wakeRigAgents(rigName string) {
 	if townRoot != "" {
 		if running, _, _ := daemon.IsRunning(townRoot); !running {
 			fmt.Fprintf(os.Stderr, "Warning: daemon is not running. Polecat may not auto-start.\n")
-			fmt.Fprintf(os.Stderr, "  Start with: gt daemon start\n")
+			fmt.Fprintf(os.Stderr, "  Start with: lt daemon start\n")
 		}
 	}
 
@@ -691,7 +691,7 @@ type FormulaOnBeadResult struct {
 //   - beadID: the base bead to bond the wisp to
 //   - title: the bead title (used for --var feature=<title>)
 //   - hookWorkDir: working directory for bd commands (polecat's worktree)
-//   - townRoot: the town root directory
+//   - townRoot: the HQ root directory
 //   - skipCook: if true, skip cooking (for batch mode optimization where cook happens once)
 //   - extraVars: additional --var values supplied by the user
 //

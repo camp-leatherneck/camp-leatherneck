@@ -12,7 +12,7 @@ import (
 // This distinguishes them from rig-level beads (which use project prefixes like "gt-").
 const TownBeadsPrefix = "hq"
 
-// Town-level agent bead IDs use the "hq-" prefix and are stored in town beads.
+// HQ-level agent bead IDs use the "hq-" prefix and are stored in town beads.
 // These are global agents that operate at the town level (mayor, deacon, dogs).
 //
 // The naming convention is:
@@ -42,9 +42,9 @@ func DogBeadIDTown(name string) string {
 
 // ValidAgentRoles are the known agent role types for ID pattern validation.
 var ValidAgentRoles = []string{
-	constants.RoleMayor,    // Town-level: gt-mayor
-	constants.RoleDeacon,   // Town-level: gt-deacon
-	"dog",                  // Town-level with name: gt-dog-<name>
+	constants.RoleMayor,    // HQ-level: gt-mayor
+	constants.RoleDeacon,   // HQ-level: gt-deacon
+	"dog",                  // HQ-level with name: gt-dog-<name>
 	constants.RoleWitness,  // Per-rig: gt-<rig>-witness
 	constants.RoleRefinery, // Per-rig: gt-<rig>-refinery
 	constants.RoleCrew,    // Per-rig with name: gt-<rig>-crew-<name>
@@ -132,8 +132,8 @@ func ExtractAgentPrefix(id string) string {
 // ValidateAgentID validates that an agent ID follows the expected pattern.
 // Canonical format: prefix-rig-role-name
 // Patterns:
-//   - Town-level: <prefix>-<role> (e.g., gt-mayor, bd-deacon)
-//   - Town-level named: <prefix>-<role>-<name> (e.g., gt-dog-alpha)
+//   - HQ-level: <prefix>-<role> (e.g., gt-mayor, bd-deacon)
+//   - HQ-level named: <prefix>-<role>-<name> (e.g., gt-dog-alpha)
 //   - Per-rig singleton: <prefix>-<rig>-<role> (e.g., gt-gastown-witness)
 //   - Per-rig named: <prefix>-<rig>-<role>-<name> (e.g., gt-gastown-polecat-nux)
 //
@@ -298,7 +298,7 @@ func ValidateAgentID(id string) error {
 // is omitted to avoid stuttered IDs like "ff-ff-witness". Instead produces "ff-witness".
 func AgentBeadIDWithPrefix(prefix, rig, role, name string) string {
 	if rig == "" || rig == prefix {
-		// Town-level agent (rig=="") or collapsed form (rig==prefix):
+		// HQ-level agent (rig=="") or collapsed form (rig==prefix):
 		//   prefix-role or prefix-role-name
 		if name == "" {
 			return prefix + "-" + role

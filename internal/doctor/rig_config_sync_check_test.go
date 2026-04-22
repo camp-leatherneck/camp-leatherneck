@@ -7,7 +7,7 @@ import (
 )
 
 func TestRigConfigSyncCheck_MissingConfig(t *testing.T) {
-	// Create temp town root
+	// Create temp HQ root
 	tmpDir := t.TempDir()
 	mayorDir := filepath.Join(tmpDir, "mayor")
 	if err := os.MkdirAll(mayorDir, 0755); err != nil {
@@ -51,7 +51,7 @@ func TestRigConfigSyncCheck_MissingConfig(t *testing.T) {
 }
 
 func TestRigConfigSyncCheck_FixCreatesConfig(t *testing.T) {
-	// Create temp town root
+	// Create temp HQ root
 	tmpDir := t.TempDir()
 	mayorDir := filepath.Join(tmpDir, "mayor")
 	if err := os.MkdirAll(mayorDir, 0755); err != nil {
@@ -109,7 +109,7 @@ func TestRigConfigSyncCheck_FixCreatesConfig(t *testing.T) {
 }
 
 func TestRigConfigSyncCheck_AllConfigsPresent(t *testing.T) {
-	// Create temp town root
+	// Create temp HQ root
 	tmpDir := t.TempDir()
 	mayorDir := filepath.Join(tmpDir, "mayor")
 	if err := os.MkdirAll(mayorDir, 0755); err != nil {
@@ -163,7 +163,7 @@ func TestRigConfigSyncCheck_AllConfigsPresent(t *testing.T) {
 }
 
 func TestStaleRuntimeFilesCheck_StalePIDFiles(t *testing.T) {
-	// Create temp town root
+	// Create temp HQ root
 	tmpDir := t.TempDir()
 	mayorDir := filepath.Join(tmpDir, "mayor")
 	if err := os.MkdirAll(mayorDir, 0755); err != nil {
@@ -204,7 +204,7 @@ func TestStaleRuntimeFilesCheck_StalePIDFiles(t *testing.T) {
 }
 
 func TestStaleRuntimeFilesCheck_StaleWispConfig(t *testing.T) {
-	// Create temp town root
+	// Create temp HQ root
 	tmpDir := t.TempDir()
 	mayorDir := filepath.Join(tmpDir, "mayor")
 	if err := os.MkdirAll(mayorDir, 0755); err != nil {
@@ -240,7 +240,7 @@ func TestStaleRuntimeFilesCheck_StaleWispConfig(t *testing.T) {
 }
 
 func TestStaleRuntimeFilesCheck_Fix(t *testing.T) {
-	// Create temp town root
+	// Create temp HQ root
 	tmpDir := t.TempDir()
 	mayorDir := filepath.Join(tmpDir, "mayor")
 	if err := os.MkdirAll(mayorDir, 0755); err != nil {

@@ -35,7 +35,7 @@ type FormulaOverlay struct {
 // LoadFormulaOverlay reads overlay files for the given formula name.
 //
 // It checks two locations:
-//   - Town-level: <townRoot>/formula-overlays/<formulaName>.toml
+//   - HQ-level: <townRoot>/formula-overlays/<formulaName>.toml
 //   - Rig-level:  <townRoot>/<rigName>/formula-overlays/<formulaName>.toml
 //
 // If a rig-level overlay exists, it takes full precedence (not merged with town).

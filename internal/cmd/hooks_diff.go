@@ -14,7 +14,7 @@ import (
 var hooksDiffCmd = &cobra.Command{
 	Use:   "diff [target]",
 	Short: "Show what sync would change",
-	Long: `Show what 'gt hooks sync' would change without applying.
+	Long: `Show what 'lt hooks sync' would change without applying.
 
 Compares the current .claude/settings.json files against what would
 be generated from base + overrides. Uses color to highlight additions
@@ -25,8 +25,8 @@ Exit codes:
   1 - Changes would be applied
 
 Examples:
-  gt hooks diff                    # Show all pending changes
-  gt hooks diff gastown/crew       # Show changes for specific target`,
+  lt hooks diff                    # Show all pending changes
+  lt hooks diff gastown/crew       # Show changes for specific target`,
 	RunE: runHooksDiff,
 }
 
@@ -43,7 +43,7 @@ var (
 func runHooksDiff(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	targets, err := hooks.DiscoverTargets(townRoot)
@@ -83,7 +83,7 @@ func runHooksDiff(cmd *cobra.Command, args []string) error {
 			continue
 		}
 
-		// Compute relative path from town root for display
+		// Compute relative path from HQ root for display
 		relPath, err := filepath.Rel(townRoot, target.Path)
 		if err != nil {
 			relPath = target.Path

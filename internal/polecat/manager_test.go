@@ -519,8 +519,8 @@ func TestClearIssueWithoutAssignment(t *testing.T) {
 }
 
 // NOTE: TestInstallCLAUDETemplate tests were removed.
-// We no longer write CLAUDE.md to worktrees - Gas Town context is injected
-// ephemerally via SessionStart hook (gt prime) to prevent leaking internal
+// We no longer write CLAUDE.md to worktrees - Camp Leatherneck context is injected
+// ephemerally via SessionStart hook (lt prime) to prevent leaking internal
 // architecture into project repos.
 
 func TestAddWithOptions_HasAgentsMD(t *testing.T) {
@@ -1280,7 +1280,7 @@ func TestAddWithOptions_NoFilesAddedToRepo(t *testing.T) {
 
 	// Create .gitignore with .claude/ and .beads/ (standard practice)
 	// .claude/ - Claude Code local state
-	// .beads/ - Gas Town local state (redirect file)
+	// .beads/ - Camp Leatherneck local state (redirect file)
 	gitignorePath := filepath.Join(mayorRig, ".gitignore")
 	if err := os.WriteFile(gitignorePath, []byte(".claude/\n.beads/\n"), 0644); err != nil {
 		t.Fatalf("write .gitignore: %v", err)
@@ -1672,7 +1672,7 @@ func TestAddWithOptions_RollbackReleasesName(t *testing.T) {
 	}
 	m := NewManager(r, git.NewGit(root), nil)
 
-	// Allocate a name (simulates what gt sling does before AddWithOptions)
+	// Allocate a name (simulates what lt sling does before AddWithOptions)
 	name, err := m.AllocateName()
 	if err != nil {
 		t.Fatalf("AllocateName: %v", err)
@@ -1944,7 +1944,7 @@ func TestAllocateAndAdd_NoDuplicateNames(t *testing.T) {
 // an existing live (non-stale) tmux session instead of returning ErrSessionRunning.
 // This is the regression test for the sling-reuse-stale-session bug: idle polecats
 // with a live Claude session at a dead ❯ prompt must have their session killed so
-// StartSession can create a fresh session with a proper gt prime --hook cycle.
+// StartSession can create a fresh session with a proper lt prime --hook cycle.
 func TestReuseIdlePolecat_KillsLiveSession(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("tmux not supported on Windows")

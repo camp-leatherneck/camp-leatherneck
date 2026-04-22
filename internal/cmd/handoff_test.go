@@ -482,7 +482,7 @@ func TestHandoffPolecatEnvCheck(t *testing.T) {
 			handoffStdin = false
 			handoffAuto = false
 
-			// The polecat path tries to exec "gt done" which will fail in tests.
+			// The polecat path tries to exec "lt done" which will fail in tests.
 			// We capture stdout to detect the "Polecat detected" message, which
 			// confirms the polecat guard triggered. Non-polecat paths will fail
 			// later (missing tmux, etc.) without printing the polecat message.

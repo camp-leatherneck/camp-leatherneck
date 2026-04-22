@@ -14,7 +14,7 @@ import (
 // Test Fixtures
 // =============================================================================
 
-// testManager creates a Manager with a temporary town root for testing.
+// testManager creates a Manager with a temporary HQ root for testing.
 func testManager(t *testing.T) (*Manager, string) {
 	t.Helper()
 	tmpDir := t.TempDir()

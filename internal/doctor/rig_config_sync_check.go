@@ -246,7 +246,7 @@ func (c *RigConfigSyncCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: strings.Join(parts, ", "),
 		Details: details,
-		FixHint: "Run 'gt doctor --fix' to create missing config files and databases",
+		FixHint: "Run 'lt doctor --fix' to create missing config files and databases",
 	}
 }
 

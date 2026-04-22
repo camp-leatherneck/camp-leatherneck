@@ -32,11 +32,11 @@ var (
 	ensuredMu   sync.Mutex
 )
 
-// FindTownRoot walks up from startDir to find the Gas Town root directory.
-// The town root is identified by the presence of mayor/town.json.
-// Returns the outermost town root found, so that rig repos which were
+// FindTownRoot walks up from startDir to find the Camp Leatherneck root directory.
+// The HQ root is identified by the presence of mayor/town.json.
+// Returns the outermost HQ root found, so that rig repos which were
 // originally standalone towns (and still contain mayor/town.json) don't
-// shadow the real town root above them.
+// shadow the real HQ root above them.
 // Returns empty string if not found (reached filesystem root).
 func FindTownRoot(startDir string) string {
 	dir := startDir
@@ -319,7 +319,7 @@ func ensureDatabaseInitialized(beadsDir string) error {
 		if meta.DoltMode == "server" && meta.DoltDatabase != "" {
 			townRoot := FindTownRoot(filepath.Dir(beadsDir))
 			if townRoot == "" {
-				return nil // Can't find town root — assume initialized
+				return nil // Can't find HQ root — assume initialized
 			}
 			dbDir := filepath.Join(townRoot, ".dolt-data", meta.DoltDatabase)
 			if _, err := os.Stat(dbDir); !os.IsNotExist(err) {
@@ -406,7 +406,7 @@ func ensureDatabaseInitialized(beadsDir string) error {
 
 // detectPrefix determines the beads prefix for a directory.
 // Resolution order:
-//  1. Town-level config: FindTownRoot → config.GetRigPrefix (authoritative source from rigs.json)
+//  1. HQ-level config: FindTownRoot → config.GetRigPrefix (authoritative source from rigs.json)
 //  2. Local config.yaml: issue-prefix or prefix field
 //  3. Default: "gt"
 //
@@ -421,7 +421,7 @@ func ensureDatabaseInitialized(beadsDir string) error {
 // directory tree to resolve the actual rig name, which is out of scope for
 // this crash-prevention guard.
 func detectPrefix(beadsDir string) string {
-	// 1. Try authoritative source: rigs.json via town root
+	// 1. Try authoritative source: rigs.json via HQ root
 	rigDir := filepath.Dir(beadsDir)
 	if townRoot := FindTownRoot(rigDir); townRoot != "" {
 		rigName := filepath.Base(rigDir)

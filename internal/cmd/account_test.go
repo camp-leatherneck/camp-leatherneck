@@ -12,7 +12,7 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
 )
 
-// setupTestTownForAccount creates a minimal Gas Town workspace with accounts.
+// setupTestTownForAccount creates a minimal Camp Leatherneck workspace with accounts.
 func setupTestTownForAccount(t *testing.T) (townRoot string, accountsDir string) {
 	t.Helper()
 
@@ -119,7 +119,7 @@ func TestAccountSwitch(t *testing.T) {
 			t.Fatalf("create symlink: %v", err)
 		}
 
-		// Change to town root
+		// Change to HQ root
 		originalWd, _ := os.Getwd()
 		defer os.Chdir(originalWd)
 		if err := os.Chdir(townRoot); err != nil {

@@ -16,12 +16,12 @@ import (
 
 // getCrewManagerForMember returns a crew manager, inferring the rig from the
 // crew member name if cwd-based inference fails. Use this when a crew member
-// name is known (e.g., gt crew at <name>).
+// name is known (e.g., lt crew at <name>).
 func getCrewManagerForMember(rigName, crewName string) (*crew.Manager, *rig.Rig, error) {
 	if rigName == "" {
 		townRoot, err := workspace.FindFromCwdOrError()
 		if err != nil {
-			return nil, nil, fmt.Errorf("not in a Gas Town workspace: %w", err)
+			return nil, nil, fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 		}
 		rigName, err = inferRigFromCwd(townRoot)
 		if err != nil && crewName != "" {
@@ -40,7 +40,7 @@ func getCrewManager(rigName string) (*crew.Manager, *rig.Rig, error) {
 	if rigName == "" {
 		townRoot, err := workspace.FindFromCwdOrError()
 		if err != nil {
-			return nil, nil, fmt.Errorf("not in a Gas Town workspace: %w", err)
+			return nil, nil, fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 		}
 		rigName, err = inferRigFromCwd(townRoot)
 		if err != nil {
@@ -78,16 +78,16 @@ func detectCrewFromCwd() (*crewDetection, error) {
 		return nil, fmt.Errorf("getting cwd: %w", err)
 	}
 
-	// Find town root
+	// Find HQ root
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return nil, fmt.Errorf("not in Gas Town workspace: %w", err)
+		return nil, fmt.Errorf("not in Camp Leatherneck workspace: %w", err)
 	}
 	if townRoot == "" {
-		return nil, fmt.Errorf("not in Gas Town workspace")
+		return nil, fmt.Errorf("not in Camp Leatherneck workspace")
 	}
 
-	// Get relative path from town root
+	// Get relative path from HQ root
 	relPath, err := filepath.Rel(townRoot, cwd)
 	if err != nil {
 		return nil, fmt.Errorf("getting relative path: %w", err)

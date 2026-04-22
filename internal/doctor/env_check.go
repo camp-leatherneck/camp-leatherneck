@@ -77,7 +77,7 @@ func NewEnvVarsCheckWithAccessor(accessor SessionEnvAccessor) *EnvVarsCheck {
 	return c
 }
 
-// Run checks environment variables for all Gas Town sessions.
+// Run checks environment variables for all Camp Leatherneck sessions.
 func (c *EnvVarsCheck) Run(ctx *CheckContext) *CheckResult {
 	reader := c.reader
 	if reader == nil {
@@ -86,7 +86,7 @@ func (c *EnvVarsCheck) Run(ctx *CheckContext) *CheckResult {
 
 	sessions, err := reader.ListSessions()
 	if err != nil {
-		// No tmux server - treat as success (valid when Gas Town is down)
+		// No tmux server - treat as success (valid when Camp Leatherneck is down)
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
@@ -94,7 +94,7 @@ func (c *EnvVarsCheck) Run(ctx *CheckContext) *CheckResult {
 		}
 	}
 
-	// Filter to Gas Town sessions only (known rig prefixes and hq-*)
+	// Filter to Camp Leatherneck sessions only (known rig prefixes and hq-*)
 	var gtSessions []string
 	for _, sess := range sessions {
 		if session.IsKnownSession(sess) {
@@ -103,11 +103,11 @@ func (c *EnvVarsCheck) Run(ctx *CheckContext) *CheckResult {
 	}
 
 	if len(gtSessions) == 0 {
-		// No Gas Town sessions - treat as success (valid when Gas Town is down)
+		// No Camp Leatherneck sessions - treat as success (valid when Camp Leatherneck is down)
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: "No Gas Town sessions running",
+			Message: "No Camp Leatherneck sessions running",
 		}
 	}
 
@@ -182,7 +182,7 @@ func (c *EnvVarsCheck) Run(ctx *CheckContext) *CheckResult {
 			Status:  StatusWarning,
 			Message: fmt.Sprintf("Found BEADS_DIR set in %d session(s)", len(beadsDirWarnings)),
 			Details: details,
-			FixHint: "Remove BEADS_DIR from session environment: gt shutdown && gt up",
+			FixHint: "Remove BEADS_DIR from session environment: lt shutdown && lt up",
 		}
 	}
 
@@ -205,13 +205,13 @@ func (c *EnvVarsCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: fmt.Sprintf("Found %d env var mismatch(es) across %d session(s)", len(mismatches), checkedCount),
 		Details: details,
-		FixHint: "Run 'gt doctor --fix' to apply missing env vars in-place, or 'gt shutdown && gt up' to restart",
+		FixHint: "Run 'lt doctor --fix' to apply missing env vars in-place, or 'lt shutdown && lt up' to restart",
 	}
 }
 
-// Fix applies missing or incorrect env vars to all Gas Town tmux sessions in-place.
+// Fix applies missing or incorrect env vars to all Camp Leatherneck tmux sessions in-place.
 // The running Claude process is unaffected (it already has env vars from startup);
-// this updates the tmux session store so future processes and gt doctor agree.
+// this updates the tmux session store so future processes and lt doctor agree.
 func (c *EnvVarsCheck) Fix(ctx *CheckContext) error {
 	accessor := c.accessor
 	if accessor == nil {

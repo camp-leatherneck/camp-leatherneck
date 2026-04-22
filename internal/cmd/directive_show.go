@@ -19,8 +19,8 @@ var directiveShowCmd = &cobra.Command{
 Shows which files contribute to the directive (town-level, rig-level, or both).
 
 Examples:
-  gt directive show polecat             # Show polecat directive
-  gt directive show witness --rig sky   # Show witness directive for sky rig`,
+  lt directive show polecat             # Show polecat directive
+  lt directive show witness --rig sky   # Show witness directive for sky rig`,
 	Args: cobra.ExactArgs(1),
 	RunE: runDirectiveShow,
 }
@@ -58,7 +58,7 @@ func runDirectiveShow(cmd *cobra.Command, args []string) error {
 		if rigPath != "" {
 			fmt.Printf("  Checked: %s\n", rigPath)
 		}
-		fmt.Println("\nUse 'gt directive edit' to create one.")
+		fmt.Println("\nUse 'lt directive edit' to create one.")
 		return nil
 	}
 
@@ -85,11 +85,11 @@ func runDirectiveShow(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-// resolveDirectiveContext finds the town root and rig name for directive commands.
+// resolveDirectiveContext finds the HQ root and rig name for directive commands.
 func resolveDirectiveContext(explicitRig string) (townRoot, rigName string, err error) {
 	townRoot, err = workspace.FindFromCwdOrError()
 	if err != nil {
-		return "", "", fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return "", "", fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	rigName = explicitRig

@@ -10,24 +10,24 @@ import (
 //go:embed townroot/claude.md
 var townRootCLAUDEmdRaw string
 
-// TownRootCLAUDEmdVersion is the version of the embedded town-root CLAUDE.md.
+// TownRootCLAUDEmdVersion is the version of the embedded HQ CLAUDE.md.
 // Increment this when updating the template content with new sections.
 const TownRootCLAUDEmdVersion = 1
 
-// TownRootCLAUDEmd returns the canonical town-root CLAUDE.md content
+// TownRootCLAUDEmd returns the canonical HQ CLAUDE.md content
 // with the CLI command name substituted.
 func TownRootCLAUDEmd() string {
 	return strings.ReplaceAll(townRootCLAUDEmdRaw, "{{cmd}}", cli.Name())
 }
 
-// TownRootRequiredSection describes a section that must be present in the town-root CLAUDE.md.
+// TownRootRequiredSection describes a section that must be present in the HQ CLAUDE.md.
 type TownRootRequiredSection struct {
 	Name    string // Human-readable name for reporting
 	Heading string // The H2 or H3 heading to look for
 }
 
 // TownRootRequiredSections returns the key sections that must be present
-// in the town-root CLAUDE.md for proper agent behavior.
+// in the HQ CLAUDE.md for proper agent behavior.
 func TownRootRequiredSections() []TownRootRequiredSection {
 	return []TownRootRequiredSection{
 		{

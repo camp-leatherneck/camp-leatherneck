@@ -346,7 +346,7 @@ func (m *mockDBPrefixGetter) GetDBPrefix(rigPath string) (string, error) {
 
 func TestDatabasePrefixCheck_SkipsRigRedirectingToTownDB(t *testing.T) {
 	// Layout:
-	//   <town>/.beads/           <- town root beads (prefix "hq")
+	//   <town>/.beads/           <- HQ root beads (prefix "hq")
 	//   <town>/site_manager/.beads/redirect -> "../.beads"  (shares town DB)
 	//   routes.jsonl has both {"prefix":"hq-","path":"."} and {"prefix":"sm-","path":"site_manager"}
 	//
@@ -362,7 +362,7 @@ func TestDatabasePrefixCheck_SkipsRigRedirectingToTownDB(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// routes.jsonl: town root + site_manager
+	// routes.jsonl: HQ root + site_manager
 	routesContent := `{"prefix":"hq-","path":"."}
 {"prefix":"sm-","path":"site_manager"}`
 	if err := os.WriteFile(filepath.Join(townBeads, "routes.jsonl"), []byte(routesContent), 0644); err != nil {
@@ -464,7 +464,7 @@ func TestDatabasePrefixCheck_MultipleRedirectsSameDB(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// All three rigs redirect to town root
+	// All three rigs redirect to HQ root
 	for _, rig := range []string{"site_manager", "camera_relay", "autostart"} {
 		rigBeads := filepath.Join(tmpDir, rig, ".beads")
 		if err := os.MkdirAll(rigBeads, 0755); err != nil {

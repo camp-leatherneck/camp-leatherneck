@@ -473,13 +473,13 @@ func TestComputeExpectedBackfillsSessionStart(t *testing.T) {
 	// It has Stop, PreCompact, UserPromptSubmit but no SessionStart.
 	staleBase := &HooksConfig{
 		Stop: []HookEntry{
-			{Matcher: "", Hooks: []Hook{{Type: "command", Command: "gt costs record"}}},
+			{Matcher: "", Hooks: []Hook{{Type: "command", Command: "lt costs record"}}},
 		},
 		PreCompact: []HookEntry{
-			{Matcher: "", Hooks: []Hook{{Type: "command", Command: "gt prime --hook"}}},
+			{Matcher: "", Hooks: []Hook{{Type: "command", Command: "lt prime --hook"}}},
 		},
 		UserPromptSubmit: []HookEntry{
-			{Matcher: "", Hooks: []Hook{{Type: "command", Command: "gt mail check --inject"}}},
+			{Matcher: "", Hooks: []Hook{{Type: "command", Command: "lt mail check --inject"}}},
 		},
 	}
 	if err := SaveBase(staleBase); err != nil {
@@ -510,7 +510,7 @@ func TestComputeExpectedBackfillsSessionStart(t *testing.T) {
 		// On-disk Stop should be preserved (not overwritten by DefaultBase)
 		if len(expected.Stop) == 0 {
 			t.Errorf("%s: on-disk Stop should be preserved", target)
-		} else if expected.Stop[0].Hooks[0].Command != "gt costs record" {
+		} else if expected.Stop[0].Hooks[0].Command != "lt costs record" {
 			t.Errorf("%s: on-disk Stop should take precedence, got %q", target, expected.Stop[0].Hooks[0].Command)
 		}
 	}

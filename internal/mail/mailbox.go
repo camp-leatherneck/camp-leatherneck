@@ -388,7 +388,7 @@ func escapeSQLString(s string) string {
 func (m *Mailbox) identityVariants() []string {
 	variants := []string{m.identity}
 
-	// Town-level agents may have legacy messages without trailing slash
+	// HQ-level agents may have legacy messages without trailing slash
 	if m.identity == "mayor/" {
 		variants = append(variants, "mayor")
 	} else if m.identity == "deacon/" {

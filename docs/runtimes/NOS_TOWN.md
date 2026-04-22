@@ -1,15 +1,15 @@
 # NOS Town Runtime Integration
 
-This document describes how to use Gas Town's core orchestration with the NOS Town Groq-native runtime.
+This document describes how to use Camp Leatherneck's core orchestration with the NOS Town Groq-native runtime.
 
 ## Overview
 
-NOS Town extends Gas Town with Groq-hosted open model support, multi-model routing, consensus councils, and institutional memory via the Historian. The two systems share the same core concepts (Hooks, Beads, Convoys, Mayor/Witness/Deacon roles) but diverge on runtime and model selection.
+NOS Town extends Camp Leatherneck with Groq-hosted open model support, multi-model routing, consensus councils, and institutional memory via the Historian. The two systems share the same core concepts (Hooks, Beads, Convoys, Mayor/Witness/Deacon roles) but diverge on runtime and model selection.
 
 ## Architecture
 
 ```
-Gas Town Core (this repo)     NOS Town Runtime (kab0rn/nostown)
+Camp Leatherneck Core (this repo)     NOS Town Runtime (kab0rn/nostown)
 │                              │
 ├── Hook lifecycle            ├── Groq API client
 ├── Beads integration         ├── Multi-model routing table
@@ -21,26 +21,26 @@ Gas Town Core (this repo)     NOS Town Runtime (kab0rn/nostown)
 
 ## Fork Strategy
 
-**NOS Town is NOT a git fork of Gas Town.** Instead:
+**NOS Town is NOT a git fork of Camp Leatherneck.** Instead:
 
 1. **kab0rn/gastown** tracks `gastownhall/gastown` upstream via normal fork/sync workflow
-2. **kab0rn/nostown** imports Gas Town core as a dependency (Go modules or submodule)
+2. **kab0rn/nostown** imports Camp Leatherneck core as a dependency (Go modules or submodule)
 3. NOS-specific logic (Groq runtime, routing, councils) lives only in `kab0rn/nostown`
 
 ### Why This Approach?
 
-- **Preserves upstream evolution**: Steve Yegge actively iterates on Gas Town. A true fork would diverge.
-- **Clean separation**: Gas Town core doesn't need Groq dependencies; NOS doesn't duplicate orchestration logic.
-- **Easy upstream contributions**: Improvements to Hooks, Convoys, or roles can be PR'd back to Gas Town without Groq-specific baggage.
+- **Preserves upstream evolution**: Steve Yegge actively iterates on Camp Leatherneck. A true fork would diverge.
+- **Clean separation**: Camp Leatherneck core doesn't need Groq dependencies; NOS doesn't duplicate orchestration logic.
+- **Easy upstream contributions**: Improvements to Hooks, Convoys, or roles can be PR'd back to Camp Leatherneck without Groq-specific baggage.
 
 ## Configuration
 
-To use NOS Town with this Gas Town fork:
+To use NOS Town with this Camp Leatherneck fork:
 
 ### 1. Install Prerequisites
 
 ```bash
-# Gas Town deps (same as standard install)
+# Camp Leatherneck deps (same as standard install)
 go install github.com/kab0rn/gastown/cmd/gt@latest
 go install github.com/steveyegge/beads/cmd/bd@latest
 
@@ -121,9 +121,9 @@ gt sling gt-abc12 myproject
 
 The main difference: `gt` doesn't know about NOS-specific features like councils, Historian, or routing table management. Use `nos` for those.
 
-## Key Differences from Standard Gas Town
+## Key Differences from Standard Camp Leatherneck
 
-| Feature | Gas Town (Claude Code) | NOS Town (Groq) |
+| Feature | Camp Leatherneck (Claude Code) | NOS Town (Groq) |
 |---------|------------------------|------------------|
 | **Runtime** | Claude Code IDE | Groq OpenAI-compatible API |
 | **Model Selection** | Single model (Opus/Sonnet/Haiku) | Multi-model routing per role |
@@ -137,7 +137,7 @@ The main difference: `gt` doesn't know about NOS-specific features like councils
 
 ## Contributing
 
-### To Gas Town Core
+### To Camp Leatherneck Core
 
 If you discover improvements to Hooks, Beads, Convoy lifecycle, or core roles:
 
@@ -157,7 +157,7 @@ Groq-specific features (routing, councils, Historian, Safeguard):
 
 ## Documentation
 
-- **Gas Town**: [README.md](../../README.md), [docs/](../)
+- **Camp Leatherneck**: [README.md](../../README.md), [docs/](../)
 - **NOS Town**: [github.com/kab0rn/nostown](https://github.com/kab0rn/nostown)
   - [docs/ROLES.md](https://github.com/kab0rn/nostown/blob/main/docs/ROLES.md) — Groq-specific role designs
   - [docs/ROUTING.md](https://github.com/kab0rn/nostown/blob/main/docs/ROUTING.md) — Multi-model routing
@@ -165,4 +165,4 @@ Groq-specific features (routing, councils, Historian, Safeguard):
 
 ## License
 
-Both Gas Town and NOS Town are MIT licensed.
+Both Camp Leatherneck and NOS Town are MIT licensed.

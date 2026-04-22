@@ -289,7 +289,7 @@ func TestMailboxMarkReadOnlyExcludesFromUnread(t *testing.T) {
 		t.Errorf("ListUnread returned %d, want 2", len(unread))
 	}
 
-	// Mark one as read-only (simulates gt mail read behavior)
+	// Mark one as read-only (simulates lt mail read behavior)
 	if err := m.MarkReadOnly("msg-001"); err != nil {
 		t.Fatalf("MarkReadOnly error: %v", err)
 	}

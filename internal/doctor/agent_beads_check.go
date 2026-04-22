@@ -17,7 +17,7 @@ import (
 // - Per-rig agents (witness, refinery) - stored in each rig's beads
 // - Crew workers - stored in each rig's beads
 //
-// Agent beads are created by gt rig add (see gt-h3hak, gt-pinkq) and gt crew add.
+// Agent beads are created by lt rig add (see gt-h3hak, gt-pinkq) and lt crew add.
 // Each rig uses its configured prefix (e.g., "gt-" for gastown, "bd-" for beads).
 type AgentBeadsCheck struct {
 	FixableCheck
@@ -39,7 +39,7 @@ func NewAgentBeadsCheck() *AgentBeadsCheck {
 // rigInfo holds the rig name and its beads path from routes.
 type rigInfo struct {
 	name      string // rig name (first component of path)
-	beadsPath string // full path to beads directory relative to town root
+	beadsPath string // full path to beads directory relative to HQ root
 }
 
 // Run checks if agent beads exist for all expected agents.
@@ -153,7 +153,7 @@ func (c *AgentBeadsCheck) Run(ctx *CheckContext) *CheckResult {
 			Status:  StatusError,
 			Message: fmt.Sprintf("%d agent bead(s) missing, %d missing gt:agent label", len(missing), len(missingLabel)),
 			Details: details,
-			FixHint: "Run 'gt doctor --fix' to create missing agent beads and add labels",
+			FixHint: "Run 'lt doctor --fix' to create missing agent beads and add labels",
 		}
 	}
 
@@ -197,7 +197,7 @@ func (c *AgentBeadsCheck) Run(ctx *CheckContext) *CheckResult {
 			Status:  StatusError,
 			Message: fmt.Sprintf("%d agent bead(s) missing", len(missing)),
 			Details: missing,
-			FixHint: "Run 'gt doctor --fix' to create missing agent beads",
+			FixHint: "Run 'lt doctor --fix' to create missing agent beads",
 		}
 	}
 
@@ -206,7 +206,7 @@ func (c *AgentBeadsCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: fmt.Sprintf("%d agent bead(s) missing gt:agent label", len(missingLabel)),
 		Details: missingLabel,
-		FixHint: "Run 'gt doctor --fix' to add missing labels",
+		FixHint: "Run 'lt doctor --fix' to add missing labels",
 	}
 }
 

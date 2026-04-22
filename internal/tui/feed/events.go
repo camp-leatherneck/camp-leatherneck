@@ -215,7 +215,7 @@ func parseBeadContext(beadID string) (actor, rig, role string) {
 	return
 }
 
-// GtEventsSource reads events from ~/gt/.events.jsonl (gt activity log)
+// GtEventsSource reads events from ~/gt/.events.jsonl (lt activity log)
 type GtEventsSource struct {
 	file   *os.File
 	events chan Event

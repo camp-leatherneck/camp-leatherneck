@@ -1,4 +1,4 @@
-// Package daemon provides the town-level background service for Gas Town.
+// Package daemon provides the town-level background service for Camp Leatherneck.
 //
 // The daemon is a simple Go process (not a Claude agent) that:
 // 1. Pokes agents periodically (heartbeat)
@@ -24,7 +24,7 @@ type Config struct {
 	// HeartbeatInterval is how often to poke agents.
 	HeartbeatInterval time.Duration `json:"heartbeat_interval"`
 
-	// TownRoot is the Gas Town workspace root.
+	// TownRoot is the Camp Leatherneck workspace root.
 	TownRoot string `json:"town_root"`
 
 	// LogFile is the path to the daemon log file.
@@ -201,7 +201,7 @@ type DaemonPatrolConfig struct {
 	Heartbeat *PatrolConfig     `json:"heartbeat,omitempty"`
 	Patrols   *PatrolsConfig    `json:"patrols,omitempty"`
 	// Env holds environment variables to set at startup.
-	// Propagated to all sessions spawned by the daemon and read by gt up/mayor attach.
+	// Propagated to all sessions spawned by the daemon and read by lt up/mayor attach.
 	// Example: {"GT_DOLT_PORT": "43211"}
 	Env       map[string]string `json:"env,omitempty"`
 }

@@ -94,7 +94,7 @@ func TestGetMayorPrime(t *testing.T) {
 		t.Error("GetMayorPrime should render mayor template")
 	}
 	if !strings.Contains(content, tmpDir) {
-		t.Error("GetMayorPrime should contain town root path")
+		t.Error("GetMayorPrime should contain HQ root path")
 	}
 }
 
@@ -103,11 +103,11 @@ func TestGetMayorPrime_InvalidTownRoot(t *testing.T) {
 	// (town name defaults to "unknown" on error)
 	content, err := GetMayorPrime("/nonexistent/path")
 	if err != nil {
-		t.Fatalf("GetMayorPrime should not fail with invalid town root: %v", err)
+		t.Fatalf("GetMayorPrime should not fail with invalid HQ root: %v", err)
 	}
 
 	// Should still have the template content
 	if !strings.Contains(content, "# Mayor Context") {
-		t.Error("GetMayorPrime should render mayor template even with invalid town root")
+		t.Error("GetMayorPrime should render mayor template even with invalid HQ root")
 	}
 }

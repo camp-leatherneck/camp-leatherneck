@@ -11,8 +11,8 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
 )
 
-// MinDoltVersion is the minimum compatible dolt version for this Gas Town release.
-// Update this when Gas Town requires new dolt features.
+// MinDoltVersion is the minimum compatible dolt version for this Camp Leatherneck release.
+// Update this when Camp Leatherneck requires new dolt features.
 const MinDoltVersion = "1.82.4"
 
 // DoltInstallURL is the installation page for dolt.

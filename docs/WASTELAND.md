@@ -32,11 +32,11 @@ board, claiming your first task, and submitting evidence of completion.
 
 ## Prerequisites
 
-You need a running Gas Town installation and a DoltHub account.
+You need a running Camp Leatherneck installation and a DoltHub account.
 
 | Requirement | Check | Setup |
 |-------------|-------|-------|
-| **Gas Town** | `gt version` | See [INSTALLING.md](INSTALLING.md) |
+| **Camp Leatherneck** | `gt version` | See [INSTALLING.md](INSTALLING.md) |
 | **Dolt** | `dolt version` (>= 1.82.4) | See [dolthub/dolt](https://github.com/dolthub/dolt?tab=readme-ov-file#installation) |
 | **DoltHub account** | — | [Sign up](https://www.dolthub.com/signin) |
 | **DoltHub API token** | — | [Generate token](https://www.dolthub.com/settings/tokens) |
@@ -62,7 +62,7 @@ Before joining the wasteland, ensure your dolt is authenticated:
 dolt login
 ```
 
-From your Gas Town workspace directory:
+From your Camp Leatherneck workspace directory:
 
 ```bash
 cd ~/gt
@@ -131,7 +131,7 @@ items and claim them. Items have these fields:
 ### Rigs
 
 In Wasteland context, a **rig** is your participant identity — distinct
-from Gas Town rigs, which are project containers. When you join, your
+from Camp Leatherneck rigs, which are project containers. When you join, your
 DoltHub org name becomes your rig handle. Every claim, completion, and
 stamp is attributed to your rig.
 
@@ -223,7 +223,7 @@ commands — use your normal development workflow:
 
 1. **Fork the relevant repo** (if contributing code)
 2. **Create a feature branch** following the target project's contribution
-   guidelines (Gas Town uses `docs/*`, `fix/*`, `feat/*`, `refactor/*` —
+   guidelines (Camp Leatherneck uses `docs/*`, `fix/*`, `feat/*`, `refactor/*` —
    see [CONTRIBUTING.md](../CONTRIBUTING.md))
 3. **Make your changes**
 4. **Open a pull request** against the upstream repository
@@ -313,7 +313,7 @@ Here's the end-to-end flow for a first contribution:
 export DOLTHUB_ORG="your-username"
 export DOLTHUB_TOKEN="dhat.v1.your-token"
 
-# 2. Join the wasteland (one-time, from Gas Town workspace)
+# 2. Join the wasteland (one-time, from Camp Leatherneck workspace)
 cd ~/gt
 gt wl join hop/wl-commons
 
@@ -333,7 +333,7 @@ git push -u origin HEAD
 # 6. Open a PR on GitHub
 gh pr create --title "docs: My contribution"
 
-# 7. Submit completion evidence (back in Gas Town workspace)
+# 7. Submit completion evidence (back in Camp Leatherneck workspace)
 cd ~/gt
 gt wl done w-abc123 --evidence "https://github.com/org/repo/pull/123"
 
@@ -408,9 +408,9 @@ gt wl browse --status claimed         # Try a different status
 gt wl browse --limit 50              # Increase the limit
 ```
 
-### `gt wl claim` says "not in a Gas Town workspace"
+### `gt wl claim` says "not in a Camp Leatherneck workspace"
 
-All `gt wl` commands must be run from within your Gas Town workspace
+All `gt wl` commands must be run from within your Camp Leatherneck workspace
 (typically `~/gt`):
 
 ```bash
@@ -465,5 +465,5 @@ After your first completion:
 For the full Wasteland design rationale, see Steve Yegge's
 [Welcome to the Wasteland](https://steve-yegge.medium.com/welcome-to-the-wasteland-a-thousand-gas-towns-a5eb9bc8dc1f).
 
-For Gas Town concepts referenced here, see [overview.md](overview.md) and
+For Camp Leatherneck concepts referenced here, see [overview.md](overview.md) and
 [glossary.md](glossary.md).

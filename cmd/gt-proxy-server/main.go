@@ -19,8 +19,8 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/util"
 )
 
-// defaultAllowedSubcmds lists the safe subcommands for gt and bd.
-// Dangerous subcommands (e.g. gt polecat, gt rig, gt admin, gt nuke) are excluded.
+// defaultAllowedSubcmds lists the safe subcommands for lt and bd.
+// Dangerous subcommands (e.g. lt polecat, lt rig, lt admin, lt nuke) are excluded.
 const defaultAllowedSubcmds = "" +
 	"gt:prime,hook,done,mail,nudge,mol,status,handoff,version,convoy,sling;" +
 	"bd:create,update,close,show,list,ready,dep,export,prime,stats,blocked,doctor"
@@ -34,7 +34,7 @@ func main() {
 		allowedCmds    = flag.String("allowed-cmds", "gt,bd", "comma-separated list of allowed commands")
 		allowedSubcmds = flag.String("allowed-subcmds", discoverAllowedSubcmds(),
 			`semicolon-separated list of "cmd:sub1,sub2,..." subcommand allowlists`)
-		townRoot = flag.String("town-root", "", "Gas Town root directory (default: $GT_TOWN or ~/gt)")
+		townRoot = flag.String("HQ", "", "Camp Leatherneck root directory (default: $GT_TOWN or ~/gt)")
 	)
 	flag.Parse()
 
@@ -69,7 +69,7 @@ func main() {
 	if !explicitFlags["ca-dir"] && fileCfg.CADir != "" {
 		*caDir = fileCfg.CADir
 	}
-	if !explicitFlags["town-root"] && fileCfg.TownRoot != "" {
+	if !explicitFlags["HQ"] && fileCfg.TownRoot != "" {
 		*townRoot = fileCfg.TownRoot
 	}
 	if !explicitFlags["allowed-cmds"] && len(fileCfg.AllowedCommands) > 0 {
@@ -152,7 +152,7 @@ func main() {
 	}
 }
 
-// discoverAllowedSubcmds calls "gt proxy-subcmds" to auto-discover the allowed
+// discoverAllowedSubcmds calls "lt proxy-subcmds" to auto-discover the allowed
 // subcommand list. Falls back to defaultAllowedSubcmds if the command is
 // unavailable or returns empty output.
 func discoverAllowedSubcmds() string {
@@ -160,7 +160,7 @@ func discoverAllowedSubcmds() string {
 	util.SetDetachedProcessGroup(cmd)
 	out, err := cmd.Output()
 	if err != nil {
-		slog.Debug("gt proxy-subcmds discovery failed, using built-in default", "err", err)
+		slog.Debug("lt proxy-subcmds discovery failed, using built-in default", "err", err)
 		return defaultAllowedSubcmds
 	}
 	result := strings.TrimSpace(string(out))

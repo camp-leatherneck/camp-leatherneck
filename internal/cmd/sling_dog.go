@@ -82,7 +82,7 @@ type DogDispatchInfo struct {
 func DispatchToDog(dogName string, opts DogDispatchOptions) (*DogDispatchInfo, error) {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		return nil, fmt.Errorf("finding town root: %w", err)
+		return nil, fmt.Errorf("finding HQ root: %w", err)
 	}
 
 	rigsConfigPath := filepath.Join(townRoot, "mayor", "rigs.json")

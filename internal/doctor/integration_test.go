@@ -1,6 +1,6 @@
 //go:build integration
 
-// Package doctor provides integration tests for Gas Town doctor functionality.
+// Package doctor provides integration tests for Camp Leatherneck doctor functionality.
 // These tests verify that:
 // 1. New town setup works correctly
 // 2. Doctor accurately detects problems (no false positives/negatives)
@@ -79,7 +79,7 @@ func TestIntegrationOrphanSessionDetection(t *testing.T) {
 		sessionName  string
 		expectOrphan bool
 	}{
-		// Valid Gas Town sessions should NOT be detected as orphans
+		// Valid Camp Leatherneck sessions should NOT be detected as orphans
 		{"mayor_session", "hq-mayor", false},
 		{"deacon_session", "hq-deacon", false},
 		{"witness_session", "ga-witness", false},
@@ -685,7 +685,7 @@ func TestIntegrationMultiTownSocketIsolation(t *testing.T) {
 	}
 
 	// Verify the split-brain check passes when the "default" socket has no
-	// Gas Town sessions.  We mock the default lister to avoid interacting with
+	// Camp Leatherneck sessions.  We mock the default lister to avoid interacting with
 	// the user's real default tmux socket.
 	tmux.SetDefaultSocket(socketA)
 	checkA := NewSocketSplitBrainCheck()

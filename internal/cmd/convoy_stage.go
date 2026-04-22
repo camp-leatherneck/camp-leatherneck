@@ -21,7 +21,7 @@ var convoyStageJSON bool
 
 // convoyStageLaunch controls whether to launch the convoy immediately after staging.
 // When true, the staged convoy is transitioned to open and Wave 1 is dispatched.
-// Set by `gt convoy stage --launch` or when `gt convoy launch` delegates to stage.
+// Set by `lt convoy stage --launch` or when `lt convoy launch` delegates to stage.
 var convoyStageLaunch bool
 
 // convoyStageTitle is an optional human-readable title for the staged convoy.
@@ -43,7 +43,7 @@ func init() {
 // JSON output types (gt-csl.4.3)
 // ---------------------------------------------------------------------------
 
-// StageResult is the top-level JSON output for gt convoy stage --json.
+// StageResult is the top-level JSON output for lt convoy stage --json.
 type StageResult struct {
 	Status           string          `json:"status"`                       // "staged_ready", "staged_warnings", or "error"
 	ConvoyID         string          `json:"convoy_id"`                    // empty if errors prevented creation
@@ -97,7 +97,7 @@ type TreeNodeJSON struct {
 	Children []TreeNodeJSON `json:"children,omitempty"`
 }
 
-// StageInputKind identifies the type of input provided to gt convoy stage.
+// StageInputKind identifies the type of input provided to lt convoy stage.
 type StageInputKind int
 
 const (
@@ -106,7 +106,7 @@ const (
 	StageInputConvoy                       // single convoy ID → read tracked beads
 )
 
-// StageInput represents parsed and validated input for gt convoy stage.
+// StageInput represents parsed and validated input for lt convoy stage.
 type StageInput struct {
 	Kind    StageInputKind
 	IDs     []string // bead IDs to process
@@ -129,7 +129,7 @@ func classifyBeadType(beadType string) StageInputKind {
 // Returns error for empty args, flag-like args, etc.
 func validateStageArgs(args []string) error {
 	if len(args) == 0 {
-		return fmt.Errorf("gt convoy stage requires at least one bead ID\n\nUsage: gt convoy stage <epic-id | task-id... | convoy-id>")
+		return fmt.Errorf("lt convoy stage requires at least one bead ID\n\nUsage: lt convoy stage <epic-id | task-id... | convoy-id>")
 	}
 	for _, arg := range args {
 		if strings.HasPrefix(arg, "--") || strings.HasPrefix(arg, "-") {
@@ -188,7 +188,7 @@ func resolveInputKind(beadTypes map[string]string) (*StageInput, error) {
 
 	// Epics and convoys must be singular.
 	if kind == StageInputEpic && len(ids) > 1 {
-		return nil, fmt.Errorf("only one epic ID allowed, got %d: %s\n  To stage multiple epics, run gt convoy stage once per epic", len(ids), strings.Join(ids, ", "))
+		return nil, fmt.Errorf("only one epic ID allowed, got %d: %s\n  To stage multiple epics, run lt convoy stage once per epic", len(ids), strings.Join(ids, ", "))
 	}
 	if kind == StageInputConvoy && len(ids) > 1 {
 		return nil, fmt.Errorf("only one convoy ID allowed, got %d: %s", len(ids), strings.Join(ids, ", "))
@@ -207,11 +207,11 @@ var convoyStageCmd = &cobra.Command{
 	Long: `Analyze bead dependencies, compute execution waves, and create a staged convoy.
 
 Three input forms:
-  gt convoy stage <epic-id>           Walk epic's children, analyze all descendants
-  gt convoy stage <task1> <task2>...  Analyze exactly the given tasks
-  gt convoy stage <convoy-id>         Re-analyze an existing convoy's tracked beads
+  lt convoy stage <epic-id>           Walk epic's children, analyze all descendants
+  lt convoy stage <task1> <task2>...  Analyze exactly the given tasks
+  lt convoy stage <convoy-id>         Re-analyze an existing convoy's tracked beads
 
-The staged convoy can later be launched with 'gt convoy launch'.`,
+The staged convoy can later be launched with 'lt convoy launch'.`,
 	Args: cobra.MinimumNArgs(1),
 	RunE: runConvoyStage,
 }
@@ -609,7 +609,7 @@ func handleOverlappingConvoys(overlaps []overlappingConvoy) (bool, string, error
 		o := open[0]
 		return false, "", fmt.Errorf(
 			"cannot stage: open convoy %s already tracks %d of these beads — close it first or wait for completion\n"+
-				"  gt convoy close %s --reason \"re-staging\"",
+				"  lt convoy close %s --reason \"re-staging\"",
 			o.ID, o.OverlapCount, o.ID)
 	}
 
@@ -622,7 +622,7 @@ func handleOverlappingConvoys(overlaps []overlappingConvoy) (bool, string, error
 		sort.Strings(ids)
 		return false, "", fmt.Errorf(
 			"ambiguous: %d staged convoys overlap with these beads (%s)\n"+
-				"  Specify which convoy to re-stage: gt convoy stage <convoy-id>",
+				"  Specify which convoy to re-stage: lt convoy stage <convoy-id>",
 			len(staged), strings.Join(ids, ", "))
 	}
 
@@ -659,7 +659,7 @@ func resolveConvoyTitle(flagTitle string, input *StageInput, beadResults map[str
 // It generates a convoy ID, builds a title and description, then runs
 // `bd create` to create the convoy and `bd dep add` for each slingable bead.
 // Convoys live in the town HQ beads database (hq-cv-* prefix), so all bd
-// commands run against getTownBeadsDir(), matching gt convoy create behavior.
+// commands run against getTownBeadsDir(), matching lt convoy create behavior.
 // Returns the convoy ID.
 func createStagedConvoy(dag *ConvoyDAG, waves []Wave, status string, title string) (string, error) {
 	// Convoys live in the town HQ beads database.
@@ -1943,7 +1943,7 @@ var isRigBlockedFn = func(townRoot, rigName string) (bool, string) {
 func detectBlockedRigs(dag *ConvoyDAG) []StagingFinding {
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil {
-		// Can't resolve town root — skip blocked rig detection
+		// Can't resolve HQ root — skip blocked rig detection
 		return nil
 	}
 
@@ -1980,9 +1980,9 @@ func detectBlockedRigs(dag *ConvoyDAG) []StagingFinding {
 	for _, rigName := range rigNames {
 		info := blockedRigs[rigName]
 		sort.Strings(info.beadIDs)
-		undoCmd := "gt rig unpark"
+		undoCmd := "lt rig unpark"
 		if info.reason == "docked" {
-			undoCmd = "gt rig undock"
+			undoCmd = "lt rig undock"
 		}
 		findings = append(findings, StagingFinding{
 			Severity:     "warning",

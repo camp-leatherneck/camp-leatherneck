@@ -97,7 +97,7 @@ func TestConvoyFeedWorkflow_Integration(t *testing.T) {
 // Deacon's dogs) can pass variable validation for wisp creation.
 //
 // Dog formulas are special because they're invoked via:
-//   gt sling mol-<name> deacon/dogs/<dog> --var convoy=<id>
+//   lt sling mol-<name> deacon/dogs/<dog> --var convoy=<id>
 //
 // The wisp creation validates that all template variables are either:
 // - Provided via --var flags, OR
@@ -198,7 +198,7 @@ func TestPolecatFormulas_CanBeWisped(t *testing.T) {
 }
 
 // TestTownShutdownFormula_CanBeWisped verifies the town shutdown formula passes validation.
-// This formula is used by Mayor to orchestrate full Gas Town shutdown/restart.
+// This formula is used by Mayor to orchestrate full Camp Leatherneck shutdown/restart.
 func TestTownShutdownFormula_CanBeWisped(t *testing.T) {
 	formulaPath := filepath.Join("formulas", "mol-town-shutdown.formula.toml")
 	data, err := os.ReadFile(formulaPath)

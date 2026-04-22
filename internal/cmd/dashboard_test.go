@@ -74,7 +74,7 @@ func TestDashboardCmd_RequiresWorkspace(t *testing.T) {
 }
 
 func TestEnsureDoltPortEnv_ReadsStateFile(t *testing.T) {
-	// Create a temporary town root with dolt-state.json
+	// Create a temporary HQ root with dolt-state.json
 	townRoot := t.TempDir()
 	daemonDir := filepath.Join(townRoot, "daemon")
 	if err := os.MkdirAll(daemonDir, 0755); err != nil {

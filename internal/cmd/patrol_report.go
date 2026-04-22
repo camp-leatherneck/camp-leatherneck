@@ -32,8 +32,8 @@ The --steps flag records which patrol steps were executed vs skipped,
 making shortcutting visible in the ledger.
 
 Examples:
-  gt patrol report --summary "All clear, no issues" --steps "heartbeat:OK,inbox-check:OK,health-scan:OK"
-  gt patrol report --summary "Dolt latency elevated, filed escalation"`,
+  lt patrol report --summary "All clear, no issues" --steps "heartbeat:OK,inbox-check:OK,health-scan:OK"
+  lt patrol report --summary "Dolt latency elevated, filed escalation"`,
 	RunE: runPatrolReport,
 }
 

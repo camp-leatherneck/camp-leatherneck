@@ -22,7 +22,7 @@ import (
 const maxDispatchFailures = 3
 
 // dispatchScheduledWork is the main dispatch loop for the capacity scheduler.
-// Called by both `gt scheduler run` and the daemon heartbeat.
+// Called by both `lt scheduler run` and the daemon heartbeat.
 func dispatchScheduledWork(townRoot, actor string, batchOverride int, dryRun bool) (int, error) {
 	// Acquire exclusive lock to prevent concurrent dispatch
 	runtimeDir := filepath.Join(townRoot, ".runtime")
@@ -71,8 +71,8 @@ func dispatchScheduledWork(townRoot, actor string, batchOverride int, dryRun boo
 			if len(staleBeads) > 0 {
 				fmt.Printf("%s %d context bead(s) still open from a previous deferred mode\n",
 					style.Warning.Render("⚠"), len(staleBeads))
-				fmt.Printf("  Use: gt scheduler clear  (close all sling context beads)\n")
-				fmt.Printf("  Or:  gt config set scheduler.max_polecats N  (re-enable deferred dispatch)\n")
+				fmt.Printf("  Use: lt scheduler clear  (close all sling context beads)\n")
+				fmt.Printf("  Or:  lt config set scheduler.max_polecats N  (re-enable deferred dispatch)\n")
 			}
 		}
 		return 0, nil

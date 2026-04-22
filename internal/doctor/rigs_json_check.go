@@ -81,7 +81,7 @@ func (c *RigsJSONCheck) Run(ctx *CheckContext) *CheckResult {
 			return &CheckResult{
 				Name:    c.Name(),
 				Status:  StatusWarning,
-				Message: "rigs.json exists but no fallback copy at town root",
+				Message: "rigs.json exists but no fallback copy at HQ root",
 				Details: []string{
 					fmt.Sprintf("Canonical: %s (exists)", c.canonicalPath),
 					fmt.Sprintf("Fallback: %s (missing)", c.fallbackPath),
@@ -102,13 +102,13 @@ func (c *RigsJSONCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusWarning,
-			Message: "rigs.json missing from mayor/ (using fallback at town root)",
+			Message: "rigs.json missing from mayor/ (using fallback at HQ root)",
 			Details: []string{
 				fmt.Sprintf("Canonical: %s (MISSING)", c.canonicalPath),
 				fmt.Sprintf("Fallback: %s (exists)", c.fallbackPath),
 				"Likely deleted by git operation in mayor worktree",
 			},
-			FixHint: "Run 'gt doctor --fix' to restore from fallback",
+			FixHint: "Run 'lt doctor --fix' to restore from fallback",
 		}
 	}
 
@@ -122,6 +122,6 @@ func (c *RigsJSONCheck) Run(ctx *CheckContext) *CheckResult {
 			fmt.Sprintf("Fallback: %s (MISSING)", c.fallbackPath),
 			"Session cycling and nudge routing will fail silently",
 		},
-		FixHint: "Restore rigs.json or run 'gt rig list' to regenerate",
+		FixHint: "Restore rigs.json or run 'lt rig list' to regenerate",
 	}
 }

@@ -43,7 +43,7 @@ func initRegistryFromWorkDir(workDir string) {
 	}
 }
 
-// workDirToTownRoot resolves a workDir to the Gas Town root directory.
+// workDirToTownRoot resolves a workDir to the Camp Leatherneck root directory.
 // Falls back to workDir itself if workspace.Find fails.
 func workDirToTownRoot(workDir string) string {
 	if townRoot, err := workspace.Find(workDir); err == nil && townRoot != "" {
@@ -79,7 +79,7 @@ func DefaultBdCli() *BdCli {
 	}
 }
 
-// initRegistryFromTownRoot initializes registries from a known town root,
+// initRegistryFromTownRoot initializes registries from a known HQ root,
 // logging any errors so that misconfiguration is observable.
 func initRegistryFromTownRoot(townRoot string) {
 	registryMu.Lock()
@@ -306,7 +306,7 @@ func notifyRefineryMergeReady(workDir, rigName string, result *HandlerResult) {
 // Tries auto-nuke; falls back to creating a cleanup wisp for manual intervention.
 func handlePolecatDoneNoMR(_, _ string, payload *PolecatDonePayload, result *HandlerResult) *HandlerResult {
 	// Persistent polecat model (gt-4ac): polecats go idle after completion, no nuke.
-	// The polecat has already set its own state to "idle" in gt done.
+	// The polecat has already set its own state to "idle" in lt done.
 	// We just acknowledge the completion here.
 	result.Handled = true
 	result.Action = fmt.Sprintf("polecat %s completed (exit=%s, no MR) — now idle, sandbox preserved", payload.PolecatName, payload.Exit)
@@ -454,7 +454,7 @@ func HandleMergeFailed(workDir, rigName string, msg *mail.Message, router *mail.
 	// Nudge the polecat about the failure instead of sending permanent mail.
 	initRegistryFromWorkDir(workDir)
 	sessionName := session.PolecatSessionName(session.PrefixFor(rigName), payload.PolecatName)
-	nudgeMsg := fmt.Sprintf("MERGE_FAILED: branch=%s issue=%s type=%s error=%s — fix and resubmit with 'gt done'",
+	nudgeMsg := fmt.Sprintf("MERGE_FAILED: branch=%s issue=%s type=%s error=%s — fix and resubmit with 'lt done'",
 		payload.Branch, payload.IssueID, payload.FailureType, payload.Error)
 	t := tmux.NewTmux()
 	if err := t.NudgeSession(sessionName, nudgeMsg); err != nil {
@@ -603,10 +603,10 @@ type agentBeadResponse struct {
 // Returns empty string if agent bead doesn't exist or has no cleanup_status.
 //
 // ZFC #10: This enables the Witness to verify it's safe to nuke before proceeding.
-// The polecat self-reports its git state when running `gt done`, and we trust that report.
+// The polecat self-reports its git state when running `lt done`, and we trust that report.
 func getCleanupStatus(bd *BdCli, workDir, rigName, polecatName string) string {
 	// Construct agent bead ID using the rig's configured prefix
-	// This supports non-gt prefixes like "bd-" for the beads rig
+	// This supports non-lt prefixes like "bd-" for the beads rig
 	townRoot, err := workspace.Find(workDir)
 	if err != nil || townRoot == "" {
 		// Fall back to default prefix
@@ -720,7 +720,7 @@ func notifyMayorSlotOpen(workDir, rigName, polecatName, exitType string) {
 	mayorSession := session.MayorSessionName()
 	t := tmux.NewTmux()
 	if running, err := t.HasSession(mayorSession); err == nil && running {
-		msg := fmt.Sprintf("SLOT_OPEN: %s/%s completed (exit=%s) — slot available. Run `gt polecat list` to verify and sling next bead.", rigName, polecatName, exitType)
+		msg := fmt.Sprintf("SLOT_OPEN: %s/%s completed (exit=%s) — slot available. Run `lt polecat list` to verify and sling next bead.", rigName, polecatName, exitType)
 		if err := t.NudgeSession(mayorSession, msg); err == nil {
 			return // Nudge delivered — no mail needed.
 		}
@@ -813,7 +813,7 @@ func extractPolecatFromJSON(output string) string {
 //
 // The restart flow:
 //  1. Kill the existing tmux session (if alive)
-//  2. Start a fresh session via `gt session restart`
+//  2. Start a fresh session via `lt session restart`
 //  3. The new session picks up the polecat's existing hook and continues
 func RestartPolecatSession(workDir, rigName, polecatName string) error {
 	address := fmt.Sprintf("%s/%s", rigName, polecatName)
@@ -845,7 +845,7 @@ func NukePolecat(bd *BdCli, workDir, rigName, polecatName string) error {
 	}
 
 	// CRITICAL: Kill the tmux session FIRST and unconditionally.
-	// We do this explicitly here because gt polecat nuke may fail to kill the
+	// We do this explicitly here because lt polecat nuke may fail to kill the
 	// session due to rig loading issues or race conditions with IsRunning checks.
 	// See: gt-g9ft5 - sessions were piling up because nuke wasn't killing them.
 	sessionName := session.PolecatSessionName(session.PrefixFor(rigName), polecatName)
@@ -864,7 +864,7 @@ func NukePolecat(bd *BdCli, workDir, rigName, polecatName string) error {
 		}
 	}
 
-	// Now run gt polecat nuke to clean up worktree, branch, and beads
+	// Now run lt polecat nuke to clean up worktree, branch, and beads
 	address := fmt.Sprintf("%s/%s", rigName, polecatName)
 
 	if err := util.ExecRun(workDir, "gt", "polecat", "nuke", address); err != nil {
@@ -909,10 +909,10 @@ func AutoNukeIfClean(workDir, rigName, polecatName string) *NukePolecatResult {
 var verifyCommitOnMain = _verifyCommitOnMain
 
 func _verifyCommitOnMain(workDir, rigName, polecatName string) (bool, error) {
-	// Find town root from workDir
+	// Find HQ root from workDir
 	townRoot, err := workspace.Find(workDir)
 	if err != nil || townRoot == "" {
-		return false, fmt.Errorf("finding town root: %v", err)
+		return false, fmt.Errorf("finding HQ root: %v", err)
 	}
 
 	// Get configured default branch for this rig
@@ -976,13 +976,13 @@ func _verifyCommitOnMain(workDir, rigName, polecatName string) (bool, error) {
 type ZombieClassification string
 
 const (
-	// ZombieStuckInDone: polecat hung in gt done (>60s with done-intent label).
+	// ZombieStuckInDone: polecat hung in lt done (>60s with done-intent label).
 	ZombieStuckInDone ZombieClassification = "stuck-in-done"
 	// ZombieAgentDeadInSession: tmux session alive but agent process died.
 	ZombieAgentDeadInSession ZombieClassification = "agent-dead-in-session"
 	// ZombieBeadClosedStillRunning: agent alive but hooked bead already closed.
 	ZombieBeadClosedStillRunning ZombieClassification = "bead-closed-still-running"
-	// ZombieDoneIntentDead: session died while executing gt done.
+	// ZombieDoneIntentDead: session died while executing lt done.
 	ZombieDoneIntentDead ZombieClassification = "done-intent-dead"
 	// ZombieIdleDirtySandbox: idle polecat with uncommitted changes.
 	ZombieIdleDirtySandbox ZombieClassification = "idle-dirty-sandbox"
@@ -1047,7 +1047,7 @@ type DetectZombiePolecatsResult struct {
 //
 // gt-dsgp: Restart-first policy. For each zombie found, we RESTART the session
 // instead of nuking. This preserves the polecat's worktree and branch, preventing
-// work loss. Nuking only happens via explicit `gt polecat nuke` command.
+// work loss. Nuking only happens via explicit `lt polecat nuke` command.
 //
 // For each zombie found:
 //   - If polecat has a pending MR: skip (not a zombie, waiting for refinery)
@@ -1200,7 +1200,7 @@ func detectZombieLiveSession(bd *BdCli, workDir, townRoot, rigName, polecatName,
 		// Agent may have died; let the existing checks determine action.
 	}
 
-	// Legacy detection: Check for done-intent stuck too long (polecat hung in gt done).
+	// Legacy detection: Check for done-intent stuck too long (polecat hung in lt done).
 	// gt-dsgp: Restart instead of nuke — the session is stuck trying to exit,
 	// a fresh start will let it retry or pick up its hook cleanly.
 	if doneIntent != nil && time.Since(doneIntent.Timestamp) > witCfg.DoneIntentStuckTimeoutD() {
@@ -1249,7 +1249,7 @@ func detectZombieLiveSession(bd *BdCli, workDir, townRoot, rigName, polecatName,
 
 	// Agent alive but hooked bead closed — occupying slot without work (gt-h1l6i).
 	// gt-dsgp: Restart instead of nuke — the fresh session will pick up its hook
-	// and run gt done properly, or go idle waiting for new work.
+	// and run lt done properly, or go idle waiting for new work.
 	if hookSt, hookOk := getBeadStatus(bd, workDir, snapHook); snapHook != "" && hookOk && hookSt == "closed" {
 		zombie := ZombieResult{
 			PolecatName:    polecatName,
@@ -1304,11 +1304,11 @@ func detectZombieDeadSession(bd *BdCli, workDir, townRoot, rigName, polecatName,
 	if doneIntent != nil {
 		age := time.Since(doneIntent.Timestamp)
 		if age < witCfg.DoneIntentRecentGraceD() {
-			return ZombieResult{}, false // Recent — still working through gt done
+			return ZombieResult{}, false // Recent — still working through lt done
 		}
 
 		// If bead is already closed, the polecat completed successfully.
-		// The dead session is expected (gt done kills it). Leave it alone. (gt-sy8)
+		// The dead session is expected (lt done kills it). Leave it alone. (gt-sy8)
 		hookSt, hookFound := getBeadStatus(bd, workDir, snapHook)
 		beadAlreadyClosed := snapHook != "" && hookFound && (hookSt == "closed" || hookSt == "")
 		if beadAlreadyClosed {
@@ -1318,7 +1318,7 @@ func detectZombieDeadSession(bd *BdCli, workDir, townRoot, rigName, polecatName,
 		}
 
 		// Persistent polecat model (gt-6a9d): Do NOT touch if there's a pending MR.
-		// The polecat completed normally (gt done → session exit). Its MR is in the
+		// The polecat completed normally (lt done → session exit). Its MR is in the
 		// refinery queue. Nuking would delete the remote branch before the refinery
 		// can merge it. The dead session is expected, not a zombie.
 		// gt-2gra: Use snapshot's ActiveMR instead of calling getAgentActiveMR.
@@ -1326,7 +1326,7 @@ func detectZombieDeadSession(bd *BdCli, workDir, townRoot, rigName, polecatName,
 			return ZombieResult{}, false
 		}
 
-		// gt-dsgp: Restart instead of nuke — the session died during gt done,
+		// gt-dsgp: Restart instead of nuke — the session died during lt done,
 		// restart it so it can retry the exit sequence or pick up new work.
 		zombie := ZombieResult{
 			PolecatName:    polecatName,
@@ -1371,7 +1371,7 @@ func detectZombieDeadSession(bd *BdCli, workDir, townRoot, rigName, polecatName,
 	}
 
 	// A polecat whose hook bead is already CLOSED (or reaped) completed its
-	// work successfully. The dead session is expected (gt done kills it).
+	// work successfully. The dead session is expected (lt done kills it).
 	// Don't flag as zombie or trigger re-dispatch. (gt-sy8)
 	// gt-dsgp: Don't nuke — sandbox preserved for reuse.
 	// gt-qbh: Treat missing beads (empty status from successful lookup) as closed.
@@ -1558,7 +1558,7 @@ type DetectStalledPolecatsResult struct {
 func DetectStalledPolecats(workDir, rigName string) *DetectStalledPolecatsResult {
 	result := &DetectStalledPolecatsResult{}
 
-	// Find town root for path resolution and session naming
+	// Find HQ root for path resolution and session naming
 	townRoot, err := workspace.Find(workDir)
 	if err != nil || townRoot == "" {
 		townRoot = workDir
@@ -1681,7 +1681,7 @@ type DiscoverCompletionsResult struct {
 }
 
 // DiscoverCompletions scans all polecat agent beads for completion metadata
-// written by gt done. With self-managed completion (gt-1qlg), this is now a
+// written by lt done. With self-managed completion (gt-1qlg), this is now a
 // SAFETY NET — polecats transition to idle directly and nudge refinery themselves.
 // This function catches crash recovery cases where a polecat wrote completion
 // metadata but crashed before transitioning to idle.
@@ -2316,7 +2316,7 @@ type DetectOrphanedMoleculesResult struct {
 func DetectOrphanedMolecules(bd *BdCli, workDir, rigName string, router *mail.Router) *DetectOrphanedMoleculesResult {
 	result := &DetectOrphanedMoleculesResult{}
 
-	// Find town root for path resolution and session naming
+	// Find HQ root for path resolution and session naming
 	townRoot, err := workspace.Find(workDir)
 	if err != nil || townRoot == "" {
 		townRoot = workDir
@@ -2670,7 +2670,7 @@ func hasPendingMR(bd *BdCli, workDir, _, polecatName, agentBeadID string) bool {
 		return true
 	}
 
-	// Check 2: active_mr on agent bead (set by gt done when MR is created)
+	// Check 2: active_mr on agent bead (set by lt done when MR is created)
 	activeMR := getAgentActiveMR(bd, workDir, agentBeadID)
 	return activeMR != ""
 }

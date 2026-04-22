@@ -75,7 +75,7 @@ func wispDeleteAge(config *DaemonPatrolConfig) time.Duration {
 
 // reapWisps is the thin orchestrator for the wisp_reaper patrol.
 // It pours a mol-dog-reaper molecule, then dispatches a Dog to execute it.
-// The Dog reads the formula steps and calls `gt reaper` CLI helpers.
+// The Dog reads the formula steps and calls `lt reaper` CLI helpers.
 // Falls back to inline execution if Dog dispatch fails.
 func (d *Daemon) reapWisps() {
 	if !d.isPatrolActive("wisp_reaper") {
@@ -120,7 +120,7 @@ func (d *Daemon) reapWisps() {
 	d.logger.Printf("wisp_reaper: dispatched to Dog for formula-driven execution")
 }
 
-// dispatchReaperDog dispatches the mol-dog-reaper formula to a Dog via gt sling.
+// dispatchReaperDog dispatches the mol-dog-reaper formula to a Dog via lt sling.
 func (d *Daemon) dispatchReaperDog(vars map[string]string) error {
 	args := []string{"sling", constants.MolDogReaper, "deacon/dogs"}
 	for k, v := range vars {
@@ -131,7 +131,7 @@ func (d *Daemon) dispatchReaperDog(vars map[string]string) error {
 	cmd.Dir = d.config.TownRoot
 	util.SetDetachedProcessGroup(cmd)
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("gt sling: %w", err)
+		return fmt.Errorf("lt sling: %w", err)
 	}
 	return nil
 }

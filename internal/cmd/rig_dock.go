@@ -39,11 +39,11 @@ This is a Level 2 (global/persistent) operation:
   - Persists until explicitly undocked
   - The daemon respects this status and won't auto-restart agents
 
-Use 'gt rig undock' to resume normal operation.
+Use 'lt rig undock' to resume normal operation.
 
 Examples:
-  gt rig dock gastown
-  gt rig dock beads`,
+  lt rig dock gastown
+  lt rig dock beads`,
 	Args: cobra.ExactArgs(1),
 	RunE: runRigDock,
 }
@@ -57,11 +57,11 @@ Undocking a rig:
   - Removes the status:docked label from the rig identity bead
   - Syncs via git so all clones see the undocked status
   - Allows the daemon to auto-restart agents
-  - Does NOT automatically start agents (use 'gt rig start' for that)
+  - Does NOT automatically start agents (use 'lt rig start' for that)
 
 Examples:
-  gt rig undock gastown
-  gt rig undock beads`,
+  lt rig undock gastown
+  lt rig undock beads`,
 	Args: cobra.ExactArgs(1),
 	RunE: runRigUndock,
 }
@@ -202,7 +202,7 @@ func runRigUndock(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	// Get rig and town root
+	// Get rig and HQ root
 	_, r, err := getRig(rigName)
 	if err != nil {
 		return err
@@ -258,7 +258,7 @@ func runRigUndock(cmd *cobra.Command, args []string) error {
 	fmt.Printf("%s Rig %s undocked\n", style.Success.Render("✓"), rigName)
 	fmt.Printf("  Label removed: %s\n", RigDockedLabel)
 	fmt.Printf("  Daemon can now auto-restart agents\n")
-	fmt.Printf("  Use '%s' to start agents immediately\n", style.Dim.Render("gt rig start "+rigName))
+	fmt.Printf("  Use '%s' to start agents immediately\n", style.Dim.Render("lt rig start "+rigName))
 
 	return nil
 }

@@ -55,7 +55,7 @@ func (m *Model) renderView() string {
 	// Empty state
 	if len(m.convoys) == 0 && m.err == nil {
 		b.WriteString("No convoys found.\n")
-		b.WriteString("Create a convoy with: gt convoy create <name> [issues...]\n")
+		b.WriteString("Create a convoy with: lt convoy create <name> [issues...]\n")
 	}
 
 	// Render convoys

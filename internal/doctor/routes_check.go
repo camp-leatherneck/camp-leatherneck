@@ -12,7 +12,7 @@ import (
 
 // determineRigBeadsPath returns the correct route path for a rig based on its actual layout.
 // Uses ResolveBeadsDir to follow any redirects (e.g., rig/.beads/redirect -> mayor/rig/.beads).
-// Falls back to the default mayor layout path if the resolved path is invalid or escapes the town root.
+// Falls back to the default mayor layout path if the resolved path is invalid or escapes the HQ root.
 func determineRigBeadsPath(townRoot, rigName string) string {
 	defaultPath := rigName + "/mayor/rig"
 	rigPath := filepath.Join(townRoot, rigName)
@@ -26,7 +26,7 @@ func determineRigBeadsPath(townRoot, rigName string) string {
 	// Normalize to forward slashes for consistent string operations on all platforms
 	rel = filepath.ToSlash(rel)
 
-	// Validate the resolved path stays within the town root
+	// Validate the resolved path stays within the HQ root
 	if rel == ".." || strings.HasPrefix(rel, "../") {
 		return defaultPath
 	}
@@ -64,7 +64,7 @@ func (c *RoutesCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusWarning,
-			Message: "No .beads directory at town root",
+			Message: "No .beads directory at HQ root",
 			FixHint: "Run 'bd init' to initialize beads",
 		}
 	}
@@ -75,7 +75,7 @@ func (c *RoutesCheck) Run(ctx *CheckContext) *CheckResult {
 			Name:    c.Name(),
 			Status:  StatusWarning,
 			Message: "No routes.jsonl file (prefix routing not configured)",
-			FixHint: "Run 'gt doctor --fix' to create routes.jsonl",
+			FixHint: "Run 'lt doctor --fix' to create routes.jsonl",
 		}
 	}
 
@@ -101,10 +101,10 @@ func (c *RoutesCheck) Run(ctx *CheckContext) *CheckResult {
 	var missingTownRoute bool
 	var missingConvoyRoute bool
 
-	// Check town root route exists (hq- -> .)
+	// Check HQ root route exists (hq- -> .)
 	if _, hasTownRoute := routeByPrefix["hq-"]; !hasTownRoute {
 		missingTownRoute = true
-		details = append(details, "Town root route (hq- -> .) is missing")
+		details = append(details, "HQ root route (hq- -> .) is missing")
 	}
 
 	// Check convoy route exists (hq-cv- -> .)
@@ -124,7 +124,7 @@ func (c *RoutesCheck) Run(ctx *CheckContext) *CheckResult {
 				Status:  StatusWarning,
 				Message: "Required town routes are missing",
 				Details: details,
-				FixHint: "Run 'gt doctor --fix' to add missing routes",
+				FixHint: "Run 'lt doctor --fix' to add missing routes",
 			}
 		}
 		return c.checkRoutesValid(ctx, routes)
@@ -180,7 +180,7 @@ func (c *RoutesCheck) Run(ctx *CheckContext) *CheckResult {
 		rigPath := filepath.Join(ctx.TownRoot, r.Path)
 		beadsPath := filepath.Join(rigPath, ".beads")
 
-		// Special case: "." path is town root, already checked
+		// Special case: "." path is HQ root, already checked
 		if r.Path == "." {
 			continue
 		}
@@ -214,7 +214,7 @@ func (c *RoutesCheck) Run(ctx *CheckContext) *CheckResult {
 		var messageParts []string
 
 		if missingTownRoute {
-			messageParts = append(messageParts, "town root route missing")
+			messageParts = append(messageParts, "HQ root route missing")
 		}
 		if missingConvoyRoute {
 			messageParts = append(messageParts, "convoy route missing")
@@ -234,7 +234,7 @@ func (c *RoutesCheck) Run(ctx *CheckContext) *CheckResult {
 			Status:  status,
 			Message: strings.Join(messageParts, ", "),
 			Details: details,
-			FixHint: "Run 'gt doctor --fix' to fix routing issues",
+			FixHint: "Run 'lt doctor --fix' to fix routing issues",
 		}
 	}
 
@@ -252,7 +252,7 @@ func (c *RoutesCheck) checkRoutesValid(ctx *CheckContext, routes []beads.Route) 
 
 	for _, r := range routes {
 		if r.Path == "." {
-			continue // Town root is valid
+			continue // HQ root is valid
 		}
 
 		rigPath := filepath.Join(ctx.TownRoot, r.Path)
@@ -323,8 +323,8 @@ func (c *RoutesCheck) Fix(ctx *CheckContext) error {
 		routeMap[r.Prefix] = i
 	}
 
-	// Ensure town root route exists (hq- -> .)
-	// This is normally created by gt install but may be missing if routes.jsonl was corrupted
+	// Ensure HQ root route exists (hq- -> .)
+	// This is normally created by lt install but may be missing if routes.jsonl was corrupted
 	modified := false
 	if _, exists := routeMap["hq-"]; !exists {
 		routeMap["hq-"] = len(routes)
@@ -344,7 +344,7 @@ func (c *RoutesCheck) Fix(ctx *CheckContext) error {
 	rigsPath := filepath.Join(ctx.TownRoot, "mayor", "rigs.json")
 	rigsConfig, err := config.LoadRigsConfig(rigsPath)
 	if err != nil {
-		// No rigs config - just write town root route if we added it
+		// No rigs config - just write HQ root route if we added it
 		if modified {
 			return beads.WriteRoutes(beadsDir, routes)
 		}

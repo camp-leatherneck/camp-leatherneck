@@ -71,7 +71,7 @@ func TestAgentsListCmd_StillRegistered(t *testing.T) {
 }
 
 func TestAgentsCmd_ShortDescription(t *testing.T) {
-	if agentsCmd.Short == "Switch between Gas Town agent sessions" {
+	if agentsCmd.Short == "Switch between Camp Leatherneck agent sessions" {
 		t.Error("agentsCmd.Short still describes popup menu behavior; should describe listing")
 	}
 }

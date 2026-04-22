@@ -18,7 +18,7 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
-// AgentType represents the type of Gas Town agent.
+// AgentType represents the type of Camp Leatherneck agent.
 type AgentType int
 
 const (
@@ -76,13 +76,13 @@ var agentsCmd = &cobra.Command{
 	Use:     "agents",
 	Aliases: []string{"ag"},
 	GroupID: GroupAgents,
-	Short:   "List Gas Town agent sessions",
-	Long: `List Gas Town agent sessions to stdout.
+	Short:   "List Camp Leatherneck agent sessions",
+	Long: `List Camp Leatherneck agent sessions to stdout.
 
 Shows Mayor, Deacon, Witnesses, Refineries, and Crew workers.
-Polecats are hidden (use 'gt polecat list' to see them).
+Polecats are hidden (use 'lt polecat list' to see them).
 
-Use 'gt agents menu' for an interactive tmux popup menu.`,
+Use 'lt agents menu' for an interactive tmux popup menu.`,
 	RunE: runAgentsList,
 }
 
@@ -96,7 +96,7 @@ var agentsListCmd = &cobra.Command{
 var agentsMenuCmd = &cobra.Command{
 	Use:   "menu",
 	Short: "Interactive popup menu for session switching",
-	Long:  `Display a tmux popup menu of Gas Town agent sessions for quick switching.`,
+	Long:  `Display a tmux popup menu of Camp Leatherneck agent sessions for quick switching.`,
 	RunE:  runAgents,
 }
 
@@ -181,7 +181,7 @@ func categorizeSession(name string) *AgentSession {
 	return sess
 }
 
-// getAgentSessions returns all categorized Gas Town sessions from the town socket.
+// getAgentSessions returns all categorized Camp Leatherneck sessions from the town socket.
 func getAgentSessions(includePolecats bool) ([]*AgentSession, error) {
 	t := tmux.NewTmux()
 	sessions, err := t.ListSessions()
@@ -235,7 +235,7 @@ func findTestSockets() []string {
 func getAllSocketSessions(includePolecats bool) []socketGroup {
 	townSocket := tmux.GetDefaultSocket()
 
-	// When gt agents menu is invoked via a tmux binding from a non-town
+	// When lt agents menu is invoked via a tmux binding from a non-town
 	// directory (e.g. a personal session), workspace.FindFromCwd fails in
 	// persistentPreRun, InitRegistry is never called, and GetDefaultSocket
 	// returns "". Fall back to GT_TOWN_SOCKET, which EnsureBindingsOnSocket
@@ -287,7 +287,7 @@ func getAllSocketSessions(includePolecats bool) []socketGroup {
 		if err != nil || len(sessions) == 0 {
 			continue
 		}
-		// Test sockets: InitRegistry is already called (we're in a gt process),
+		// Test sockets: InitRegistry is already called (we're in a lt process),
 		// so townSocket is not needed here.
 		_ = tmux.EnsureBindingsOnSocket(sock, "")
 
@@ -328,7 +328,7 @@ func filterAndSortSessions(sessionNames []string, includePolecats bool) []*Agent
 	sort.Slice(agents, func(i, j int) bool {
 		a, b := agents[i], agents[j]
 
-		// Town-level agents first
+		// HQ-level agents first
 		if a.Type == AgentMayor {
 			return true
 		}
@@ -454,17 +454,17 @@ func runAgents(cmd *cobra.Command, args []string) error {
 	if total == 0 {
 		fmt.Println("No agent sessions running.")
 		fmt.Println("\nStart agents with:")
-		fmt.Println("  gt mayor start")
-		fmt.Println("  gt deacon start")
+		fmt.Println("  lt mayor start")
+		fmt.Println("  lt deacon start")
 		return nil
 	}
 
-	// Group display titles: town socket -> "Gas Town", default -> "Personal",
+	// Group display titles: town socket -> "Camp Leatherneck", default -> "Personal",
 	// testing -> "Testing".
 	groupTitle := func(socket string) string {
 		switch {
 		case socket == tmux.GetDefaultSocket():
-			return "⚙️  Gas Town"
+			return "⚙️  Camp Leatherneck"
 		case socket == "default":
 			return "Personal"
 		case socket == "testing":
@@ -601,7 +601,7 @@ type CollisionIssue struct {
 func runAgentsCheck(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	report, err := buildCollisionReport(townRoot)
@@ -634,7 +634,7 @@ func runAgentsCheck(cmd *cobra.Command, args []string) error {
 		fmt.Println()
 	}
 
-	fmt.Printf("Run %s to fix stale locks\n", style.Dim.Render("gt agents fix"))
+	fmt.Printf("Run %s to fix stale locks\n", style.Dim.Render("lt agents fix"))
 
 	return nil
 }
@@ -642,7 +642,7 @@ func runAgentsCheck(cmd *cobra.Command, args []string) error {
 func runAgentsFix(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Clean stale locks
@@ -693,7 +693,7 @@ func buildCollisionReport(townRoot string) (*CollisionReport, error) {
 		sessions = []string{} // Continue even if tmux not running
 	}
 
-	// Filter to Gas Town sessions
+	// Filter to Camp Leatherneck sessions
 	var gtSessions []string
 	for _, s := range sessions {
 		if session.IsKnownSession(s) {

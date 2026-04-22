@@ -1,4 +1,4 @@
-// Package config provides role configuration for Gas Town agents.
+// Package config provides role configuration for Camp Leatherneck agents.
 package config
 
 import (
@@ -133,7 +133,7 @@ func isValidRoleName(name string) bool {
 // LoadRoleDefinition loads role configuration with override resolution.
 // Resolution order (later overrides earlier):
 //  1. Built-in defaults (embedded in binary)
-//  2. Town-level overrides (<town>/roles/<role>.toml)
+//  2. HQ-level overrides (<town>/roles/<role>.toml)
 //  3. Rig-level overrides (<rig>/roles/<role>.toml)
 //
 // Each layer merges with (not replaces) the previous. Users only specify

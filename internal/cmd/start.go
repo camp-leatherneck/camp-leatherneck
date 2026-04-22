@@ -58,8 +58,8 @@ var (
 var startCmd = &cobra.Command{
 	Use:     "start [path]",
 	GroupID: GroupServices,
-	Short:   "Start Gas Town or a crew workspace",
-	Long: `Start Gas Town by launching the Deacon and Mayor.
+	Short:   "Start Camp Leatherneck or a crew workspace",
+	Long: `Start Camp Leatherneck by launching the Deacon and Mayor.
 
 The Deacon is the health-check orchestrator that monitors Mayor and Witnesses.
 The Mayor is the global coordinator that dispatches work.
@@ -69,9 +69,9 @@ Use --all to start Witnesses and Refineries for all registered rigs immediately.
 
 Crew shortcut:
   If a path like "rig/crew/name" is provided, starts that crew workspace.
-  This is equivalent to 'gt start crew rig/name'.
+  This is equivalent to 'lt start crew rig/name'.
 
-To stop Gas Town, use 'gt shutdown'.`,
+To stop Camp Leatherneck, use 'lt shutdown'.`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runStart,
 }
@@ -79,15 +79,15 @@ To stop Gas Town, use 'gt shutdown'.`,
 var shutdownCmd = &cobra.Command{
 	Use:     "shutdown",
 	GroupID: GroupServices,
-	Short:   "Shutdown Gas Town with cleanup",
-	Long: `Shutdown Gas Town by stopping agents and cleaning up polecats.
+	Short:   "Shutdown Camp Leatherneck with cleanup",
+	Long: `Shutdown Camp Leatherneck by stopping agents and cleaning up polecats.
 
 This is the "done for the day" command - it stops everything AND removes
-polecat worktrees/branches. For a reversible pause, use 'gt down' instead.
+polecat worktrees/branches. For a reversible pause, use 'lt down' instead.
 
 Comparison:
-  gt down      - Pause (stop processes, keep worktrees) - reversible
-  gt shutdown  - Done (stop + cleanup worktrees) - permanent cleanup
+  lt down      - Pause (stop processes, keep worktrees) - reversible
+  lt shutdown  - Done (stop + cleanup worktrees) - permanent cleanup
 
 After killing sessions, polecats are cleaned up:
   - Worktrees are removed
@@ -116,16 +116,16 @@ var startCrewCmd = &cobra.Command{
 	Short: "Start a crew workspace (creates if needed)",
 	Long: `Start a crew workspace, creating it if it doesn't exist.
 
-This is a convenience command that combines 'gt crew add' and 'gt crew at --detached'.
+This is a convenience command that combines 'lt crew add' and 'lt crew at --detached'.
 The crew session starts in the background with Claude running and ready.
 
 The name can include the rig in slash format (e.g., greenplace/joe).
 If not specified, the rig is inferred from the current directory.
 
 Examples:
-  gt start crew joe                    # Start joe in current rig
-  gt start crew greenplace/joe            # Start joe in gastown rig
-  gt start crew joe --rig beads        # Start joe in beads rig`,
+  lt start crew joe                    # Start joe in current rig
+  lt start crew greenplace/joe            # Start joe in gastown rig
+  lt start crew joe --rig beads        # Start joe in beads rig`,
 	Args: cobra.ExactArgs(1),
 	RunE: runStartCrew,
 }
@@ -176,10 +176,10 @@ func runStart(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	// Verify we're in a Gas Town workspace
+	// Verify we're in a Camp Leatherneck workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Apply ephemeral cost tier if specified
@@ -206,7 +206,7 @@ func runStart(cmd *cobra.Command, args []string) error {
 		fmt.Printf("  %s Cleaned up %d orphaned session(s)\n", style.Bold.Render("✓"), cleaned)
 	}
 
-	fmt.Printf("Starting Gas Town from %s\n\n", style.Dim.Render(townRoot))
+	fmt.Printf("Starting Camp Leatherneck from %s\n\n", style.Dim.Render(townRoot))
 	fmt.Println("Starting all agents in parallel...")
 	fmt.Println()
 
@@ -218,7 +218,7 @@ func runStart(cmd *cobra.Command, args []string) error {
 	}
 
 	// Phase 1: Start Dolt server BEFORE agents.
-	// Agents run bd commands on startup (via gt prime → patrol_helpers) that
+	// Agents run bd commands on startup (via lt prime → patrol_helpers) that
 	// connect to the Dolt SQL server. Without this sequencing, they race the
 	// server and bd auto-spawns orphan embedded servers. (gt-t2zf)
 	var doltOK bool
@@ -286,11 +286,11 @@ func runStart(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Println()
-	fmt.Printf("%s Gas Town is running\n", style.Bold.Render("✓"))
+	fmt.Printf("%s Camp Leatherneck is running\n", style.Bold.Render("✓"))
 	fmt.Println()
-	fmt.Printf("  Attach to Mayor:  %s\n", style.Dim.Render("gt mayor attach"))
-	fmt.Printf("  Attach to Deacon: %s\n", style.Dim.Render("gt deacon attach"))
-	fmt.Printf("  Check status:     %s\n", style.Dim.Render("gt status"))
+	fmt.Printf("  Attach to Mayor:  %s\n", style.Dim.Render("lt mayor attach"))
+	fmt.Printf("  Attach to Deacon: %s\n", style.Dim.Render("lt deacon attach"))
+	fmt.Printf("  Check status:     %s\n", style.Dim.Render("lt status"))
 
 	return nil
 }
@@ -365,7 +365,7 @@ func startCoreAgents(townRoot string, agentOverride string, mu *sync.Mutex) erro
 }
 
 // startRigAgents starts witness and refinery for all rigs in parallel.
-// Called when --all flag is passed to gt start.
+// Called when --all flag is passed to lt start.
 func startRigAgents(rigs []*rig.Rig, mu *sync.Mutex) {
 	var wg sync.WaitGroup
 
@@ -513,7 +513,7 @@ func runShutdown(cmd *cobra.Command, args []string) error {
 	toStop, preserved := categorizeSessions(sessions)
 
 	if len(toStop) == 0 {
-		fmt.Printf("%s Gas Town was not running\n", style.Dim.Render("○"))
+		fmt.Printf("%s Camp Leatherneck was not running\n", style.Dim.Render("○"))
 
 		// Still check for orphaned daemons even if no sessions are running
 		if townRoot != "" {
@@ -560,9 +560,9 @@ func runShutdown(cmd *cobra.Command, args []string) error {
 // categorizeSessions splits sessions into those to stop and those to preserve.
 func categorizeSessions(sessions []string) (toStop, preserved []string) {
 	for _, sess := range sessions {
-		// Gas Town sessions use rig-specific prefixes or hq- (town-level)
+		// Camp Leatherneck sessions use rig-specific prefixes or hq- (town-level)
 		if !session.IsKnownSession(sess) {
-			continue // Not a Gas Town session
+			continue // Not a Camp Leatherneck session
 		}
 
 		// Parse session to determine role
@@ -601,7 +601,7 @@ func categorizeSessions(sessions []string) (toStop, preserved []string) {
 }
 
 func runGracefulShutdown(t *tmux.Tmux, gtSessions []string, townRoot string) error {
-	fmt.Printf("Graceful shutdown of Gas Town (waiting up to %ds)...\n\n", shutdownWait)
+	fmt.Printf("Graceful shutdown of Camp Leatherneck (waiting up to %ds)...\n\n", shutdownWait)
 
 	// Phase 1: Send ESC to all agents to interrupt them
 	fmt.Printf("Phase 1: Sending ESC to %d agent(s)...\n", len(gtSessions))
@@ -612,7 +612,7 @@ func runGracefulShutdown(t *tmux.Tmux, gtSessions []string, townRoot string) err
 
 	// Phase 2: Send shutdown message asking agents to handoff
 	fmt.Printf("\nPhase 2: Requesting handoff from agents...\n")
-	shutdownMsg := "[SHUTDOWN] Gas Town is shutting down. Please save your state and update your handoff bead, then type /exit or wait to be terminated."
+	shutdownMsg := "[SHUTDOWN] Camp Leatherneck is shutting down. Please save your state and update your handoff bead, then type /exit or wait to be terminated."
 	for _, sess := range gtSessions {
 		// Small delay then send the message
 		time.Sleep(constants.ShutdownNotifyDelay)
@@ -674,7 +674,7 @@ func runGracefulShutdown(t *tmux.Tmux, gtSessions []string, townRoot string) err
 }
 
 func runImmediateShutdown(t *tmux.Tmux, gtSessions []string, townRoot string) error {
-	fmt.Println("Shutting down Gas Town...")
+	fmt.Println("Shutting down Camp Leatherneck...")
 
 	mayorSession := getMayorSessionName()
 	deaconSession := getDeaconSessionName()
@@ -712,12 +712,12 @@ func runImmediateShutdown(t *tmux.Tmux, gtSessions []string, townRoot string) er
 	verifyNoOrphans()
 
 	fmt.Println()
-	fmt.Printf("%s Gas Town shutdown complete (%d sessions stopped)\n", style.Bold.Render("✓"), stopped)
+	fmt.Printf("%s Camp Leatherneck shutdown complete (%d sessions stopped)\n", style.Bold.Render("✓"), stopped)
 
 	return nil
 }
 
-// killSessionsInOrder stops sessions in the correct shutdown order, matching gt down:
+// killSessionsInOrder stops sessions in the correct shutdown order, matching lt down:
 //  1. Polecats and crew (workers - stop before monitors can restart them)
 //  2. Refineries (work processors)
 //  3. Witnesses (monitors - stop before deacon so they can't restart workers)
@@ -886,7 +886,7 @@ func cleanupPolecats(townRoot string) {
 			}
 
 			// Clean: remove worktree and branch
-			// selfNuke=false because this is gt start --shutdown cleanup, not polecat self-deleting
+			// selfNuke=false because this is lt start --shutdown cleanup, not polecat self-deleting
 			if err := polecatMgr.RemoveWithOptions(p.Name, true, shutdownNuclear, false); err != nil {
 				fmt.Printf("  %s %s/%s: cleanup failed: %v\n",
 					style.Dim.Render("○"), r.Name, p.Name, err)
@@ -970,7 +970,7 @@ func stopDaemonIfRunning(townRoot string) {
 }
 
 // runStartCrew starts a crew workspace, creating it if it doesn't exist.
-// This combines the functionality of 'gt crew add' and 'gt crew at --detached'.
+// This combines the functionality of 'lt crew add' and 'lt crew at --detached'.
 func runStartCrew(cmd *cobra.Command, args []string) error {
 	name := args[0]
 
@@ -986,7 +986,7 @@ func runStartCrew(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// If rig still not specified, try to infer from cwd, then by crew name
@@ -1046,7 +1046,7 @@ func runStartCrew(cmd *cobra.Command, args []string) error {
 			style.Bold.Render("✓"), rigName, name)
 	}
 
-	fmt.Printf("Attach with: %s\n", style.Dim.Render(fmt.Sprintf("gt crew at %s", name)))
+	fmt.Printf("Attach with: %s\n", style.Dim.Render(fmt.Sprintf("lt crew at %s", name)))
 	return nil
 }
 

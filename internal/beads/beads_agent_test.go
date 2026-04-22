@@ -440,7 +440,7 @@ func TestCreateAgentBead_UsesTownRootForCrossRigRoutes(t *testing.T) {
 	}
 	logOutput := string(logData)
 	if !strings.Contains(logOutput, "pwd="+townRoot) {
-		t.Fatalf("mock bd log missing town root cwd:\n%s", logOutput)
+		t.Fatalf("mock bd log missing HQ root cwd:\n%s", logOutput)
 	}
 	if !strings.Contains(logOutput, "beads_dir="+filepath.Join(townRoot, ".beads")) {
 		t.Fatalf("mock bd log missing town-root BEADS_DIR:\n%s", logOutput)

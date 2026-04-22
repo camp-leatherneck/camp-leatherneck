@@ -42,7 +42,7 @@ const (
 	// doltStateRetries is a reduced retry count for SetAgentStateWithRetry.
 	// Agent state is a monitoring concern, not a correctness requirement (see
 	// comment on SetAgentStateWithRetry). 10 retries with exponential backoff
-	// wastes ~2 minutes on persistent failures, blocking `gt sling` for no
+	// wastes ~2 minutes on persistent failures, blocking `lt sling` for no
 	// benefit since the caller already treats errors as warn-only.
 	// 3 retries (total backoff ~3.5s) is sufficient to ride out transient
 	// Dolt hiccups without punishing interactive workflows.
@@ -149,7 +149,7 @@ func NewManager(r *rig.Rig, g *git.Git, t *tmux.Tmux) *Manager {
 	resolvedBeads := beads.ResolveBeadsDir(r.Path)
 	beadsPath := filepath.Dir(resolvedBeads) // Get the directory containing .beads
 
-	// Compute town root once for deterministic use across all Manager methods.
+	// Compute HQ root once for deterministic use across all Manager methods.
 	// Rig path is always filepath.Join(townRoot, rigName), so filepath.Dir is correct
 	// and avoids the non-determinism of workspace.Find which can fail or resolve
 	// differently depending on call-site context (gt-lph).
@@ -177,7 +177,7 @@ func NewManager(r *rig.Rig, g *git.Git, t *tmux.Tmux) *Manager {
 		)
 	} else {
 		// Fallback: check rig-level config.json for polecat_names
-		// (pool-init and gt rig config write namepool config here).
+		// (pool-init and lt rig config write namepool config here).
 		if rigCfg, rcErr := rig.LoadRigConfig(r.Path); rcErr == nil && len(rigCfg.PolecatNames) > 0 {
 			pool = NewNamePoolWithConfig(r.Path, r.Name, "", rigCfg.PolecatNames, 0)
 		} else {
@@ -185,7 +185,7 @@ func NewManager(r *rig.Rig, g *git.Git, t *tmux.Tmux) *Manager {
 		}
 	}
 
-	// Set town root for custom theme resolution in getNames()
+	// Set HQ root for custom theme resolution in getNames()
 	pool.SetTownRoot(townRoot)
 
 	_ = pool.Load() // non-fatal: state file may not exist for new rigs
@@ -206,7 +206,7 @@ func (m *Manager) GetNamePool() *NamePool {
 }
 
 // lockPolecat acquires an exclusive file lock for a specific polecat.
-// This prevents concurrent gt processes from racing on the same polecat's
+// This prevents concurrent lt processes from racing on the same polecat's
 // filesystem operations (Add, Remove, RepairWorktree).
 // Caller must defer fl.Unlock().
 func (m *Manager) lockPolecat(name string) (*flock.Flock, error) {
@@ -223,7 +223,7 @@ func (m *Manager) lockPolecat(name string) (*flock.Flock, error) {
 }
 
 // lockPool acquires an exclusive file lock for name pool operations.
-// This prevents concurrent gt processes from racing on AllocateName/ReconcilePool.
+// This prevents concurrent lt processes from racing on AllocateName/ReconcilePool.
 // Caller must defer fl.Unlock().
 func (m *Manager) lockPool() (*flock.Flock, error) {
 	lockDir := filepath.Join(m.rig.Path, ".runtime", "locks")
@@ -262,7 +262,7 @@ func (m *Manager) CheckDoltHealth() error {
 		}
 		// Fail fast on config/init errors — retrying won't help (gt-2ra, gas-tc4)
 		if isDoltConfigError(err) {
-			return fmt.Errorf("%w: %v\n\nRecovery: run 'gt doctor --fix' to repair database configuration.\n"+
+			return fmt.Errorf("%w: %v\n\nRecovery: run 'lt doctor --fix' to repair database configuration.\n"+
 				"If that doesn't help, try: bd init --force --server", ErrDoltUnhealthy, err)
 		}
 		lastErr = err
@@ -285,7 +285,7 @@ func (m *Manager) CheckDoltHealth() error {
 		}
 	}
 
-	return fmt.Errorf("%w: %v\n\nRecovery: run 'gt doctor --fix' to diagnose and repair Dolt configuration", ErrDoltUnhealthy, lastErr)
+	return fmt.Errorf("%w: %v\n\nRecovery: run 'lt doctor --fix' to diagnose and repair Dolt configuration", ErrDoltUnhealthy, lastErr)
 }
 
 // CheckDoltServerCapacity verifies the Dolt server has capacity for new connections.
@@ -384,7 +384,7 @@ func (m *Manager) assigneeID(name string) string {
 // agentBeadID returns the agent bead ID for a polecat.
 // Format: "<prefix>-<rig>-polecat-<name>" (e.g., "gt-gastown-polecat-Toast", "bd-beads-polecat-obsidian")
 // The prefix is looked up from routes.jsonl to support rigs with custom prefixes.
-// Uses the town root computed at Manager construction for deterministic IDs
+// Uses the HQ root computed at Manager construction for deterministic IDs
 // regardless of call site (gt-lph).
 func (m *Manager) agentBeadID(name string) string {
 	prefix := beads.GetPrefixForRig(m.townRoot, m.rig.Name)
@@ -765,7 +765,7 @@ func (m *Manager) addWithOptionsLocked(name string, opts AddOptions, polecatDir 
 			"  - Branch doesn't exist on the remote (create it there first)\n"+
 			"  - default_branch is misconfigured (check %s/config.json)\n"+
 			"  - Bare repo fetch failed (try: git -C %s fetch origin)\n\n"+
-			"Run 'gt doctor' to diagnose.",
+			"Run 'lt doctor' to diagnose.",
 			startPoint, m.rig.Path, filepath.Join(m.rig.Path, ".repo.git"))
 	}
 
@@ -775,7 +775,7 @@ func (m *Manager) addWithOptionsLocked(name string, opts AddOptions, polecatDir 
 	}
 	worktreeCreated = true
 
-	// Provision CLAUDE.md with gt done instructions (same as AddWithOptions path).
+	// Provision CLAUDE.md with lt done instructions (same as AddWithOptions path).
 	lockedRigName := filepath.Base(m.rig.Path)
 	if _, err := templates.CreatePolecatCLAUDEmd(clonePath, lockedRigName, name); err != nil {
 		style.PrintWarning("could not provision polecat CLAUDE.md: %v", err)
@@ -942,7 +942,7 @@ func (m *Manager) AddWithOptions(name string, opts AddOptions) (_ *Polecat, retE
 			"  - Branch doesn't exist on the remote (create it there first)\n"+
 			"  - default_branch is misconfigured (check %s/config.json)\n"+
 			"  - Bare repo fetch failed (try: git -C %s fetch origin)\n\n"+
-			"Run 'gt doctor' to diagnose.",
+			"Run 'lt doctor' to diagnose.",
 			startPoint, m.rig.Path, filepath.Join(m.rig.Path, ".repo.git"))
 	}
 
@@ -955,28 +955,28 @@ func (m *Manager) AddWithOptions(name string, opts AddOptions) (_ *Polecat, retE
 	}
 	worktreeCreated = true
 
-	// Provision CLAUDE.md with gt done instructions and lifecycle context.
+	// Provision CLAUDE.md with lt done instructions and lifecycle context.
 	// This is the primary mechanism for polecats to learn about completion —
 	// the file persists across compaction and session restarts (unlike ephemeral
-	// gt prime output which scrolls past and gets lost).
+	// lt prime output which scrolls past and gets lost).
 	rigName := filepath.Base(m.rig.Path)
 	if _, err := templates.CreatePolecatCLAUDEmd(clonePath, rigName, name); err != nil {
-		// Non-fatal — polecat can still learn via gt prime hook
+		// Non-fatal — polecat can still learn via lt prime hook
 		style.PrintWarning("could not provision polecat CLAUDE.md: %v", err)
 	}
 
 	// Set up shared beads: polecat uses rig's .beads via redirect file.
 	// This eliminates git sync overhead - all polecats share one database.
-	// Fatal: without shared beads, gt done writes MR beads to a local .beads/
+	// Fatal: without shared beads, lt done writes MR beads to a local .beads/
 	// that the Refinery never reads, causing the merge queue to stay empty.
 	if err := m.setupSharedBeads(clonePath); err != nil {
 		cleanupOnError()
 		return nil, fmt.Errorf("setting up shared beads: %w (polecat cannot submit MRs without shared beads)", err)
 	}
 
-	// Provision PRIME.md with Gas Town context for this worker.
+	// Provision PRIME.md with Camp Leatherneck context for this worker.
 	// This is the fallback if SessionStart hook fails - ensures polecats
-	// always have GUPP and essential Gas Town context.
+	// always have GUPP and essential Camp Leatherneck context.
 	if err := beads.ProvisionPrimeMDForWorktree(clonePath); err != nil {
 		// Non-fatal - polecat can still work via hook, warn but don't fail
 		style.PrintWarning("could not provision PRIME.md: %v", err)
@@ -1011,7 +1011,7 @@ func (m *Manager) AddWithOptions(name string, opts AddOptions) (_ *Polecat, retE
 		style.PrintWarning("could not run setup hooks: %v", err)
 	}
 
-	// NOTE: Slash commands (.claude/commands/) are provisioned at town level by gt install.
+	// NOTE: Slash commands (.claude/commands/) are provisioned at town level by lt install.
 	// All agents inherit them via Claude's directory traversal - no per-workspace copies needed.
 
 	// Create or reopen agent bead for ZFC compliance (self-report state).
@@ -1144,7 +1144,7 @@ func (m *Manager) RemoveWithOptions(name string, force, nuclear, selfNuke bool) 
 
 	// Check if user's shell is cd'd into the worktree (prevents broken shell)
 	// This check runs unless selfNuke=true (polecat deleting its own worktree).
-	// When a polecat calls `gt done`, it's inside its worktree by design - the session
+	// When a polecat calls `lt done`, it's inside its worktree by design - the session
 	// will be killed immediately after, so breaking the shell is expected and harmless.
 	// See: https://github.com/camp-leatherneck/camp-leatherneck/issues/942
 	if !selfNuke {
@@ -1161,7 +1161,7 @@ func (m *Manager) RemoveWithOptions(name string, force, nuclear, selfNuke bool) 
 			}
 
 			if strings.HasPrefix(cwdAbs, cloneAbs) || strings.HasPrefix(cwdAbs, polecatAbs) {
-				return fmt.Errorf("%w: your shell is in %s\n\nPlease cd elsewhere first, then retry:\n  cd ~/gt\n  gt polecat nuke %s/%s --force",
+				return fmt.Errorf("%w: your shell is in %s\n\nPlease cd elsewhere first, then retry:\n  cd ~/gt\n  lt polecat nuke %s/%s --force",
 					ErrShellInWorktree, cwd, m.rig.Name, name)
 			}
 		}
@@ -1232,7 +1232,7 @@ func (m *Manager) RemoveWithOptions(name string, force, nuclear, selfNuke bool) 
 	// Verify removal succeeded (fixes #618)
 	// The above removal attempts may fail silently on permissions, symlinks, or busy files
 	if err := verifyRemovalComplete(polecatDir, clonePath); err != nil {
-		// Log warning but don't fail - the polecat is effectively "removed" from Gas Town's perspective
+		// Log warning but don't fail - the polecat is effectively "removed" from Camp Leatherneck's perspective
 		style.PrintWarning("incomplete removal for %s: %v", name, err)
 	}
 
@@ -1445,7 +1445,7 @@ func (m *Manager) RepairWorktreeWithOptions(name string, force bool, opts AddOpt
 			"  - Branch doesn't exist on the remote (create it there first)\n"+
 			"  - default_branch is misconfigured (check %s/config.json)\n"+
 			"  - Bare repo fetch failed (try: git -C %s fetch origin)\n\n"+
-			"Run 'gt doctor' to diagnose.",
+			"Run 'lt doctor' to diagnose.",
 			startPoint, m.rig.Path, filepath.Join(m.rig.Path, ".repo.git"))
 	}
 
@@ -1578,7 +1578,7 @@ func (m *Manager) ReuseIdlePolecat(name string, opts AddOptions) (*Polecat, erro
 	// The polecat was found idle (no hooked work), so even a "live" session is
 	// just Claude sitting at a dead ❯ prompt from the previous task. Leaving it
 	// alive prevents StartSession from creating a fresh session with a proper
-	// gt prime --hook cycle to discover the newly hooked bead.
+	// lt prime --hook cycle to discover the newly hooked bead.
 	//
 	// Previously, non-stale sessions returned ErrSessionRunning here, causing the
 	// caller to allocate a new polecat. But heartbeat freshness can race with
@@ -1639,9 +1639,9 @@ func (m *Manager) ReuseIdlePolecat(name string, opts AddOptions) (*Polecat, erro
 	_ = polecatGit.CleanForce()
 
 	// Re-provision CLAUDE.md after reset — git reset --hard restores the tracked
-	// version (which lacks gt done instructions), and git clean -f removes any
+	// version (which lacks lt done instructions), and git clean -f removes any
 	// untracked CLAUDE.md we previously wrote. Without this, reused polecats
-	// lose all lifecycle instructions and never call gt done.
+	// lose all lifecycle instructions and never call lt done.
 	reuseRigName := filepath.Base(m.rig.Path)
 	if _, err := templates.CreatePolecatCLAUDEmd(clonePath, reuseRigName, name); err != nil {
 		style.PrintWarning("could not re-provision polecat CLAUDE.md on reuse: %v", err)
@@ -1683,7 +1683,7 @@ func (m *Manager) ReuseIdlePolecat(name string, opts AddOptions) (*Polecat, erro
 
 	// Sync agent_state column to "spawning" (gt-ulom).
 	// createAgentBeadWithRetry sets agent_state in the description only.
-	// The column stays stale (e.g., "idle" from previous gt done) until
+	// The column stays stale (e.g., "idle" from previous lt done) until
 	// StartSession sets it to "working". Without this, the column and
 	// description diverge, causing dashboards to show incorrect state.
 	if err := m.beads.UpdateAgentState(agentID, "spawning"); err != nil {
@@ -1811,7 +1811,7 @@ func (m *Manager) ReconcilePoolWith(namesWithDirs, namesWithSessions []string) {
 //
 // Uses heartbeat-based liveness detection (gt-qjtq): checks whether the session's
 // heartbeat file has been updated recently. Polecat sessions touch their heartbeat
-// via gt commands (gt prime, gt hook, bd show, etc.) which run frequently during
+// via lt commands (lt prime, lt hook, bd show, etc.) which run frequently during
 // normal operation. A stale heartbeat indicates the agent is no longer active.
 //
 // Falls back to PID signal probing when no heartbeat file exists (backward
@@ -1857,7 +1857,7 @@ func isSessionProcessDead(t *tmux.Tmux, sessionName string, townRoot string) boo
 }
 
 // pendingMaxAge is how long a .pending reservation marker may exist before
-// it is considered stale. gt sling completes in seconds, so 5 minutes is
+// it is considered stale. lt sling completes in seconds, so 5 minutes is
 // a conservative bound that avoids false positives on slow machines.
 // Configurable via operational.polecat.pending_max_age in settings/config.json.
 const pendingMaxAge = 5 * time.Minute
@@ -1867,7 +1867,7 @@ const pendingMaxAge = 5 * time.Minute
 // - Empty polecat directories without .git
 // - Directories with invalid/corrupt .git files
 // - Stale git worktree registrations
-// - Stale .pending reservation markers (gt sling crashed before AddWithOptions)
+// - Stale .pending reservation markers (lt sling crashed before AddWithOptions)
 func (m *Manager) cleanupOrphanPolecatState() {
 	polecatsDir := filepath.Join(m.rig.Path, "polecats")
 
@@ -1878,7 +1878,7 @@ func (m *Manager) cleanupOrphanPolecatState() {
 
 	for _, entry := range entries {
 		// Clean up stale allocation reservation markers.
-		// A .pending file older than pendingMaxAge means gt sling crashed after
+		// A .pending file older than pendingMaxAge means lt sling crashed after
 		// AllocateName but before AddWithOptions created the directory. Remove it
 		// so the name can be reallocated on the next reconcile.
 		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".pending") {
@@ -1976,7 +1976,7 @@ func (m *Manager) List() ([]*Polecat, error) {
 
 // FindIdlePolecat returns the first idle polecat in the rig, or nil if none.
 // Idle polecats have completed their work and have a preserved sandbox (worktree)
-// that can be reused by gt sling without creating a new worktree.
+// that can be reused by lt sling without creating a new worktree.
 // Persistent polecat model (gt-4ac).
 func (m *Manager) FindIdlePolecat() (*Polecat, error) {
 	polecats, err := m.List()
@@ -2009,7 +2009,7 @@ func (m *Manager) Get(name string) (*Polecat, error) {
 // - StateWorking: issue status set to in_progress
 // SetAgentState updates the agent bead's agent_state field.
 // This is called after a polecat session successfully starts to transition
-// from "spawning" to "working", making gt polecat identity show accurate status.
+// from "spawning" to "working", making lt polecat identity show accurate status.
 // Valid states: "spawning", "working", "done", "stuck", "idle"
 func (m *Manager) SetAgentState(name string, state string) error {
 	agentID := m.agentBeadID(name)
@@ -2036,7 +2036,7 @@ func (m *Manager) SetState(name string, state State) error {
 	case StateWorking:
 		// Set issue to in_progress if there is one.
 		// Skip if status is "hooked" — sling sets this, and changing it here causes
-		// merge conflicts when gt done runs. The polecat should claim work via gt prime,
+		// merge conflicts when lt done runs. The polecat should claim work via lt prime,
 		// not have sling change status during spawn (gt-zecmc).
 		if issue != nil && issue.Status != beads.StatusHooked {
 			status := "in_progress"
@@ -2182,7 +2182,7 @@ func (m *Manager) loadFromBeads(name string) (*Polecat, error) {
 	// Cross-check tmux session liveness once for use in state derivation below.
 	// When a tmux session has died (e.g., due to disk space exhaustion or OOM),
 	// beads may still report the polecat as "working" because the bead state was
-	// never updated. Without this check, `gt polecat list` shows zombies as working.
+	// never updated. Without this check, `lt polecat list` shows zombies as working.
 	// See: disk-space-resilience — all 5 polecats appeared "working" after sessions died.
 	//
 	// When tmux is nil (e.g., no tmux available or in tests), we cannot determine

@@ -36,8 +36,8 @@ import (
 // All agents also implicitly allow .beads/ or .beads/redirect (added in checkWorktreeClean).
 //
 // IMPORTANT: Be very conservative about adding files here. Each entry represents
-// a file that Gas Town creates inside the user's repo, which could be accidentally
-// committed and pushed upstream. Prefer ephemeral context injection (gt prime) over
+// a file that Camp Leatherneck creates inside the user's repo, which could be accidentally
+// committed and pushed upstream. Prefer ephemeral context injection (lt prime) over
 // on-disk files.
 var agentAllowlist = map[string][]string{
 	// Mayor is a clone (not worktree) - it's the canonical copy of the user's repo.
@@ -53,7 +53,7 @@ var agentAllowlist = map[string][]string{
 
 	// Crew workers are user-managed worktrees for human developers.
 	"crew": {
-		"?? state.json", // crew/manager.go: Gas Town metadata (TODO: migrate to beads like polecats)
+		"?? state.json", // crew/manager.go: Camp Leatherneck metadata (TODO: migrate to beads like polecats)
 		"?? .gitignore", // EnsureGitignorePatterns: adds .claude/, .runtime/, .logs/, __pycache__/ patterns
 	},
 
@@ -152,7 +152,7 @@ func createTestGitRepoAt(t *testing.T, repoDir string) {
 	}
 }
 
-// setupTestTown creates a minimal Gas Town workspace for testing.
+// setupTestTown creates a minimal Camp Leatherneck workspace for testing.
 // Returns townRoot and a cleanup function.
 func setupTestTown(t *testing.T) string {
 	t.Helper()
@@ -337,7 +337,7 @@ esac
 	return logPath
 }
 
-// TestRigAddCreatesCorrectStructure verifies that gt rig add creates
+// TestRigAddCreatesCorrectStructure verifies that lt rig add creates
 // the expected directory structure.
 func TestRigAddCreatesCorrectStructure(t *testing.T) {
 	requireDoltServer(t)
@@ -423,8 +423,8 @@ func TestRigAddCreatesCorrectStructure(t *testing.T) {
 		t.Errorf("refinery/rig/.git should be a file (worktree), not a directory")
 	}
 
-	// NOTE: Most agent settings are installed at startup time, not by gt rig add.
-	// Exception: polecats/.claude/ is scaffolded by gt rig add so polecat sessions
+	// NOTE: Most agent settings are installed at startup time, not by lt rig add.
+	// Exception: polecats/.claude/ is scaffolded by lt rig add so polecat sessions
 	// don't fail on startup due to missing hooks (gt-ke4mj).
 	parentSettingsThatShouldNotExist := []struct {
 		path string
@@ -437,23 +437,23 @@ func TestRigAddCreatesCorrectStructure(t *testing.T) {
 
 	for _, s := range parentSettingsThatShouldNotExist {
 		if _, err := os.Stat(s.path); err == nil {
-			t.Errorf("%s should NOT exist after gt rig add (agents install settings at startup)", s.desc)
+			t.Errorf("%s should NOT exist after lt rig add (agents install settings at startup)", s.desc)
 		}
 	}
 
-	// Polecats settings should be scaffolded by gt rig add (gt-ke4mj).
+	// Polecats settings should be scaffolded by lt rig add (gt-ke4mj).
 	polecatSettings := filepath.Join(rigPath, "polecats", ".claude", "settings.json")
 	if _, err := os.Stat(polecatSettings); os.IsNotExist(err) {
-		t.Errorf("polecats/.claude/settings.json should exist after gt rig add (scaffolded for polecat startup)")
+		t.Errorf("polecats/.claude/settings.json should exist after lt rig add (scaffolded for polecat startup)")
 	}
 	polecatHandoff := filepath.Join(rigPath, "polecats", ".claude", "commands", "handoff.md")
 	if _, err := os.Stat(polecatHandoff); os.IsNotExist(err) {
-		t.Errorf("polecats/.claude/commands/handoff.md should exist after gt rig add (scaffolded for polecat startup)")
+		t.Errorf("polecats/.claude/commands/handoff.md should exist after lt rig add (scaffolded for polecat startup)")
 	}
 
 	// NOTE: No per-directory CLAUDE.md/AGENTS.md is created at agent level.
 	// Only ~/gt/CLAUDE.md (town-root identity anchor) exists on disk.
-	// Full context is injected ephemerally by `gt prime` at session start.
+	// Full context is injected ephemerally by `lt prime` at session start.
 
 	// NOTE: Settings are now installed at parent directories (e.g., witness/.claude/settings.json)
 	// and passed to Claude via --settings flag. Settings no longer exist inside working directories.
@@ -500,7 +500,7 @@ func TestRigAddCreatesCorrectStructure(t *testing.T) {
 	}
 }
 
-// TestRigAddRespectsDefaultAgent verifies that gt rig add scaffolds the polecat
+// TestRigAddRespectsDefaultAgent verifies that lt rig add scaffolds the polecat
 // config directory matching the town's default_agent setting (gt-vdx).
 func TestRigAddRespectsDefaultAgent(t *testing.T) {
 	requireDoltServer(t)
@@ -835,7 +835,7 @@ func TestRigAddCreatesRigConfig(t *testing.T) {
 	}
 }
 
-// TestRigAddWithUpstreamURL verifies that gt rig add --upstream-url
+// TestRigAddWithUpstreamURL verifies that lt rig add --upstream-url
 // configures the upstream remote on both the bare repo and mayor clone,
 // and persists the URL to config.json and rigs.json.
 func TestRigAddWithUpstreamURL(t *testing.T) {
@@ -1007,7 +1007,7 @@ func TestRigAddRejectsInvalidNames(t *testing.T) {
 	}
 }
 
-// TestRigAddCreatesAgentBeads verifies that gt rig add creates
+// TestRigAddCreatesAgentBeads verifies that lt rig add creates
 // witness and refinery agent beads via the manager's initAgentBeads.
 func TestRigAddCreatesAgentBeads(t *testing.T) {
 	requireDoltServer(t)
@@ -1100,23 +1100,23 @@ func TestAgentBeadIDs(t *testing.T) {
 	}
 }
 
-// TestAgentWorktreesStayClean verifies that after gt install, gt rig add, and
-// agent creation, all agent worktrees have no unexpected Gas Town files.
+// TestAgentWorktreesStayClean verifies that after lt install, lt rig add, and
+// agent creation, all agent worktrees have no unexpected Camp Leatherneck files.
 //
 // This is a critical invariant: user repos should stay clean. The only allowed
-// Gas Town file is .beads/redirect which points to the shared rig-level beads.
+// Camp Leatherneck file is .beads/redirect which points to the shared rig-level beads.
 //
 // Agents tested:
-// - Mayor: mayor/rig/ (clone, created by gt rig add)
-// - Refinery: refinery/rig/ (worktree, created by gt rig add)
+// - Mayor: mayor/rig/ (clone, created by lt rig add)
+// - Refinery: refinery/rig/ (worktree, created by lt rig add)
 // - Crew: crew/<name>/ (worktree, created by gt crew add)
-// - Polecat: polecats/<name>/<rigname>/ (worktree, created by gt polecat identity add)
+// - Polecat: polecats/<name>/<rigname>/ (worktree, created by lt polecat identity add)
 //
 // Known issues this test catches:
 // - Extra files in .beads/ beyond redirect (e.g., PRIME.md, databases)
 // - AGENTS.md being copied/created in worktrees
 // - CLAUDE.md being created in non-polecat worktrees (polecats need it for gt done)
-// - Any other Gas Town artifacts polluting the repo
+// - Any other Camp Leatherneck artifacts polluting the repo
 //
 // Tests two scenarios:
 // - Repo WITHOUT tracked .beads/ (clean repo)
@@ -1219,14 +1219,14 @@ func runAgentCleanTest(t *testing.T, hasTrackedBeads bool) {
 		}
 	}
 
-	// Step 2: Run gt install
+	// Step 2: Run lt install
 	cmd := exec.Command(gtBinary, "install", hqPath, "--name", "test-town")
 	cmd.Env = append(os.Environ(), "HOME="+tmpDir)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		t.Fatalf("gt install failed: %v\nOutput: %s", err, output)
+		t.Fatalf("lt install failed: %v\nOutput: %s", err, output)
 	}
-	t.Logf("gt install output:\n%s", output)
+	t.Logf("lt install output:\n%s", output)
 
 	// Bridge the test Dolt server PID so AddRig's IsRunning check passes.
 	bridgeDoltPidToTown(t, hqPath)
@@ -1271,9 +1271,9 @@ func runAgentCleanTest(t *testing.T, hasTrackedBeads bool) {
 	cmd.Env = append(os.Environ(), "HOME="+tmpDir, "GT_ROOT="+hqPath)
 	output, err = cmd.CombinedOutput()
 	if err != nil {
-		t.Fatalf("gt crew add failed: %v\nOutput: %s", err, output)
+		t.Fatalf("lt crew add failed: %v\nOutput: %s", err, output)
 	}
-	t.Logf("gt crew add output:\n%s", output)
+	t.Logf("lt crew add output:\n%s", output)
 
 	// Step 5: Create a polecat (non-fatal: beads infrastructure may not support
 	// agent bead creation in environments without a running Dolt server).
@@ -1287,10 +1287,10 @@ func runAgentCleanTest(t *testing.T, hasTrackedBeads bool) {
 	cmd.Env = append(os.Environ(), "HOME="+tmpDir, "GT_ROOT="+hqPath)
 	output, err = cmd.CombinedOutput()
 	if err != nil {
-		t.Logf("gt polecat identity add failed (non-fatal, beads may not be available): %v", err)
+		t.Logf("lt polecat identity add failed (non-fatal, beads may not be available): %v", err)
 	} else {
 		polecatCreated = true
-		t.Logf("gt polecat identity add output:\n%s", output)
+		t.Logf("lt polecat identity add output:\n%s", output)
 	}
 
 	// Step 6: Define all agent worktrees to check

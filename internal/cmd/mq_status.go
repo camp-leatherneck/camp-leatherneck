@@ -12,7 +12,7 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/style"
 )
 
-// MRStatusOutput is the JSON output structure for gt mq status.
+// MRStatusOutput is the JSON output structure for lt mq status.
 type MRStatusOutput struct {
 	// Core issue fields
 	ID        string `json:"id"`

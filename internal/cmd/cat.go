@@ -21,10 +21,10 @@ This is a convenience wrapper around 'bd show' that integrates with gt.
 Accepts any bead ID with a recognized prefix (gt-*, bd-*, hq-*, mol-*, etc.).
 
 Examples:
-  gt cat gt-abc123       # Show a gastown bead
-  gt cat bd-abc123       # Show a beads bead
-  gt cat hq-xyz789       # Show a town-level bead
-  gt cat bd-abc --json   # Output as JSON`,
+  lt cat gt-abc123       # Show a gastown bead
+  lt cat bd-abc123       # Show a beads bead
+  lt cat hq-xyz789       # Show a town-level bead
+  lt cat bd-abc --json   # Output as JSON`,
 	Args: cobra.ExactArgs(1),
 	RunE: runCat,
 }

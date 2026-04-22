@@ -29,17 +29,17 @@ var changelogCmd = &cobra.Command{
 	Use:     "changelog",
 	GroupID: GroupWork,
 	Short:   "Show completed work across rigs",
-	Long: `Show a changelog of closed beads across all rigs in Gas Town.
+	Long: `Show a changelog of closed beads across all rigs in Camp Leatherneck.
 
 Filters out ephemeral/internal beads (wisps, patrols) to show only real work.
 
 Examples:
-  gt changelog            # This week's completed work (default)
-  gt changelog --today    # Today's completions
-  gt changelog --week     # This week's completions
-  gt changelog --since 2026-03-10  # Since a specific date
-  gt changelog --rig gastown       # One rig only
-  gt changelog --json              # JSON output`,
+  lt changelog            # This week's completed work (default)
+  lt changelog --today    # Today's completions
+  lt changelog --week     # This week's completions
+  lt changelog --since 2026-03-10  # Since a specific date
+  lt changelog --rig gastown       # One rig only
+  lt changelog --json              # JSON output`,
 	RunE: runChangelog,
 }
 
@@ -76,7 +76,7 @@ type closedBead struct {
 func runChangelog(_ *cobra.Command, _ []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	since, err := changelogSinceTime()

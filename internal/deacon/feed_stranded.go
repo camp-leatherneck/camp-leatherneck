@@ -47,7 +47,7 @@ type ConvoyFeedState struct {
 	LastFeedTime time.Time `json:"last_feed_time,omitempty"`
 }
 
-// StrandedConvoy holds info about a stranded convoy from `gt convoy stranded --json`.
+// StrandedConvoy holds info about a stranded convoy from `lt convoy stranded --json`.
 type StrandedConvoy struct {
 	ID           string   `json:"id"`
 	Title        string   `json:"title"`
@@ -179,7 +179,7 @@ func (s *ConvoyFeedState) RecordFeed() {
 	s.LastFeedTime = time.Now().UTC()
 }
 
-// FindStrandedConvoys runs `gt convoy stranded --json` and parses the output.
+// FindStrandedConvoys runs `lt convoy stranded --json` and parses the output.
 func FindStrandedConvoys(townRoot string) ([]StrandedConvoy, error) {
 	cmd := exec.Command("gt", "convoy", "stranded", "--json")
 	cmd.Dir = townRoot
@@ -187,7 +187,7 @@ func FindStrandedConvoys(townRoot string) ([]StrandedConvoy, error) {
 
 	output, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("running gt convoy stranded: %w", err)
+		return nil, fmt.Errorf("running lt convoy stranded: %w", err)
 	}
 
 	var stranded []StrandedConvoy
@@ -333,7 +333,7 @@ func FeedStranded(townRoot string, maxPerCycle int, cooldown time.Duration) *Fee
 	return result
 }
 
-// closeEmptyConvoy runs `gt convoy check <id>` to auto-close an empty convoy.
+// closeEmptyConvoy runs `lt convoy check <id>` to auto-close an empty convoy.
 func closeEmptyConvoy(townRoot, convoyID string) error {
 	cmd := exec.Command("gt", "convoy", "check", convoyID)
 	cmd.Dir = townRoot
@@ -343,7 +343,7 @@ func closeEmptyConvoy(townRoot, convoyID string) error {
 	return cmd.Run()
 }
 
-// dispatchFeedDog dispatches a dog to feed a stranded convoy via gt sling.
+// dispatchFeedDog dispatches a dog to feed a stranded convoy via lt sling.
 func dispatchFeedDog(townRoot, convoyID string) error {
 	cmd := exec.Command("gt", "sling", constants.MolConvoyFeed, "deacon/dogs",
 		"--var", fmt.Sprintf("convoy=%s", convoyID))

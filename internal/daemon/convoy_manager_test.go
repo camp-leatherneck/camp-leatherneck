@@ -41,7 +41,7 @@ func setupTestStore(t *testing.T) (beadsdk.Storage, func()) {
 
 // scanTestOpts configures the mockGtForScanTest helper.
 type scanTestOpts struct {
-	strandedJSON  string // JSON for `gt convoy stranded --json`; default "[]"
+	strandedJSON  string // JSON for `lt convoy stranded --json`; default "[]"
 	slingFailOnce bool   // first sling invocation exits 1, subsequent succeed
 	routes        string // routes.jsonl content; empty = no routes file
 }
@@ -254,7 +254,7 @@ func TestScanStranded_FeedsReadyIssues(t *testing.T) {
 	}
 	logContent := string(data)
 	if !strings.Contains(logContent, "sling") || !strings.Contains(logContent, "gt-issue1") {
-		t.Errorf("expected gt sling to be invoked for gt-issue1, got: %q", logContent)
+		t.Errorf("expected lt sling to be invoked for gt-issue1, got: %q", logContent)
 	}
 }
 
@@ -275,7 +275,7 @@ func TestScanStranded_ClosesEmptyConvoys(t *testing.T) {
 		t.Fatalf("read check log: %v", err)
 	}
 	if !strings.Contains(string(data), "hq-empty1") {
-		t.Errorf("expected gt convoy check for hq-empty1, got: %q", data)
+		t.Errorf("expected lt convoy check for hq-empty1, got: %q", data)
 	}
 }
 
@@ -340,7 +340,7 @@ func TestScanStranded_GracePeriodAllowsOldConvoy(t *testing.T) {
 		t.Fatalf("read check log: %v", err)
 	}
 	if !strings.Contains(string(data), "hq-old1") {
-		t.Errorf("expected gt convoy check for hq-old1 (past grace period), got: %q", data)
+		t.Errorf("expected lt convoy check for hq-old1 (past grace period), got: %q", data)
 	}
 }
 
@@ -1187,7 +1187,7 @@ exit 0
 
 	if _, err := os.Stat(callLogPath); err == nil {
 		data, _ := os.ReadFile(callLogPath)
-		t.Errorf("gt was called unexpectedly: %s", data)
+		t.Errorf("lt was called unexpectedly: %s", data)
 	}
 
 	for _, s := range logged {

@@ -21,8 +21,8 @@ Displays each target with its override chain and whether it is
 currently in sync with the base + overrides configuration.
 
 Examples:
-  gt hooks list            # Show all managed locations
-  gt hooks list --json     # Output as JSON`,
+  lt hooks list            # Show all managed locations
+  lt hooks list --json     # Output as JSON`,
 	RunE: runHooksListTargets,
 }
 
@@ -45,7 +45,7 @@ type listTargetInfo struct {
 func runHooksListTargets(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	targets, err := hooks.DiscoverTargets(townRoot)

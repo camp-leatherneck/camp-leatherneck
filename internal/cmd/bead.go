@@ -41,9 +41,9 @@ The target prefix determines which repository receives the bead.
 Common prefixes: gt- (gastown), bd- (beads), hq- (headquarters)
 
 Examples:
-  gt bead move gt-abc123 bd-     # Move gt-abc123 to beads repo as bd-*
-  gt bead move hq-xyz bd-        # Move hq-xyz to beads repo
-  gt bead move bd-123 gt-        # Move bd-123 to gastown repo`,
+  lt bead move gt-abc123 bd-     # Move gt-abc123 to beads repo as bd-*
+  lt bead move hq-xyz bd-        # Move hq-xyz to beads repo
+  lt bead move bd-123 gt-        # Move bd-123 to gastown repo`,
 	Args: cobra.ExactArgs(2),
 	RunE: runBeadMove,
 }
@@ -55,13 +55,13 @@ var beadShowCmd = &cobra.Command{
 	Short: "Show details of a bead",
 	Long: `Displays the full details of a bead by ID.
 
-This is an alias for 'gt show'. All bd show flags are supported.
+This is an alias for 'lt show'. All bd show flags are supported.
 
 Examples:
-  gt bead show gt-abc123          # Show a gastown issue
-  gt bead show hq-xyz789          # Show a town-level bead
-  gt bead show bd-def456          # Show a beads issue
-  gt bead show gt-abc123 --json   # Output as JSON`,
+  lt bead show gt-abc123          # Show a gastown issue
+  lt bead show hq-xyz789          # Show a town-level bead
+  lt bead show bd-def456          # Show a beads issue
+  lt bead show gt-abc123 --json   # Output as JSON`,
 	DisableFlagParsing: true, // Pass all flags through to bd show
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return runShow(cmd, args)
@@ -73,13 +73,13 @@ var beadReadCmd = &cobra.Command{
 	Short: "Show details of a bead (alias for 'show')",
 	Long: `Displays the full details of a bead by ID.
 
-This is an alias for 'gt bead show'. All bd show flags are supported.
+This is an alias for 'lt bead show'. All bd show flags are supported.
 
 Examples:
-  gt bead read gt-abc123          # Show a gastown issue
-  gt bead read hq-xyz789          # Show a town-level bead
-  gt bead read bd-def456          # Show a beads issue
-  gt bead read gt-abc123 --json   # Output as JSON`,
+  lt bead read gt-abc123          # Show a gastown issue
+  lt bead read hq-xyz789          # Show a town-level bead
+  lt bead read bd-def456          # Show a beads issue
+  lt bead read gt-abc123 --json   # Output as JSON`,
 	DisableFlagParsing: true, // Pass all flags through to bd show
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return runShow(cmd, args)

@@ -33,9 +33,9 @@ The posted_by field is set to the rig's DoltHub org (DOLTHUB_ORG) or
 falls back to the directory name.
 
 Examples:
-  gt wl post --title "Fix auth bug" --project gastown --type bug
-  gt wl post --title "Add federation sync" --type feature --priority 1 --effort large
-  gt wl post --title "Update docs" --tags "docs,federation" --effort small`,
+  lt wl post --title "Fix auth bug" --project gastown --type bug
+  lt wl post --title "Add federation sync" --type feature --priority 1 --effort large
+  lt wl post --title "Update docs" --tags "docs,federation" --effort small`,
 	RunE: runWlPost,
 }
 
@@ -56,7 +56,7 @@ func init() {
 func runWlPost(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	var tags []string

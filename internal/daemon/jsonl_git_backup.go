@@ -387,7 +387,7 @@ func (d *Daemon) commitAndPushJsonlBackup(gitRepo string, databases []string, co
 
 	// Commit.
 	if err := d.runGitCmd(gitRepo, gitCmdTimeout, "commit", "-m", msg,
-		"--author=Gas Town Daemon <daemon@gastown.local>"); err != nil {
+		"--author=Camp Leatherneck Daemon <daemon@gastown.local>"); err != nil {
 		return fmt.Errorf("git commit: %w", err)
 	}
 
@@ -457,7 +457,7 @@ func (d *Daemon) runGitCmd(dir string, timeout time.Duration, args ...string) er
 	return nil
 }
 
-// escalate sends an escalation message to the mayor via gt escalate.
+// escalate sends an escalation message to the mayor via lt escalate.
 func (d *Daemon) escalate(source, message string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

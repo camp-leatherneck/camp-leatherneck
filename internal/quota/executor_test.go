@@ -430,7 +430,7 @@ func TestExecute_RestartCommandFailure(t *testing.T) {
 	}
 
 	rotator := NewRotator(tmuxClient, exec, mgr, accounts,
-		func(s string) (string, error) { return "", fmt.Errorf("cannot detect town root") },
+		func(s string) (string, error) { return "", fmt.Errorf("cannot detect HQ root") },
 		&mockLogger{}, "", "", nil,
 	)
 

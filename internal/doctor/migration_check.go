@@ -66,7 +66,7 @@ func (c *DoltMetadataCheck) Run(ctx *CheckContext) *CheckResult {
 	townBeadsDir := filepath.Join(ctx.TownRoot, ".beads")
 	if _, err := os.Stat(filepath.Join(doltDataDir, "hq")); err == nil {
 		if !c.hasDoltMetadata(townBeadsDir, "hq") {
-			missing = append(missing, "hq (town root .beads/)")
+			missing = append(missing, "hq (HQ root .beads/)")
 			c.missingMetadata = append(c.missingMetadata, "hq")
 		} else {
 			ok++
@@ -125,7 +125,7 @@ func (c *DoltMetadataCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:   StatusWarning,
 		Message:  fmt.Sprintf("%d rig(s) missing Dolt server metadata", len(missing)),
 		Details:  details,
-		FixHint:  "Run 'gt dolt fix-metadata' to update all metadata.json files",
+		FixHint:  "Run 'lt dolt fix-metadata' to update all metadata.json files",
 		Category: c.CheckCategory,
 	}
 }
@@ -348,7 +348,7 @@ func (c *DoltServerReachableCheck) Run(ctx *CheckContext) *CheckResult {
 				"bd commands will fail or create isolated local databases",
 				"This is the split-brain scenario — data written now may be invisible to the server later",
 			),
-			FixHint:  "Check dolt server connectivity or run 'gt dolt start' for local server",
+			FixHint:  "Check dolt server connectivity or run 'lt dolt start' for local server",
 			Category: c.CheckCategory,
 		}
 	}
@@ -546,7 +546,7 @@ func (c *DoltOrphanedDatabaseCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:   StatusWarning,
 		Message:  fmt.Sprintf("%d orphaned database(s) in .dolt-data/", len(orphans)),
 		Details:  details,
-		FixHint:  "Run 'gt dolt cleanup' to remove orphaned databases",
+		FixHint:  "Run 'lt dolt cleanup' to remove orphaned databases",
 		Category: c.CheckCategory,
 	}
 }

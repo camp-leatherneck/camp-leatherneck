@@ -49,7 +49,7 @@ func runEscalate(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load escalation config
@@ -228,7 +228,7 @@ type deliveryStatus struct {
 func runEscalateList(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	bd := beads.New(beads.ResolveBeadsDir(townRoot))
@@ -315,7 +315,7 @@ func runEscalateAck(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Detect who is acknowledging
@@ -344,7 +344,7 @@ func runEscalateClose(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Detect who is closing
@@ -373,7 +373,7 @@ func runEscalateClose(cmd *cobra.Command, args []string) error {
 func runEscalateStale(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Load escalation config for threshold and max reescalations
@@ -554,8 +554,8 @@ func formatReescalationMailBody(result *beads.ReescalationResult, reescalatedBy 
 	lines = append(lines, "This escalation was not acknowledged within the stale threshold and has been automatically re-escalated to a higher severity.")
 	lines = append(lines, "")
 	lines = append(lines, "---")
-	lines = append(lines, "To acknowledge: gt escalate ack "+result.ID)
-	lines = append(lines, "To close: gt escalate close "+result.ID+" --reason \"resolution\"")
+	lines = append(lines, "To acknowledge: lt escalate ack "+result.ID)
+	lines = append(lines, "To close: lt escalate close "+result.ID+" --reason \"resolution\"")
 	return strings.Join(lines, "\n")
 }
 
@@ -564,7 +564,7 @@ func runEscalateShow(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	bd := beads.New(beads.ResolveBeadsDir(townRoot))
@@ -725,15 +725,15 @@ func sendEscalationEmail(cfg *config.EscalationConfig, beadID, severity, descrip
 		from = "gastown@localhost"
 	}
 	to := cfg.Contacts.HumanEmail
-	subject := fmt.Sprintf("[Gas Town %s] %s", strings.ToUpper(severity), description)
+	subject := fmt.Sprintf("[Camp Leatherneck %s] %s", strings.ToUpper(severity), description)
 
 	body := fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n"+
-		"Gas Town Escalation\r\n"+
+		"Camp Leatherneck Escalation\r\n"+
 		"====================\r\n"+
 		"Bead: %s\r\n"+
 		"Severity: %s\r\n"+
 		"Description: %s\r\n\r\n"+
-		"Acknowledge: gt escalate ack %s\r\n",
+		"Acknowledge: lt escalate ack %s\r\n",
 		from, to, subject, beadID, strings.ToUpper(severity), description, beadID)
 
 	addr := fmt.Sprintf("%s:%s", host, port)
@@ -759,7 +759,7 @@ func sendEscalationSlack(cfg *config.EscalationConfig, beadID, severity, descrip
 	}
 
 	payload := map[string]string{
-		"text": fmt.Sprintf("%s *[%s] Escalation %s*\n%s\n_Acknowledge: `gt escalate ack %s`_",
+		"text": fmt.Sprintf("%s *[%s] Escalation %s*\n%s\n_Acknowledge: `lt escalate ack %s`_",
 			emoji, strings.ToUpper(severity), beadID, description, beadID),
 	}
 	body, err := json.Marshal(payload)
@@ -784,7 +784,7 @@ func sendEscalationSlack(cfg *config.EscalationConfig, beadID, severity, descrip
 func sendEscalationSMS(cfg *config.EscalationConfig, beadID, severity, description string) error {
 	payload := map[string]string{
 		"to":   cfg.Contacts.HumanSMS,
-		"body": fmt.Sprintf("[Gas Town %s] %s (bead: %s)", strings.ToUpper(severity), description, beadID),
+		"body": fmt.Sprintf("[Camp Leatherneck %s] %s (bead: %s)", strings.ToUpper(severity), description, beadID),
 	}
 	body, err := json.Marshal(payload)
 	if err != nil {
@@ -838,8 +838,8 @@ func formatEscalationMailBody(beadID, severity, reason, from, related string) st
 	}
 	lines = append(lines, "")
 	lines = append(lines, "---")
-	lines = append(lines, "To acknowledge: gt escalate ack "+beadID)
-	lines = append(lines, "To close: gt escalate close "+beadID+" --reason \"resolution\"")
+	lines = append(lines, "To acknowledge: lt escalate ack "+beadID)
+	lines = append(lines, "To close: lt escalate close "+beadID+" --reason \"resolution\"")
 	return strings.Join(lines, "\n")
 }
 

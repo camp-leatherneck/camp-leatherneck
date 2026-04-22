@@ -86,12 +86,12 @@ func ensureConfigYAML(beadsDir, prefix string, onlyIfMissing bool) error {
 	configPath := filepath.Join(beadsDir, "config.yaml")
 	wantPrefix := "prefix: " + prefix
 	wantIssuePrefix := "issue-prefix: " + prefix
-	// Gas Town rigs should disable idle-monitor to use centralized Dolt server
+	// Camp Leatherneck rigs should disable idle-monitor to use centralized Dolt server
 	wantIdleTimeout := "dolt.idle-timeout: \"0\""
 
 	data, err := os.ReadFile(configPath)
 	if os.IsNotExist(err) {
-		// New config: include all Gas Town defaults
+		// New config: include all Camp Leatherneck defaults
 		content := wantPrefix + "\n" + wantIssuePrefix + "\n" + wantIdleTimeout + "\n"
 		return os.WriteFile(configPath, []byte(content), 0644)
 	}

@@ -83,10 +83,10 @@ func TestLoadRoleDirective(t *testing.T) {
 	t.Run("invalid paths graceful", func(t *testing.T) {
 		t.Parallel()
 
-		// Non-existent town root
+		// Non-existent HQ root
 		got := LoadRoleDirective("polecat", "/nonexistent/path/xyz", "myrig")
 		if got != "" {
-			t.Errorf("got %q, want empty string for invalid town root", got)
+			t.Errorf("got %q, want empty string for invalid HQ root", got)
 		}
 
 		// Empty rig name skips rig-level lookup

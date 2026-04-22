@@ -84,7 +84,7 @@ func TestSetTownRootConcurrentWithFetch(t *testing.T) {
 
 	var wg sync.WaitGroup
 
-	// Writer goroutine: update town root
+	// Writer goroutine: update HQ root
 	wg.Add(1)
 	go func() {
 		defer wg.Done()

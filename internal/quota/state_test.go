@@ -12,7 +12,7 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
 )
 
-// setupTestTown creates a temporary town root with mayor directory.
+// setupTestTown creates a temporary HQ root with mayor directory.
 func setupTestTown(t *testing.T) string {
 	t.Helper()
 	townRoot := t.TempDir()

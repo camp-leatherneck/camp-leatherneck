@@ -45,7 +45,7 @@ func init() {
 var feedCmd = &cobra.Command{
 	Use:     "feed",
 	GroupID: GroupDiag,
-	Short:   "Show real-time activity feed of gt events",
+	Short:   "Show real-time activity feed of lt events",
 	Long: `Display a real-time feed of issue changes and agent activity.
 
 By default, launches an interactive TUI dashboard with:
@@ -97,21 +97,21 @@ MQ (Merge Queue) event symbols:
   ⊘  merge_skipped   - MR skipped (already merged, etc.)
 
 Examples:
-  gt feed                       # Launch TUI dashboard
-  gt feed --problems            # Start in problems view
-  gt feed -p                    # Short flag for problems view
-  gt feed --plain               # Plain text output (bd activity)
-  gt feed --window              # Open in dedicated tmux window
-  gt feed --since 1h            # Events from last hour
-  gt feed --rig greenplace      # Use gastown rig's beads`,
+  lt feed                       # Launch TUI dashboard
+  lt feed --problems            # Start in problems view
+  lt feed -p                    # Short flag for problems view
+  lt feed --plain               # Plain text output (bd activity)
+  lt feed --window              # Open in dedicated tmux window
+  lt feed --since 1h            # Events from last hour
+  lt feed --rig greenplace      # Use gastown rig's beads`,
 	RunE: runFeed,
 }
 
 func runFeed(cmd *cobra.Command, args []string) error {
-	// Must be in a Gas Town workspace
+	// Must be in a Camp Leatherneck workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace (run from ~/gt or a rig directory)")
+		return fmt.Errorf("not in a Camp Leatherneck workspace (run from ~/lt or a rig directory)")
 	}
 
 	// Build feed arguments for window mode
@@ -231,10 +231,10 @@ func runFeedDirect(townRoot string) error {
 
 // runFeedTUI runs the interactive TUI feed.
 func runFeedTUI(workDir string, problemsView bool) error {
-	// Must be in a Gas Town workspace
+	// Must be in a Camp Leatherneck workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	var sources []feed.EventSource
@@ -310,7 +310,7 @@ func runFeedInWindow(workDir string, bdArgs []string) error {
 	}
 
 	// Build the command to run in the window
-	// Use gt feed --plain instead of bd activity (which may not exist)
+	// Use lt feed --plain instead of bd activity (which may not exist)
 	gtPath, err := os.Executable()
 	if err != nil {
 		gtPath = "gt"

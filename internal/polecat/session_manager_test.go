@@ -302,7 +302,7 @@ func TestPolecatStartInjectsFallbackEnvVars(t *testing.T) {
 		"GT_RIG",          // Rig name (was already there pre-PR)
 		"GT_POLECAT",      // Polecat name (was already there pre-PR)
 		"GT_ROLE",         // Role address (was already there pre-PR)
-		"GT_TOWN_ROOT",    // Town root for FindFromCwdWithFallback after worktree nuke
+		"GT_TOWN_ROOT",    // HQ root for FindFromCwdWithFallback after worktree nuke
 	}
 
 	// Verify the env var map includes all required keys
@@ -452,7 +452,7 @@ func TestSessionManager_resolveBeadsDir(t *testing.T) {
 			expectedDir: filepath.Join(townRoot, "beads/mayor/rig"),
 		},
 		{
-			name:        "town-level bead resolves to town root",
+			name:        "town-level bead resolves to HQ root",
 			issueID:     "hq-town123",
 			expectedDir: townRoot,
 		},

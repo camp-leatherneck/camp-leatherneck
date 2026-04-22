@@ -67,7 +67,7 @@ var mqCmd = &cobra.Command{
 	RunE:    requireSubcommand,
 	Long: `Manage merge requests and the merge queue for a rig.
 
-Alias: 'gt mr' is equivalent to 'gt mq' (merge request vs merge queue).
+Alias: 'lt mr' is equivalent to 'lt mq' (merge request vs merge queue).
 
 The merge queue tracks work branches from polecats waiting to be merged.
 Use these commands to view, submit, retry, and manage merge requests.`,
@@ -104,11 +104,11 @@ Polecat auto-cleanup:
   multiple MRs or continue working).
 
 Examples:
-  gt mq submit                           # Auto-detect everything + auto-cleanup
-  gt mq submit --issue gp-abc            # Explicit issue
-  gt mq submit --epic gt-xyz             # Target integration branch explicitly
-  gt mq submit --priority 0              # Override priority (P0)
-  gt mq submit --no-cleanup              # Submit without auto-cleanup`,
+  lt mq submit                           # Auto-detect everything + auto-cleanup
+  lt mq submit --issue gp-abc            # Explicit issue
+  lt mq submit --epic gt-xyz             # Target integration branch explicitly
+  lt mq submit --priority 0              # Override priority (P0)
+  lt mq submit --no-cleanup              # Submit without auto-cleanup`,
 	RunE: runMqSubmit,
 }
 
@@ -121,8 +121,8 @@ Resets a failed MR so it can be processed again by the refinery.
 The MR must be in a failed state (open with an error).
 
 Examples:
-  gt mq retry greenplace gp-mr-abc123
-  gt mq retry greenplace gp-mr-abc123 --now`,
+  lt mq retry greenplace gp-mr-abc123
+  lt mq retry greenplace gp-mr-abc123 --now`,
 	Args: cobra.ExactArgs(2),
 	RunE: runMQRetry,
 }
@@ -142,10 +142,10 @@ Output format:
               (waiting on gt-mr-001)
 
 Examples:
-  gt mq list greenplace
-  gt mq list greenplace --ready
-  gt mq list greenplace --status=open
-  gt mq list greenplace --worker=Nux`,
+  lt mq list greenplace
+  lt mq list greenplace --ready
+  lt mq list greenplace --status=open
+  lt mq list greenplace --worker=Nux`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMQList,
 }
@@ -159,8 +159,8 @@ This closes the MR with a 'rejected' status without merging.
 The source issue is NOT closed (work is not done).
 
 Examples:
-  gt mq reject greenplace polecat/Nux/gp-xyz --reason "Does not meet requirements"
-  gt mq reject greenplace mr-Nux-12345 --reason "Superseded by other work" --notify`,
+  lt mq reject greenplace polecat/Nux/gp-xyz --reason "Does not meet requirements"
+  lt mq reject greenplace mr-Nux-12345 --reason "Superseded by other work" --notify`,
 	Args: cobra.ExactArgs(2),
 	RunE: runMQReject,
 }
@@ -182,8 +182,8 @@ Designed for use by the refinery formula after a successful merge to main.
 The branch name is read from the MR bead, so no manual branch argument is needed.
 
 Examples:
-  gt mq post-merge gastown gt-mr-abc123
-  gt mq post-merge gastown gt-mr-abc123 --skip-branch-delete`,
+  lt mq post-merge gastown gt-mr-abc123
+  lt mq post-merge gastown gt-mr-abc123 --skip-branch-delete`,
 	Args: cobra.ExactArgs(2),
 	RunE: runMQPostMerge,
 }
@@ -197,7 +197,7 @@ Shows all MR fields, current status with timestamps, dependencies,
 blockers, and processing history.
 
 Example:
-  gt mq status gp-mr-abc123`,
+  lt mq status gp-mr-abc123`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMqStatus,
 }
@@ -247,10 +247,10 @@ Actions:
   4. Store actual branch name in epic metadata
 
 Examples:
-  gt mq integration create gt-auth-epic
+  lt mq integration create gt-auth-epic
   # Creates integration/add-user-authentication (from epic title)
 
-  gt mq integration create RA-123 --branch "klauern/PROJ-1234/{epic}"
+  lt mq integration create RA-123 --branch "klauern/PROJ-1234/{epic}"
   # Creates klauern/PROJ-1234/RA-123`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMqIntegrationCreate,
@@ -279,9 +279,9 @@ Options:
   --dry-run     Preview only, make no changes
 
 Examples:
-  gt mq integration land gt-auth-epic
-  gt mq integration land gt-auth-epic --dry-run
-  gt mq integration land gt-auth-epic --force --skip-tests`,
+  lt mq integration land gt-auth-epic
+  lt mq integration land gt-auth-epic --dry-run
+  lt mq integration land gt-auth-epic --force --skip-tests`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMqIntegrationLand,
 }
@@ -298,7 +298,7 @@ Shows:
   - Pending MRs (open, targeting integration branch)
 
 Example:
-  gt mq integration status gt-auth-epic`,
+  lt mq integration status gt-auth-epic`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMqIntegrationStatus,
 }
@@ -372,7 +372,7 @@ func findCurrentRig(townRoot string) (string, *rig.Rig, error) {
 		return "", nil, fmt.Errorf("getting current directory: %w", err)
 	}
 
-	// Get relative path from town root to cwd
+	// Get relative path from HQ root to cwd
 	relPath, err := filepath.Rel(townRoot, cwd)
 	if err != nil {
 		return "", nil, fmt.Errorf("computing relative path: %w", err)
@@ -385,7 +385,7 @@ func findCurrentRig(townRoot string) (string, *rig.Rig, error) {
 		rigName = parts[0]
 	}
 
-	// When gt is invoked via shell alias (cd ~/gt && gt), cwd is the town
+	// When lt is invoked via shell alias (cd ~/gt && gt), cwd is the town
 	// root and relPath is ".". Fall back to GT_RIG env var.
 	if rigName == "" {
 		rigName = os.Getenv("GT_RIG")

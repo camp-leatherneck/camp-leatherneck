@@ -2,11 +2,11 @@
 
 > **Status: Partially implemented** -- Infrastructure (Dolt remotes) exists. Core federation features (URI scheme, cross-workspace queries, delegation) are not yet implemented.
 
-Multi-workspace coordination for Gas Town and Beads.
+Multi-workspace coordination for Camp Leatherneck and Beads.
 
 ## Overview
 
-Federation enables multiple Gas Town instances to reference each other's work,
+Federation enables multiple Camp Leatherneck instances to reference each other's work,
 coordinate across organizations, and track distributed projects.
 
 ## Entity Model
@@ -161,7 +161,7 @@ For private federation within an organization:
 
 **4. Direct Town-to-Town (Advanced)**
 
-Two Gas Town instances federating directly:
+Two Camp Leatherneck instances federating directly:
 - Town A runs remotesapi on accessible endpoint
 - Town B adds Town A as remote: `dolt remote add town-a http://town-a.example.com:8000/town`
 

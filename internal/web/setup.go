@@ -144,7 +144,7 @@ func (h *SetupAPIHandler) handleInstall(w http.ResponseWriter, r *http.Request) 
 	}
 	req.Path = expanded
 
-	// Build gt install command. Flags go first, then -- to end flag parsing,
+	// Build lt install command. Flags go first, then -- to end flag parsing,
 	// then the positional path (prevents paths like "--help" being parsed as flags).
 	args := []string{"install"}
 	if req.Name != "" {
@@ -246,7 +246,7 @@ func (h *SetupAPIHandler) handleLaunch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Use PATH lookup for gt binary. Do NOT use os.Executable() here - during
+	// Use PATH lookup for lt binary. Do NOT use os.Executable() here - during
 	// tests it returns the test binary, causing fork bombs when executed.
 
 	// Start new dashboard on a DIFFERENT port first, then we'll tell the browser to go there
@@ -331,14 +331,14 @@ func (h *SetupAPIHandler) handleCheckWorkspace(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	// Check if mayor/ directory exists (indicates a Gas Town HQ)
+	// Check if mayor/ directory exists (indicates a Camp Leatherneck HQ)
 	mayorDir := filepath.Join(path, "mayor")
 	if _, err := os.Stat(mayorDir); os.IsNotExist(err) {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(CheckWorkspaceResponse{
 			Valid:   false,
 			Path:    path,
-			Message: "Not a Gas Town workspace (no mayor/ directory)",
+			Message: "Not a Camp Leatherneck workspace (no mayor/ directory)",
 		})
 		return
 	}
@@ -441,7 +441,7 @@ const setupHTML = `<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="dashboard-token" content="<!--CSRF_TOKEN-->">
-    <title>Gas Town Setup</title>
+    <title>Camp Leatherneck Setup</title>
     <style>
         :root {
             --bg-dark: #0d1117;
@@ -772,12 +772,12 @@ const setupHTML = `<!DOCTYPE html>
         <div class="setup-card" id="mode-existing">
             <h2>Open Existing Workspace</h2>
             <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.9rem;">
-                Enter the path to an existing Gas Town workspace.
+                Enter the path to an existing Camp Leatherneck workspace.
             </p>
             <div class="form-group">
                 <label>Workspace Path</label>
                 <input type="text" id="existing-path" placeholder="~/gt" value="~/gt">
-                <div class="hint">Path to your Gas Town HQ directory</div>
+                <div class="hint">Path to your Camp Leatherneck HQ directory</div>
             </div>
             <button class="btn btn-primary" id="check-btn" onclick="checkWorkspace()">Check Workspace</button>
             <div id="workspace-result"></div>
@@ -789,7 +789,7 @@ const setupHTML = `<!DOCTYPE html>
             <div class="form-group">
                 <label>Workspace Path</label>
                 <input type="text" id="install-path" placeholder="~/gt" value="~/gt">
-                <div class="hint">Where to create your Gas Town headquarters</div>
+                <div class="hint">Where to create your Camp Leatherneck headquarters</div>
             </div>
             <div class="form-group">
                 <label>Workspace Name (optional)</label>
@@ -970,7 +970,7 @@ const setupHTML = `<!DOCTYPE html>
             btn.disabled = true;
             btn.innerHTML = '<span class="loading"></span>Creating...';
             output.className = 'output-box visible';
-            output.textContent = 'Running gt install...';
+            output.textContent = 'Running lt install...';
 
             fetch('/api/install', {
                 method: 'POST',

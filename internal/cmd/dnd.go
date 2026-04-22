@@ -26,13 +26,13 @@ Subcommands:
 
 Without arguments, toggles DND mode.
 
-Related: gt notify - for fine-grained notification level control
+Related: lt notify - for fine-grained notification level control
 
 Examples:
-  gt dnd            # Toggle DND on/off
-  gt dnd on         # Enable DND (mute notifications)
-  gt dnd off        # Disable DND (resume notifications)
-  gt dnd status     # Show current notification level`,
+  lt dnd            # Toggle DND on/off
+  lt dnd on         # Enable DND (mute notifications)
+  lt dnd off        # Disable DND (resume notifications)
+  lt dnd status     # Show current notification level`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runDnd,
 }
@@ -50,7 +50,7 @@ func runDnd(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	roleInfo, err := GetRoleWithContext(cwd, townRoot)
@@ -99,7 +99,7 @@ func runDnd(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("enabling DND: %w", err)
 		}
 		fmt.Printf("%s DND enabled - notifications muted\n", style.SuccessPrefix)
-		fmt.Printf("  Run %s to resume notifications\n", style.Bold.Render("gt dnd off"))
+		fmt.Printf("  Run %s to resume notifications\n", style.Bold.Render("lt dnd off"))
 
 	case "off":
 		if err := bd.UpdateAgentNotificationLevel(agentBeadID, beads.NotifyNormal); err != nil {

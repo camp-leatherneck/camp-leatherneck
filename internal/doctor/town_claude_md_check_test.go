@@ -48,11 +48,11 @@ func TestTownCLAUDEmdCheck_MissingSections(t *testing.T) {
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	// Write only the identity anchor (no Dolt or communication sections)
-	content := `# Gas Town
+	content := `# Camp Leatherneck
 
-This is a Gas Town workspace. Your identity and role are determined by ` + "`gt prime`" + `.
+This is a Camp Leatherneck workspace. Your identity and role are determined by ` + "`lt prime`" + `.
 
-Run ` + "`gt prime`" + ` for full context after compaction, clear, or new session.
+Run ` + "`lt prime`" + ` for full context after compaction, clear, or new session.
 `
 	claudePath := filepath.Join(tmpDir, "CLAUDE.md")
 	if err := os.WriteFile(claudePath, []byte(content), 0644); err != nil {
@@ -75,9 +75,9 @@ func TestTownCLAUDEmdCheck_PartialSections(t *testing.T) {
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	// Write identity anchor + Dolt section but no communication hygiene
-	content := `# Gas Town
+	content := `# Camp Leatherneck
 
-This is a Gas Town workspace.
+This is a Camp Leatherneck workspace.
 
 ## Dolt Server — Operational Awareness
 
@@ -137,9 +137,9 @@ func TestTownCLAUDEmdCheck_Fix_AppendSections(t *testing.T) {
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	// Write minimal anchor + a user custom section
-	original := `# Gas Town
+	original := `# Camp Leatherneck
 
-This is a Gas Town workspace.
+This is a Camp Leatherneck workspace.
 
 ## My Custom Section
 
@@ -274,9 +274,9 @@ func TestIsIdentityAnchor_MinimalAnchor(t *testing.T) {
 	tmpDir := t.TempDir()
 	path := filepath.Join(tmpDir, "CLAUDE.md")
 
-	content := `# Gas Town
+	content := `# Camp Leatherneck
 
-Run ` + "`gt prime`" + ` for full context.
+Run ` + "`lt prime`" + ` for full context.
 `
 	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
 		t.Fatal(err)
@@ -307,13 +307,13 @@ func TestIsIdentityAnchor_NonGasTownFile(t *testing.T) {
 
 	content := `# My Project
 
-This is a regular project CLAUDE.md, not Gas Town.
+This is a regular project CLAUDE.md, not Camp Leatherneck.
 `
 	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
 		t.Fatal(err)
 	}
 
 	if isIdentityAnchor(path) {
-		t.Error("non-Gas Town file should not be recognized as identity anchor")
+		t.Error("non-Camp Leatherneck file should not be recognized as identity anchor")
 	}
 }

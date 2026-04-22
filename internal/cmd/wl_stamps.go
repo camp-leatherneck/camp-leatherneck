@@ -39,13 +39,13 @@ Use --author to filter by who issued the stamp. Use --skill, --type,
 and --severity to narrow results.
 
 EXAMPLES:
-  gt wl stamps gastown                         # All stamps for gastown
-  gt wl stamps gastown --author hop-mayor      # Stamps from a specific validator
-  gt wl stamps gastown --skill go              # Filter by skill tag
-  gt wl stamps gastown --type boot_block       # Boot block stamps only
-  gt wl stamps gastown --severity branch       # Branch-level stamps
-  gt wl stamps gastown --limit 10              # Show 10 stamps
-  gt wl stamps gastown --json                  # JSON output`,
+  lt wl stamps gastown                         # All stamps for gastown
+  lt wl stamps gastown --author hop-mayor      # Stamps from a specific validator
+  lt wl stamps gastown --skill go              # Filter by skill tag
+  lt wl stamps gastown --type boot_block       # Boot block stamps only
+  lt wl stamps gastown --severity branch       # Branch-level stamps
+  lt wl stamps gastown --limit 10              # Show 10 stamps
+  lt wl stamps gastown --json                  # JSON output`,
 }
 
 func init() {
@@ -113,7 +113,7 @@ func runWLStamps(cmd *cobra.Command, args []string) error {
 
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Fast path: query through the Dolt server if the database is registered.
@@ -192,7 +192,7 @@ func runWLStamps(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("dolt not found in PATH — install from https://docs.dolthub.com/introduction/installation")
 	}
 
-	// Try wasteland config first (set by gt wl join).
+	// Try wasteland config first (set by lt wl join).
 	var cloneDir string
 	if cfg, cfgErr := wasteland.LoadConfig(townRoot); cfgErr == nil && cfg.LocalDir != "" {
 		if _, statErr := os.Stat(filepath.Join(cfg.LocalDir, ".dolt")); statErr == nil {

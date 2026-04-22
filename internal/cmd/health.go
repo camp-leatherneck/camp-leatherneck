@@ -23,7 +23,7 @@ var (
 	healthJSON bool
 )
 
-// HealthReport is the machine-readable output of gt health --json.
+// HealthReport is the machine-readable output of lt health --json.
 type HealthReport struct {
 	Timestamp string              `json:"timestamp"`
 	Server    *ServerHealth       `json:"server"`
@@ -85,7 +85,7 @@ type OrphanDB struct {
 var healthCmd = &cobra.Command{
 	Use:   "health",
 	Short: "Show comprehensive system health",
-	Long: `Display a comprehensive health report for the Gas Town data plane.
+	Long: `Display a comprehensive health report for the Camp Leatherneck data plane.
 
 Sections:
   1. Dolt Server: status, PID, port, latency
@@ -107,7 +107,7 @@ func init() {
 func runHealth(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	report := &HealthReport{

@@ -79,7 +79,7 @@ func runConvoyScheduleByID(convoyID string, opts convoyScheduleOpts) error {
 		if rigName == "" {
 			skippedNoRig++
 			prefix := beads.ExtractPrefix(t.ID)
-			fmt.Printf("  %s %s: cannot resolve rig from prefix %q (town-root or unknown)\n",
+			fmt.Printf("  %s %s: cannot resolve rig from prefix %q (HQ or unknown)\n",
 				style.Dim.Render("○"), t.ID, prefix)
 			continue
 		}
@@ -195,7 +195,7 @@ func runConvoySlingByID(convoyID string, opts convoyScheduleOpts) error {
 		if rigName == "" {
 			skippedNoRig++
 			prefix := beads.ExtractPrefix(t.ID)
-			fmt.Printf("  %s %s: cannot resolve rig from prefix %q (town-root or unknown)\n",
+			fmt.Printf("  %s %s: cannot resolve rig from prefix %q (HQ or unknown)\n",
 				style.Dim.Render("○"), t.ID, prefix)
 			continue
 		}

@@ -53,10 +53,10 @@ Use --force for non-interactive mode (daemon/cron), or run interactively
 to review the plan before proceeding.
 
 Examples:
-  gt maintain                # Interactive (shows plan, asks confirmation)
-  gt maintain --force        # Non-interactive (daemon/cron use)
-  gt maintain --dry-run      # Preview what would happen
-  gt maintain --threshold 50 # Custom commit threshold`,
+  lt maintain                # Interactive (shows plan, asks confirmation)
+  lt maintain --force        # Non-interactive (daemon/cron use)
+  lt maintain --dry-run      # Preview what would happen
+  lt maintain --threshold 50 # Custom commit threshold`,
 	RunE: runMaintain,
 }
 
@@ -77,7 +77,7 @@ type maintainDBInfo struct {
 func runMaintain(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	config := doltserver.DefaultConfig(townRoot)
@@ -88,7 +88,7 @@ func runMaintain(cmd *cobra.Command, args []string) error {
 	// Verify server is running (needed for reap + flatten phases).
 	running, _, err := doltserver.IsRunning(townRoot)
 	if err != nil || !running {
-		return fmt.Errorf("Dolt server not running — start with 'gt dolt start'")
+		return fmt.Errorf("Dolt server not running — start with 'lt dolt start'")
 	}
 
 	// Phase 0: Build and display maintenance plan.

@@ -76,10 +76,10 @@ The weekly rollup (--weekly) aggregates the past 7 days of compaction event
 beads and sends trend data to mayor/.
 
 Examples:
-  gt compact report              # Run compaction + send daily digest
-  gt compact report --dry-run    # Preview the report without sending
-  gt compact report --weekly     # Send weekly rollup to mayor/
-  gt compact report --json       # Output report as JSON`,
+  lt compact report              # Run compaction + send daily digest
+  lt compact report --dry-run    # Preview the report without sending
+  lt compact report --weekly     # Send weekly rollup to mayor/
+  lt compact report --json       # Output report as JSON`,
 	RunE: runCompactReport,
 }
 
@@ -311,7 +311,7 @@ func formatDailyDigest(report *compactReport) string {
 	return sb.String()
 }
 
-// sendCompactDigest sends the daily digest via gt mail send.
+// sendCompactDigest sends the daily digest via lt mail send.
 func sendCompactDigest(dateStr, body string) error {
 	subject := fmt.Sprintf("Wisp Compaction: %s", dateStr)
 

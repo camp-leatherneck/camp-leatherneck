@@ -24,7 +24,7 @@ func runMailClaim(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Get caller identity
@@ -121,7 +121,7 @@ func runMailClaim(cmd *cobra.Command, args []string) error {
 			// winning claimant writes ack labels. Non-fatal: the claim
 			// itself already succeeded.
 			if ackErr := mail.AcknowledgeDeliveryBead(townRoot, beadsDir, candidate.ID, mail.AddressToIdentity(caller)); ackErr != nil {
-				fmt.Fprintf(os.Stderr, "gt mail claim: delivery ack failed for %s: %v\n", candidate.ID, ackErr)
+				fmt.Fprintf(os.Stderr, "lt mail claim: delivery ack failed for %s: %v\n", candidate.ID, ackErr)
 			}
 			claimed = candidate
 			break
@@ -290,7 +290,7 @@ func runMailRelease(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	beadsDir := beads.ResolveBeadsDir(townRoot)
@@ -466,10 +466,10 @@ COMMANDS:
   delete    Delete a queue
 
 Examples:
-  gt mail queue create work --claimers 'gastown/polecats/*'
-  gt mail queue show work
-  gt mail queue list
-  gt mail queue delete work`,
+  lt mail queue create work --claimers 'gastown/polecats/*'
+  lt mail queue show work
+  lt mail queue list
+  lt mail queue delete work`,
 	RunE: requireSubcommand,
 }
 
@@ -482,9 +482,9 @@ The --claimers flag specifies a pattern for who can claim messages from this que
 Patterns support wildcards: 'gastown/polecats/*' matches any polecat in gastown rig.
 
 Examples:
-  gt mail queue create work --claimers 'gastown/polecats/*'
-  gt mail queue create dispatch --claimers 'gastown/crew/*'
-  gt mail queue create urgent --claimers '*'`,
+  lt mail queue create work --claimers 'gastown/polecats/*'
+  lt mail queue create dispatch --claimers 'gastown/crew/*'
+  lt mail queue create urgent --claimers '*'`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMailQueueCreate,
 }
@@ -497,8 +497,8 @@ var mailQueueShowCmd = &cobra.Command{
 Displays the queue's claim pattern, status, and message counts.
 
 Examples:
-  gt mail queue show work
-  gt mail queue show dispatch --json`,
+  lt mail queue show work
+  lt mail queue show dispatch --json`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMailQueueShow,
 }
@@ -511,8 +511,8 @@ var mailQueueListCmd = &cobra.Command{
 Shows queue names, claim patterns, and status.
 
 Examples:
-  gt mail queue list
-  gt mail queue list --json`,
+  lt mail queue list
+  lt mail queue list --json`,
 	RunE: runMailQueueList,
 }
 
@@ -524,7 +524,7 @@ var mailQueueDeleteCmd = &cobra.Command{
 This permanently removes the queue bead. Messages in the queue are not affected.
 
 Examples:
-  gt mail queue delete work`,
+  lt mail queue delete work`,
 	Args: cobra.ExactArgs(1),
 	RunE: runMailQueueDelete,
 }
@@ -555,7 +555,7 @@ func runMailQueueCreate(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Get caller identity for created_by
@@ -605,7 +605,7 @@ func runMailQueueShow(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Get queue bead
@@ -667,7 +667,7 @@ func runMailQueueList(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// List queue beads
@@ -721,7 +721,7 @@ func runMailQueueDelete(cmd *cobra.Command, args []string) error {
 	// Find workspace
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	// Delete queue bead

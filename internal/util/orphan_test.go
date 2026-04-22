@@ -98,7 +98,7 @@ func TestIsInGasTownWorkspace(t *testing.T) {
 	}
 	defer os.Chdir(origDir)
 
-	// Create a temporary directory structure simulating a Gas Town workspace
+	// Create a temporary directory structure simulating a Camp Leatherneck workspace
 	tmpDir := t.TempDir()
 	mayorDir := filepath.Join(tmpDir, "mayor")
 	if err := os.MkdirAll(mayorDir, 0o755); err != nil {

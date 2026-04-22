@@ -2,12 +2,12 @@
 
 > **Status: Design proposal -- not yet implemented**
 >
-> Design document for the Gas Town plugin system.
+> Design document for the Camp Leatherneck plugin system.
 > Written 2026-01-11, crew/george session.
 
 ## Problem Statement
 
-Gas Town needs extensible, project-specific automation that runs during Deacon patrol cycles. The immediate use case is rebuilding stale binaries (gt, bd, wv), but the pattern generalizes to any periodic maintenance task.
+Camp Leatherneck needs extensible, project-specific automation that runs during Deacon patrol cycles. The immediate use case is rebuilding stale binaries (gt, bd, wv), but the pattern generalizes to any periodic maintenance task.
 
 Current state:
 - Plugin infrastructure exists conceptually (patrol step mentions it)

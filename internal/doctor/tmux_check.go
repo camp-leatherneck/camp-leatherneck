@@ -28,7 +28,7 @@ func NewLinkedPaneCheck() *LinkedPaneCheck {
 	}
 }
 
-// Run checks for linked panes across Gas Town tmux sessions.
+// Run checks for linked panes across Camp Leatherneck tmux sessions.
 func (c *LinkedPaneCheck) Run(ctx *CheckContext) *CheckResult {
 	t := tmux.NewTmux()
 
@@ -42,7 +42,7 @@ func (c *LinkedPaneCheck) Run(ctx *CheckContext) *CheckResult {
 		}
 	}
 
-	// Filter to Gas Town sessions only
+	// Filter to Camp Leatherneck sessions only
 	var gtSessions []string
 	for _, s := range sessions {
 		if session.IsKnownSession(s) {
@@ -98,7 +98,7 @@ func (c *LinkedPaneCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: fmt.Sprintf("All %d Gas Town sessions have independent panes", len(gtSessions)),
+			Message: fmt.Sprintf("All %d Camp Leatherneck sessions have independent panes", len(gtSessions)),
 		}
 	}
 
@@ -107,7 +107,7 @@ func (c *LinkedPaneCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusError,
 		Message: fmt.Sprintf("Found %d linked pane(s) causing crosstalk!", len(conflicts)),
 		Details: conflicts,
-		FixHint: "Run 'gt doctor --fix' to kill linked sessions (daemon will recreate)",
+		FixHint: "Run 'lt doctor --fix' to kill linked sessions (daemon will recreate)",
 	}
 }
 

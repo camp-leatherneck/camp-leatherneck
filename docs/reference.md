@@ -1,12 +1,12 @@
-# Gas Town Reference
+# Camp Leatherneck Reference
 
-Technical reference for Gas Town internals. Read the README first.
+Technical reference for Camp Leatherneck internals. Read the README first.
 
 > For directory structure details, see [architecture.md](design/architecture.md).
 
 ## Beads Routing
 
-Gas Town routes beads commands based on issue ID prefix. You don't need to think
+Camp Leatherneck routes beads commands based on issue ID prefix. You don't need to think
 about which database to use - just use the issue ID.
 
 ```bash
@@ -271,7 +271,7 @@ with = "macro-formula"
 
 ## Environment Variables
 
-Gas Town sets environment variables for each agent session via `config.AgentEnv()`.
+Camp Leatherneck sets environment variables for each agent session via `config.AgentEnv()`.
 These are set in tmux session environment when agents are spawned.
 
 ### Core Variables (All Agents)
@@ -366,7 +366,7 @@ additively with any project-level settings in the customer repo.
 ### CLAUDE.md
 
 Only `~/gt/CLAUDE.md` exists on disk — a minimal identity anchor that prevents
-agents from losing their Gas Town identity after context compaction or new sessions.
+agents from losing their Camp Leatherneck identity after context compaction or new sessions.
 
 Full role context (~300-500 lines per role) is injected ephemerally by `gt prime`
 via the SessionStart hook. No per-directory CLAUDE.md or AGENTS.md files are created.
@@ -378,20 +378,20 @@ via the SessionStart hook. No per-directory CLAUDE.md or AGENTS.md files are cre
 
 ### Customer Repo Files (CLAUDE.md and .claude/)
 
-Gas Town no longer uses git sparse checkout to hide customer repo files. Customer
+Camp Leatherneck no longer uses git sparse checkout to hide customer repo files. Customer
 repositories can have their own `.claude/` directory and `CLAUDE.md` — these are
 preserved in all worktrees (crew, polecats, refinery, mayor/rig).
 
-Gas Town's context comes from the town-root `CLAUDE.md` identity anchor
+Camp Leatherneck's context comes from the town-root `CLAUDE.md` identity anchor
 (picked up by all agents via Claude Code's upward directory traversal),
 `gt prime` via the SessionStart hook, and the customer repo's own `CLAUDE.md`.
 These coexist safely because:
 
-- **`--settings` flag provides Gas Town settings** as a separate tier that merges
+- **`--settings` flag provides Camp Leatherneck settings** as a separate tier that merges
   additively with customer project settings, so both coexist cleanly
 - **`gt prime` injects role context** ephemerally via SessionStart hook, which is
   additive with the customer's `CLAUDE.md` — both are loaded
-- Gas Town settings live in parent directories (not in customer repos), so
+- Camp Leatherneck settings live in parent directories (not in customer repos), so
   customer `.claude/` files are fully preserved
 
 **Doctor check**: `gt doctor` warns if legacy sparse checkout is still configured.
@@ -407,13 +407,13 @@ Claude Code's settings are layered from multiple sources:
 3. `~/.claude/settings.json` (user global settings)
 4. `--settings <path>` flag (loaded as a separate additive tier)
 
-Gas Town uses the `--settings` flag to inject role-specific settings from
+Camp Leatherneck uses the `--settings` flag to inject role-specific settings from
 gastown-managed parent directories. This merges additively with customer
 project settings rather than overriding them.
 
 ### Settings Templates
 
-Gas Town uses two settings templates based on role type:
+Camp Leatherneck uses two settings templates based on role type:
 
 | Type | Roles | Key Difference |
 |------|-------|----------------|

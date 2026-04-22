@@ -27,24 +27,24 @@ var themeCmd = &cobra.Command{
 	Use:     "theme [name]",
 	GroupID: GroupConfig,
 	Short:   "View or set tmux theme for the current rig",
-	Long: `Manage tmux status bar themes for Gas Town sessions.
+	Long: `Manage tmux status bar themes for Camp Leatherneck sessions.
 
 Without arguments, shows the current theme assignment.
 With a name argument, sets the theme for this rig.
 
 Examples:
-  gt theme              # Show current theme
-  gt theme --list       # List available themes
-  gt theme forest       # Set theme to 'forest'
-  gt theme none         # Disable tmux theming for this rig
-  gt theme apply        # Apply theme to all running sessions in this rig`,
+  lt theme              # Show current theme
+  lt theme --list       # List available themes
+  lt theme forest       # Set theme to 'forest'
+  lt theme none         # Disable tmux theming for this rig
+  lt theme apply        # Apply theme to all running sessions in this rig`,
 	RunE: runTheme,
 }
 
 var themeApplyCmd = &cobra.Command{
 	Use:   "apply",
 	Short: "Apply theme to running sessions",
-	Long: `Apply theme to running Gas Town sessions.
+	Long: `Apply theme to running Camp Leatherneck sessions.
 
 By default, only applies to sessions in the current rig.
 Use --all to apply to sessions across all rigs.`,
@@ -54,7 +54,7 @@ Use --all to apply to sessions across all rigs.`,
 var themeCLICmd = &cobra.Command{
 	Use:   "cli [mode]",
 	Short: "View or set CLI color scheme (dark/light/auto)",
-	Long: `Manage CLI output color scheme for Gas Town commands.
+	Long: `Manage CLI output color scheme for Camp Leatherneck commands.
 
 Without arguments, shows the current CLI theme mode and detection.
 With a mode argument, sets the CLI theme preference.
@@ -68,10 +68,10 @@ The setting is stored in town settings (settings/config.json) and can
 be overridden per-session via the GT_THEME environment variable.
 
 Examples:
-  gt theme cli              # Show current CLI theme
-  gt theme cli dark         # Set CLI theme to dark mode
-  gt theme cli auto         # Reset to auto-detection
-  GT_THEME=light gt status  # Override for a single command`,
+  lt theme cli              # Show current CLI theme
+  lt theme cli dark         # Set CLI theme to dark mode
+  lt theme cli auto         # Reset to auto-detection
+  GT_THEME=light lt status  # Override for a single command`,
 	RunE: runThemeCLI,
 }
 
@@ -129,7 +129,7 @@ func runTheme(cmd *cobra.Command, args []string) error {
 	} else {
 		fmt.Printf("Theme '%s' saved for rig '%s'\n", themeName, rigName)
 	}
-	fmt.Println("Run 'gt theme apply' to apply to running sessions")
+	fmt.Println("Run 'lt theme apply' to apply to running sessions")
 
 	return nil
 }
@@ -253,13 +253,13 @@ func detectCurrentRig() string {
 		return ""
 	}
 
-	// Find town root to extract rig name
+	// Find HQ root to extract rig name
 	townRoot, err := workspace.FindFromCwd()
 	if err != nil || townRoot == "" {
 		return ""
 	}
 
-	// Get path relative to town root
+	// Get path relative to HQ root
 	rel, err := filepath.Rel(townRoot, cwd)
 	if err != nil {
 		return ""
@@ -316,7 +316,7 @@ func saveRigTheme(rigName, themeName string) error {
 		return fmt.Errorf("finding workspace: %w", err)
 	}
 	if townRoot == "" {
-		return fmt.Errorf("not in a Gas Town workspace")
+		return fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	settingsPath := filepath.Join(townRoot, rigName, "settings", "config.json")
@@ -361,7 +361,7 @@ func runThemeCLI(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("finding workspace: %w", err)
 	}
 	if townRoot == "" {
-		return fmt.Errorf("not in a Gas Town workspace")
+		return fmt.Errorf("not in a Camp Leatherneck workspace")
 	}
 
 	settingsPath := config.TownSettingsPath(townRoot)

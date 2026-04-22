@@ -9,10 +9,10 @@ import (
 )
 
 // TestAreScheduledFailClosed verifies that areScheduled fails closed when
-// running outside a town root — all requested IDs should be treated as scheduled.
+// running outside a HQ root — all requested IDs should be treated as scheduled.
 // This prevents false stranded detection and duplicate scheduling on transient errors.
 func TestAreScheduledFailClosed(t *testing.T) {
-	// Run areScheduled from a temp dir that is NOT a town root.
+	// Run areScheduled from a temp dir that is NOT a HQ root.
 	// workspace.FindFromCwd will fail, triggering the fail-closed path.
 	tmpDir := t.TempDir()
 	origDir, _ := os.Getwd()

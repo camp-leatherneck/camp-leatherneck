@@ -480,7 +480,7 @@ func AgentBeadIDToAddress(id string) string {
 	parts := strings.Split(rest, "-")
 
 	if len(parts) == 1 {
-		// Town-level: gt-mayor → mayor/
+		// HQ-level: gt-mayor → mayor/
 		return parts[0] + "/"
 	}
 
@@ -500,7 +500,7 @@ func AgentBeadIDToAddress(id string) string {
 			}
 			return rig + "/" + parts[i]
 		case "dog":
-			// Town-level named: gt-dog-alpha
+			// HQ-level named: gt-dog-alpha
 			if i+1 < len(parts) {
 				name := strings.Join(parts[i+1:], "-")
 				return "dog/" + name

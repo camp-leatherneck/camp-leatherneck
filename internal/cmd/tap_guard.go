@@ -31,7 +31,7 @@ Example hook configuration:
   {
     "PreToolUse": [{
       "matcher": "Bash(gh pr create*)",
-      "hooks": [{"command": "gt tap guard pr-workflow"}]
+      "hooks": [{"command": "lt tap guard pr-workflow"}]
     }]
   }`,
 }
@@ -39,9 +39,9 @@ Example hook configuration:
 var tapGuardPRWorkflowCmd = &cobra.Command{
 	Use:   "pr-workflow",
 	Short: "Block PR creation and feature branches",
-	Long: `Block PR workflow operations in Gas Town.
+	Long: `Block PR workflow operations in Camp Leatherneck.
 
-Gas Town workers push directly to main. PRs add friction that breaks
+Camp Leatherneck workers push directly to main. PRs add friction that breaks
 the autonomous execution model (GUPP principle).
 
 This guard blocks:
@@ -50,14 +50,14 @@ This guard blocks:
   - git switch -c (feature branches)
 
 Exit codes:
-  0 - Operation allowed (not in Gas Town agent context, not maintainer origin)
+  0 - Operation allowed (not in Camp Leatherneck agent context, not maintainer origin)
   2 - Operation BLOCKED (in agent context OR maintainer origin)
 
 The guard blocks in two scenarios:
-  1. Running as a Gas Town agent (crew, polecat, witness, etc.)
+  1. Running as a Camp Leatherneck agent (crew, polecat, witness, etc.)
   2. Origin remote is steveyegge/gastown (maintainer should push directly)
 
-Humans running outside Gas Town with a fork origin can still use PRs.`,
+Humans running outside Camp Leatherneck with a fork origin can still use PRs.`,
 	RunE: runTapGuardPRWorkflow,
 }
 
@@ -67,13 +67,13 @@ func init() {
 }
 
 func runTapGuardPRWorkflow(cmd *cobra.Command, args []string) error {
-	// Check if we're in a Gas Town agent context
+	// Check if we're in a Camp Leatherneck agent context
 	if isGasTownAgentContext() {
 		fmt.Fprintln(os.Stderr, "")
 		fmt.Fprintln(os.Stderr, "╔══════════════════════════════════════════════════════════════════╗")
 		fmt.Fprintln(os.Stderr, "║  ❌ PR WORKFLOW BLOCKED                                          ║")
 		fmt.Fprintln(os.Stderr, "╠══════════════════════════════════════════════════════════════════╣")
-		fmt.Fprintln(os.Stderr, "║  Gas Town workers push directly to main. PRs are forbidden.     ║")
+		fmt.Fprintln(os.Stderr, "║  Camp Leatherneck workers push directly to main. PRs are forbidden.     ║")
 		fmt.Fprintln(os.Stderr, "║                                                                  ║")
 		fmt.Fprintln(os.Stderr, "║  Instead of:  gh pr create / git checkout -b / git switch -c    ║")
 		fmt.Fprintln(os.Stderr, "║  Do this:     git add . && git commit && git push origin main   ║")
@@ -101,13 +101,13 @@ func runTapGuardPRWorkflow(cmd *cobra.Command, args []string) error {
 		return NewSilentExit(2) // Exit 2 = BLOCK in Claude Code hooks
 	}
 
-	// Not in Gas Town context and not maintainer origin - allow PRs
+	// Not in Camp Leatherneck context and not maintainer origin - allow PRs
 	return nil
 }
 
-// isGasTownAgentContext returns true if we're running as a Gas Town managed agent.
+// isGasTownAgentContext returns true if we're running as a Camp Leatherneck managed agent.
 func isGasTownAgentContext() bool {
-	// Check environment variables set by Gas Town session management
+	// Check environment variables set by Camp Leatherneck session management
 	envVars := []string{
 		"GT_POLECAT",
 		"GT_CREW",

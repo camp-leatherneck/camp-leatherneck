@@ -1,6 +1,6 @@
-// Package health provides reusable health check functions for the Gas Town data plane.
+// Package health provides reusable health check functions for the Camp Leatherneck data plane.
 // These checks are shared between the Doctor Dog (daemon/doctor_dog.go) and the
-// gt health CLI command (cmd/health.go).
+// lt health CLI command (cmd/health.go).
 package health
 
 import (

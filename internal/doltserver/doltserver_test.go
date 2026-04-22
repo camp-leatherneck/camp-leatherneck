@@ -152,7 +152,7 @@ func TestDoltProcessMatchesTownPaths(t *testing.T) {
 			want:      true,
 		},
 		{
-			name:      "matches cwd in town root",
+			name:      "matches cwd in HQ root",
 			actualCWD: "/town",
 			want:      true,
 		},
@@ -1355,7 +1355,7 @@ func TestConcurrentMetadataSameFile(t *testing.T) {
 }
 
 // TestConcurrentFindMigratableDatabases tests that FindMigratableDatabases
-// can be called concurrently (simulating gt status during migration).
+// can be called concurrently (simulating lt status during migration).
 func TestConcurrentFindMigratableDatabases(t *testing.T) {
 	townRoot := t.TempDir()
 
@@ -1637,7 +1637,7 @@ func TestEnsureMetadata_RepairsMissingDoltFields(t *testing.T) {
 // TestEnsureMetadata_RepairsStalePort tests that EnsureMetadata overwrites
 // a stale dolt_server_port (e.g., 13729 from a previous bd init) with the
 // correct port from DefaultConfig. This is the root cause of "connection
-// refused" errors reported by community users after gt dolt fix-metadata.
+// refused" errors reported by community users after lt dolt fix-metadata.
 func TestEnsureMetadata_RepairsStalePort(t *testing.T) {
 	townRoot := t.TempDir()
 
@@ -1912,7 +1912,7 @@ func TestFindAndMigrateAll_Idempotent(t *testing.T) {
 		}
 	}
 
-	// Update metadata (as gt dolt migrate does)
+	// Update metadata (as lt dolt migrate does)
 	updated1, errs1 := EnsureAllMetadata(townRoot)
 	if len(errs1) > 0 {
 		t.Errorf("pass 1 metadata errors: %v", errs1)
@@ -2307,7 +2307,7 @@ func TestRollbackRoundTrip(t *testing.T) {
 // =============================================================================
 
 func TestFindMigratableDatabases_SpacesInPath(t *testing.T) {
-	townRoot := filepath.Join(t.TempDir(), "my town root")
+	townRoot := filepath.Join(t.TempDir(), "my HQ root")
 	if err := os.MkdirAll(townRoot, 0755); err != nil {
 		t.Fatal(err)
 	}
@@ -3678,7 +3678,7 @@ func TestWaitForReady_ServerAlreadyListening(t *testing.T) {
 	// Extract the port from the listener
 	port := listener.Addr().(*net.TCPAddr).Port
 
-	// Create a town root with server mode metadata pointing to this port
+	// Create a HQ root with server mode metadata pointing to this port
 	townRoot := t.TempDir()
 	beadsDir := filepath.Join(townRoot, ".beads")
 	if err := os.MkdirAll(beadsDir, 0755); err != nil {

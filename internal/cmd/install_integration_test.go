@@ -13,7 +13,7 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/config"
 )
 
-// TestInstallCreatesCorrectStructure validates that a fresh gt install
+// TestInstallCreatesCorrectStructure validates that a fresh lt install
 // creates the expected directory structure and configuration files.
 func TestInstallCreatesCorrectStructure(t *testing.T) {
 	tmpDir := t.TempDir()
@@ -30,12 +30,12 @@ func TestInstallCreatesCorrectStructure(t *testing.T) {
 	_ = exec.Command("pkill", "-f", "dolt sql-server").Run()
 	t.Cleanup(func() { _ = exec.Command("pkill", "-f", "dolt sql-server").Run() })
 
-	// Run gt install
+	// Run lt install
 	cmd := exec.Command(gtBinary, "install", hqPath, "--name", "test-town")
 	cmd.Env = env
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		t.Fatalf("gt install failed: %v\nOutput: %s", err, output)
+		t.Fatalf("lt install failed: %v\nOutput: %s", err, output)
 	}
 
 	// Verify directory structure
@@ -69,7 +69,7 @@ func TestInstallCreatesCorrectStructure(t *testing.T) {
 		t.Errorf("rigs.json should be empty, got %d rigs", len(rigsConfig.Rigs))
 	}
 
-	// Verify Claude settings exist in mayor/.claude/ (not town root/.claude/)
+	// Verify Claude settings exist in mayor/.claude/ (not HQ root/.claude/)
 	// Mayor settings go here to avoid polluting child workspaces via directory traversal
 	mayorSettingsPath := filepath.Join(hqPath, "mayor", ".claude", "settings.json")
 	assertFileExists(t, mayorSettingsPath, "mayor/.claude/settings.json")
@@ -96,12 +96,12 @@ func TestInstallBeadsHasCorrectPrefix(t *testing.T) {
 	_ = exec.Command("pkill", "-f", "dolt sql-server").Run()
 	t.Cleanup(func() { _ = exec.Command("pkill", "-f", "dolt sql-server").Run() })
 
-	// Run gt install (includes beads init by default)
+	// Run lt install (includes beads init by default)
 	cmd := exec.Command(gtBinary, "install", hqPath)
 	cmd.Env = env
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		t.Fatalf("gt install failed: %v\nOutput: %s", err, output)
+		t.Fatalf("lt install failed: %v\nOutput: %s", err, output)
 	}
 
 	// Verify .beads/ directory exists
@@ -176,7 +176,7 @@ func TestInstallBeadsHasCorrectPrefix(t *testing.T) {
 	}
 }
 
-// TestInstallIdempotent validates that running gt install twice
+// TestInstallIdempotent validates that running lt install twice
 // on the same directory fails without --force flag.
 func TestInstallIdempotent(t *testing.T) {
 	tmpDir := t.TempDir()
@@ -198,8 +198,8 @@ func TestInstallIdempotent(t *testing.T) {
 	if err == nil {
 		t.Fatal("second install should have failed without --force")
 	}
-	if !strings.Contains(string(output), "already a Gas Town HQ") {
-		t.Errorf("expected 'already a Gas Town HQ' error, got: %s", output)
+	if !strings.Contains(string(output), "already a Camp Leatherneck HQ") {
+		t.Errorf("expected 'already a Camp Leatherneck HQ' error, got: %s", output)
 	}
 
 	// Third install with --force should succeed
@@ -210,7 +210,7 @@ func TestInstallIdempotent(t *testing.T) {
 	}
 }
 
-// TestInstallForcePreservesConfigs validates that re-running gt install --force
+// TestInstallForcePreservesConfigs validates that re-running lt install --force
 // preserves existing town.json and rigs.json rather than clobbering them.
 func TestInstallForcePreservesConfigs(t *testing.T) {
 	tmpDir := t.TempDir()
@@ -307,7 +307,7 @@ func TestInstallForcePreservesConfigs(t *testing.T) {
 	}
 }
 
-// TestInstallForceRejectsNonRegularConfigs validates that gt install --force
+// TestInstallForceRejectsNonRegularConfigs validates that lt install --force
 // errors when town.json or rigs.json exists as a directory instead of a file.
 func TestInstallForceRejectsNonRegularConfigs(t *testing.T) {
 	tmpDir := t.TempDir()
@@ -360,12 +360,12 @@ func TestInstallFormulasProvisioned(t *testing.T) {
 	_ = exec.Command("pkill", "-f", "dolt sql-server").Run()
 	t.Cleanup(func() { _ = exec.Command("pkill", "-f", "dolt sql-server").Run() })
 
-	// Run gt install (includes beads and formula provisioning)
+	// Run lt install (includes beads and formula provisioning)
 	cmd := exec.Command(gtBinary, "install", hqPath)
 	cmd.Env = env
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		t.Fatalf("gt install failed: %v\nOutput: %s", err, output)
+		t.Fatalf("lt install failed: %v\nOutput: %s", err, output)
 	}
 
 	// Verify .beads/formulas/ directory exists
@@ -463,12 +463,12 @@ func TestInstallNoBeadsFlag(t *testing.T) {
 
 	gtBinary := buildGT(t)
 
-	// Run gt install with --no-beads
+	// Run lt install with --no-beads
 	cmd := exec.Command(gtBinary, "install", hqPath, "--no-beads")
 	cmd.Env = append(os.Environ(), "HOME="+tmpDir)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		t.Fatalf("gt install --no-beads failed: %v\nOutput: %s", err, output)
+		t.Fatalf("lt install --no-beads failed: %v\nOutput: %s", err, output)
 	}
 
 	// Verify .beads/ directory does NOT exist
@@ -532,10 +532,10 @@ func assertSlotValue(t *testing.T, townRoot, issueID, slot, want string) {
 	}
 }
 
-// TestInstallDoctorClean validates that gt install creates a functional system.
+// TestInstallDoctorClean validates that lt install creates a functional system.
 // This test verifies:
-// 1. gt install succeeds with proper structure
-// 2. gt rig add succeeds
+// 1. lt install succeeds with proper structure
+// 2. lt rig add succeeds
 // 3. gt crew add succeeds
 // 4. Basic commands work
 //
@@ -674,7 +674,7 @@ func TestInstallDoctorClean(t *testing.T) {
 	})
 }
 
-// TestInstallWithDaemon validates that gt install creates a functional system
+// TestInstallWithDaemon validates that lt install creates a functional system
 // with the daemon running. This extends TestInstallDoctorClean by:
 // 1. Starting the daemon after install
 // 2. Verifying the daemon is healthy
@@ -784,7 +784,7 @@ func cleanE2EEnv() []string {
 // configureGitIdentity sets git global config in the test's temp HOME directory.
 // Tests override HOME to a temp dir for isolation, so git/dolt can't find the
 // container's build-time global config. EnsureDoltIdentity copies from git config,
-// so git identity must be available before gt install.
+// so git identity must be available before lt install.
 func configureGitIdentity(t *testing.T, env []string) {
 	t.Helper()
 	for _, args := range [][]string{
@@ -807,6 +807,6 @@ func runGTCmd(t *testing.T, binary, dir string, env []string, args ...string) {
 	cmd.Env = env
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		t.Fatalf("gt %v failed: %v\n%s", args, err, out)
+		t.Fatalf("lt %v failed: %v\n%s", args, err, out)
 	}
 }

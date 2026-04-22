@@ -32,12 +32,12 @@ const (
 	shutdownLockFile    = "daemon/shutdown.lock"
 	shutdownLockTimeout = 5 * time.Second
 
-	// ShutdownSentinel is a file written during gt down to prevent agents from
+	// ShutdownSentinel is a file written during lt down to prevent agents from
 	// restarting the daemon mid-shutdown. Checked by ensureDaemon.
 	ShutdownSentinel = "daemon/shutting-down"
 
-	// defaultDownOrphanGraceSecs is the grace period for orphan cleanup during gt down.
-	// Short because gt down is meant to be quick - processes already had SIGTERM via
+	// defaultDownOrphanGraceSecs is the grace period for orphan cleanup during lt down.
+	// Short because lt down is meant to be quick - processes already had SIGTERM via
 	// KillSessionWithProcesses.
 	defaultDownOrphanGraceSecs = 5
 )
@@ -45,14 +45,14 @@ const (
 var downCmd = &cobra.Command{
 	Use:     "down",
 	GroupID: GroupServices,
-	Short:   "Stop all Gas Town services",
-	Long: `Stop Gas Town services (reversible pause).
+	Short:   "Stop all Camp Leatherneck services",
+	Long: `Stop Camp Leatherneck services (reversible pause).
 
 Shutdown levels (progressively more aggressive):
-  gt down                    Stop infrastructure (default)
-  gt down --polecats         Also stop all polecat sessions
-  gt down --all              Full shutdown with orphan cleanup
-  gt down --nuke             Also kill the shared tmux server
+  lt down                    Stop infrastructure (default)
+  lt down --polecats         Also stop all polecat sessions
+  lt down --all              Full shutdown with orphan cleanup
+  lt down --nuke             Also kill the shared tmux server
 
 Infrastructure agents stopped:
   • Crew       - Per-rig crew member sessions
@@ -64,8 +64,8 @@ Infrastructure agents stopped:
   • Daemon     - Go background process
   • Dolt       - Shared SQL database server
 
-This is a "pause" operation - use 'gt start' to bring everything back up.
-For permanent cleanup (removing worktrees), use 'gt shutdown' instead.
+This is a "pause" operation - use 'lt start' to bring everything back up.
+For permanent cleanup (removing worktrees), use 'lt shutdown' instead.
 
 Use cases:
   • Taking a break (stop token consumption)
@@ -96,7 +96,7 @@ func init() {
 func runDown(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	t := tmux.NewTmux()
@@ -127,7 +127,7 @@ func runDown(cmd *cobra.Command, args []string) error {
 
 		// Prevent tmux server from exiting when all sessions are killed.
 		// By default, tmux exits when there are no sessions (exit-empty on).
-		// This ensures the server stays running for subsequent `gt up`.
+		// This ensures the server stays running for subsequent `lt up`.
 		// Ignore errors - if there's no server, nothing to configure.
 		_ = t.SetExitEmpty(false)
 	}
@@ -331,8 +331,8 @@ func runDown(cmd *cobra.Command, args []string) error {
 
 	// Phase 4b-iv: Remove .beads/dolt directories.
 	// These legacy per-agent data directories trigger bd to auto-spawn local
-	// Dolt servers. Removing them prevents rogue respawn on next gt up.
-	// Data has already been migrated to .dolt-data/ by gt dolt migrate.
+	// Dolt servers. Removing them prevents rogue respawn on next lt up.
+	// Data has already been migrated to .dolt-data/ by lt dolt migrate.
 	beadsDoltDirs := findBeadsDoltDirs(townRoot)
 	if len(beadsDoltDirs) > 0 {
 		if downDryRun {
@@ -399,7 +399,7 @@ func runDown(cmd *cobra.Command, args []string) error {
 			fmt.Printf("This may indicate a process manager is respawning agents.\n")
 			fmt.Printf("Check with:\n")
 			fmt.Printf("  %s\n", style.Dim.Render("ps aux | grep claude  # Find respawned processes"))
-			fmt.Printf("  %s\n", style.Dim.Render("gt status             # Verify town state"))
+			fmt.Printf("  %s\n", style.Dim.Render("lt status             # Verify town state"))
 			allOK = false
 		}
 	}
@@ -423,7 +423,7 @@ func runDown(cmd *cobra.Command, args []string) error {
 				style.Bold.Render("⚠ BLOCKED:"), socketLabel)
 			fmt.Printf("This will destroy all tmux sessions on this socket, including any custom windows you opened.\n")
 			fmt.Println()
-			fmt.Printf("To proceed, run with: %s\n", style.Bold.Render("GT_NUKE_ACKNOWLEDGED=1 gt down --nuke"))
+			fmt.Printf("To proceed, run with: %s\n", style.Bold.Render("GT_NUKE_ACKNOWLEDGED=1 lt down --nuke"))
 			allOK = false
 		} else {
 			if err := t.KillServer(); err != nil {
@@ -718,7 +718,7 @@ func verifyShutdown(t *tmux.Tmux, townRoot string) []string {
 		var pid int
 		if _, err := fmt.Sscanf(string(pidData), "%d", &pid); err == nil {
 			if isProcessRunning(pid) {
-				respawned = append(respawned, fmt.Sprintf("gt daemon (PID %d)", pid))
+				respawned = append(respawned, fmt.Sprintf("lt daemon (PID %d)", pid))
 			}
 		}
 	}
@@ -742,17 +742,17 @@ func verifyShutdown(t *tmux.Tmux, townRoot string) []string {
 	return respawned
 }
 
-// findOrphanedClaudeProcesses finds Gas Town agent processes (claude/codex/opencode/cursor-agent/copilot/node)
+// findOrphanedClaudeProcesses finds Camp Leatherneck agent processes (claude/codex/opencode/cursor-agent/copilot/node)
 // that are running in the town directory but aren't associated with any active tmux session.
 // This can happen when tmux sessions are killed but child processes don't terminate.
 //
-// Only matches processes whose full command line references the town root path,
+// Only matches processes whose full command line references the HQ root path,
 // which avoids false positives on unrelated Node.js applications (VS Code
 // extensions, web servers, etc.).
 func findOrphanedClaudeProcesses(townRoot string) []int {
 	// Use ps to get PID, process name, and full command line in a single pass.
 	// Previous implementation used "pgrep -l node" which matched ALL node
-	// processes on the system regardless of whether they belonged to Gas Town.
+	// processes on the system regardless of whether they belonged to Camp Leatherneck.
 	out, err := exec.Command("ps", "-eo", "pid,comm,args").Output()
 	if err != nil {
 		return nil
@@ -775,18 +775,18 @@ func findOrphanedClaudeProcesses(townRoot string) []int {
 			continue
 		}
 
-		// Only consider known Gas Town process names
+		// Only consider known Camp Leatherneck process names
 		comm := strings.ToLower(fields[1])
 		switch comm {
 		case "claude", "claude-code", "codex", "opencode", "cursor-agent", "agent", "copilot", "node":
-			// Potential Gas Town process
+			// Potential Camp Leatherneck process
 		default:
 			continue
 		}
 
-		// Verify the process's command line references the town root.
+		// Verify the process's command line references the HQ root.
 		// This filters out unrelated node processes (VS Code, web servers, etc.)
-		// whose command lines won't contain the Gas Town directory path.
+		// whose command lines won't contain the Camp Leatherneck directory path.
 		args := strings.Join(fields[2:], " ")
 		if strings.Contains(args, townRoot) {
 			orphaned = append(orphaned, pid)
@@ -823,7 +823,7 @@ func newLegacyTmux(socket string) legacySocketTmux {
 	return tmux.NewTmuxWithSocket(socket)
 }
 
-// cleanupLegacyDefaultSocket removes Gas Town sessions left on the "default"
+// cleanupLegacyDefaultSocket removes Camp Leatherneck sessions left on the "default"
 // tmux socket by old binaries. Returns the number of sessions cleaned.
 func cleanupLegacyDefaultSocket() int {
 	currentSocket := getDefaultSocket()
@@ -848,7 +848,7 @@ func cleanupLegacyDefaultSocket() int {
 	return cleaned
 }
 
-// countLegacyDefaultSocketSessions counts Gas Town sessions on the "default"
+// countLegacyDefaultSocketSessions counts Camp Leatherneck sessions on the "default"
 // tmux socket (for dry-run output).
 func countLegacyDefaultSocketSessions() int {
 	currentSocket := getDefaultSocket()
@@ -871,7 +871,7 @@ func countLegacyDefaultSocketSessions() int {
 	return count
 }
 
-// cleanupLegacyBaseSocket removes Gas Town sessions left on the old basename-only
+// cleanupLegacyBaseSocket removes Camp Leatherneck sessions left on the old basename-only
 // tmux socket (e.g., "gt") by binaries from before path-hashed socket names were
 // introduced (e.g., "gt-a1b2c3"). Returns the number of sessions cleaned.
 func cleanupLegacyBaseSocket(townRoot string) int {
@@ -898,7 +898,7 @@ func cleanupLegacyBaseSocket(townRoot string) int {
 	return cleaned
 }
 
-// countLegacyBaseSocketSessions counts Gas Town sessions on the old basename-only
+// countLegacyBaseSocketSessions counts Camp Leatherneck sessions on the old basename-only
 // tmux socket (for dry-run output).
 func countLegacyBaseSocketSessions(townRoot string) int {
 	currentSocket := getDefaultSocket()
@@ -923,7 +923,7 @@ func countLegacyBaseSocketSessions(townRoot string) int {
 }
 
 // findIdleMonitorProcesses finds bd dolt idle-monitor processes scoped to
-// this town. Matches by town root path in the process args, or by the
+// this town. Matches by HQ root path in the process args, or by the
 // town's configured Dolt port. Processes from other towns are not matched.
 func findIdleMonitorProcesses(townRoot string) []int {
 	absRoot, _ := filepath.Abs(townRoot)
@@ -952,7 +952,7 @@ func findIdleMonitorProcesses(townRoot string) []int {
 		}
 
 		// Scope to this town: match by path (with boundary check to avoid
-		// false matches on sibling paths like /tmp/gt matching /tmp/gt-old)
+		// false matches on sibling paths like /tmp/lt matching /tmp/gt-old)
 		matchesTown := containsPathBoundary(line, absRoot) || containsPathBoundary(line, townRoot)
 		if !matchesTown {
 			// Check for --port <portStr> as a discrete argument
@@ -1011,7 +1011,7 @@ func stopIdleMonitors(pids []int) int {
 }
 
 // findOrphanDoltServers finds dolt sql-server processes whose working
-// directory is within the town root but NOT the canonical .dolt-data/ dir.
+// directory is within the HQ root but NOT the canonical .dolt-data/ dir.
 // These are rogues spawned by bd from .beads/dolt/ directories.
 func findOrphanDoltServers(townRoot string) []int {
 	out, err := exec.Command("ps", "-eo", "pid,args").Output()
@@ -1094,7 +1094,7 @@ func stopOrphanDoltServers(pids []int) int {
 
 // findBeadsDoltDirs finds .beads/dolt directories that trigger bd auto-spawning.
 // These are legacy per-agent data directories that should have been migrated
-// to .dolt-data/ by gt dolt migrate.
+// to .dolt-data/ by lt dolt migrate.
 func findBeadsDoltDirs(townRoot string) []string {
 	var dirs []string
 	townAbs, _ := filepath.Abs(townRoot)

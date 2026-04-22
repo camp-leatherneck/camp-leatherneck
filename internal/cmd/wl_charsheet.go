@@ -27,9 +27,9 @@ The character sheet renders a rig's position in value-space from accumulated sta
 If no handle is specified, shows your own character sheet.
 
 EXAMPLES:
-  gt wl charsheet                # Your own character sheet
-  gt wl charsheet alice-dev      # Another rig's sheet
-  gt wl charsheet --json         # JSON output for tooling`,
+  lt wl charsheet                # Your own character sheet
+  lt wl charsheet alice-dev      # Another rig's sheet
+  lt wl charsheet --json         # JSON output for tooling`,
 }
 
 func init() {
@@ -40,7 +40,7 @@ func init() {
 func runWlCharsheet(cmd *cobra.Command, args []string) error {
 	townRoot, err := workspace.FindFromCwdOrError()
 	if err != nil {
-		return fmt.Errorf("not in a Gas Town workspace: %w", err)
+		return fmt.Errorf("not in a Camp Leatherneck workspace: %w", err)
 	}
 
 	handle := ""
@@ -56,7 +56,7 @@ func runWlCharsheet(cmd *cobra.Command, args []string) error {
 
 	dbName := wasteland.ResolveDBName(townRoot)
 	if !doltserver.DatabaseExists(townRoot, dbName) {
-		return fmt.Errorf("database %q not found\nJoin a wasteland first with: gt wl join <org/db>", dbName)
+		return fmt.Errorf("database %q not found\nJoin a wasteland first with: lt wl join <org/db>", dbName)
 	}
 
 	store := doltserver.NewWLCommonsWithDB(townRoot, dbName)

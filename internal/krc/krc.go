@@ -89,7 +89,7 @@ func ConfigFile(townRoot string) string {
 	return filepath.Join(townRoot, ".krc.yaml")
 }
 
-// LoadConfig loads KRC configuration from the town root.
+// LoadConfig loads KRC configuration from the HQ root.
 // Returns DefaultConfig if no config file exists.
 func LoadConfig(townRoot string) (*Config, error) {
 	configPath := ConfigFile(townRoot)
@@ -109,7 +109,7 @@ func LoadConfig(townRoot string) (*Config, error) {
 	return config, nil
 }
 
-// SaveConfig writes the KRC configuration to the town root.
+// SaveConfig writes the KRC configuration to the HQ root.
 func SaveConfig(townRoot string, config *Config) error {
 	configPath := ConfigFile(townRoot)
 	data, err := json.MarshalIndent(config, "", "  ")

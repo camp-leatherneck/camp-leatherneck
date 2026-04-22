@@ -327,7 +327,7 @@ context, checkpoint, startup directive.
 
 **Code**:
 - `internal/cmd/tap_guard.go` — `runTapGuardPRWorkflow()` (line ~34): blocks
-  `gh pr create`, `git checkout -b`, `git switch -c` in Gas Town agent contexts;
+  `gh pr create`, `git checkout -b`, `git switch -c` in Camp Leatherneck agent contexts;
   `isGasTownAgentContext()` (line ~103) checks GT_* env vars and CWD paths
 - `internal/cmd/tap_guard_dangerous.go` — `runTapGuardDangerous()` (line ~66):
   blocks 5 patterns: `rm -rf /`, `git push --force`, `git push -f`,
