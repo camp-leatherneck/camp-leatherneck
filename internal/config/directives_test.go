@@ -16,7 +16,7 @@ func TestLoadRoleDirective(t *testing.T) {
 		if err := os.MkdirAll(townDir, 0755); err != nil {
 			t.Fatal(err)
 		}
-		if err := os.WriteFile(filepath.Join(townDir, "polecat.md"), []byte("town directive"), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(townDir, "marine.md"), []byte("town directive"), 0644); err != nil {
 			t.Fatal(err)
 		}
 
@@ -33,7 +33,7 @@ func TestLoadRoleDirective(t *testing.T) {
 		if err := os.MkdirAll(rigDir, 0755); err != nil {
 			t.Fatal(err)
 		}
-		if err := os.WriteFile(filepath.Join(rigDir, "witness.md"), []byte("rig directive"), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(rigDir, "sarge.md"), []byte("rig directive"), 0644); err != nil {
 			t.Fatal(err)
 		}
 
@@ -51,7 +51,7 @@ func TestLoadRoleDirective(t *testing.T) {
 		if err := os.MkdirAll(townDir, 0755); err != nil {
 			t.Fatal(err)
 		}
-		if err := os.WriteFile(filepath.Join(townDir, "polecat.md"), []byte("town rules"), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(townDir, "marine.md"), []byte("town rules"), 0644); err != nil {
 			t.Fatal(err)
 		}
 
@@ -59,7 +59,7 @@ func TestLoadRoleDirective(t *testing.T) {
 		if err := os.MkdirAll(rigDir, 0755); err != nil {
 			t.Fatal(err)
 		}
-		if err := os.WriteFile(filepath.Join(rigDir, "polecat.md"), []byte("rig rules"), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(rigDir, "marine.md"), []byte("rig rules"), 0644); err != nil {
 			t.Fatal(err)
 		}
 
@@ -108,13 +108,43 @@ func TestLoadRoleDirective(t *testing.T) {
 		if err := os.MkdirAll(townDir, 0755); err != nil {
 			t.Fatal(err)
 		}
-		if err := os.WriteFile(filepath.Join(townDir, "polecat.md"), []byte("  \n\t\n  "), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(townDir, "marine.md"), []byte("  \n\t\n  "), 0644); err != nil {
 			t.Fatal(err)
 		}
 
 		got := LoadRoleDirective("polecat", townRoot, "myrig")
 		if got != "" {
 			t.Errorf("got %q, want empty string for whitespace-only directive", got)
+		}
+	})
+
+	t.Run("role name mapping to directive filename", func(t *testing.T) {
+		t.Parallel()
+		townRoot := t.TempDir()
+		townDir := filepath.Join(townRoot, "directives")
+		if err := os.MkdirAll(townDir, 0755); err != nil {
+			t.Fatal(err)
+		}
+
+		// Create files with new Marine rank names
+		mappings := map[string]string{
+			"mayor":    "lt.md",
+			"deacon":   "top.md",
+			"witness":  "sarge.md",
+			"refinery": "gunny.md",
+			"polecat":  "marine.md",
+		}
+
+		for role, filename := range mappings {
+			content := "directive for " + role
+			if err := os.WriteFile(filepath.Join(townDir, filename), []byte(content), 0644); err != nil {
+				t.Fatal(err)
+			}
+
+			got := LoadRoleDirective(role, townRoot, "")
+			if got != content {
+				t.Errorf("role %s: got %q, want %q", role, got, content)
+			}
 		}
 	})
 }
