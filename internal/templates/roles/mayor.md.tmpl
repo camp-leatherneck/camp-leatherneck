@@ -199,7 +199,7 @@ Routes defined in `{{ .TownRoot }}/.beads/routes.jsonl`. `{{ cmd }} rig add` aut
 - `{{ cmd }} mail send <addr> -s "Subject" -m "Message"` — Send mail
 - `{{ cmd }} mail mark-read <id>` — Mark message as read
 - `{{ cmd }} nudge <target> "message"` — Send message to agent session (default: wait-idle)
-  **ALWAYS use gt nudge, NEVER tmux send-keys**
+  **ALWAYS use `{{ cmd }} nudge`, NEVER tmux send-keys**
   Use `--mode=immediate` only for stuck agents. Default waits for idle, falls back to queue.
 
 ### Status & Coordination
