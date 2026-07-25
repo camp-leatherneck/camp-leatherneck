@@ -1696,11 +1696,17 @@ func (t *Tmux) NudgeSessionWithOpts(session, message string, opts NudgeOpts) err
 	time.Sleep(adaptiveTextDelay(len(sanitized)))
 
 	if !opts.SkipEscape {
-		// Auto-skip Escape for Copilot CLI sessions. Escape cancels in-flight
-		// generation in Copilot CLI (like Gemini), leaving the nudge text
-		// stranded in the input field without Enter being processed. (hq-isz)
+		// Auto-skip Escape for agents where Escape disrupts delivery rather than
+		// exiting vim INSERT mode.
+		// - Copilot CLI / Gemini: Escape cancels in-flight generation. (hq-isz)
+		// - Claude Code: Escape interrupts the current generation mid-response,
+		//   showing "Interrupted · What should Claude do instead?" which can
+		//   corrupt the agent's task state. Unlike vim, Escape does NOT clear
+		//   the composer text — but the interruption mid-task confuses state.
+		//   Fire Watch's raw-tmux fallback (C-u + text + Enter, no Escape)
+		//   avoids this by never interrupting. (hq-neh)
 		agentType, _ := t.GetEnvironment(session, "GT_AGENT")
-		if agentType == "copilot" {
+		if agentType == "copilot" || agentType == "claude" {
 			opts.SkipEscape = true
 		}
 	}
