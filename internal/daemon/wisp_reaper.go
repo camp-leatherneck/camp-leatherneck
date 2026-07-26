@@ -127,7 +127,10 @@ func (d *Daemon) dispatchReaperDog(vars map[string]string) error {
 		args = append(args, "--var", fmt.Sprintf("%s=%s", k, v))
 	}
 
-	cmd := exec.Command("gt", args...)
+	// Use "lt" (the Camp Leatherneck fork) not "gt" (upstream). The dog pool
+	// is a CL extension; upstream gt sling marks the dog working but fails to
+	// deliver the hook molecule, leaving the dog in split-brain state. (hq-4ek)
+	cmd := exec.Command("lt", args...)
 	cmd.Dir = d.config.TownRoot
 	util.SetDetachedProcessGroup(cmd)
 	if err := cmd.Run(); err != nil {
