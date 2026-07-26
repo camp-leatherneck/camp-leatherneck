@@ -61,13 +61,13 @@ Discover databases and count candidates for each operation.
 
 **1. List databases to scan:**
 ```bash
-lt reaper databases --port={{dolt_port}} --json
+~/.local/bin/lt reaper databases --port={{dolt_port}} --json
 ```
 Or use configured database list from {{databases}} variable.
 
 **2. Scan each database:**
 ```bash
-lt reaper scan --db=<name> --port={{dolt_port}} \\
+~/.local/bin/lt reaper scan --db=<name> --port={{dolt_port}} \\
   --max-age={{max_age}} --purge-age={{purge_age}} \\
   --mail-age={{mail_delete_age}} --stale-age={{stale_issue_age}} \\
   --json
@@ -94,7 +94,7 @@ Close wisps past max_age whose parent molecule is closed or missing.
 
 **1. For each database with reap candidates:**
 ```bash
-lt reaper reap --db=<name> --port={{dolt_port}} \\
+~/.local/bin/lt reaper reap --db=<name> --port={{dolt_port}} \\
   --max-age={{max_age}} {{#if dry_run}}--dry-run{{/if}} --json
 ```
 
@@ -120,7 +120,7 @@ Delete closed wisps past purge_age and closed mail past mail_delete_age.
 
 **1. For each database with purge candidates:**
 ```bash
-lt reaper purge --db=<name> --port={{dolt_port}} \\
+~/.local/bin/lt reaper purge --db=<name> --port={{dolt_port}} \\
   --purge-age={{purge_age}} --mail-age={{mail_delete_age}} \\
   {{#if dry_run}}--dry-run{{/if}} --json
 ```
@@ -144,7 +144,7 @@ Close issues that have been open with no status change past stale_issue_age.
 
 **1. For each database with stale candidates:**
 ```bash
-lt reaper auto-close --db=<name> --port={{dolt_port}} \\
+~/.local/bin/lt reaper auto-close --db=<name> --port={{dolt_port}} \\
   --stale-age={{stale_issue_age}} \\
   {{#if dry_run}}--dry-run{{/if}} --json
 ```
@@ -167,7 +167,7 @@ if the agent session restarts or stalls mid-cycle.
 
 **For each database:**
 ```bash
-lt reaper close-ephemeral --port={{dolt_port}} --ephemeral-age=1h \
+~/.local/bin/lt reaper close-ephemeral --port={{dolt_port}} --ephemeral-age=1h \
   {{#if dry_run}}--dry-run{{/if}}
 ```
 
@@ -195,7 +195,7 @@ Generate summary and signal completion.
 
 **2. If anomalies were found, escalate:**
 ```bash
-lt escalate "Reaper anomalies detected" -s MEDIUM -m "<anomaly details>"
+~/.local/bin/lt escalate "Reaper anomalies detected" -s MEDIUM -m "<anomaly details>"
 ```
 
 **Exit criteria:** Report generated, anomalies escalated if any."""
