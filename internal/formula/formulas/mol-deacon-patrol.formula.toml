@@ -997,7 +997,7 @@ Generate and send the daily compaction digest.
 
 **Step 1: Send daily digest (idempotent — safe to run every cycle)**
 ```bash
-gt compact report
+lt compact report
 ```
 
 This runs compaction (capturing JSON results), queries active wisps,
@@ -1010,7 +1010,7 @@ Skips automatically if today's digest was already sent.
 **Step 2: Weekly rollup (Mondays only, idempotent)**
 If today is Monday, also send the weekly rollup:
 ```bash
-gt compact report --weekly
+lt compact report --weekly
 ```
 
 This aggregates the past 7 days of compaction event beads and sends
