@@ -962,7 +962,7 @@ Run TTL-based wisp compaction to manage storage growth.
 
 **Step 1: Preview compaction scope**
 ```bash
-gt compact --dry-run --json
+lt compact --dry-run --json
 ```
 
 Parse the JSON output:
@@ -971,7 +971,7 @@ Parse the JSON output:
 
 **Step 2: Execute compaction (if needed)**
 ```bash
-gt compact --verbose
+lt compact --verbose
 ```
 
 This runs the compaction algorithm:
