@@ -157,9 +157,26 @@ gt reaper auto-close --db=<name> --port={{dolt_port}} \\
 **Exit criteria:** All eligible stale issues auto-closed."""
 
 [[steps]]
+id = "close-ephemeral"
+title = "Close stale ephemeral wisps"
+needs = ["auto-close"]
+description = """
+Close open ephemeral wisps (ephemeral=1) older than 1h. These are patrol-step
+tracking wisps that should be closed when each step completes but remain open
+if the agent session restarts or stalls mid-cycle.
+
+**For each database:**
+```bash
+lt reaper close-ephemeral --port={{dolt_port}} --ephemeral-age=1h \
+  {{#if dry_run}}--dry-run{{/if}}
+```
+
+**Exit criteria:** 0 open ephemeral wisps older than 1h."""
+
+[[steps]]
 id = "report"
 title = "Report findings and return to kennel"
-needs = ["auto-close"]
+needs = ["close-ephemeral"]
 description = """
 Generate summary and signal completion.
 

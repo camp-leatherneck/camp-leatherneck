@@ -405,6 +405,81 @@ Returns the count of closed issues. Use --dry-run to preview.`,
 	},
 }
 
+var reaperEphemeralMaxAge string
+
+var reaperCloseEphemeralCmd = &cobra.Command{
+	Use:   "close-ephemeral",
+	Short: "Close stale ephemeral wisps past ephemeral-age",
+	Long: `Close open ephemeral wisps (ephemeral=1) older than the ephemeral-age threshold.
+
+Patrol-step and tracking wisps are created as ephemeral=1 and should be
+closed by their agent when each step completes. If the session restarts or
+stalls, they remain open indefinitely until the 24h standard reaper threshold.
+This command applies a short TTL (default 1h) so they don't accumulate.
+
+When --db is provided, closes in a single database. When omitted, auto-discovers
+all databases on the Dolt server and closes in each one.`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		ephemeralAge, err := time.ParseDuration(reaperEphemeralMaxAge)
+		if err != nil {
+			return fmt.Errorf("invalid --ephemeral-age: %w", err)
+		}
+
+		databases := reaper.DiscoverDatabases(reaperHost, reaperPort)
+		if reaperDB != "" {
+			databases = strings.Split(reaperDB, ",")
+		}
+
+		var totalClosed int
+		for _, dbName := range databases {
+			if err := reaper.ValidateDBName(dbName); err != nil {
+				fmt.Fprintf(os.Stderr, "skip invalid db: %s\n", dbName)
+				continue
+			}
+
+			db, err := reaper.OpenDB(reaperHost, reaperPort, dbName, 10*time.Second, 10*time.Second)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s: connect error: %v\n", dbName, err)
+				continue
+			}
+
+			if ok, err := reaper.HasReaperSchema(db); err != nil {
+				fmt.Fprintf(os.Stderr, "%s: schema check error: %v\n", dbName, err)
+				db.Close()
+				continue
+			} else if !ok {
+				db.Close()
+				continue
+			}
+
+			result, err := reaper.CloseStaleEphemeralWisps(db, dbName, ephemeralAge, reaperDryRun)
+			db.Close()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s: close-ephemeral error: %v\n", dbName, err)
+				continue
+			}
+
+			prefix := ""
+			if result.DryRun {
+				prefix = "[DRY RUN] would "
+			}
+			if result.Closed > 0 {
+				fmt.Printf("%s: %sclosed %d stale ephemeral wisps\n", dbName, prefix, result.Closed)
+			}
+			totalClosed += result.Closed
+		}
+
+		if len(databases) > 1 {
+			prefix := ""
+			if reaperDryRun {
+				prefix = "[DRY RUN] "
+			}
+			fmt.Printf("\n%sEphemeral close summary: closed %d stale ephemeral wisps\n", prefix, totalClosed)
+		}
+		return nil
+	},
+}
+
 var reaperRunCmd = &cobra.Command{
 	Use:   "run",
 	Short: "Run full reaper cycle across all databases",
@@ -539,7 +614,7 @@ func init() {
 		}
 	}
 
-	for _, cmd := range []*cobra.Command{reaperScanCmd, reaperReapCmd, reaperPurgeCmd, reaperAutoCloseCmd, reaperRunCmd, reaperDatabasesCmd} {
+	for _, cmd := range []*cobra.Command{reaperScanCmd, reaperReapCmd, reaperPurgeCmd, reaperAutoCloseCmd, reaperCloseEphemeralCmd, reaperRunCmd, reaperDatabasesCmd} {
 		cmd.Flags().StringVar(&reaperDB, "db", "", "Database name (required for single-db commands)")
 		cmd.Flags().StringVar(&reaperHost, "host", defaultHost, "Dolt server host (env: GT_DOLT_HOST)")
 		cmd.Flags().IntVar(&reaperPort, "port", defaultPort, "Dolt server port (env: GT_DOLT_PORT)")
@@ -562,12 +637,14 @@ func init() {
 	for _, cmd := range []*cobra.Command{reaperScanCmd, reaperAutoCloseCmd, reaperRunCmd} {
 		cmd.Flags().StringVar(&reaperStaleAge, "stale-age", "720h", "Max issue staleness before auto-close (30d)")
 	}
+	reaperCloseEphemeralCmd.Flags().StringVar(&reaperEphemeralMaxAge, "ephemeral-age", "1h", "Max age before closing stale ephemeral wisps")
 
 	reaperCmd.AddCommand(reaperDatabasesCmd)
 	reaperCmd.AddCommand(reaperScanCmd)
 	reaperCmd.AddCommand(reaperReapCmd)
 	reaperCmd.AddCommand(reaperPurgeCmd)
 	reaperCmd.AddCommand(reaperAutoCloseCmd)
+	reaperCmd.AddCommand(reaperCloseEphemeralCmd)
 	reaperCmd.AddCommand(reaperRunCmd)
 
 	rootCmd.AddCommand(reaperCmd)

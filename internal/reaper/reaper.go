@@ -949,6 +949,93 @@ func ClosePluginDispatches(db *sql.DB, dbName string, maxAge time.Duration, dryR
 	return result, nil
 }
 
+// CloseStaleEphemeralWispsResult holds the results of closing stale ephemeral wisps.
+type CloseStaleEphemeralWispsResult struct {
+	Database string    `json:"database"`
+	Closed   int       `json:"closed"`
+	DryRun   bool      `json:"dry_run,omitempty"`
+	Anomalies []Anomaly `json:"anomalies,omitempty"`
+}
+
+// CloseStaleEphemeralWisps closes open ephemeral wisps (ephemeral=1) older than
+// maxAge. These are transient patrol-step and tracking wisps created by agents
+// that should be closed when their step completes. If the agent session restarts
+// or stalls, they remain open indefinitely until the 24h reaper threshold.
+// This fast-path applies a short TTL (default 1h) so they don't accumulate.
+func CloseStaleEphemeralWisps(db *sql.DB, dbName string, maxAge time.Duration, dryRun bool) (*CloseStaleEphemeralWispsResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultQueryTimeout)
+	defer cancel()
+
+	cutoff := time.Now().UTC().Add(-maxAge)
+	result := &CloseStaleEphemeralWispsResult{Database: dbName, DryRun: dryRun}
+
+	selectQuery := fmt.Sprintf(
+		"SELECT id FROM `%s`.wisps WHERE status IN ('open', 'in_progress') AND ephemeral = 1 AND created_at < ?",
+		dbName)
+
+	rows, err := db.QueryContext(ctx, selectQuery, cutoff)
+	if err != nil {
+		if isTableNotFound(err) {
+			return result, nil
+		}
+		return nil, fmt.Errorf("select stale ephemeral wisps: %w", err)
+	}
+	var ids []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			rows.Close()
+			return nil, fmt.Errorf("scan ephemeral wisp id: %w", err)
+		}
+		ids = append(ids, id)
+	}
+	rows.Close()
+
+	result.Closed = len(ids)
+	if len(ids) == 0 || dryRun {
+		return result, nil
+	}
+
+	if _, err := db.ExecContext(ctx, "SET @@autocommit = 0"); err != nil {
+		return nil, fmt.Errorf("disable autocommit: %w", err)
+	}
+	defer func() {
+		_, _ = db.ExecContext(context.Background(), "SET @@autocommit = 1")
+	}()
+
+	placeholders := make([]string, len(ids))
+	args := make([]interface{}, len(ids))
+	for i, id := range ids {
+		placeholders[i] = "?"
+		args[i] = id
+	}
+	updateQuery := fmt.Sprintf(
+		"UPDATE `%s`.wisps SET status = 'closed', closed_at = NOW(), close_reason = 'reaped: stale ephemeral wisp (session restart residue)' WHERE id IN (%s)",
+		dbName, strings.Join(placeholders, ","))
+	if _, err := db.ExecContext(ctx, updateQuery, args...); err != nil {
+		return nil, fmt.Errorf("close stale ephemeral wisps: %w", err)
+	}
+
+	if _, err := db.ExecContext(ctx, "COMMIT"); err != nil {
+		result.Anomalies = append(result.Anomalies, Anomaly{
+			Type:    "sql_commit_failed",
+			Message: fmt.Sprintf("sql commit after ephemeral wisp close failed: %v", err),
+		})
+		return result, nil
+	}
+	commitMsg := fmt.Sprintf("reaper: close %d stale ephemeral wisps in %s", len(ids), dbName)
+	if _, err := db.ExecContext(ctx, fmt.Sprintf("CALL DOLT_COMMIT('-Am', '%s')", commitMsg)); err != nil { //nolint:gosec
+		if !isNothingToCommit(err) {
+			result.Anomalies = append(result.Anomalies, Anomaly{
+				Type:    "dolt_commit_failed",
+				Message: fmt.Sprintf("dolt commit after ephemeral wisp close failed: %v", err),
+			})
+		}
+	}
+
+	return result, nil
+}
+
 // FormatJSON marshals any value to indented JSON.
 func FormatJSON(v interface{}) string {
 	data, err := json.MarshalIndent(v, "", "  ")
