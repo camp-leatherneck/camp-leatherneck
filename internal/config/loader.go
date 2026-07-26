@@ -2391,6 +2391,27 @@ func SanitizeAgentEnv(resolvedEnv, callerEnv map[string]string) {
 	if _, ok := callerEnv["CLAUDECODE"]; !ok {
 		resolvedEnv["CLAUDECODE"] = ""
 	}
+
+	// Ensure ~/.local/bin is at the front of PATH for agent subprocesses.
+	// When the daemon runs as a background service (launchd/systemd), its PATH
+	// comes from the system default and may not have the user's local bin first.
+	// Agent sessions that run "lt compact" or similar would otherwise resolve
+	// to a system-installed binary (e.g., Homebrew's upstream lt) instead of
+	// the locally-built fork with all in-tree fixes applied.
+	if _, ok := callerEnv["PATH"]; !ok {
+		if home := os.Getenv("HOME"); home != "" {
+			localBin := filepath.Join(home, ".local", "bin")
+			currentPath := os.Getenv("PATH")
+			parts := strings.Split(currentPath, ":")
+			filtered := make([]string, 0, len(parts))
+			for _, p := range parts {
+				if p != localBin {
+					filtered = append(filtered, p)
+				}
+			}
+			resolvedEnv["PATH"] = localBin + ":" + strings.Join(filtered, ":")
+		}
+	}
 }
 
 // PrependEnv prepends export statements to a command string.
