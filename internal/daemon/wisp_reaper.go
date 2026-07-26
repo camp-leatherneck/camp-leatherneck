@@ -2,6 +2,7 @@ package daemon
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -127,10 +128,15 @@ func (d *Daemon) dispatchReaperDog(vars map[string]string) error {
 		args = append(args, "--var", fmt.Sprintf("%s=%s", k, v))
 	}
 
-	// Use "lt" (the Camp Leatherneck fork) not "gt" (upstream). The dog pool
-	// is a CL extension; upstream gt sling marks the dog working but fails to
-	// deliver the hook molecule, leaving the dog in split-brain state. (hq-4ek)
-	cmd := exec.Command("lt", args...)
+	// Use the running daemon's own binary path, not a bare "lt" lookup.
+	// A bare lookup resolves via PATH which has /opt/homebrew/bin first in
+	// launchd-spawned processes; upstream gt/lt sling marks the dog working
+	// but fails to deliver the CL hook molecule (split-brain, hq-4ek).
+	ltBin, err := os.Executable()
+	if err != nil {
+		ltBin = "lt" // fallback; will fail the same way as before if PATH is wrong
+	}
+	cmd := exec.Command(ltBin, args...)
 	cmd.Dir = d.config.TownRoot
 	util.SetDetachedProcessGroup(cmd)
 	if err := cmd.Run(); err != nil {
