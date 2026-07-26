@@ -110,14 +110,15 @@ func runDailyDigest() error {
 		dateStr = compactReportDate
 	}
 
-	// Idempotency check: see if digest already exists for this date
+	// Idempotency check: see if digest already exists for this date.
+	// FATAL on error — proceeding when we can't verify uniqueness creates
+	// duplicates (hq-mww). Transient Dolt failures must be retried by the
+	// caller, not masked here.
 	existingID, err := findExistingCompactReport(dateStr)
 	if err != nil {
-		// Non-fatal: continue with creation attempt
-		if compactReportVerbose {
-			fmt.Fprintf(os.Stderr, "warning: idempotency check failed: %v\n", err)
-		}
-	} else if existingID != "" {
+		return fmt.Errorf("idempotency check failed, refusing to risk duplicate: %w", err)
+	}
+	if existingID != "" {
 		fmt.Printf("%s Compaction digest already sent for %s (bead: %s)\n",
 			style.Dim.Render("○"), dateStr, existingID)
 		return nil
@@ -562,9 +563,13 @@ func formatWeeklyRollup(rollup *weeklyRollup) string {
 func findExistingCompactReport(dateStr string) (string, error) {
 	expectedTitle := fmt.Sprintf("Compaction Report %s", dateStr)
 
+	// Search open AND closed: bd list defaults to open-only, so without an
+	// explicit status filter we'd miss beads that were successfully closed.
+	// Including both catches the case where auto-close fails silently and
+	// the bead stays open. (hq-mww)
 	listCmd := exec.Command("bd", "list",
 		"--type=event",
-		"--status=closed",
+		"--status=open,closed",
 		"--json",
 		"--limit=50",
 	)
