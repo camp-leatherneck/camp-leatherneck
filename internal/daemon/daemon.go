@@ -107,6 +107,11 @@ type Daemon struct {
 	// Only accessed from heartbeat loop goroutine - no sync needed.
 	lastDoctorMolTime time.Time
 
+	// lastReaperDispatchTime tracks when the last mol-dog-reaper dispatch was made.
+	// Prevents concurrent reaper dispatches via debounce window (see hq-noe).
+	// Only accessed from heartbeat loop goroutine - no sync needed.
+	lastReaperDispatchTime time.Time
+
 	// lastMaintenanceRun tracks when scheduled maintenance last ran.
 	// Only accessed from heartbeat loop goroutine - no sync needed.
 	lastMaintenanceRun time.Time
@@ -147,6 +152,10 @@ const (
 	// doctorMolCooldown is the minimum interval between mol-dog-doctor molecules.
 	// Configurable via operational.daemon.doctor_mol_cooldown.
 	doctorMolCooldown = 5 * time.Minute
+
+	// reaperDispatchDebounce is the minimum interval between mol-dog-reaper dispatches.
+	// Prevents concurrent reaper dispatches that can cause hook delivery race (hq-noe).
+	reaperDispatchDebounce = 30 * time.Second
 )
 
 const beadsModulePath = "github.com/steveyegge/beads"

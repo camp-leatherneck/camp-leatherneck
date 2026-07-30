@@ -83,6 +83,13 @@ func (d *Daemon) reapWisps() {
 		return
 	}
 
+	// Debounce concurrent dispatches to prevent hook delivery race (hq-noe).
+	// Skip if a dispatch was made within the debounce window.
+	if time.Since(d.lastReaperDispatchTime) < reaperDispatchDebounce {
+		d.logger.Printf("wisp_reaper: skipped (dispatch debounce window active)")
+		return
+	}
+
 	config := d.patrolConfig.Patrols.WispReaper
 	maxAge := wispReaperMaxAge(d.patrolConfig)
 	deleteAge := wispDeleteAge(d.patrolConfig)
@@ -119,6 +126,7 @@ func (d *Daemon) reapWisps() {
 	}
 
 	d.logger.Printf("wisp_reaper: dispatched to Dog for formula-driven execution")
+	d.lastReaperDispatchTime = time.Now()
 }
 
 // dispatchReaperDog dispatches the mol-dog-reaper formula to a Dog via lt sling.
