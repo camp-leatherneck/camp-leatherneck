@@ -120,7 +120,7 @@ Pour the mol-prd-review convoy to run 6 parallel PRD reviewers.
 
 **1. Pour the convoy:**
 ```bash
-gt formula run mol-prd-review \\
+~/.local/bin/lt formula run mol-prd-review \\
   --problem="{{problem}}" \\
   --context="See .prd-reviews/{{review_id}}/prd-draft.md. {{context}}"
 ```
@@ -136,7 +136,7 @@ This spawns 6 polecats in parallel:
 **2. Await synthesis:**
 The convoy's synthesis step will mail you when complete. Check your inbox:
 ```bash
-gt mail inbox
+~/.local/bin/lt mail inbox
 ```
 
 The mail subject will be: `PRD Review Complete: {{problem}}`
@@ -185,7 +185,7 @@ I'll incorporate your answers and kick off implementation plan generation.
 
 **3. Await reply:**
 Wait for the human to respond in this conversation. They will type their
-answers directly. Do NOT use `gt mail inbox` — the reply comes in chat.
+answers directly. Do NOT use `~/.local/bin/lt mail inbox` — the reply comes in chat.
 
 **4. Incorporate answers:**
 Update the PRD draft at `.prd-reviews/{{review_id}}/prd-draft.md` with the
@@ -210,7 +210,7 @@ Pour the design convoy to generate an implementation plan from the refined PRD.
 
 **1. Pour the design convoy:**
 ```bash
-gt formula run design \\
+~/.local/bin/lt formula run design \\
   --problem="{{problem}}" \\
   --context="PRD with clarifications: .prd-reviews/{{review_id}}/prd-draft.md. {{context}}"
 ```
@@ -226,7 +226,7 @@ This spawns 6 polecats in parallel, each exploring a different dimension:
 **2. Await synthesis:**
 The synthesis step will produce a design document. Check for it:
 ```bash
-gt mail inbox  # synthesis notifies when done
+~/.local/bin/lt mail inbox  # synthesis notifies when done
 ls .designs/   # find the design output directory
 ```
 
@@ -261,7 +261,7 @@ First PRD-alignment round. Dispatch 2 polecats to check the plan against the PRD
 
 Polecat A — **requirements-coverage**:
 ```bash
-gt sling --prompt="Review an implementation plan for PRD alignment.
+~/.local/bin/lt sling --prompt="Review an implementation plan for PRD alignment.
 
 Read the PRD: .prd-reviews/{{review_id}}/prd-draft.md
 Read the plan: .designs/<design-id>/design-doc.md
@@ -281,7 +281,7 @@ Mail your full report back when done." --mail-back
 
 Polecat B — **goals-alignment**:
 ```bash
-gt sling --prompt="Review an implementation plan for PRD alignment.
+~/.local/bin/lt sling --prompt="Review an implementation plan for PRD alignment.
 
 Read the PRD: .prd-reviews/{{review_id}}/prd-draft.md
 Read the plan: .designs/<design-id>/design-doc.md
@@ -300,7 +300,7 @@ Mail your full report back when done." --mail-back
 
 **2. Await reports:**
 ```bash
-gt mail inbox  # wait for both polecats to report back
+~/.local/bin/lt mail inbox  # wait for both polecats to report back
 ```
 
 **3. Apply fixes to the plan:**
@@ -322,7 +322,7 @@ Second PRD-alignment round. The plan has been updated from round 1 findings.
 
 Polecat A — **constraints-compliance**:
 ```bash
-gt sling --prompt="Review an implementation plan for PRD alignment (round 2).
+~/.local/bin/lt sling --prompt="Review an implementation plan for PRD alignment (round 2).
 
 Read the PRD: .prd-reviews/{{review_id}}/prd-draft.md
 Read the plan: .designs/<design-id>/design-doc.md
@@ -343,7 +343,7 @@ Mail your full report back when done." --mail-back
 
 Polecat B — **non-goals-enforcement**:
 ```bash
-gt sling --prompt="Review an implementation plan for PRD alignment (round 2).
+~/.local/bin/lt sling --prompt="Review an implementation plan for PRD alignment (round 2).
 
 Read the PRD: .prd-reviews/{{review_id}}/prd-draft.md
 Read the plan: .designs/<design-id>/design-doc.md
@@ -364,7 +364,7 @@ Mail your full report back when done." --mail-back
 
 **2. Await reports:**
 ```bash
-gt mail inbox
+~/.local/bin/lt mail inbox
 ```
 
 **3. Apply fixes to the plan:**
@@ -385,7 +385,7 @@ Third and final PRD-alignment round. Plan has been updated from rounds 1-2.
 
 Polecat A — **user-stories-coverage**:
 ```bash
-gt sling --prompt="Review an implementation plan for PRD alignment (round 3).
+~/.local/bin/lt sling --prompt="Review an implementation plan for PRD alignment (round 3).
 
 Read the PRD: .prd-reviews/{{review_id}}/prd-draft.md
 Read the plan: .designs/<design-id>/design-doc.md
@@ -406,7 +406,7 @@ Mail your full report back when done." --mail-back
 
 Polecat B — **open-questions-resolution**:
 ```bash
-gt sling --prompt="Review an implementation plan for PRD alignment (round 3).
+~/.local/bin/lt sling --prompt="Review an implementation plan for PRD alignment (round 3).
 
 Read the PRD: .prd-reviews/{{review_id}}/prd-draft.md
 Read the plan: .designs/<design-id>/design-doc.md
@@ -429,7 +429,7 @@ Mail your full report back when done." --mail-back
 
 **2. Await reports:**
 ```bash
-gt mail inbox
+~/.local/bin/lt mail inbox
 ```
 
 **3. Apply fixes to the plan:**
@@ -469,7 +469,7 @@ Now review the plan itself for internal quality.
 
 Polecat A — **completeness**:
 ```bash
-gt sling --prompt="Review an implementation plan for completeness.
+~/.local/bin/lt sling --prompt="Review an implementation plan for completeness.
 
 Read the plan: .designs/<design-id>/design-doc.md
 Read the PRD alignment logs: .plan-reviews/{{review_id}}/prd-align-round-*.md
@@ -493,7 +493,7 @@ Mail your full report back when done." --mail-back
 
 Polecat B — **sequencing**:
 ```bash
-gt sling --prompt="Review an implementation plan for correct sequencing.
+~/.local/bin/lt sling --prompt="Review an implementation plan for correct sequencing.
 
 Read the plan: .designs/<design-id>/design-doc.md
 
@@ -514,7 +514,7 @@ Mail your full report back when done." --mail-back
 
 **2. Await reports:**
 ```bash
-gt mail inbox
+~/.local/bin/lt mail inbox
 ```
 
 **3. Apply fixes to the plan:**
@@ -534,7 +534,7 @@ Second plan self-review round.
 
 Polecat A — **risk**:
 ```bash
-gt sling --prompt="Review an implementation plan for risk.
+~/.local/bin/lt sling --prompt="Review an implementation plan for risk.
 
 Read the plan: .designs/<design-id>/design-doc.md
 Read prior review changes: .plan-reviews/{{review_id}}/review-round-1.md
@@ -558,7 +558,7 @@ Mail your full report back when done." --mail-back
 
 Polecat B — **scope-creep**:
 ```bash
-gt sling --prompt="Review an implementation plan for scope creep.
+~/.local/bin/lt sling --prompt="Review an implementation plan for scope creep.
 
 Read the plan: .designs/<design-id>/design-doc.md
 Read the PRD: .prd-reviews/{{review_id}}/prd-draft.md
@@ -582,7 +582,7 @@ Mail your full report back when done." --mail-back
 
 **2. Await reports:**
 ```bash
-gt mail inbox
+~/.local/bin/lt mail inbox
 ```
 
 **3. Apply fixes to the plan:**
@@ -603,7 +603,7 @@ Third and final plan self-review round.
 
 Polecat A — **testability**:
 ```bash
-gt sling --prompt="Review an implementation plan for testability.
+~/.local/bin/lt sling --prompt="Review an implementation plan for testability.
 
 Read the plan: .designs/<design-id>/design-doc.md
 Read prior review changes: .plan-reviews/{{review_id}}/review-round-1.md and round-2.md
@@ -626,7 +626,7 @@ Mail your full report back when done." --mail-back
 
 Polecat B — **coherence**:
 ```bash
-gt sling --prompt="Review an implementation plan for overall coherence.
+~/.local/bin/lt sling --prompt="Review an implementation plan for overall coherence.
 
 Read the plan: .designs/<design-id>/design-doc.md
 Read the PRD: .prd-reviews/{{review_id}}/prd-draft.md
@@ -650,7 +650,7 @@ Mail your full report back when done." --mail-back
 
 **2. Await reports:**
 ```bash
-gt mail inbox
+~/.local/bin/lt mail inbox
 ```
 
 **3. Apply fixes to the plan:**
@@ -754,7 +754,7 @@ Output:
 ### Next Steps
 - Review beads: bd list --type=task
 - Start work: bd ready (shows unblocked tasks)
-- Kick off agent swarm: gt sling <first-bead-id> <rig>
+- Kick off agent swarm: ~/.local/bin/lt sling <first-bead-id> <rig>
 ```
 
 **Exit criteria:** All plan tasks exist as beads. Dependencies are correctly wired.

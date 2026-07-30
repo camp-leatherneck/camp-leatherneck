@@ -23,7 +23,7 @@ The Mayor should ONLY be nudged for genuine emergencies:
 
 Health pings to the Mayor are a ZFC violation — they burn Mayor context
 on ceremony instead of work. The Mayor is your boss, not a subordinate
-to be monitored. Use `gt mail send mayor/` for non-urgent communication.
+to be monitored. Use `~/.local/bin/lt mail send mayor/` for non-urgent communication.
 
 ## Second-Order Monitoring
 
@@ -42,7 +42,7 @@ This happens when idle_cycles >= {{idle_effort_threshold}} (no activity detected
 
 Abbreviated patrol rules:
 - **heartbeat**: ALWAYS run (required by daemon).
-- **inbox-check**: Run `gt mail drain` only. Skip individual message processing unless drain reports unprocessed HELP or RECOVERED_BEAD messages.
+- **inbox-check**: Run `~/.local/bin/lt mail drain` only. Skip individual message processing unless drain reports unprocessed HELP or RECOVERED_BEAD messages.
 - **orphan-process-cleanup**: SKIP.
 - **test-pollution-cleanup**: SKIP.
 - **gate-evaluation**: SKIP.
@@ -51,7 +51,7 @@ Abbreviated patrol rules:
 - **resolve-external-deps**: SKIP.
 - **fire-notifications**: SKIP.
 - **heartbeat-mid**: SKIP (short cycle doesn't need mid-cycle refresh).
-- **health-scan**: Quick `gt witness status` / `gt refinery status` only. Skip nudges.
+- **health-scan**: Quick `~/.local/bin/lt witness status` / `~/.local/bin/lt refinery status` only. Skip nudges.
 - **dolt-health**: SKIP.
 - **zombie-scan**: SKIP.
 - **plugin-run**: SKIP.
@@ -94,7 +94,7 @@ The daemon monitors `deacon/heartbeat.json` and kills the Deacon if it goes stal
 so the daemon knows we are alive.
 
 ```bash
-gt deacon heartbeat "starting patrol cycle"
+~/.local/bin/lt deacon heartbeat "starting patrol cycle"
 ```
 
 This MUST run before any other step. Skipping it risks the daemon killing a healthy
@@ -120,9 +120,9 @@ Check the Mayor's inbox for messages from:
 - External triggers (webhooks, timers)
 
 ```bash
-gt mail inbox
+~/.local/bin/lt mail inbox
 # For each message:
-gt mail read <id>
+~/.local/bin/lt mail read <id>
 # Handle based on message type
 ```
 
@@ -130,14 +130,14 @@ gt mail read <id>
 Assess and handle or forward to Mayor.
 Archive after handling:
 ```bash
-gt mail archive <message-id>
+~/.local/bin/lt mail archive <message-id>
 ```
 
 **LIFECYCLE messages**:
 Polecats reporting completion, refineries reporting merge results.
 Archive after processing:
 ```bash
-gt mail archive <message-id>
+~/.local/bin/lt mail archive <message-id>
 ```
 
 **DOG_DONE messages**:
@@ -146,9 +146,9 @@ Subject format: `DOG_DONE <hostname>`
 Body contains: task name, counts, status.
 ```bash
 # Parse the report, log metrics if needed
-gt mail read <id>
+~/.local/bin/lt mail read <id>
 # Archive after noting completion
-gt mail archive <message-id>
+~/.local/bin/lt mail archive <message-id>
 ```
 Dogs return to idle automatically. The report is informational - no action needed
 unless the dog reports errors that require escalation.
@@ -158,8 +158,8 @@ The daemon's ConvoyManager handles convoy feeding (event-driven, 5s poll).
 Simply archive these messages — no deacon action needed.
 ```bash
 # For each CONVOY_NEEDS_FEEDING message:
-gt mail read <id>
-gt mail archive <message-id>
+~/.local/bin/lt mail read <id>
+~/.local/bin/lt mail archive <message-id>
 ```
 
 **RECOVERED_BEAD messages** (from Witness):
@@ -168,10 +168,10 @@ to open status and sends a RECOVERED_BEAD mail. The Deacon auto re-dispatches:
 Subject format: `RECOVERED_BEAD <bead-id>`
 ```bash
 # For each RECOVERED_BEAD message:
-gt mail read <id>
+~/.local/bin/lt mail read <id>
 # Extract bead ID from subject
-gt deacon redispatch <bead-id>
-gt mail archive <message-id>
+~/.local/bin/lt deacon redispatch <bead-id>
+~/.local/bin/lt mail archive <message-id>
 ```
 
 The `redispatch` command handles:
@@ -204,7 +204,7 @@ instances in terminals have a TTY like "pts/0".
 
 **Run cleanup:**
 ```bash
-gt deacon cleanup-orphans
+~/.local/bin/lt deacon cleanup-orphans
 ```
 
 This command:
@@ -219,7 +219,7 @@ Multiple Gas Town instances may share the same machine, each with its own tmux
 socket and agent processes. `ps` output shows Claude processes from ALL towns,
 but each town's deacon should only clean up processes belonging to its own town.
 
-- The `gt deacon cleanup-orphans` output shows `town=<path>` for each orphan
+- The `~/.local/bin/lt deacon cleanup-orphans` output shows `town=<path>` for each orphan
 - Only clean up processes where the town path matches this town's root (`$GT_ROOT`)
 - Processes belonging to other towns are managed by those towns' own deacons
 - If you use manual process inspection (`ps aux`), verify a process's working
@@ -254,8 +254,8 @@ Any `dolt sql-server` process that holds this workspace's configured port
 is an "imposter" — a leaked server from another workspace. Kill and log.
 
 ```bash
-# Use gt dolt kill-imposters which checks data-dir — safe for multi-workspace setups
-gt dolt kill-imposters 2>/dev/null || true
+# Use ~/.local/bin/lt dolt kill-imposters which checks data-dir — safe for multi-workspace setups
+~/.local/bin/lt dolt kill-imposters 2>/dev/null || true
 ```
 
 **2. Stale test temp dirs**
@@ -393,7 +393,7 @@ bd mol show <mol-id> --json
 # Look for rig field or infer from prefix
 
 # Dispatch to that rig's polecat pool
-gt sling <mol-id> <rig>/polecats
+~/.local/bin/lt sling <mol-id> <rig>/polecats
 ```
 
 **Step 3: Log dispatch**
@@ -417,18 +417,18 @@ Check convoy completion status.
 
 Convoys are coordination beads that track multiple issues across rigs. When all tracked issues close, the convoy auto-closes.
 
-**IMPORTANT**: Use `gt convoy` commands (not `bd list`) because convoys are stored in
+**IMPORTANT**: Use `~/.local/bin/lt convoy` commands (not `bd list`) because convoys are stored in
 town-level HQ beads and the Deacon runs from ~/gt/deacon/. The `gt` commands are
 town-aware and will find convoys regardless of current directory.
 
 **Step 1: Find open convoys**
 ```bash
-gt convoy list
+~/.local/bin/lt convoy list
 ```
 
 **Step 2: Check and auto-close completed convoys**
 ```bash
-gt convoy check
+~/.local/bin/lt convoy check
 ```
 
 This command:
@@ -438,7 +438,7 @@ This command:
 - Sends notifications to convoy owners
 
 **Note**: Convoys support cross-prefix tracking (e.g., hq-* convoy can track gt-*, bd-* issues).
-The `gt convoy` commands handle cross-rig issue resolution automatically.
+The `~/.local/bin/lt convoy` commands handle cross-rig issue resolution automatically.
 
 Stranded convoy feeding is handled by the daemon's ConvoyManager (event-driven + 30s periodic scan).
 The deacon no longer feeds convoys directly — this avoids double-dispatch races between deacon dogs and daemon."""
@@ -454,7 +454,7 @@ When an issue in one rig closes, any dependencies in other rigs should be notifi
 
 **Step 1: Check recent closures from feed**
 ```bash
-gt feed --since 10m --plain | grep "✓"
+~/.local/bin/lt feed --since 10m --plain | grep "✓"
 # Look for recently closed issues
 ```
 
@@ -492,7 +492,7 @@ After convoy completion or cross-rig dependency resolution, notify relevant part
 When a convoy closes (all tracked issues done), notify the Overseer:
 ```bash
 # Convoy gt-convoy-xxx just completed
-gt mail send mayor/ -s "Convoy complete: <convoy-title>" \\
+~/.local/bin/lt mail send mayor/ -s "Convoy complete: <convoy-title>" \\
   -m "Convoy <id> has completed. All tracked issues closed.
       Duration: <start to end>
       Issues: <count>
@@ -504,7 +504,7 @@ gt mail send mayor/ -s "Convoy complete: <convoy-title>" \\
 When a cross-rig dependency resolves, notify the affected rig:
 ```bash
 # Issue bd-xxx closed, unblocking gt-yyy
-gt mail send gastown/witness -s "Dependency resolved: <bd-xxx>" \\
+~/.local/bin/lt mail send gastown/witness -s "Dependency resolved: <bd-xxx>" \\
   -m "External dependency bd-xxx has closed.
       Unblocked: gt-yyy (<title>)
       This issue may now proceed."
@@ -524,7 +524,7 @@ description = """
 Refresh the heartbeat mid-cycle to prevent the daemon from killing us during long patrols.
 
 ```bash
-gt deacon heartbeat "mid-cycle checkpoint"
+~/.local/bin/lt deacon heartbeat "mid-cycle checkpoint"
 ```"""
 
 [[steps]]
@@ -537,7 +537,7 @@ Check Witness and Refinery health for each rig.
 **IMPORTANT: Skip DOCKED/PARKED rigs**
 Before checking any rig, verify its operational state:
 ```bash
-gt rig status <rig>
+~/.local/bin/lt rig status <rig>
 # Check the Status: line - if DOCKED or PARKED, skip entirely
 ```
 
@@ -545,7 +545,7 @@ DOCKED rigs are intentionally offline (Mayor or human docked them). Do NOT:
 - Check their witness/refinery status
 - Send health pings
 - Attempt restarts
-- Undock the rig (NEVER run `gt rig undock`)
+- Undock the rig (NEVER run `~/.local/bin/lt rig undock`)
 - Escalate or send mail about a docked rig being offline
 - "Restore" a docked rig to operational status
 A docked rig is NOT broken. It is off on purpose. Skip it entirely.
@@ -569,19 +569,19 @@ If ACTIVE work exists:
 
 For each rig, run:
 ```bash
-gt witness status <rig>
-gt refinery status <rig>
+~/.local/bin/lt witness status <rig>
+~/.local/bin/lt refinery status <rig>
 
 # ONLY if active work exists - health ping (clears backoff as side effect)
 # Use --mode=queue to avoid interrupting in-flight tool calls
-gt nudge --mode=queue <rig>/witness 'HEALTH_CHECK from deacon'
-gt nudge --mode=queue <rig>/refinery 'HEALTH_CHECK from deacon'
+~/.local/bin/lt nudge --mode=queue <rig>/witness 'HEALTH_CHECK from deacon'
+~/.local/bin/lt nudge --mode=queue <rig>/refinery 'HEALTH_CHECK from deacon'
 ```
 
 **Health Ping Benefit**: The queued nudge commands serve as a **backoff reset** —
 any nudge resets the agent's backoff to base interval, ensuring patrol agents
 remain responsive during active work periods. Formal liveness verification is
-handled separately by `gt deacon health-check` (which uses immediate delivery).
+handled separately by `~/.local/bin/lt deacon health-check` (which uses immediate delivery).
 
 **Signals to assess:**
 
@@ -609,18 +609,18 @@ health_state:
 | Cycles Unresponsive | Suggested Action |
 |---------------------|------------------|
 | 1-2 | Note it, check again next cycle |
-| 3-4 | Attempt restart: gt witness restart <rig> |
+| 3-4 | Attempt restart: ~/.local/bin/lt witness restart <rig> |
 | 5+ | Escalate to Mayor with context |
 
 **Restart commands:**
 ```bash
-gt witness restart <rig>
-gt refinery restart <rig>
+~/.local/bin/lt witness restart <rig>
+~/.local/bin/lt refinery restart <rig>
 ```
 
 **Escalation:**
 ```bash
-gt mail send mayor/ -s "Health: <rig> <component> unresponsive" \\
+~/.local/bin/lt mail send mayor/ -s "Health: <rig> <component> unresponsive" \\
   -m "Component has been unresponsive for N cycles. Restart attempts failed.
       Last healthy: <timestamp>
       Error signals: <details>"
@@ -633,7 +633,7 @@ id = "dolt-health"
 title = "Run Dolt data-plane health check"
 needs = ["health-scan"]
 description = """
-Run `gt health --json` to inspect the Dolt data plane and flag anomalies.
+Run `~/.local/bin/lt health --json` to inspect the Dolt data plane and flag anomalies.
 
 This step surfaces problems that individual patrol steps won't catch:
 commit bloat (compactor dog may have failed), stale backups (backup dog
@@ -641,7 +641,7 @@ may have failed), orphan databases, and zombie Dolt server processes.
 
 **Step 1: Run the health check**
 ```bash
-gt health --json
+~/.local/bin/lt health --json
 ```
 
 Parse the JSON output (HealthReport schema):
@@ -669,33 +669,33 @@ Parse the JSON output (HealthReport schema):
 
 **Server down (CRITICAL):**
 ```bash
-gt escalate -s CRITICAL "Dolt server is down"
+~/.local/bin/lt escalate -s CRITICAL "Dolt server is down"
 ```
 
 **Commit bloat (commits > 50k in any DB):**
 The compactor dog (`mol-dog-compactor`) may have failed. Dispatch a compactor:
 ```bash
-gt dog dispatch --formula mol-dog-compactor --var db=<db_name>
+~/.local/bin/lt dog dispatch --formula mol-dog-compactor --var db=<db_name>
 ```
 If no idle dogs, log for next cycle.
 
 **Stale backups:**
 The backup dog (`mol-dog-backup`) may have failed. Dispatch a backup:
 ```bash
-gt dog dispatch --formula mol-dog-backup
+~/.local/bin/lt dog dispatch --formula mol-dog-backup
 ```
 
 **Zombie processes:**
 Log the PIDs. The zombie-scan step (next) handles polecat zombies;
 this catches zombie *Dolt server* processes. Kill them:
 ```bash
-gt dolt kill-imposters
+~/.local/bin/lt dolt kill-imposters
 ```
 
 **Orphan DBs:**
 Dispatch cleanup:
 ```bash
-gt dolt cleanup
+~/.local/bin/lt dolt cleanup
 ```
 
 **Pollution:**
@@ -733,11 +733,11 @@ Detection only - Boot handles termination.
 
 **Run the zombie scan (DRY RUN ONLY):**
 ```bash
-gt deacon zombie-scan --dry-run
+~/.local/bin/lt deacon zombie-scan --dry-run
 ```
 
 **NEVER run:**
-- `gt deacon zombie-scan` (without --dry-run)
+- `~/.local/bin/lt deacon zombie-scan` (without --dry-run)
 - `tmux kill-session`
 - `gt polecat nuke`
 - Any command that terminates a session
@@ -746,12 +746,12 @@ gt deacon zombie-scan --dry-run
 1. Review the output to confirm they are truly abandoned
 2. File a death warrant for each detected zombie:
    ```bash
-   gt warrant file <polecat> --reason "Zombie detected: no session, no hook, idle >10m"
+   ~/.local/bin/lt warrant file <polecat> --reason "Zombie detected: no session, no hook, idle >10m"
    ```
 3. Boot will handle interrogation and execution
 4. Notify the Mayor about Witness failure:
    ```bash
-   gt mail send mayor/ -s "Witness cleanup failure" \
+   ~/.local/bin/lt mail send mayor/ -s "Witness cleanup failure" \
      -m "Filed death warrant for <polecat>. Witness failed to clean up."
    ```
 
@@ -796,7 +796,7 @@ Ensure dog pool has available workers for dispatch.
 
 **Step 1: Check dog pool status**
 ```bash
-gt dog status
+~/.local/bin/lt dog status
 # Shows idle/working counts
 ```
 
@@ -804,15 +804,15 @@ gt dog status
 If idle count is 0 and working count is at capacity, consider spawning:
 ```bash
 # If no idle dogs available
-gt dog add <name>
+~/.local/bin/lt dog add <name>
 # Names: alpha, bravo, charlie, delta, etc.
 ```
 
 **Step 3: Retire stale dogs (optional)**
 Dogs that have been idle for >24 hours can be removed to save resources:
 ```bash
-gt dogs list --json
-# Check last_active in each entry; if idle > 24h: gt dog remove <name>
+~/.local/bin/lt dogs list --json
+# Check last_active in each entry; if idle > 24h: ~/.local/bin/lt dog remove <name>
 ```
 
 **Pool sizing guidelines:**
@@ -829,20 +829,20 @@ needs = ["dog-pool-maintenance"]
 description = """
 Check for dogs that have been working too long (stuck).
 
-Dogs dispatched via `gt dog dispatch --plugin` are marked as "working" with
+Dogs dispatched via `~/.local/bin/lt dog dispatch --plugin` are marked as "working" with
 a work description like "plugin:rebuild-gt". If a dog hangs, crashes, or
 takes too long, it needs intervention.
 
 **Step 1: List working dogs**
 ```bash
-gt dog list --json
+~/.local/bin/lt dog list --json
 # Filter for state: "working"
 ```
 
 **Step 2: Check work duration**
 For each working dog:
 ```bash
-gt dog status <name> --json
+~/.local/bin/lt dog status <name> --json
 # Check: work_started_at, current_work
 ```
 
@@ -862,11 +862,11 @@ is_stuck = duration > stuck_threshold
 For dogs working > timeout:
 ```bash
 # Option A: File death warrant (Boot handles termination)
-gt warrant file deacon/dogs/<name> --reason "Stuck: working on <work> for <duration>"
+~/.local/bin/lt warrant file deacon/dogs/<name> --reason "Stuck: working on <work> for <duration>"
 
 # Option B: Force clear work and notify
-gt dog clear <name> --force
-gt mail send deacon/ -s "DOG_TIMEOUT <name>" -m "Dog <name> timed out on <work> after <duration>"
+~/.local/bin/lt dog clear <name> --force
+~/.local/bin/lt mail send deacon/ -s "DOG_TIMEOUT <name>" -m "Dog <name> timed out on <work> after <duration>"
 ```
 
 **Decision matrix:**
@@ -880,7 +880,7 @@ gt mail send deacon/ -s "DOG_TIMEOUT <name>" -m "Dog <name> timed out on <work> 
 **Step 4: Track chronic failures**
 If same dog gets stuck repeatedly:
 ```bash
-gt mail send mayor/ -s "Dog <name> chronic failures" \
+~/.local/bin/lt mail send mayor/ -s "Dog <name> chronic failures" \
   -m "Dog has timed out N times in last 24h. Consider removing from pool."
 ```
 
@@ -901,13 +901,13 @@ bd list --status=in_progress --json | head -20
 
 For each in_progress issue, check if assignee session exists:
 ```bash
-gt session status <rig>/<name> --json | jq -r '.running' | grep -q true && echo "alive" || echo "orphan"
+~/.local/bin/lt session status <rig>/<name> --json | jq -r '.running' | grep -q true && echo "alive" || echo "orphan"
 ```
 
 **Step 2: If orphans detected, dispatch to dog**
 ```bash
 # Sling orphan-scan formula to an idle dog
-gt sling mol-orphan-scan deacon/dogs --var scope=town
+~/.local/bin/lt sling mol-orphan-scan deacon/dogs --var scope=town
 ```
 
 **Important:** Do NOT fix orphans inline. Dogs handle recovery.
@@ -925,7 +925,7 @@ needs = ["orphan-check"]
 description = """
 **DETECT ONLY** - Check if cleanup is needed and dispatch to dog.
 
-**Step 1: Quick cleanup check (avoid gt doctor -v — takes 60s, blocks patrol)**
+**Step 1: Quick cleanup check (avoid ~/.local/bin/lt doctor -v — takes 60s, blocks patrol)**
 ```bash
 # Fast orphan session check only
 tmux list-sessions 2>/dev/null | wc -l
@@ -936,11 +936,11 @@ bd list --status=open --json 2>/dev/null | jq length
 **Step 2: If cleanup needed, dispatch to dog**
 ```bash
 # Sling session-gc formula to an idle dog
-gt sling mol-session-gc deacon/dogs --var mode=conservative
+~/.local/bin/lt sling mol-session-gc deacon/dogs --var mode=conservative
 ```
 
-**Important:** Do NOT run `gt doctor -v` or `gt doctor --fix` inline.
-`gt doctor -v` takes 60+ seconds and blocks the patrol loop.
+**Important:** Do NOT run `~/.local/bin/lt doctor -v` or `~/.local/bin/lt doctor --fix` inline.
+`~/.local/bin/lt doctor -v` takes 60+ seconds and blocks the patrol loop.
 Dogs handle cleanup. The Deacon stays lightweight - detection only.
 
 **Step 3: If nothing to clean**
@@ -1059,14 +1059,14 @@ to avoid JSONL pollution. This step aggregates them into a single permanent
 **Step 1: Check if digest is needed**
 ```bash
 # Preview yesterday's patrol digests (dry run)
-gt patrol digest --yesterday --dry-run
+~/.local/bin/lt patrol digest --yesterday --dry-run
 ```
 
 If output shows "No patrol digests found", skip to Step 3.
 
 **Step 2: Create the digest**
 ```bash
-gt patrol digest --yesterday
+~/.local/bin/lt patrol digest --yesterday
 ```
 
 This:
@@ -1094,7 +1094,7 @@ Maintain daemon logs and state files.
 The daemon automatically rotates logs every heartbeat (3 min), but the deacon
 can trigger a force-rotation to ensure cleanup happens during patrol:
 ```bash
-gt daemon rotate-logs
+~/.local/bin/lt daemon rotate-logs
 ```
 
 This rotates Dolt server logs (dolt.log, dolt-server.log, rig-level dolt-server.log)
@@ -1109,7 +1109,7 @@ and per-rig .beads/dolt-server.log files.
 The state.json tracks active sessions. Prune entries for sessions that no longer exist:
 ```bash
 # Check for stale session entries
-gt daemon status --json 2>/dev/null
+~/.local/bin/lt daemon status --json 2>/dev/null
 ```
 
 If state.json references sessions not in tmux:
@@ -1128,7 +1128,7 @@ Verify inbox hygiene before ending patrol cycle.
 
 **Step 1: Check inbox state**
 ```bash
-gt mail inbox
+~/.local/bin/lt mail inbox
 ```
 
 Inbox should be EMPTY or contain only just-arrived unprocessed messages.
@@ -1142,7 +1142,7 @@ All message types should have been archived during inbox-check processing:
 If any were missed:
 ```bash
 # For each stale message found:
-gt mail archive <message-id>
+~/.local/bin/lt mail archive <message-id>
 ```
 
 **Goal**: Inbox should have ≤2 active messages at end of cycle.
@@ -1158,7 +1158,7 @@ Check own context limit.
 The Deacon runs in a Claude session with finite context. Check if approaching the limit:
 
 ```bash
-gt context --usage
+~/.local/bin/lt context --usage
 ```
 
 If context is high (>80%), prepare for handoff:
@@ -1180,13 +1180,13 @@ End of patrol cycle decision.
 Refresh the heartbeat again immediately before the long idle wait:
 
 ```bash
-gt deacon heartbeat "pre-await checkpoint"
+~/.local/bin/lt deacon heartbeat "pre-await checkpoint"
 ```
 
 Use await-signal with exponential backoff to wait for activity:
 
 ```bash
-gt mol step await-signal --agent-bead hq-deacon \
+~/.local/bin/lt mol step await-signal --agent-bead hq-deacon \
   --backoff-base 60s --backoff-mult 2 --backoff-max 15m
 ```
 
@@ -1204,7 +1204,7 @@ This command:
 **On signal received** (activity detected):
 Reset the idle counter and start next patrol cycle:
 ```bash
-gt agent state hq-deacon --set idle=0
+~/.local/bin/lt agent state hq-deacon --set idle=0
 ```
 
 **On timeout** (no activity):
@@ -1238,7 +1238,7 @@ After await-signal returns (either by signal or timeout):
    in the ledger. Format: comma-separated step_id:STATUS pairs.
 3. Close current patrol and start next cycle:
 ```bash
-gt patrol report --summary "<brief summary>" \
+~/.local/bin/lt patrol report --summary "<brief summary>" \
   --steps "heartbeat:OK,inbox-check:OK,orphan-process-cleanup:SKIP,..."
 ```
 The --steps flag is REQUIRED. List ALL 26 steps with their actual status.
@@ -1249,7 +1249,7 @@ This closes the current patrol wisp and automatically creates a new one.
 **If context HIGH** (approaching limit):
 1. Write handoff mail with notable observations:
 ```bash
-gt handoff -s "Deacon patrol handoff" -m "<observations>"
+~/.local/bin/lt handoff -s "Deacon patrol handoff" -m "<observations>"
 ```
 2. Exit cleanly - the daemon will respawn a fresh Deacon session
 

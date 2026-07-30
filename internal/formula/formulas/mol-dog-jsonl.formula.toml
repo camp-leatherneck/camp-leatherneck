@@ -170,7 +170,7 @@ None
 
 **2. Signal completion to Deacon:**
 ```bash
-gt mail send deacon/ -s "DOG_DONE: jsonl" -m "Task: jsonl-git-backup
+~/.local/bin/lt mail send deacon/ -s "DOG_DONE: jsonl" -m "Task: jsonl-git-backup
 Exported: {{exported_count}}/{{total_count}}
 Records: {{record_count}}
 Push: {{push_status}}

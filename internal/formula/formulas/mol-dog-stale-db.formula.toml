@@ -9,9 +9,9 @@ server performance, and inflate SHOW DATABASES output.
 The Dog already kills zombie processes; detecting zombie databases is the
 same domain — infrastructure hygiene.
 
-Current behavior (from doltserver.go FindOrphanedDatabases + gt dolt cleanup):
+Current behavior (from doltserver.go FindOrphanedDatabases + ~/.local/bin/lt dolt cleanup):
 - FindOrphanedDatabases: checks databases against rig metadata.json references
-- gt dolt cleanup: removes orphans via DROP DATABASE or filesystem cleanup
+- ~/.local/bin/lt dolt cleanup: removes orphans via DROP DATABASE or filesystem cleanup
 
 This molecule adds continuous monitoring: detect orphan accumulation before
 it reaches crisis levels (Clown Show #18: 245 orphans at 27s latency).
@@ -37,7 +37,7 @@ This is infrastructure work. You:
 
 Only removes databases matching known test/orphan patterns. Production databases
 are identified by rig metadata.json references and are never touched.
-Uses the same safety logic as gt dolt cleanup."""
+Uses the same safety logic as ~/.local/bin/lt dolt cleanup."""
 formula = "mol-dog-stale-db"
 version = 1
 
@@ -102,14 +102,14 @@ If DROP puts server into read-only, attempt recovery before continuing.
 SQL cleanup would take too long (each DROP is ~27s under load).
 Escalate instead of attempting cleanup:
 ```bash
-gt escalate -s HIGH "Dolt: {{orphan_count}} orphan databases detected (too many for SQL cleanup)"
+~/.local/bin/lt escalate -s HIGH "Dolt: {{orphan_count}} orphan databases detected (too many for SQL cleanup)"
 ```
 
 Recommend filesystem cleanup:
 ```
-gt dolt stop
+~/.local/bin/lt dolt stop
 cd ~/gt/.dolt-data && rm -rf testdb_* beads_t* beads_pt* beads_vr* doctest_* doctortest_*
-gt dolt start
+~/.local/bin/lt dolt start
 ```
 
 **4. Record results:**
@@ -158,12 +158,12 @@ No action needed.
 **2. Warn if above threshold:**
 If orphan count >= {{warn_threshold}}, this is early warning:
 ```bash
-gt mail send deacon/ -s "WARN: {{orphan_count}} orphan databases detected" -m "..."
+~/.local/bin/lt mail send deacon/ -s "WARN: {{orphan_count}} orphan databases detected" -m "..."
 ```
 
 **3. Signal completion to Deacon:**
 ```bash
-gt mail send deacon/ -s "DOG_DONE: stale-db" -m "Task: stale-db-scan
+~/.local/bin/lt mail send deacon/ -s "DOG_DONE: stale-db" -m "Task: stale-db-scan
 Total DBs: {{total_count}}
 Production: {{prod_count}}
 Orphans: {{orphan_count}}

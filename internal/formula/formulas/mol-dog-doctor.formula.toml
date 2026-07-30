@@ -63,7 +63,7 @@ Time the probe query. Warn if > {{latency_threshold}}.
 **If server unreachable:**
 This is a critical failure. Escalate immediately:
 ```bash
-gt escalate -s CRITICAL "Dolt: server unreachable on port {{port}}"
+~/.local/bin/lt escalate -s CRITICAL "Dolt: server unreachable on port {{port}}"
 ```
 
 **Exit criteria:** Server connectivity confirmed (or escalated)."""
@@ -99,7 +99,7 @@ SHOW DATABASES;
 Count databases matching orphan patterns: testdb_*, beads_t*, beads_pt*, doctest_*.
 If orphan count > threshold, recommend cleanup:
 ```bash
-gt dolt cleanup
+~/.local/bin/lt dolt cleanup
 ```
 
 **5. Backup freshness:**
@@ -146,7 +146,7 @@ None — server is healthy.
 {{#each orphans}}
 - {{name}}
 {{/each}}
-Run `gt dolt cleanup` to remove.
+Run `~/.local/bin/lt dolt cleanup` to remove.
 {{else}}
 None detected.
 {{/if}}
@@ -155,12 +155,12 @@ None detected.
 **2. Escalate if critical:**
 ```bash
 # If server unreachable or critically degraded
-gt escalate -s CRITICAL "Dolt: <condition>"
+~/.local/bin/lt escalate -s CRITICAL "Dolt: <condition>"
 ```
 
 **3. Signal completion to Deacon:**
 ```bash
-gt mail send deacon/ -s "DOG_DONE: doctor" -m "Task: dolt-doctor
+~/.local/bin/lt mail send deacon/ -s "DOG_DONE: doctor" -m "Task: dolt-doctor
 Server: {{server_status}}
 Latency: {{latency}}
 Connections: {{conn_count}}/{{conn_max}}

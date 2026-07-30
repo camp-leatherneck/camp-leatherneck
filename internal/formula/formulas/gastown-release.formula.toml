@@ -12,19 +12,19 @@ This formula orchestrates a release cycle for Gas Town:
 ## Usage
 
 ```bash
-gt mol wisp create gastown-release --var version=0.3.0
+~/.local/bin/lt mol wisp create gastown-release --var version=0.3.0
 ```
 
 Or assign to a crew member:
 ```bash
-gt sling gastown/crew/max --formula gastown-release --var version=0.3.0
+~/.local/bin/lt sling gastown/crew/max --formula gastown-release --var version=0.3.0
 ```
 
 ## Error Handling
 
 - **Crew members (with user present)**: Attempt to resolve issues (merge branches,
   commit/stash work). Ask the user if blocked.
-- **Polecats (autonomous)**: Escalate via `gt escalate` if preflight fails or
+- **Polecats (autonomous)**: Escalate via `~/.local/bin/lt escalate` if preflight fails or
   unrecoverable errors occur. Do not proceed with a release if workspaces have
   uncommitted work.
 """
@@ -86,7 +86,7 @@ done
 
 **For polecats (autonomous)**:
 1. If any workspace has uncommitted work: STOP and escalate
-2. Use: `gt escalate --severity medium "Release blocked: workspace X has uncommitted work"`
+2. Use: `~/.local/bin/lt escalate --severity medium "Release blocked: workspace X has uncommitted work"`
 3. Do NOT proceed with release - uncommitted work would be excluded
 
 This step is critical. A release with uncommitted work means losing changes.
@@ -326,7 +326,7 @@ codesign -f -s - $(go env GOPATH)/bin/gt
 
 Verify:
 ```bash
-gt version
+~/.local/bin/lt version
 ```
 
 Should show {{version}}.
@@ -341,15 +341,15 @@ id = "restart-daemons"
 title = "Restart daemons"
 needs = ["local-install"]
 description = """
-Restart gt daemon to pick up the new version.
+Restart ~/.local/bin/lt daemon to pick up the new version.
 
 ```bash
-gt daemon stop && gt daemon start
+~/.local/bin/lt daemon stop && ~/.local/bin/lt daemon start
 ```
 
 Verify:
 ```bash
-gt daemon status
+~/.local/bin/lt daemon status
 ```
 
 The daemon should show the new binary timestamp and no stale warning.

@@ -11,7 +11,7 @@ This is infrastructure work. You:
 1. Receive convoy ID via variable
 2. Load convoy and find ready issues
 3. Check idle polecat capacity across rigs
-4. Dispatch min(ready_issues, idle_polecats) using gt sling
+4. Dispatch min(ready_issues, idle_polecats) using ~/.local/bin/lt sling
 5. Report actions taken
 6. Return to kennel
 
@@ -55,12 +55,12 @@ Load the convoy and find issues ready for dispatch.
 
 **1. Check assignment:**
 ```bash
-gt hook               # Shows convoy in hook_bead or vars
+~/.local/bin/lt hook               # Shows convoy in hook_bead or vars
 ```
 
 **2. Load convoy details:**
 ```bash
-gt convoy status {{convoy}} --json
+~/.local/bin/lt convoy status {{convoy}} --json
 ```
 
 **3. Identify ready issues:**
@@ -107,7 +107,7 @@ Determine how many polecats are available for dispatch.
 
 **1. For each rig that has ready issues:**
 ```bash
-gt polecats <rig>
+~/.local/bin/lt polecats <rig>
 # Shows polecat status: idle, working, etc.
 ```
 
@@ -146,11 +146,11 @@ Sling each ready issue to an available polecat.
 ```bash
 # Dispatch issue to the appropriate rig
 # This spawns a fresh polecat or assigns to idle one
-gt sling <issue-id> <rig>
+~/.local/bin/lt sling <issue-id> <rig>
 
 # Example:
-gt sling gt-abc123 gastown
-gt sling bd-xyz789 beads
+~/.local/bin/lt sling gt-abc123 gastown
+~/.local/bin/lt sling bd-xyz789 beads
 ```
 
 **Track results:**
@@ -159,7 +159,7 @@ For each dispatch:
 - Failure: Note issue ID, error message
 
 **Important notes:**
-- `gt sling` handles polecat selection automatically
+- `~/.local/bin/lt sling` handles polecat selection automatically
 - It will spawn a new polecat if none available
 - The polecat gets the issue hooked and starts immediately
 - Don't wait for polecat to complete - fire and forget
@@ -212,7 +212,7 @@ Create summary report of convoy feeding actions.
 
 **2. Send to Deacon:**
 ```bash
-gt mail send deacon/ -s "Convoy fed: {{convoy}}" -m "$(cat <<EOF
+~/.local/bin/lt mail send deacon/ -s "Convoy fed: {{convoy}}" -m "$(cat <<EOF
 Convoy {{convoy}} feeding complete.
 
 Dispatched: {{dispatch_count}}/{{ready_count}} issues
@@ -238,7 +238,7 @@ Signal work complete and return to available pool.
 
 **1. Signal completion to Deacon:**
 ```bash
-gt mail send deacon/ -s "DOG_DONE $(hostname)" -m "Task: convoy-feed
+~/.local/bin/lt mail send deacon/ -s "DOG_DONE $(hostname)" -m "Task: convoy-feed
 Convoy: {{convoy}}
 Ready: {{ready_count}}
 Dispatched: {{dispatch_count}}

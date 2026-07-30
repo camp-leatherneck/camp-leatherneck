@@ -36,17 +36,17 @@ tmux capture-pane -t gt-{{rig}}-{{polecat}} -p | tail -20
 
 Look for:
 - Claude prompt visible ("> " at start of line)
-- `gt prime` output
+- `~/.local/bin/lt prime` output
 - Signs of reading the assigned issue
 
 **If idle for >60 seconds:**
 ```bash
-gt nudge {{rig}}/polecats/{{polecat}} "Begin work on {{issue}}."
+~/.local/bin/lt nudge {{rig}}/polecats/{{polecat}} "Begin work on {{issue}}."
 ```
 
 **If still no response after nudge:**
 ```bash
-gt nudge {{rig}}/polecats/{{polecat}} "Are you there? Please acknowledge."
+~/.local/bin/lt nudge {{rig}}/polecats/{{polecat}} "Are you there? Please acknowledge."
 ```
 
 After 3 failed nudges, mark as stuck and escalate.
@@ -113,7 +113,7 @@ bd show {{issue}}             # Status should be 'closed'
 Nudge polecat to fix:
 ```bash
 # Use --mode=queue to avoid interrupting in-flight tool calls
-gt nudge --mode=queue {{rig}}/polecats/{{polecat}} "Verification failed: <issue>. Please fix."
+~/.local/bin/lt nudge --mode=queue {{rig}}/polecats/{{polecat}} "Verification failed: <issue>. Please fix."
 ```
 Return to working step.
 
@@ -131,7 +131,7 @@ Work verified. Send MERGE_READY to Refinery and wait.
 
 **Send merge request:**
 ```bash
-gt mail send {{rig}}/refinery -s "MERGE_READY {{polecat}}" -m "Branch: $(cd polecats/{{polecat}} && git branch --show-current)
+~/.local/bin/lt mail send {{rig}}/refinery -s "MERGE_READY {{polecat}}" -m "Branch: $(cd polecats/{{polecat}} && git branch --show-current)
 Issue: {{issue}}
 Polecat: {{polecat}}
 Verified: clean git state, issue closed"
@@ -165,7 +165,7 @@ Merge confirmed. Clean up the polecat.
 
 **1. Kill the polecat session:**
 ```bash
-gt session kill {{rig}}/polecats/{{polecat}}
+~/.local/bin/lt session kill {{rig}}/polecats/{{polecat}}
 ```
 
 **2. Remove worktree (if ephemeral):**

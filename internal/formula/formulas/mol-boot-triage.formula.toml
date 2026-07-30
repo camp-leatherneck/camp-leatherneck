@@ -30,7 +30,7 @@ Observe the current system state to inform triage decisions.
 tmux has-session -t hq-deacon 2>/dev/null && echo "alive" || echo "dead"
 
 # If alive, what's the pane output showing?
-gt peek deacon --lines 20
+~/.local/bin/lt peek deacon --lines 20
 ```
 
 **Step 2: Check agent bead state**
@@ -44,7 +44,7 @@ bd show hq-deacon 2>/dev/null
 **Step 3: Check recent activity**
 ```bash
 # Recent feed events
-gt feed --since 10m --plain | head -20
+~/.local/bin/lt feed --since 10m --plain | head -20
 
 # Recent wisps (operational state)
 ls -lt $GT_ROOT/.beads-wisp/*.wisp.json 2>/dev/null | head -5
@@ -53,7 +53,7 @@ ls -lt $GT_ROOT/.beads-wisp/*.wisp.json 2>/dev/null | head -5
 **Step 4: Check Deacon mail**
 ```bash
 # Does Deacon have unread mail?
-gt mail inbox deacon 2>/dev/null | head -10
+~/.local/bin/lt mail inbox deacon 2>/dev/null | head -10
 ```
 
 Record observations for the decide step:
@@ -101,7 +101,7 @@ Signs of working:
 
 **Output**: Record decision as one of:
 - NOTHING: Let Deacon continue
-- NUDGE: Gentle wake signal (gt nudge)
+- NUDGE: Gentle wake signal (~/.local/bin/lt nudge)
 - WAKE: Stronger wake (escape + message)
 - INTERRUPT: Force restart needed
 - START: Session is dead, start fresh
@@ -120,7 +120,7 @@ No action needed. Log observation and exit.
 **NUDGE**
 ```bash
 # Use --mode=queue to avoid interrupting in-flight tool calls
-gt nudge --mode=queue deacon "Boot check-in: you have pending work"
+~/.local/bin/lt nudge --mode=queue deacon "Boot check-in: you have pending work"
 ```
 
 **WAKE**
@@ -132,13 +132,13 @@ tmux send-keys -t hq-deacon Escape
 sleep 1
 
 # Send wake message
-gt nudge deacon "Boot wake: please check your inbox and pending work"
+~/.local/bin/lt nudge deacon "Boot wake: please check your inbox and pending work"
 ```
 
 **INTERRUPT**
 ```bash
 # This is more aggressive - signals Deacon to restart
-gt mail send deacon -s "INTERRUPT: Boot detected stuck state" \
+~/.local/bin/lt mail send deacon -s "INTERRUPT: Boot detected stuck state" \
   -m "Boot observed stuck state. Please check your context and consider handoff.
 
 Observations:
@@ -150,7 +150,7 @@ If you're making progress, please update your agent bead to reflect activity."
 **START**
 ```bash
 # Deacon is dead - start it immediately
-gt deacon start
+~/.local/bin/lt deacon start
 echo "Boot started Deacon session"
 ```
 
@@ -169,7 +169,7 @@ either processed them or crashed before seeing them.
 
 **Step 1: List Deacon inbox**
 ```bash
-gt mail inbox deacon --json 2>/dev/null
+~/.local/bin/lt mail inbox deacon --json 2>/dev/null
 ```
 
 **Step 2: Archive stale handoffs**
@@ -180,13 +180,13 @@ For each message:
 
 ```bash
 # For each stale handoff:
-gt mail archive <message-id>
+~/.local/bin/lt mail archive <message-id>
 ```
 
 **Step 3: Archive Boot's own old mail**
 Boot doesn't need persistent inbox. Archive anything processed:
 ```bash
-gt mail inbox boot --json 2>/dev/null
+~/.local/bin/lt mail inbox boot --json 2>/dev/null
 # Archive any messages older than current session
 ```
 
@@ -211,7 +211,7 @@ exit 0
 **In normal mode**
 Write brief handoff for next Boot instance:
 ```bash
-gt mail send boot -s "Boot handoff" -m "Completed triage cycle.
+~/.local/bin/lt mail send boot -s "Boot handoff" -m "Completed triage cycle.
 Action: <action taken>
 Observations: <brief summary>
 Time: $(date)"

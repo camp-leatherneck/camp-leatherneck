@@ -114,7 +114,7 @@ None
 
 **2. Signal completion to Deacon:**
 ```bash
-gt mail send deacon/ -s "DOG_DONE: backup" -m "Task: dolt-backup
+~/.local/bin/lt mail send deacon/ -s "DOG_DONE: backup" -m "Task: dolt-backup
 Synced: {{synced_count}}/{{total_count}}
 Offsite: {{offsite_status}}
 Status: COMPLETE"

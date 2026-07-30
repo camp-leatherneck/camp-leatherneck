@@ -377,7 +377,7 @@ bd close {warrant_id} --reason "Session responded at attempt {attempt}"
 
 **4. Notify requester:**
 ```bash
-gt mail send {requester}/ -s "PARDON: {target}" -m "Death warrant cancelled.
+~/.local/bin/lt mail send {requester}/ -s "PARDON: {target}" -m "Death warrant cancelled.
 Session responded after attempt {attempt}.
 Warrant: {warrant_id}
 Response detected: {timestamp}"

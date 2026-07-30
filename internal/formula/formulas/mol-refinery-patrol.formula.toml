@@ -80,7 +80,7 @@ resolve that placeholder with this rule:
 ## FORBIDDEN Actions
 
 - FORBIDDEN: Landing integration branches to the default branch via raw git commands (`git merge`, `git push`).
-  Integration branches may ONLY be landed via `gt mq integration land <epic-id>`.
+  Integration branches may ONLY be landed via `~/.local/bin/lt mq integration land <epic-id>`.
   This applies regardless of `auto_land` configuration. The pre-push hook enforces this.
 
 ## Step Execution Order
@@ -94,8 +94,8 @@ When `await-event` outputs `EFFORT: reduced`, run an ABBREVIATED patrol.
 This happens when idle_cycles >= {{idle_effort_threshold}} (no events on channel).
 
 Abbreviated patrol rules:
-- **inbox-check**: Run `gt mail drain` and quick inbox check. Skip individual message processing unless new MERGE_READY found.
-- **queue-scan**: Quick `gt mq list` check. If queue is empty, skip directly to check-integration-branches.
+- **inbox-check**: Run `~/.local/bin/lt mail drain` and quick inbox check. Skip individual message processing unless new MERGE_READY found.
+- **queue-scan**: Quick `~/.local/bin/lt mq list` check. If queue is empty, skip directly to check-integration-branches.
 - **process-branch through merge-push**: Only run if queue-scan found work. Otherwise SKIP all.
 - **loop-check through generate-summary**: SKIP if no merges were processed.
 - **check-integration-branches**: Quick check only.
@@ -195,7 +195,7 @@ bd mol wisp gc --age 1h --force
 Then check mail for MERGE_READY submissions, escalations, and messages.
 
 ```bash
-gt mail inbox
+~/.local/bin/lt mail inbox
 ```
 
 For each message:
@@ -227,21 +227,21 @@ Mark as read. The work will be processed in queue-scan/process-branch.
 **PATROL: Wake up**:
 Witness detected MRs waiting but refinery idle. Acknowledge and archive:
 ```bash
-gt mail archive <message-id>
+~/.local/bin/lt mail archive <message-id>
 ```
 
 **HELP / Blocked**:
 Assess and respond. If you can't help, escalate to Mayor.
 Archive after handling:
 ```bash
-gt mail archive <message-id>
+~/.local/bin/lt mail archive <message-id>
 ```
 
 **HANDOFF**:
 Read predecessor context. Check for in-flight merges.
 Archive after absorbing context:
 ```bash
-gt mail archive <message-id>
+~/.local/bin/lt mail archive <message-id>
 ```
 
 **Hygiene principle**: Archive messages after they're fully processed.
@@ -256,7 +256,7 @@ Check the beads merge queue - this is the SOURCE OF TRUTH for pending merges.
 
 ```bash
 git fetch --prune origin
-gt mq list <rig>
+~/.local/bin/lt mq list <rig>
 ```
 
 The beads MQ tracks all pending merge requests. Do NOT rely on `git branch -r | grep polecat`
@@ -300,7 +300,7 @@ git ls-remote --exit-code origin refs/heads/<polecat-branch>
 
 If the branch no longer exists (exit code non-zero):
 - Close the MR bead: `bd close <mr-id> --reason "Branch no longer exists"`
-- Archive the MERGE_READY mail: `gt mail archive <message-id>`
+- Archive the MERGE_READY mail: `~/.local/bin/lt mail archive <message-id>`
 - Skip to loop-check — do NOT treat as a merge failure, do NOT nudge the polecat
 
 **Step 1: Checkout and attempt rebase**
@@ -504,7 +504,7 @@ If any check or test FAILED:
    - Abort merge (clean up temp branch)
    - **Send FIX_NEEDED directly to the polecat** (event-driven lifecycle):
      ```bash
-     gt mail send <rig>/polecats/<polecat-name> -s "FIX_NEEDED <polecat-name>" --stdin <<'BODY'
+     ~/.local/bin/lt mail send <rig>/polecats/<polecat-name> -s "FIX_NEEDED <polecat-name>" --stdin <<'BODY'
      Branch: <branch>
      Issue: <issue-id>
      Polecat: <polecat-name>
@@ -612,7 +612,7 @@ if [ "$OPEN_PR" != "[]" ] && [ "$OPEN_PR" != "" ]; then
 fi
 ```
 
-If an open PR exists, pass `--skip-branch-delete` to `gt mq post-merge` in Step 3.
+If an open PR exists, pass `--skip-branch-delete` to `~/.local/bin/lt mq post-merge` in Step 3.
 The PR should be merged or closed through the GitHub API, not by branch deletion.
 
 Continue to Step 2.
@@ -682,7 +682,7 @@ gh pr checks <polecat-branch> --repo "$REPO_URL" --watch --fail-fast
 Do NOT merge. Send FIX_NEEDED back to the polecat:
 ```bash
 FAILURE_OUTPUT=$(gh pr checks <polecat-branch> --repo "$REPO_URL" 2>&1)
-gt mail send <rig>/polecats/<polecat-name> -s "FIX_NEEDED <polecat-name>" --stdin <<'BODY'
+~/.local/bin/lt mail send <rig>/polecats/<polecat-name> -s "FIX_NEEDED <polecat-name>" --stdin <<'BODY'
 Branch: <branch>
 Issue: <issue-id>
 PR: ${PR_URL}
@@ -714,7 +714,7 @@ echo "Review decision: $REVIEW_DECISION"
 
 **If CHANGES_REQUESTED:**
 ```bash
-gt mail send <rig>/polecats/<polecat-name> -s "FIX_NEEDED <polecat-name>" --stdin <<'BODY'
+~/.local/bin/lt mail send <rig>/polecats/<polecat-name> -s "FIX_NEEDED <polecat-name>" --stdin <<'BODY'
 Branch: <branch>
 Issue: <issue-id>
 PR: ${PR_URL}
@@ -747,14 +747,14 @@ RIGHT NOW, before any cleanup, send MERGED mail to Witness.
 
 **If merge_strategy = "direct":**
 ```bash
-gt mail send <rig>/witness -s "MERGED <polecat-name>" -m "Branch: <branch>
+~/.local/bin/lt mail send <rig>/witness -s "MERGED <polecat-name>" -m "Branch: <branch>
 Issue: <issue-id>
 Merged-At: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 ```
 
 **If merge_strategy = "pr":**
 ```bash
-gt mail send <rig>/witness -s "MERGED <polecat-name>" -m "Branch: <branch>
+~/.local/bin/lt mail send <rig>/witness -s "MERGED <polecat-name>" -m "Branch: <branch>
 Issue: <issue-id>
 PR: ${PR_URL}
 Merged-At: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -775,8 +775,8 @@ deleting the remote polecat branch (respects delete_merged_branches config):
 # If an open PR was detected in Step 1.6 (direct) or merge_strategy=pr,
 # pass --skip-branch-delete to avoid auto-closing the PR via head_ref_delete.
 # Otherwise, omit the flag.
-gt mq post-merge <rig> <mr-bead-id>            # normal (no open PR)
-gt mq post-merge <rig> <mr-bead-id> --skip-branch-delete  # open PR exists
+~/.local/bin/lt mq post-merge <rig> <mr-bead-id>            # normal (no open PR)
+~/.local/bin/lt mq post-merge <rig> <mr-bead-id> --skip-branch-delete  # open PR exists
 ```
 
 The MR bead ID was in the MERGE_READY message or find via:
@@ -793,7 +793,7 @@ prevents branch deletion when an open PR is detected in direct merge mode.
 
 **Step 4: Archive the MERGE_READY mail (REQUIRED)**
 ```bash
-gt mail archive <merge-ready-message-id>
+~/.local/bin/lt mail archive <merge-ready-message-id>
 ```
 The message ID was tracked when you processed inbox-check.
 
@@ -879,11 +879,11 @@ Read the two config values above, then:
   FORBIDDEN: If auto_land is false, you MUST NOT land integration branches yourself using
   raw git commands. Do not merge integration branches to the default/target branch. Do not push
   integration branch merges. The auto_land=false setting means landing requires a human
-  to run `gt mq integration land` manually. Respect this boundary unconditionally.
+  to run `~/.local/bin/lt mq integration land` manually. Respect this boundary unconditionally.
 - If BOTH are "true":
   1. `bd list --type=epic --status=open` to find epics
-  2. `gt mq integration status <epic-id>` for each epic
-  3. If `ready_to_land: true`: run `gt mq integration land <epic-id>`
+  2. `~/.local/bin/lt mq integration status <epic-id>` for each epic
+  3. If `ready_to_land: true`: run `~/.local/bin/lt mq integration land <epic-id>`
   4. If `ready_to_land: false`: do nothing, epic work is incomplete
   Never land partial epics — ALL children must be closed first."""
 
@@ -929,7 +929,7 @@ Verify inbox hygiene before ending patrol cycle.
 
 **Step 1: Check inbox state**
 ```bash
-gt mail inbox
+~/.local/bin/lt mail inbox
 ```
 
 Inbox should contain ONLY:
@@ -945,7 +945,7 @@ Look for messages that were processed but not archived:
 
 ```bash
 # For each stale message found:
-gt mail archive <message-id>
+~/.local/bin/lt mail archive <message-id>
 ```
 
 **Step 3: Check for orphaned MR beads**
@@ -992,7 +992,7 @@ This must return exactly one bead ID. If it returns zero results, STOP and repor
 Then use await-event to subscribe to the refinery event channel with exponential backoff:
 
 ```bash
-gt mol step await-event --channel refinery --agent-bead YOUR_AGENT_BEAD \
+~/.local/bin/lt mol step await-event --channel refinery --agent-bead YOUR_AGENT_BEAD \
   --backoff-base 30s --backoff-mult 2 --backoff-max 15m --cleanup
 ```
 
@@ -1011,12 +1011,12 @@ This command:
 **Supported events:**
 - `MERGE_READY` — from witness when polecat branch is pushed and ready to merge
 - `PATROL_WAKE` — from witness when MRs waiting but refinery appears idle
-- `MQ_SUBMIT` — from polecat via `gt mq submit`
+- `MQ_SUBMIT` — from polecat via `~/.local/bin/lt mq submit`
 
 **On event received** (refinery-specific activity):
 Reset the idle counter and start next patrol cycle:
 ```bash
-gt agent state YOUR_AGENT_BEAD --set idle=0
+~/.local/bin/lt agent state YOUR_AGENT_BEAD --set idle=0
 ```
 
 **On timeout** (no events):
@@ -1031,7 +1031,7 @@ After await-event returns, check the EFFORT directive in the output:
 
 **If `EFFORT: reduced`** — Run ABBREVIATED patrol:
 - inbox-check: Quick drain + check for MERGE_READY only
-- queue-scan: Quick `gt mq list`. If empty, skip to check-integration-branches
+- queue-scan: Quick `~/.local/bin/lt mq list`. If empty, skip to check-integration-branches
 - process-branch through merge-push: SKIP if queue empty
 - loop-check through generate-summary: SKIP if no merges processed
 - check-integration-branches: Quick check only
@@ -1045,26 +1045,26 @@ After await-event returns (either by event or timeout):
 1. **Re-assess session health** (check RSS, context, age again — conditions change)
 2. Close current patrol and start next cycle:
 ```bash
-gt patrol report --summary "<brief summary: branches merged, test results, queue state>"
+~/.local/bin/lt patrol report --summary "<brief summary: branches merged, test results, queue state>"
 ```
 This closes the current patrol wisp and automatically creates a new one.
 3. Continue executing from the first step of the new patrol cycle
 
 **If you decide to hand off:**
 
-Report and exit using `gt handoff` for clean session transition:
+Report and exit using `~/.local/bin/lt handoff` for clean session transition:
 
 ```bash
-gt handoff -s "Patrol complete" -m "Merged X branches, Y tests passed.
+~/.local/bin/lt handoff -s "Patrol complete" -m "Merged X branches, Y tests passed.
 Queue: empty/N remaining
 RSS: X MB, Session age: Xh
 Next: [any notes for successor]"
 ```
 
-`gt handoff` sends handoff mail to yourself, respawns with a fresh Claude instance,
-SessionStart hook runs gt prime, and your successor picks up from the hook.
+`~/.local/bin/lt handoff` sends handoff mail to yourself, respawns with a fresh Claude instance,
+SessionStart hook runs ~/.local/bin/lt prime, and your successor picks up from the hook.
 
-**DO NOT just exit.** Always use `gt handoff` for proper lifecycle.
+**DO NOT just exit.** Always use `~/.local/bin/lt handoff` for proper lifecycle.
 
 **IMPORTANT**: Never sleep-poll manually (e.g., `sleep 30 && bd list`).
-Always use `gt mol step await-event` — it's event-driven and tracks backoff state."""
+Always use `~/.local/bin/lt mol step await-event` — it's event-driven and tracks backoff state."""

@@ -10,7 +10,7 @@ Use when you need to:
 - Prepare for maintenance or upgrades
 
 Sling to Mayor when ready to reboot:
-  gt sling mol-town-shutdown mayor
+  ~/.local/bin/lt sling mol-town-shutdown mayor
 """
 formula = "mol-town-shutdown"
 type = "workflow"
@@ -23,7 +23,7 @@ description = """
 Scan for conditions that might make shutdown inadvisable.
 
 ```bash
-gt shutdown preflight
+~/.local/bin/lt shutdown preflight
 ```
 
 This checks for:
@@ -54,10 +54,10 @@ Kill Claude processes but leave polecat sandboxes intact.
 
 ```bash
 # Stop all polecat Claude sessions
-gt stop --all --preserve-sandbox
+~/.local/bin/lt stop --all --preserve-sandbox
 
 # Verify sandboxes still exist
-gt polecats --all --status
+~/.local/bin/lt polecats --all --status
 ```
 
 What this does:
@@ -85,13 +85,13 @@ Archive and clear all agent inboxes across all rigs.
 
 ```bash
 # For each rig
-for rig in $(gt rigs --names); do
-  gt mail clear $rig/witness --archive
-  gt mail clear $rig/refinery --archive
+for rig in $(~/.local/bin/lt rigs --names); do
+  ~/.local/bin/lt mail clear $rig/witness --archive
+  ~/.local/bin/lt mail clear $rig/refinery --archive
 done
 
 # Clear Mayor inbox
-gt mail clear mayor --archive
+~/.local/bin/lt mail clear mayor --archive
 ```
 
 Messages are archived to `.beads/mail-archive/` before deletion.
@@ -106,7 +106,7 @@ description = """
 Stop the Gas Town daemon gracefully.
 
 ```bash
-gt daemon stop
+~/.local/bin/lt daemon stop
 ```
 
 The daemon handles:
@@ -126,10 +126,10 @@ Rotate logs to prevent unbounded growth.
 
 ```bash
 # Rotate daemon logs
-gt daemon rotate-logs
+~/.local/bin/lt daemon rotate-logs
 
 # Clean up old session captures (but not current sandboxes)
-gt doctor --fix
+~/.local/bin/lt doctor --fix
 ```
 
 Old logs are moved to `$GT_ROOT/logs/archive/` with timestamps.
@@ -159,7 +159,7 @@ description = """
 Record shutdown context for the fresh Mayor session.
 
 ```bash
-gt mail send mayor -s "🤝 HANDOFF: Town shutdown complete" -m "
+~/.local/bin/lt mail send mayor -s "🤝 HANDOFF: Town shutdown complete" -m "
 Town shutdown completed. State preserved.
 
 Polecat sandboxes: PRESERVED (will resume from hooks)
@@ -167,9 +167,9 @@ Inboxes: ARCHIVED and cleared
 Daemon: STOPPED
 
 Next steps:
-1. gt daemon start
-2. gt prime
-3. gt status (verify health)
+1. ~/.local/bin/lt daemon start
+2. ~/.local/bin/lt prime
+3. ~/.local/bin/lt status (verify health)
 4. Resume operations or respawn polecats
 
 Shutdown reason: {{shutdown_reason}}
@@ -185,7 +185,7 @@ description = """
 Start the daemon with fresh state.
 
 ```bash
-gt daemon start
+~/.local/bin/lt daemon start
 ```
 
 The daemon will:
@@ -193,7 +193,7 @@ The daemon will:
 - Watch for pending spawns
 - Resume background coordination
 
-Polecats are NOT auto-respawned. Use `gt sling` or let Witness
+Polecats are NOT auto-respawned. Use `~/.local/bin/lt sling` or let Witness
 restart them based on their preserved hooks.
 """
 

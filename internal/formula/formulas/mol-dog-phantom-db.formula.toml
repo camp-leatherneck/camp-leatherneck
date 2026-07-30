@@ -90,7 +90,7 @@ Skip this step — nothing to escalate.
 
 **2. If phantoms were found, escalate:**
 ```bash
-gt escalate -s HIGH "Dolt: detected {{phantom_count}} phantom database(s): {{phantom_names}} — requires Dolt server restart to resolve"
+~/.local/bin/lt escalate -s HIGH "Dolt: detected {{phantom_count}} phantom database(s): {{phantom_names}} — requires Dolt server restart to resolve"
 ```
 
 Phantom databases indicate a Dolt bug (DROP DATABASE + catalog re-materialization)
@@ -127,7 +127,7 @@ None detected — .dolt-data/ is clean.
 
 **2. Signal completion to Deacon:**
 ```bash
-gt mail send deacon/ -s "DOG_DONE: phantom-db" -m "Task: phantom-db-scan
+~/.local/bin/lt mail send deacon/ -s "DOG_DONE: phantom-db" -m "Task: phantom-db-scan
 Scanned: {{scan_count}}
 Phantoms: {{phantom_count}}
 Quarantined: {{quarantined_count}}

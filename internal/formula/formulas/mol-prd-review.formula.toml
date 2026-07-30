@@ -319,7 +319,7 @@ All leg analyses from: {{.output.directory}}/
 
 **After writing the file, mail the human overseer:**
 ```bash
-gt mail send --human -s "PRD Review Complete: {{.problem}}" -m "
+~/.local/bin/lt mail send --human -s "PRD Review Complete: {{.problem}}" -m "
 Review is ready: {{.output.directory}}/prd-review.md
 
 ## Summary
