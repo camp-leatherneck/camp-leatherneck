@@ -88,14 +88,22 @@ func SyncPlugins(sourceDir, targetDir string, clean bool) (*SyncResult, error) {
 	return result, nil
 }
 
-// dirsMatch checks if two plugin directories have identical contents.
+// runtimeFiles are files generated at runtime that should not be part of the
+// plugin definition hash or overwritten by sync.
+var runtimeFiles = map[string]bool{
+	"state.json": true,
+}
+
+// dirsMatch checks if two plugin directories have identical plugin-definition contents.
+// Runtime files (state.json) are excluded from the comparison.
 func dirsMatch(src, dst string) bool {
 	srcHash := DirHash(src)
 	dstHash := DirHash(dst)
 	return srcHash != "" && srcHash == dstHash
 }
 
-// DirHash computes a content hash of all files in a directory.
+// DirHash computes a content hash of plugin definition files in a directory.
+// Runtime files (state.json) are excluded so they do not affect drift detection.
 func DirHash(dir string) string {
 	h := sha256.New()
 	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
@@ -103,6 +111,9 @@ func DirHash(dir string) string {
 			return err
 		}
 		rel, _ := filepath.Rel(dir, path)
+		if runtimeFiles[rel] {
+			return nil // skip runtime state files
+		}
 		h.Write([]byte(rel))
 		if d.IsDir() {
 			return nil
@@ -120,9 +131,18 @@ func DirHash(dir string) string {
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
-// copyDir recursively copies a directory, replacing the destination atomically.
+// copyDir recursively copies a plugin directory, replacing the destination atomically.
 // It copies to a temp directory in the same parent, then swaps via rename.
+// Runtime state files (state.json) are preserved from the old destination.
 func copyDir(src, dst string) error {
+	// Snapshot runtime state before the swap so we can restore it afterward.
+	savedRuntime := make(map[string][]byte)
+	for name := range runtimeFiles {
+		if data, err := os.ReadFile(filepath.Join(dst, name)); err == nil {
+			savedRuntime[name] = data
+		}
+	}
+
 	tmpDir, err := os.MkdirTemp(filepath.Dir(dst), ".plugin-sync-*")
 	if err != nil {
 		return fmt.Errorf("creating temp dir: %w", err)
@@ -151,7 +171,15 @@ func copyDir(src, dst string) error {
 	if err := os.RemoveAll(dst); err != nil {
 		return fmt.Errorf("removing old destination: %w", err)
 	}
-	return os.Rename(tmpDir, dst)
+	if err := os.Rename(tmpDir, dst); err != nil {
+		return err
+	}
+
+	// Restore runtime state files that should survive a plugin definition update.
+	for name, data := range savedRuntime {
+		_ = os.WriteFile(filepath.Join(dst, name), data, 0644) //nolint:gosec // G306: 0644 is intentional
+	}
+	return nil
 }
 
 func copyFile(src, dst string) error {
