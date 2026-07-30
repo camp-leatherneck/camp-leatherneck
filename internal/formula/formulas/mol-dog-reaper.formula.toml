@@ -165,13 +165,16 @@ Close open ephemeral wisps (ephemeral=1) older than 1h. These are patrol-step
 tracking wisps that should be closed when each step completes but remain open
 if the agent session restarts or stalls mid-cycle.
 
-**For each database:**
+**For each database (must specify --db=<name> — command ignores wisps without it):**
 ```bash
-~/.local/bin/lt reaper close-ephemeral --port={{dolt_port}} --ephemeral-age=1h \
+~/.local/bin/lt reaper close-ephemeral --db=<name> --port={{dolt_port}} --ephemeral-age=1h \
   {{#if dry_run}}--dry-run{{/if}}
 ```
 
-**Exit criteria:** 0 open ephemeral wisps older than 1h."""
+Run once per database from the scan list. Do NOT omit --db; without it the command
+closes 0 wisps regardless of how many are open.
+
+**Exit criteria:** 0 open ephemeral wisps older than 1h across all databases."""
 
 [[steps]]
 id = "report"
