@@ -320,6 +320,44 @@ func (d *Daemon) dispatchPlugins(mgr *dog.Manager, sm *dog.SessionManager, rigsC
 	}
 }
 
+// clearSplitBrainDogs resets dogs whose work assignment predates this daemon
+// start (hq-u49). Split-brain occurs when a prior daemon poured a molecule
+// and set a dog to StateWorking, but the daemon died before delivering the
+// hook to the dog's tmux buffer. The dog's tmux session may or may not exist;
+// either way, the molecule was never executed. Clearing the work assignment
+// returns the dog to idle so it can receive new work. The orphaned molecule
+// is left for the next reaper run to close.
+func (d *Daemon) clearSplitBrainDogs(daemonStartedAt time.Time) {
+	rigsConfig, err := d.loadRigsConfig()
+	if err != nil {
+		d.logger.Printf("clearSplitBrainDogs: failed to load rigs config: %v", err)
+		return
+	}
+
+	mgr := dog.NewManager(d.config.TownRoot, rigsConfig)
+	dogs, err := mgr.List()
+	if err != nil {
+		d.logger.Printf("clearSplitBrainDogs: failed to list dogs: %v", err)
+		return
+	}
+
+	for _, dg := range dogs {
+		if dg.State != dog.StateWorking {
+			continue
+		}
+		// WorkStartedAt zero means the field was never set — treat as stale too.
+		if !dg.WorkStartedAt.IsZero() && !dg.WorkStartedAt.Before(daemonStartedAt) {
+			continue
+		}
+		age := daemonStartedAt.Sub(dg.WorkStartedAt).Truncate(time.Second)
+		d.logger.Printf("clearSplitBrainDogs: dog %s stuck working (work: %q, assigned %v before daemon start) — resetting to idle",
+			dg.Name, dg.Work, age)
+		if err := mgr.ClearWork(dg.Name); err != nil {
+			d.logger.Printf("clearSplitBrainDogs: failed to clear work for dog %s: %v", dg.Name, err)
+		}
+	}
+}
+
 // loadRigsConfig loads the rigs configuration from mayor/rigs.json.
 func (d *Daemon) loadRigsConfig() (*config.RigsConfig, error) {
 	rigsPath := filepath.Join(d.config.TownRoot, "mayor", "rigs.json")

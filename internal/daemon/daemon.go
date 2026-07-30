@@ -423,6 +423,12 @@ func (d *Daemon) Run() (err error) {
 		d.logger.Printf("Warning: failed to save state: %v", err)
 	}
 
+	// Clear dogs whose work assignments predate this daemon start (hq-u49).
+	// These are split-brain from a prior daemon session: the prior daemon poured
+	// a molecule and marked the dog working, but the hook was never delivered.
+	// Dogs stuck in this state will not receive new work until reset.
+	d.clearSplitBrainDogs(state.StartedAt)
+
 	// Handle signals
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, daemonSignals()...)
