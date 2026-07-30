@@ -153,8 +153,13 @@ type Anomaly struct {
 const (
 	// DefaultQueryTimeout is the timeout for individual reaper SQL queries.
 	DefaultQueryTimeout = 30 * time.Second
+	// DefaultPurgeTimeout is the timeout for a full purge cycle (all batches).
+	// Larger than DefaultQueryTimeout to accommodate bulk deletes across many
+	// rows after Dolt accumulates state over days of uptime (hq-urv).
+	DefaultPurgeTimeout = 10 * time.Minute
 	// DefaultBatchSize is the number of rows per batch DELETE operation.
-	DefaultBatchSize = 100
+	// Kept small to limit per-batch lock duration and reduce timeout risk.
+	DefaultBatchSize = 50
 )
 
 // ValidateDBName returns an error if the database name is unsafe.
@@ -454,7 +459,7 @@ func Purge(db *sql.DB, dbName string, purgeAge, mailDeleteAge time.Duration, dry
 }
 
 func purgeClosedWisps(db *sql.DB, dbName string, purgeAge time.Duration, dryRun bool) (int, []Anomaly, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultPurgeTimeout)
 	defer cancel()
 
 	deleteCutoff := time.Now().UTC().Add(-purgeAge)
@@ -534,7 +539,7 @@ func purgeClosedWisps(db *sql.DB, dbName string, purgeAge time.Duration, dryRun 
 }
 
 func purgeOldMail(db *sql.DB, dbName string, mailDeleteAge time.Duration, dryRun bool) (int, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultPurgeTimeout)
 	defer cancel()
 
 	mailCutoff := time.Now().UTC().Add(-mailDeleteAge)
