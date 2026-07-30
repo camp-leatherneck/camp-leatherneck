@@ -1,16 +1,11 @@
 package plugin
 
 import (
-	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
+	"path/filepath"
 	"time"
-
-	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
-	"github.com/camp-leatherneck/camp-leatherneck/internal/constants"
 )
 
 // RunResult represents the outcome of a plugin execution.
@@ -22,7 +17,7 @@ const (
 	ResultSkipped RunResult = "skipped"
 )
 
-// PluginRunRecord represents data for creating a plugin run bead.
+// PluginRunRecord represents data for recording a plugin run.
 type PluginRunRecord struct {
 	PluginName string
 	RigName    string
@@ -30,16 +25,25 @@ type PluginRunRecord struct {
 	Body       string
 }
 
-// PluginRunBead represents a recorded plugin run from the ledger.
+// PluginRunBead represents a recorded plugin run (kept for CLI history display).
 type PluginRunBead struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
 	CreatedAt time.Time `json:"created_at"`
 	Labels    []string  `json:"labels"`
-	Result    RunResult `json:"-"` // Parsed from labels
+	Result    RunResult `json:"-"` // Populated from labels or direct assignment
 }
 
-// Recorder handles plugin run recording and querying.
+// pluginState is the on-disk format for plugin run history (state.json).
+type pluginState struct {
+	LastDispatch time.Time        `json:"last_dispatch"`
+	History      []*PluginRunBead `json:"history,omitempty"`
+}
+
+const maxHistoryEntries = 50
+
+// Recorder handles plugin run recording and cooldown gate queries.
+// State is persisted to <townRoot>/plugins/<name>/state.json — no Dolt dependency.
 type Recorder struct {
 	townRoot string
 }
@@ -49,12 +53,49 @@ func NewRecorder(townRoot string) *Recorder {
 	return &Recorder{townRoot: townRoot}
 }
 
-// RecordRun creates an ephemeral bead for a plugin run.
-// This is pure data writing - the caller decides what result to record.
-func (r *Recorder) RecordRun(record PluginRunRecord) (string, error) {
-	title := fmt.Sprintf("Plugin run: %s", record.PluginName)
+func (r *Recorder) statePath(pluginName string) string {
+	return filepath.Join(r.townRoot, "plugins", pluginName, "state.json")
+}
 
-	// Build labels
+func (r *Recorder) readState(pluginName string) (*pluginState, error) {
+	data, err := os.ReadFile(r.statePath(pluginName)) //nolint:gosec // G304: path is constructed from trusted internal values
+	if os.IsNotExist(err) {
+		return &pluginState{}, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("reading plugin state: %w", err)
+	}
+	var state pluginState
+	if err := json.Unmarshal(data, &state); err != nil {
+		// Corrupt state — treat as no history rather than erroring.
+		return &pluginState{}, nil
+	}
+	return &state, nil
+}
+
+func (r *Recorder) writeState(pluginName string, state *pluginState) error {
+	data, err := json.MarshalIndent(state, "", "  ")
+	if err != nil {
+		return fmt.Errorf("marshaling plugin state: %w", err)
+	}
+	path := r.statePath(pluginName)
+	if err := os.WriteFile(path, data, 0644); err != nil { //nolint:gosec // G306: 0644 is intentional
+		return fmt.Errorf("writing plugin state: %w", err)
+	}
+	return nil
+}
+
+// RecordRun records a plugin dispatch to state.json.
+// Returns a synthetic run ID for display purposes.
+func (r *Recorder) RecordRun(record PluginRunRecord) (string, error) {
+	state, err := r.readState(record.PluginName)
+	if err != nil {
+		return "", err
+	}
+
+	now := time.Now().UTC()
+	id := fmt.Sprintf("run-%d", now.UnixNano())
+
 	labels := []string{
 		"type:plugin-run",
 		fmt.Sprintf("plugin:%s", record.PluginName),
@@ -64,165 +105,68 @@ func (r *Recorder) RecordRun(record PluginRunRecord) (string, error) {
 		labels = append(labels, fmt.Sprintf("rig:%s", record.RigName))
 	}
 
-	// Build bd create command
-	args := []string{
-		"create",
-		"--ephemeral",
-		"--json",
-		"--title=" + title,
-	}
-	for _, label := range labels {
-		args = append(args, "-l", label)
-	}
-	if record.Body != "" {
-		args = append(args, "--description="+record.Body)
+	entry := &PluginRunBead{
+		ID:        id,
+		Title:     fmt.Sprintf("Plugin run: %s", record.PluginName),
+		CreatedAt: now,
+		Labels:    labels,
+		Result:    record.Result,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), constants.BdCommandTimeout)
-	defer cancel()
-	cmd := exec.CommandContext(ctx, "bd", args...) //nolint:gosec // G204: bd is a trusted internal tool
-	cmd.Dir = r.townRoot
-	// Set BEADS_DIR explicitly to prevent inherited env vars from causing
-	// prefix mismatches when redirects are in play.
-	cmd.Env = append(os.Environ(), "BEADS_DIR="+beads.ResolveBeadsDir(r.townRoot))
-
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-
-	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("creating plugin run bead: %s: %w", stderr.String(), err)
+	state.LastDispatch = now
+	state.History = append([]*PluginRunBead{entry}, state.History...)
+	if len(state.History) > maxHistoryEntries {
+		state.History = state.History[:maxHistoryEntries]
 	}
 
-	// Parse created bead ID from JSON output
-	var result struct {
-		ID string `json:"id"`
+	if err := r.writeState(record.PluginName, state); err != nil {
+		return "", err
 	}
-	if err := json.Unmarshal(stdout.Bytes(), &result); err != nil {
-		return "", fmt.Errorf("parsing bd create output: %w", err)
-	}
-
-	// Close the receipt immediately — it exists for audit/cooldown-gate queries
-	// (which use --all to include closed beads) but should not stay open.
-	closeCtx, closeCancel := context.WithTimeout(context.Background(), constants.BdCommandTimeout)
-	defer closeCancel()
-	closeCmd := exec.CommandContext(closeCtx, "bd", "close", result.ID, "--reason", "plugin run recorded") //nolint:gosec // G204: bd is a trusted internal tool
-	closeCmd.Dir = r.townRoot
-	closeCmd.Env = append(os.Environ(), "BEADS_DIR="+beads.ResolveBeadsDir(r.townRoot))
-	_ = closeCmd.Run() // Best-effort — reaper will catch it if this fails
-
-	return result.ID, nil
+	return id, nil
 }
 
 // GetLastRun returns the most recent run for a plugin.
 // Returns nil if no runs found.
 func (r *Recorder) GetLastRun(pluginName string) (*PluginRunBead, error) {
-	runs, err := r.queryRuns(pluginName, 1, "")
+	state, err := r.readState(pluginName)
 	if err != nil {
 		return nil, err
 	}
-	if len(runs) == 0 {
+	if len(state.History) == 0 {
 		return nil, nil
 	}
-	return runs[0], nil
+	return state.History[0], nil
 }
 
 // GetRunsSince returns all runs for a plugin since the given duration.
-// Duration format: "1h", "24h", "7d", etc.
+// Duration format: "1h", "24h", "30m", etc. Empty string returns all runs.
 func (r *Recorder) GetRunsSince(pluginName string, since string) ([]*PluginRunBead, error) {
-	return r.queryRuns(pluginName, 0, since)
-}
+	state, err := r.readState(pluginName)
+	if err != nil {
+		return nil, err
+	}
 
-// queryRuns queries plugin run beads from the ledger.
-func (r *Recorder) queryRuns(pluginName string, limit int, since string) ([]*PluginRunBead, error) {
-	args := []string{
-		"list",
-		"--json",
-		"--all", // Include closed beads too
-		"-l", "type:plugin-run",
-		"-l", fmt.Sprintf("plugin:%s", pluginName),
+	if since == "" {
+		return state.History, nil
 	}
-	if limit > 0 {
-		args = append(args, fmt.Sprintf("--limit=%d", limit))
+
+	d, err := time.ParseDuration(since)
+	if err != nil {
+		return nil, fmt.Errorf("parsing duration %q: %w", since, err)
 	}
-	if since != "" {
-		// Parse as Go duration and compute an absolute RFC3339 cutoff.
-		// bd's compact duration uses "m" for months, but plugin gate
-		// durations use Go's time.ParseDuration where "m" means minutes.
-		// Passing an absolute timestamp avoids this unit mismatch.
-		d, err := time.ParseDuration(since)
-		if err != nil {
-			return nil, fmt.Errorf("parsing duration %q: %w", since, err)
+	cutoff := time.Now().Add(-d)
+
+	var runs []*PluginRunBead
+	for _, run := range state.History {
+		if run.CreatedAt.After(cutoff) {
+			runs = append(runs, run)
 		}
-		cutoff := time.Now().Add(-d).UTC().Format(time.RFC3339)
-		args = append(args, "--created-after="+cutoff)
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), constants.BdCommandTimeout)
-	defer cancel()
-	cmd := exec.CommandContext(ctx, "bd", args...) //nolint:gosec // G204: bd is a trusted internal tool
-	cmd.Dir = r.townRoot
-	// Set BEADS_DIR explicitly to prevent inherited env vars from causing
-	// prefix mismatches when redirects are in play.
-	cmd.Env = append(os.Environ(), "BEADS_DIR="+beads.ResolveBeadsDir(r.townRoot))
-
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-
-	if err := cmd.Run(); err != nil {
-		// Empty result is OK (no runs found)
-		if stderr.Len() == 0 || stdout.String() == "[]\n" {
-			return nil, nil
-		}
-		return nil, fmt.Errorf("querying plugin runs: %s: %w", stderr.String(), err)
-	}
-
-	// Parse JSON output
-	var beads []struct {
-		ID        string   `json:"id"`
-		Title     string   `json:"title"`
-		CreatedAt string   `json:"created_at"`
-		Labels    []string `json:"labels"`
-	}
-	if err := json.Unmarshal(stdout.Bytes(), &beads); err != nil {
-		// Empty array is valid
-		if stdout.String() == "[]\n" || stdout.Len() == 0 {
-			return nil, nil
-		}
-		return nil, fmt.Errorf("parsing bd list output: %w", err)
-	}
-
-	// Convert to PluginRunBead with parsed result
-	runs := make([]*PluginRunBead, 0, len(beads))
-	for _, b := range beads {
-		run := &PluginRunBead{
-			ID:     b.ID,
-			Title:  b.Title,
-			Labels: b.Labels,
-		}
-
-		// Parse created_at
-		if t, err := time.Parse(time.RFC3339, b.CreatedAt); err == nil {
-			run.CreatedAt = t
-		}
-
-		// Extract result from labels
-		for _, label := range b.Labels {
-			if len(label) > 7 && label[:7] == "result:" {
-				run.Result = RunResult(label[7:])
-				break
-			}
-		}
-
-		runs = append(runs, run)
-	}
-
 	return runs, nil
 }
 
 // CountRunsSince returns the count of runs for a plugin since the given duration.
-// This is useful for cooldown gate evaluation.
+// Used by the cooldown gate in dispatchPlugins.
 func (r *Recorder) CountRunsSince(pluginName string, since string) (int, error) {
 	runs, err := r.GetRunsSince(pluginName, since)
 	if err != nil {
