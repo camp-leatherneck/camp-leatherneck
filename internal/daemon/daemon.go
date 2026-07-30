@@ -31,6 +31,7 @@ import (
 	"github.com/camp-leatherneck/camp-leatherneck/internal/estop"
 	"github.com/camp-leatherneck/camp-leatherneck/internal/events"
 	"github.com/camp-leatherneck/camp-leatherneck/internal/feed"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/formula"
 	gitpkg "github.com/camp-leatherneck/camp-leatherneck/internal/git"
 	"github.com/camp-leatherneck/camp-leatherneck/internal/mayor"
 	"github.com/camp-leatherneck/camp-leatherneck/internal/polecat"
@@ -395,6 +396,15 @@ func (d *Daemon) Run() (err error) {
 		for _, e := range errs {
 			d.logger.Printf("Warning: metadata repair: %v", e)
 		}
+	}
+
+	// Sync embedded formulas to .beads/formulas/ at startup (hq-2xm).
+	// Updates formulas that are outdated or missing; skips user-modified files.
+	// This prevents stale on-disk formulas from diverging from the running binary.
+	if updated, skipped, reinstalled, err := formula.UpdateFormulas(d.config.TownRoot); err != nil {
+		d.logger.Printf("Warning: formula sync failed: %v", err)
+	} else if updated+reinstalled > 0 {
+		d.logger.Printf("Formula sync: updated %d, reinstalled %d, skipped %d (user-modified)", updated, reinstalled, skipped)
 	}
 
 	// Write PID file with nonce for ownership verification
