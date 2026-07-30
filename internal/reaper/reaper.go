@@ -969,8 +969,12 @@ type CloseStaleEphemeralWispsResult struct {
 // that should be closed when their step completes. If the agent session restarts
 // or stalls, they remain open indefinitely until the 24h reaper threshold.
 // This fast-path applies a short TTL (default 1h) so they don't accumulate.
+//
+// IDs are collected upfront, then updated in batches of DefaultBatchSize to avoid
+// issuing a single oversized UPDATE (which can exceed Dolt's per-query deadline and
+// hold a table lock for 15-20 minutes, blocking all subsequent writes).
 func CloseStaleEphemeralWisps(db *sql.DB, dbName string, maxAge time.Duration, dryRun bool) (*CloseStaleEphemeralWispsResult, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), DefaultQueryTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultPurgeTimeout)
 	defer cancel()
 
 	cutoff := time.Now().UTC().Add(-maxAge)
@@ -1003,33 +1007,35 @@ func CloseStaleEphemeralWisps(db *sql.DB, dbName string, maxAge time.Duration, d
 		return result, nil
 	}
 
-	if _, err := db.ExecContext(ctx, "SET @@autocommit = 0"); err != nil {
-		return nil, fmt.Errorf("disable autocommit: %w", err)
-	}
-	defer func() {
-		_, _ = db.ExecContext(context.Background(), "SET @@autocommit = 1")
-	}()
+	// Batch UPDATEs — each batch auto-commits (autocommit=1 default), releasing the
+	// row lock immediately so concurrent writers are not blocked between batches.
+	// Partial success is acceptable: remaining open wisps will be caught on the next
+	// reaper cycle.
+	for i := 0; i < len(ids); i += DefaultBatchSize {
+		end := i + DefaultBatchSize
+		if end > len(ids) {
+			end = len(ids)
+		}
+		batch := ids[i:end]
 
-	placeholders := make([]string, len(ids))
-	args := make([]interface{}, len(ids))
-	for i, id := range ids {
-		placeholders[i] = "?"
-		args[i] = id
-	}
-	updateQuery := fmt.Sprintf(
-		"UPDATE `%s`.wisps SET status = 'closed', closed_at = NOW(), close_reason = 'reaped: stale ephemeral wisp (session restart residue)' WHERE id IN (%s)",
-		dbName, strings.Join(placeholders, ","))
-	if _, err := db.ExecContext(ctx, updateQuery, args...); err != nil {
-		return nil, fmt.Errorf("close stale ephemeral wisps: %w", err)
+		placeholders := make([]string, len(batch))
+		args := make([]interface{}, len(batch))
+		for j, id := range batch {
+			placeholders[j] = "?"
+			args[j] = id
+		}
+		updateQuery := fmt.Sprintf(
+			"UPDATE `%s`.wisps SET status = 'closed', closed_at = NOW(), close_reason = 'reaped: stale ephemeral wisp (session restart residue)' WHERE id IN (%s)",
+			dbName, strings.Join(placeholders, ","))
+		if _, err := db.ExecContext(ctx, updateQuery, args...); err != nil {
+			result.Anomalies = append(result.Anomalies, Anomaly{
+				Type:    "batch_update_failed",
+				Message: fmt.Sprintf("batch update failed (ids %d-%d): %v", i, end-1, err),
+			})
+			return result, nil
+		}
 	}
 
-	if _, err := db.ExecContext(ctx, "COMMIT"); err != nil {
-		result.Anomalies = append(result.Anomalies, Anomaly{
-			Type:    "sql_commit_failed",
-			Message: fmt.Sprintf("sql commit after ephemeral wisp close failed: %v", err),
-		})
-		return result, nil
-	}
 	commitMsg := fmt.Sprintf("reaper: close %d stale ephemeral wisps in %s", len(ids), dbName)
 	if _, err := db.ExecContext(ctx, fmt.Sprintf("CALL DOLT_COMMIT('-Am', '%s')", commitMsg)); err != nil { //nolint:gosec
 		if !isNothingToCommit(err) {
