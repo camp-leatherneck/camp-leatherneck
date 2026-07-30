@@ -972,7 +972,7 @@ func CloseStaleEphemeralWisps(db *sql.DB, dbName string, maxAge time.Duration, d
 	result := &CloseStaleEphemeralWispsResult{Database: dbName, DryRun: dryRun}
 
 	selectQuery := fmt.Sprintf(
-		"SELECT id FROM `%s`.wisps WHERE status IN ('open', 'in_progress') AND ephemeral = 1 AND created_at < ?",
+		"SELECT id FROM `%s`.wisps WHERE status IN ('open', 'hooked', 'in_progress') AND ephemeral = 1 AND created_at < ?",
 		dbName)
 
 	rows, err := db.QueryContext(ctx, selectQuery, cutoff)
