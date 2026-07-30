@@ -293,6 +293,12 @@ func (d *Daemon) dispatchPlugins(mgr *dog.Manager, sm *dog.SessionManager, rigsC
 			continue
 		}
 
+		// Brief pause before starting the session (hq-f8f): bd create returns
+		// before the new row is visible to other Dolt connections. Without this,
+		// the dog session starts immediately and queries an inbox that doesn't yet
+		// include the dispatch mail, causing spurious "no work" escalations.
+		time.Sleep(1500 * time.Millisecond)
+
 		if err := sm.Start(idleDog.Name, dog.SessionStartOptions{
 			WorkDesc: workDesc,
 		}); err != nil {
