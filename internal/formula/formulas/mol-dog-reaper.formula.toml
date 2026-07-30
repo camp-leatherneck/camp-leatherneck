@@ -36,7 +36,7 @@ issues that are not P0/P1, not epics, and have no active dependencies.
 ## Anomaly Detection
 
 The Dog should watch for and flag:
-- Dangling parent references (wisps referencing purged parents)
+- Dangling parent references (wisps referencing purged parents) — BUT see timing rule below
 - Sudden spikes in reap candidates (suggests a wisp lifecycle problem)
 - Open wisp counts exceeding alert_threshold
 - Dolt commit failures (data may not be persisted)
@@ -44,7 +44,11 @@ The Dog should watch for and flag:
 NOT anomalies (do NOT escalate these):
 - Scan/reap count mismatch (scan finds N, reap closes M < N): this is a benign
   race condition — the witness closes wisps for dead sessions concurrently.
-  This is expected behavior, not a bug."""
+  This is expected behavior, not a bug.
+- Dangling parent refs at SCAN TIME: the purge step cleans up reverse dependency
+  references, so dangling refs observed during scan self-heal by purge completion.
+  NEVER escalate dangling_parent_ref anomalies found at scan time. Record the
+  pre-purge count and verify in the report step (post-purge) before escalating."""
 formula = "mol-dog-reaper"
 version = 2
 
@@ -75,15 +79,18 @@ Or use configured database list from {{databases}} variable.
 
 **3. Inspect results for anomalies:**
 - Check the `anomalies` array in the JSON output
-- Flag any `dangling_parent_ref` anomalies — these indicate wisps with
-  parent dependency records pointing to purged/missing parents
-- If `open_wisps` exceeds {{alert_threshold}}, escalate
+- If `open_wisps` exceeds {{alert_threshold}}, escalate immediately
+- If you see `dangling_parent_ref` anomalies: **record the count per database but
+  DO NOT escalate yet.** Purge cleans reverse dependency references and these refs
+  self-heal in the same reaper cycle. Escalate only if they persist post-purge
+  (checked in the report step).
+- Any other anomaly types: use judgment to escalate if severe
 
 **4. Decide whether to proceed:**
 - If no candidates found across all databases, skip remaining steps
-- If anomalies are severe, consider escalating before proceeding
+- If non-dangling-ref anomalies are severe, consider escalating before proceeding
 
-**Exit criteria:** Scan complete, candidates identified, anomalies flagged."""
+**Exit criteria:** Scan complete, candidates identified, pre-purge dangling ref counts noted."""
 
 [[steps]]
 id = "reap"
@@ -196,12 +203,25 @@ Generate summary and signal completion.
 **Anomalies**: (list any anomalies found)
 ```
 
-**2. If anomalies were found, escalate:**
+**2. Check for persistent dangling parent references (post-purge):**
+If any database had `dangling_parent_ref` anomalies at scan time, re-scan it now
+to check whether they were resolved by purge:
 ```bash
-~/.local/bin/lt escalate "Reaper anomalies detected" -s MEDIUM -m "<anomaly details>"
+~/.local/bin/lt reaper scan --db=<name> --port={{dolt_port}} \
+  --max-age={{max_age}} --purge-age={{purge_age}} \
+  --mail-age={{mail_delete_age}} --stale-age={{stale_issue_age}} \
+  --json
+```
+- If `dangling_parent_ref` count is now 0: they self-healed — do NOT escalate
+- If `dangling_parent_ref` count is still > 0 after purge: this is a real anomaly —
+  escalate with the post-purge count
+
+**3. If real anomalies remain (non-self-healing), escalate:**
+```bash
+~/.local/bin/lt escalate "Reaper anomalies detected" -s MEDIUM -m "<anomaly details with post-purge counts>"
 ```
 
-**Exit criteria:** Report generated, anomalies escalated if any."""
+**Exit criteria:** Report generated, only persistent (post-purge) anomalies escalated."""
 
 [vars]
 [vars.max_age]
