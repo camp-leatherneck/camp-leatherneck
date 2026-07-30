@@ -134,6 +134,12 @@ type Daemon struct {
 	// Only accessed from heartbeat loop goroutine - no sync needed.
 	knownRigsCache      []string
 	knownRigsCacheValid bool
+
+	// warnedNoWispConfig tracks rigs for which the "no wisp config" warning has
+	// already been emitted this session. The warning fires once per rig at most
+	// to prevent log spam on every isRigOperational call.
+	// Only accessed from heartbeat loop goroutine - no sync needed.
+	warnedNoWispConfig map[string]bool
 }
 
 // sessionDeath records a detected session death for mass death analysis.
@@ -2040,9 +2046,17 @@ func (d *Daemon) getPatrolRigs(patrol string) []string {
 func (d *Daemon) isRigOperational(rigName string) (bool, string) {
 	cfg := wisp.NewConfig(d.config.TownRoot, rigName)
 
-	// Warn if wisp config is missing - parked/docked state may have been lost
+	// Warn once if wisp config is missing — a parked rig whose file was deleted
+	// would be treated as operational. Rate-limited to one warn per rig per session
+	// to prevent log spam on every heartbeat tick (hq-xry).
 	if _, err := os.Stat(cfg.ConfigPath()); os.IsNotExist(err) {
-		d.logger.Printf("Warning: no wisp config for %s - parked state may have been lost", rigName)
+		if d.warnedNoWispConfig == nil {
+			d.warnedNoWispConfig = make(map[string]bool)
+		}
+		if !d.warnedNoWispConfig[rigName] {
+			d.logger.Printf("Warning: no wisp config for %s - parked state may have been lost", rigName)
+			d.warnedNoWispConfig[rigName] = true
+		}
 	}
 
 	// Check wisp layer first (local/ephemeral overrides)
