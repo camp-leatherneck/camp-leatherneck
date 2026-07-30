@@ -276,7 +276,9 @@ func (d *Daemon) reapWispsInline(config *WispReaperConfig, maxAge, deleteAge tim
 		if err := reaper.ValidateDBName(dbName); err != nil {
 			continue
 		}
-		db, err := reaper.OpenDB("127.0.0.1", port, dbName, 10*time.Second, 10*time.Second)
+		// DefaultPurgeTimeout read/write so batch UPDATEs can complete without
+		// the transport timing out and leaving orphaned queries on Dolt.
+		db, err := reaper.OpenDB("127.0.0.1", port, dbName, reaper.DefaultPurgeTimeout, reaper.DefaultPurgeTimeout)
 		if err != nil {
 			continue
 		}

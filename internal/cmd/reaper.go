@@ -437,7 +437,10 @@ all databases on the Dolt server and closes in each one.`,
 				continue
 			}
 
-			db, err := reaper.OpenDB(reaperHost, reaperPort, dbName, 10*time.Second, 10*time.Second)
+			// Use DefaultPurgeTimeout as read/write timeout so individual batch UPDATEs
+			// are allowed to complete rather than timing out at the transport layer and
+			// leaving Dolt running an orphaned UPDATE that blocks subsequent writes.
+			db, err := reaper.OpenDB(reaperHost, reaperPort, dbName, reaper.DefaultPurgeTimeout, reaper.DefaultPurgeTimeout)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "%s: connect error: %v\n", dbName, err)
 				continue
