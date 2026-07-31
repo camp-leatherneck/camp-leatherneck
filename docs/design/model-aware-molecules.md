@@ -2,9 +2,23 @@
 
 > Plan for adding model-specific constraints to molecule steps with subscription-aware routing.
 
-**Status**: In Progress
+**Status**: Proposed — design only, zero corresponding code (verified 2026-07-31, see note below)
 **Owner**: Design
 **Related**: [molecules.md](../concepts/molecules.md) | [agent-provider-interface.md](agent-provider-interface.md)
+
+> **Documentation-integrity correction (2026-07-31):** §10 below previously
+> marked Phase 1 "DONE" with checked boxes for `internal/models/database.go`,
+> `router.go`, and `usage.go`. **None of these files exist.** A repo-wide
+> grep for `SelectModel`, `ModelEntry`, and `StepConstraints` across
+> `internal/` returns zero matches, and `internal/models/` is not a
+> directory in this repository. This doc's substantive content has not
+> been touched since it was written (its only commit since is a mechanical
+> brand-string sweep) — the checkboxes were aspirational or describe a
+> branch/PR that never landed, not a false claim added carelessly, but the
+> effect is the same: do not build on this as if Phase 1 exists. If you
+> want this capability, start from §10 Phase 1 as an unstarted TODO list,
+> not a foundation. See the Camp Leatherneck architectural redesign
+> (hq-lhy1) for the full audit this correction is part of.
 
 ---
 
@@ -537,13 +551,13 @@ description = "Thorough work with quality model within budget"
 
 ## 10. Implementation Phases
 
-### Phase 1: Model Database + Step Constraints (DONE)
+### Phase 1: Model Database + Step Constraints (NOT STARTED — corrected 2026-07-31, was falsely marked DONE, see note at top of file)
 
-- [x] Create `internal/models/database.go` — static benchmarks + OpenRouter pricing + TOML overrides
-- [x] Create `internal/models/router.go` — `SelectModel()` heuristic scoring
-- [x] Create `internal/models/usage.go` — local JSONL tracking; `MonthlyStats`, `EstimateCost`
-- [x] Add routing fields to `internal/formula/types.go` Step struct
-- [x] Validate new fields in `internal/formula/parser.go`
+- [ ] Create `internal/models/database.go` — static benchmarks + OpenRouter pricing + TOML overrides
+- [ ] Create `internal/models/router.go` — `SelectModel()` heuristic scoring
+- [ ] Create `internal/models/usage.go` — local JSONL tracking; `MonthlyStats`, `EstimateCost`
+- [ ] Add routing fields to `internal/formula/types.go` Step struct
+- [ ] Validate new fields in `internal/formula/parser.go`
 
 ### Phase 2: Subscription Discovery (P0)
 

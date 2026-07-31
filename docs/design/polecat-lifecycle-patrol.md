@@ -3,7 +3,7 @@
 > **Bead:** gt-t6muy
 > **Date:** 2026-02-20
 > **Author:** capable (gastown polecat)
-> **Status:** Implemented — core lifecycle shipped, branch cleanup shipped, mayor notify pending
+> **Status:** Implemented — core lifecycle shipped, branch cleanup shipped, mayor notify **shipped** (corrected 2026-07-31, hq-lhy1: was marked pending, actually shipped commit 0fbc53e9, 2026-03-10 — `internal/refinery/engineer.go` HandleMRInfoSuccess nudges mayor on every merge. This doc's own audit predates that commit by 3 days and was never updated.)
 > **Updated:** 2026-03-07 (gt-o8g8 implementation audit by bear)
 > **Related:** gt-dtw9u (Witness monitoring), gt-qpwv4 (Completion detection),
 > gt-6qyt1 (Refinery queue), gt-budeb (Auto-nuke), gt-5j3ia (Swarm aggregation),
@@ -644,7 +644,7 @@ All core lifecycle operations are implemented and running in production:
 
 | Feature | Description | Impact |
 |---------|-------------|--------|
-| Refinery notifies mayor after merge | PRs #2436/#2437 closed; branch cleanup shipped, mayor notify not yet | Unblocks dependent work dispatch |
+| Refinery notifies mayor after merge | PRs #2436/#2437 closed; branch cleanup shipped, mayor notify **shipped** (commit 0fbc53e9, 2026-03-10 — corrected 2026-07-31) | Unblocks dependent work dispatch |
 
 ### Deferred (design only)
 

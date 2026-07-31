@@ -94,16 +94,33 @@ Planned commands: `gt remote add/list` for remote registration,
 
 ## Implementation Status
 
+> **Correction (2026-07-31, hq-lhy1 documentation-integrity sweep):** three
+> items below were checked `[x]` with no supporting code. Verified: no
+> `hop://`/`beads://` parser or resolver exists anywhere in the codebase
+> (the string `hop://` appears only as an unvalidated free-text doc
+> comment in `internal/beads/beads_delegation.go` and in test fixtures) —
+> unchecked below. No code configures Dolt remotes or a `remotesapi` block
+> for any database (`grep -rn "remotesapi"` across the whole repo, all
+> file types, returns zero hits outside this file) — the "Current Setup"
+> and "Configured Remotes" sections further down describe a setup this
+> codebase does not produce; treat them as illustrative/aspirational, not
+> as what's actually running — unchecked below. Conversely, "Delegation
+> primitives" undersold reality: `internal/beads/beads_delegation.go` (177
+> lines) has a real, tested `Delegation` struct with `AddDelegation` /
+> `RemoveDelegation` / `GetDelegation` — real code, just not wired to any
+> CLI command yet, so still correctly shown unchecked but noted as
+> further along than "not started."
+
 - [x] Agent identity in git commits
 - [x] BD_ACTOR default in beads create
 - [x] Workspace metadata file (.town.json)
-- [x] Cross-workspace URI scheme (hop://, beads://, local forms)
-- [x] Dolt remotes configured (DoltHub endpoints)
-- [x] Local remotesapi enabled (port 8000)
+- [ ] Cross-workspace URI scheme (hop://, beads://, local forms) — *corrected 2026-07-31: no parser/resolver exists*
+- [ ] Dolt remotes configured (DoltHub endpoints) — *corrected 2026-07-31: no code configures this*
+- [ ] Local remotesapi enabled (port 8000) — *corrected 2026-07-31: no code produces this*
 - [ ] DoltHub authentication (`dolt login`)
 - [ ] Remote registration (gt remote add)
 - [ ] Cross-workspace queries
-- [ ] Delegation primitives
+- [ ] Delegation primitives — *struct + CRUD methods exist in internal/beads/beads_delegation.go, unwired to any command*
 
 ## Dolt Federation Configuration
 

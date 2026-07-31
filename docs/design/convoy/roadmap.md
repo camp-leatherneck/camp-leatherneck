@@ -119,12 +119,12 @@ Fixing them benefits the entire system.
 
 | # | Failure | Fixed by | Status |
 |---|---------|----------|--------|
-| 7 | Blocked tasks get slung (blocks deps ignored) | `isIssueBlocked` | PR [#1759](https://github.com/steveyegge/gastown/pull/1759) (open) |
-| 8 | Epics get slung to polecats (no type filter) | `IsSlingableType` | PR [#1759](https://github.com/steveyegge/gastown/pull/1759) (open) |
+| 7 | Blocked tasks get slung (blocks deps ignored) | `isIssueBlocked` | PR [#1759](https://github.com/steveyegge/gastown/pull/1759) (**merged** 2026-02-21, commit 738658ea — corrected 2026-07-31) |
+| 8 | Epics get slung to polecats (no type filter) | `IsSlingableType` | PR [#1759](https://github.com/steveyegge/gastown/pull/1759) (**merged** — corrected 2026-07-31) |
 | 9 | Cross-rig close events invisible to daemon | Multi-rig SDK polling | **Merged** |
 | 10 | Daemon doesn't feed next task after close | Continuation feeding | **Merged** |
 | 11 | Refinery convoy check passes wrong path (never works) | Call removed | **Merged** |
-| 12 | First dispatch failure abandons entire convoy | Dispatch failure iteration | PR [#1759](https://github.com/steveyegge/gastown/pull/1759) (open) |
+| 12 | First dispatch failure abandons entire convoy | Dispatch failure iteration | PR [#1759](https://github.com/steveyegge/gastown/pull/1759) (**merged** — corrected 2026-07-31) |
 | 13 | Stranded scan is reporting-only, doesn't auto-dispatch | `feedFirstReady` | **Merged** |
 
 ---
@@ -155,7 +155,17 @@ can't deliver if the underlying pipeline drops tasks.
 **This milestone is independent of convoy work.** It can be done in
 parallel by a different contributor, or sequenced after Milestone 0.
 
-### Milestone 2: Stage and launch (`gt convoy stage`, `gt convoy launch`)
+### Milestone 2: Stage and launch (`gt convoy stage`, `gt convoy launch`) — **SHIPPED**
+
+> **Correction (2026-07-31, hq-lhy1 documentation-integrity sweep):** this
+> milestone is implemented, not planned. `internal/cmd/convoy_stage.go` and
+> `internal/cmd/convoy_launch.go` implement `gt convoy stage`/`gt convoy
+> launch` in full — DAG walking, wave computation via Kahn's algorithm,
+> `staged_ready`/`staged_warnings` transitions, Wave 1 dispatch — matching
+> the "What ships" list below almost line for line. `git log
+> --diff-filter=A` dates these files to 2026-02-20. This doc was never
+> updated after the milestone shipped. Read the code, not this section,
+> for current behavior.
 
 **Goal:** Enable the `/design-to-beads → gt convoy stage → gt convoy
 launch` workflow.
@@ -267,7 +277,17 @@ dispatch strategy (Phase 1 feeder with blocks checking) covers the
 common case. The coordinator polecat is for complex epics where
 AI-driven task selection outperforms static dependency ordering.
 
-### Milestone 5: Mountain-Eater (autonomous epic grinding)
+### Milestone 5: Mountain-Eater (autonomous epic grinding) — **SHIPPED**
+
+> **Correction (2026-07-31, hq-lhy1 documentation-integrity sweep):** this
+> milestone is implemented, not the furthest-out unplanned work. `gt
+> mountain <epic>` (status/pause/resume/cancel) exists in
+> `internal/cmd/mountain.go`, and `internal/witness/mountain.go`
+> implements the failure-tracking auto-skip-after-3 behavior this section
+> describes. `git log --diff-filter=A` dates this to 2026-03-13 — the same
+> day as this doc's own last edit, roughly an hour later. The doc was
+> never updated after. Read the code, not this section, for current
+> behavior.
 
 **Goal:** Layer agent-driven judgment on top of the mechanical
 ConvoyManager so that large epics grind to completion autonomously.
@@ -359,7 +379,7 @@ more reliable.
 
 ## Summary: what to do next
 
-1. **Now:** Get PR [#1759](https://github.com/steveyegge/gastown/pull/1759) (feeder safety guards) reviewed and merged to
+1. ~~**Now:** Get PR [#1759](https://github.com/steveyegge/gastown/pull/1759) (feeder safety guards) reviewed and merged to~~ **DONE — PR #1759 merged 2026-02-21 (commit 738658ea). Correction applied 2026-07-31 (hq-lhy1) — this doc had not been updated since.**
    complete Milestone 0.
 
 2. **Next:** Start Milestone 1 (pipeline reliability) and/or Milestone 2

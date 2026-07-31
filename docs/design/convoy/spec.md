@@ -2,7 +2,7 @@
 
 > Daemon-resident event-driven completion and stranded convoy recovery.
 
-**Status**: Implementation complete (all stories DONE)
+**Status**: Implemented — S-01 through S-18 done as stated (daemon/ConvoyManager subsystem verified against code), **except S-05 below, which is inaccurate** (verified 2026-07-31 as part of the Camp Leatherneck architectural redesign, hq-lhy1)
 **Owner**: Daemon subsystem
 **Related**: [convoy-lifecycle.md](convoy-lifecycle.md) | [convoy-manager.md](../daemon/convoy-manager.md)
 
@@ -196,9 +196,24 @@ notification hooks. Removed when daemon gained multi-rig event polling.
 
 ---
 
-### S-05: Refinery integration [REMOVED]
+### S-05: Refinery integration [INCORRECT — see 2026-07-31 correction]
 
-**Description**: Refinery convoy observer removed. The daemon event poll (5s)
+> **Correction (2026-07-31, hq-lhy1 documentation-integrity sweep):** this
+> section's "[REMOVED]" claim is false. `internal/refinery/engineer.go`
+> currently has an extensive, active convoy integration —
+> `postMergeConvoyCheck`, `checkAndCloseCompletedConvoys`,
+> `notifyDeaconConvoyFeeding`, `landConvoySwarm` (40+ convoy references in
+> that file). `git log -S "postMergeConvoyCheck"` shows this code existed
+> since 2026-02-20, *before* this doc's own last substantive edit
+> (2026-02-28) — the claim was already wrong when written, not just later
+> drift. What was actually removed/never built as a *dedicated observer*
+> is a standalone refinery-side convoy-check loop separate from its normal
+> merge-completion path; the refinery's own merge flow has always driven
+> convoy completion. Do not treat this section as ground truth — read
+> `internal/refinery/engineer.go` directly if you need the current state.
+
+**Description** *(original text, now known partially inaccurate — kept for
+history)*: Refinery convoy observer removed. The daemon event poll (5s)
 and witness observer provide sufficient coverage. The refinery observer was
 silently broken (S-17: wrong root path) for the entire feature lifetime with
 no visible impact, confirming the other two observers are sufficient. Since
@@ -207,7 +222,8 @@ beads unavailability disables the entire town (not just convoy checks), the
 
 **History**: Originally called `CheckConvoysForIssueWithAutoStore` after merge.
 S-17 found it passed rig path instead of town root. S-18 fixed it. Subsequently
-removed as unnecessary redundancy.
+removed as unnecessary redundancy — but see correction above: convoy
+integration remains live in the refinery's merge-completion path.
 
 ---
 

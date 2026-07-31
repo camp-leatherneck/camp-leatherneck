@@ -3,7 +3,17 @@
 > **Bead:** gt-0wkk
 > **Date:** 2026-02-28
 > **Author:** rictus (gastown polecat)
-> **Status:** Design proposal
+> **Status:** Partial — Phases 1 and 2 shipped (bead gt-1qlg), Phase 3 (removing
+> `DiscoverCompletions`) not done. Corrected 2026-07-31 (hq-lhy1
+> documentation-integrity sweep) — this was still marked "Design proposal"
+> despite `internal/cmd/done.go` (comment citing this doc's Phase 2 by
+> name) and `internal/witness/handlers.go` (`DiscoverCompletions` is now
+> explicitly a crash-recovery safety net per its own doc comment, matching
+> §3 "What the Witness Still Does" below almost verbatim) both confirming
+> Phase 1+2 are live. `DiscoverCompletions`/`processDiscoveredCompletion`
+> still exist and are still called from `internal/cmd/patrol_scan.go` —
+> Phase 3's planned removal has not happened; treat this doc's "current
+> flow" framing as describing the pre-Phase-2 past, not today.
 > **Related:** gt-4ac (persistent polecat model), gt-a6gp (nudge-over-mail),
 > gt-6a9d (nuke safety), gt-w0br (bead-based discovery)
 
