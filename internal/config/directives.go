@@ -42,6 +42,14 @@ func roleToFileName(role string) string {
 // content is returned. Returns empty string if no directive files exist.
 //
 // Invalid or unreadable paths are treated as absent (no error).
+//
+// Front-matter (a leading TOML block delimited by "+++" lines, used to carry
+// roster metadata — see internal/roster) is stripped before the content is
+// returned. Per the Architecture Certification C3 ruling: front-matter must
+// be invisible to the agent reading this directive, not merely non-crashing.
+// A directive with no front-matter is returned byte-identical to how it was
+// before front-matter existed as a concept — stripFrontMatter is a no-op
+// when the leading "+++" marker isn't present.
 func LoadRoleDirective(role, townRoot, rigName string) string {
 	var parts []string
 
@@ -50,7 +58,7 @@ func LoadRoleDirective(role, townRoot, rigName string) string {
 	// HQ-level directive
 	townPath := filepath.Join(townRoot, "directives", fileName+".md")
 	if content, err := os.ReadFile(townPath); err == nil { //nolint:gosec // G304: path is from trusted config
-		if s := strings.TrimSpace(string(content)); s != "" {
+		if s := strings.TrimSpace(stripFrontMatter(string(content))); s != "" {
 			parts = append(parts, s)
 		}
 	}
@@ -59,11 +67,67 @@ func LoadRoleDirective(role, townRoot, rigName string) string {
 	if rigName != "" {
 		rigPath := filepath.Join(townRoot, rigName, "directives", fileName+".md")
 		if content, err := os.ReadFile(rigPath); err == nil { //nolint:gosec // G304: path is from trusted config
-			if s := strings.TrimSpace(string(content)); s != "" {
+			if s := strings.TrimSpace(stripFrontMatter(string(content))); s != "" {
 				parts = append(parts, s)
 			}
 		}
 	}
 
 	return strings.Join(parts, "\n")
+}
+
+// frontMatterDelim is the delimiter line for the TOML front-matter block
+// this package recognizes. Matches the convention already used by plugin.md
+// files elsewhere in this repo (e.g. plugins/*/plugin.md).
+const frontMatterDelim = "+++"
+
+// stripFrontMatter removes a leading "+++\n...\n+++" TOML front-matter
+// block from directive content, if present. Content with no front-matter
+// is returned completely unchanged — this is what makes front-matter
+// optional and backward-compatible: a directive written before front-matter
+// existed, or one an operator chooses never to add it to, behaves exactly
+// as it always did.
+//
+// Malformed front-matter (an opening "+++" with no matching close) is
+// treated as absent rather than eating the rest of the file — a directive
+// that happens to start a line with "+++" for some other reason (e.g. a
+// markdown horizontal-rule-like flourish) degrades to "front-matter not
+// found," not silent content loss.
+func stripFrontMatter(content string) string {
+	trimmedLeading := strings.TrimLeft(content, "\r\n\t ")
+	if !strings.HasPrefix(trimmedLeading, frontMatterDelim) {
+		return content
+	}
+	afterOpen := trimmedLeading[len(frontMatterDelim):]
+	// The rest of the opening delimiter's line must be empty (allow
+	// trailing whitespace) — "+++" must be alone on its line, not e.g.
+	// "+++foo" or a markdown "***" divider that happens to share a prefix.
+	newlineIdx := strings.IndexByte(afterOpen, '\n')
+	if newlineIdx == -1 {
+		return content
+	}
+	restOfOpenLine := strings.TrimRight(afterOpen[:newlineIdx], "\r \t")
+	if restOfOpenLine != "" {
+		return content
+	}
+	afterOpenLine := afterOpen[newlineIdx+1:]
+
+	closeIdx := strings.Index(afterOpenLine, "\n"+frontMatterDelim)
+	var closeMarkerLen int
+	if strings.HasPrefix(afterOpenLine, frontMatterDelim) {
+		// Front-matter block with zero content lines: "+++\n+++\nbody".
+		closeIdx = 0
+		closeMarkerLen = len(frontMatterDelim)
+	} else if closeIdx == -1 {
+		return content // no closing delimiter found — treat as no front-matter
+	} else {
+		closeMarkerLen = 1 + len(frontMatterDelim) // the leading "\n" plus "+++"
+	}
+
+	afterClose := afterOpenLine[closeIdx+closeMarkerLen:]
+	// Consume the rest of the closing delimiter's line too.
+	if nl := strings.IndexByte(afterClose, '\n'); nl != -1 {
+		return afterClose[nl+1:]
+	}
+	return ""
 }

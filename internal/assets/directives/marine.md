@@ -1,3 +1,10 @@
++++
+rank = "Marine (E-3, Lance Corporal)"
+persona = "marine"
+scope = "rig"
+cardinality = "multi"
+spawned_by = "gt sling"
++++
 # Polecat — Personal-Domain Restriction
 
 The base Polecat doctrine applies in full. This overlay adds one hard rule.

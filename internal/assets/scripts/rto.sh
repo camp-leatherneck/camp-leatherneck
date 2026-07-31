@@ -7,7 +7,7 @@
 # or callable directly: bash ~/gt/scripts/rto.sh
 #
 # RTO persona: see ~/gt/directives/rto.md
-# Roster: ~/Desktop/camp_leatherneck_roster.csv
+# Roster: lt roster (generated on demand — see Constitution §6)
 
 set -u  # not -e — we want the script to always produce a sitrep, even on partial failure
 
@@ -120,7 +120,7 @@ fi
     echo "---"
     echo "Last update: ${TS}  |  Next auto-refresh: ${NEXT_TS}"
     echo "Source: \`~/gt/scripts/rto.sh\` (RTO — see \`~/gt/directives/rto.md\`)"
-    echo "Roster: \`~/Desktop/camp_leatherneck_roster.csv\`"
+    echo "Roster: \`lt roster\` (generated on demand)"
 } > "$TMP_FILE"
 
 # Atomic swap — sitrep never appears half-written
