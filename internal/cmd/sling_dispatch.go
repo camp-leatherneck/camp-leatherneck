@@ -131,6 +131,14 @@ func executeSling(params SlingParams) (*SlingResult, error) {
 		return result, fmt.Errorf("could not get bead info: %w", err)
 	}
 
+	// PHI containment gate. Unconditional — runs before any --force/--agent
+	// override logic, and before any bead content reaches a spawned agent
+	// session. See phi_guard.go and internal/phi.
+	if err := phiGuardForBead(townRoot, info); err != nil {
+		result.ErrMsg = err.Error()
+		return result, err
+	}
+
 	// Guard against dispatching closed/tombstone beads (defense-in-depth).
 	// Not bypassed by --force — if you need to re-dispatch, reopen the bead first.
 	if info.Status == "closed" || info.Status == "tombstone" {

@@ -572,6 +572,13 @@ func runSling(cmd *cobra.Command, args []string) (retErr error) {
 		return fmt.Errorf("checking bead status: %w", err)
 	}
 
+	// PHI containment gate. Unconditional — runs before any --force/--agent
+	// override logic, and before any bead content reaches a spawned agent
+	// session. See phi_guard.go and internal/phi.
+	if err := phiGuardForBead(townRoot, info); err != nil {
+		return err
+	}
+
 	// Guard against slinging beads with flag-like titles (gt-e0kx5).
 	// These are garbage beads created by flag-parsing bugs. Slinging them
 	// causes dispatch loops where polecats bounce the work.
