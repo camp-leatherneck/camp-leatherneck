@@ -19,6 +19,21 @@ have). The CLI is renamed at the Makefile level (`BINARY := lt`), not
 aliased. A dedicated Homebrew tap, independent `CHANGELOG.md`/`README.md`,
 an install script, and an npm package directory already exist.
 
+> **Correction, 2026-07-31 (later same day).** The `HEAD..upstream/main` = 0
+> figure above was measured against a local `upstream/main` ref with no
+> confirmed fresh fetch in that session — a fail-open method, and the result
+> was false. A fresh, timestamped fetch (`2026-07-31T21:47:10Z`, cross-checked
+> live via `git ls-remote upstream main`) showed main 777 commits and 1,177
+> files behind. This does not change the Decision below: the relevant
+> property for a deliberately divergent downstream distribution is
+> **demonstrated mergeability**, not commit-distance parity, and mergeability
+> was separately verified the same session by scratch merge (138 of 1,177
+> differing files conflicted, all small and localized, rename detection
+> intact, `main` unchanged afterward). See
+> `CAMP_LEATHERNECK_ARCHITECTURE_CERTIFICATION.md`'s Amendment for full
+> evidence, and `hq-35iwf` (bd) for the tracked workstream to actually close
+> the 777-commit gap — a separate effort from this decision.
+
 ## Decision
 
 Camp Leatherneck is a **productized downstream distribution of Gastown**:

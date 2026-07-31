@@ -199,16 +199,40 @@ function call added to `doctor.go`, not a refactor).
 **Cadence:** fetch and merge `upstream/main` on a regular schedule
 (monthly minimum, opportunistically sooner for a notable upstream fix).
 Because the product layer never touches upstream paths, this stays a
-fast, low-conflict operation — parity was exact (0 commits behind) as of
-2026-07-31. Letting it lapse for months converts a cheap habit into an
-expensive project.
+low-conflict operation relative to the size of the gap — but **it is not
+free, and letting it lapse makes it worse, not neutral.**
+
+**Corrected 2026-07-31 (later same day):** this section previously claimed
+"parity was exact (0 commits behind) as of 2026-07-31." That was measured
+against a local `upstream/main` ref with no confirmed fresh fetch in that
+session — fail-open, and false. A fresh, timestamped fetch the same day
+(cross-checked live via `git ls-remote upstream main`) showed main **777
+commits and 1,177 files behind**. A scratch merge against that real gap
+conflicted in 138 of those 1,177 files — small, localized conflicts,
+**not** confined to README/NOTICE/display strings as the example below used
+to claim; near-upstream files with a product-layer seam (e.g. files touched
+per the "smallest possible seam" rule above) can and did conflict too, at a
+scale still fully reviewable by hand. See
+`CAMP_LEATHERNECK_ARCHITECTURE_CERTIFICATION.md`'s Amendment for full
+evidence. This cadence now has an owner and a tracked trigger — `hq-35iwf`
+(bd), assigned to Joey — rather than being a sentence with no mechanism
+behind it.
+
+**⚠️ Any `git rev-list --count HEAD..upstream/main`-style count is invalid
+evidence unless `git fetch upstream` ran in the same session immediately
+before it, and the observation is recorded with a timestamp.** An unfetched
+or undated count is not a measurement — it reads identically to a real one
+and cannot be told apart from it after the fact, which is exactly how the
+false "0 commits behind" claim above got repeated as fact.
 
 ```bash
 git fetch upstream
+# Verify freshness before trusting anything downstream of this fetch:
+#   git rev-parse upstream/main  must equal  git ls-remote upstream main
 git merge upstream/main
-# Expect conflicts, if any, only in README.md, NOTICE, embedded directive
-# templates, or other display-string overrides — never in near-upstream
-# engine code.
+# Conflicts are expected to be small and reviewable, not necessarily
+# confined to README/NOTICE/display strings — a large gap can surface
+# conflicts anywhere a product-layer seam sits near upstream churn.
 ```
 
 ## Questions?
