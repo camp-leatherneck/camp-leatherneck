@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/camp-leatherneck/camp-leatherneck/internal/doctor"
+	"github.com/camp-leatherneck/camp-leatherneck/internal/provenance"
 	"github.com/camp-leatherneck/camp-leatherneck/internal/workspace"
 )
 
@@ -156,6 +157,13 @@ func runDoctor(cmd *cobra.Command, args []string) error {
 	d.RegisterAll(doctor.WorkspaceChecks()...)
 
 	d.Register(doctor.NewGlobalStateCheck())
+
+	// Provenance: launchd declared program == running daemon == PATH lt ==
+	// known commit (Constitution §7 / C2). Logic lives entirely in
+	// internal/provenance — this is the full footprint here, per the
+	// certification ruling to keep this near-upstream file untouched
+	// beyond a minimal registration line.
+	d.Register(provenance.NewCheck())
 
 	// Disk space check — most fundamental resource check. Low disk space is the
 	// root cause of cascading failures (Dolt data loss, polecat death, lost commits).

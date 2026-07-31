@@ -1,8 +1,72 @@
 package version
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 )
+
+// TestGetRepoRoot_FindsCampLeatherneckSourceRoot is the regression test for
+// a real bug found 2026-07-31 (LT_IMPLEMENTATION_CONTRACT.md Phase 3 item
+// 8): GetRepoRoot's candidate list never included ~/camp-leatherneck, the
+// actual canonical source root — only legacy ~/gt/gastown-style paths. This
+// meant `lt stale` (and the rebuild-gt plugin, which depends on it) could
+// only succeed by accident, when run from inside the source repo and
+// falling through to the CWD git-toplevel fallback.
+func TestGetRepoRoot_FindsCampLeatherneckSourceRoot(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	t.Setenv("GT_ROOT", "") // isolate from a real GT_ROOT in the test environment
+
+	srcDir := filepath.Join(home, "camp-leatherneck", "cmd", "lt")
+	if err := os.MkdirAll(srcDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(srcDir, "main.go"), []byte("package main\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := GetRepoRoot()
+	if err != nil {
+		t.Fatalf("GetRepoRoot() error = %v, want to find %s", err, filepath.Join(home, "camp-leatherneck"))
+	}
+	want := filepath.Join(home, "camp-leatherneck")
+	if got != want {
+		t.Errorf("GetRepoRoot() = %q, want %q", got, want)
+	}
+}
+
+// TestGetRepoRoot_PrefersCampLeatherneckOverLegacyPath proves the new
+// candidate is checked first when both exist, matching the Constitution's
+// "canonical source root" framing rather than treating it as just another
+// equally-weighted fallback.
+func TestGetRepoRoot_PrefersCampLeatherneckOverLegacyPath(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	t.Setenv("GT_ROOT", "")
+
+	for _, rel := range []string{
+		filepath.Join("camp-leatherneck", "cmd", "lt"),
+		filepath.Join("gt", "gastown", "cmd", "lt"),
+	} {
+		dir := filepath.Join(home, rel)
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(dir, "main.go"), []byte("package main\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	got, err := GetRepoRoot()
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := filepath.Join(home, "camp-leatherneck")
+	if got != want {
+		t.Errorf("GetRepoRoot() = %q, want %q (camp-leatherneck should win over the legacy gt/gastown path)", got, want)
+	}
+}
 
 func TestShortCommit(t *testing.T) {
 	tests := []struct {

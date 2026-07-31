@@ -150,13 +150,26 @@ func CheckStaleBinary(repoDir string) *StaleBinaryInfo {
 }
 
 // GetRepoRoot returns the git repository root for the lt source code.
-// The canonical source is the gastown repo itself ($GT_ROOT/gastown).
-// Crew rigs also contain cmd/lt/main.go but have different HEADs,
-// so we prefer the gastown repo over CWD-based git toplevel detection.
+//
+// Per CAMP_LEATHERNECK_ARCHITECTURE_CONSTITUTION.md §2, the canonical source
+// root is ~/camp-leatherneck — checked first, since it's the ratified,
+// current location. The gastown-named candidates below it are pre-rename
+// legacy paths (~/gt/gastown, ~/gastown, ~/src/gastown and their
+// mayor/rig subdirectories) kept only as harmless fallbacks for machines
+// that haven't migrated; they cost nothing to check and this function
+// already tries several candidates in sequence.
+//
+// Found during the Camp Leatherneck topology normalization (2026-07-31,
+// LT_IMPLEMENTATION_CONTRACT.md Phase 3 item 8): this function never
+// included ~/camp-leatherneck at all, so `lt stale` (and the rebuild-gt
+// plugin, which depends on it) could only ever succeed by accident, when
+// invoked from inside the source repo itself and falling through to the
+// CWD-based git-toplevel check at the bottom of this function.
 func GetRepoRoot() (string, error) {
 	// Check if GT_ROOT environment variable is set (agents always have this)
 	if gtRoot := os.Getenv("GT_ROOT"); gtRoot != "" {
 		candidates := []string{
+			gtRoot + "/camp-leatherneck",
 			gtRoot + "/gastown",
 			gtRoot + "/gastown/mayor/rig",
 		}
@@ -171,6 +184,7 @@ func GetRepoRoot() (string, error) {
 	home := os.Getenv("HOME")
 	if home != "" {
 		candidates := []string{
+			home + "/camp-leatherneck",
 			home + "/gt/gastown",
 			home + "/gt/gastown/mayor/rig",
 			home + "/gastown",

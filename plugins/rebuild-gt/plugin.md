@@ -35,7 +35,7 @@ The Deacon evaluates this before dispatch. If gate closed, skip.
 Check binary staleness:
 
 ```bash
-gt stale --json
+lt stale --json
 ```
 
 Parse the JSON output and check these fields:
@@ -58,7 +58,7 @@ bd create --wisp-type patrol \
 Before building, verify the source repo is clean and on main:
 
 ```bash
-cd ~/gt/gastown/mayor/rig
+cd ~/camp-leatherneck
 git status --porcelain  # Must be clean
 git branch --show-current  # Must be "main"
 ```
@@ -67,10 +67,10 @@ If either check fails, skip the rebuild and record a wisp.
 
 ## Action
 
-Rebuild from source (the mayor/rig directory is the canonical source):
+Rebuild from source (~/camp-leatherneck is the sole canonical source root):
 
 ```bash
-cd ~/gt/gastown/mayor/rig && make build && make safe-install
+cd ~/camp-leatherneck && make build && make safe-install
 ```
 
 **IMPORTANT**: Use `make safe-install` (not `make install`) to avoid restarting
@@ -94,7 +94,7 @@ bd create --wisp-type patrol \
   --description "Build failed: $ERROR" \
   "Plugin: rebuild-gt [failure]"
 
-gt escalate --severity=medium \
+lt escalate --severity=medium \
   --subject="Plugin FAILED: rebuild-gt" \
   --body="$ERROR" \
   --source="plugin:rebuild-gt"
