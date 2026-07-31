@@ -44,9 +44,9 @@ type BinaryInfo struct {
 // somewhere else on PATH — the exact hazard class that let Homebrew
 // gastown silently contend with this build for the name "gt".
 type ShadowBinary struct {
-	Name       string
-	Path       string
-	SHA256     string
+	Name             string
+	Path             string
+	SHA256           string
 	MatchesCanonical bool
 }
 
@@ -73,21 +73,21 @@ type DaemonInfo struct {
 
 // LaunchdJob describes one com.campleatherneck.* LaunchAgent.
 type LaunchdJob struct {
-	Label            string
-	PlistPath        string
-	PlistExists      bool
-	DeclaredProgram  string
-	ProgramExists    bool // does the file at DeclaredProgram actually exist
-	Loaded           bool // present in `launchctl list`
-	LastExitStatus   string
-	StatusError      string
+	Label           string
+	PlistPath       string
+	PlistExists     bool
+	DeclaredProgram string
+	ProgramExists   bool // does the file at DeclaredProgram actually exist
+	Loaded          bool // present in `launchctl list`
+	LastExitStatus  string
+	StatusError     string
 }
 
 // RoleDirectiveStatus is the resolution result for one role.
 type RoleDirectiveStatus struct {
-	Role         string
-	FileName     string
-	Present      bool
+	Role          string
+	FileName      string
+	Present       bool
 	DirectiveLess bool // true for roles like "dog"/"crew" that have no directive by design (C4)
 }
 
@@ -103,13 +103,14 @@ type Report struct {
 	TownRoot    string
 	SourceRoot  string
 
-	Binaries  []BinaryInfo   // canonical lt (and gt, if present) as resolved via PATH
-	Shadows   []ShadowBinary // additional lt/gt found elsewhere on PATH
-	Source    SourceInfo
-	Daemon    DaemonInfo
-	Launchd   []LaunchdJob
+	Binaries   []BinaryInfo   // canonical lt (and gt, if present) as resolved via PATH
+	Shadows    []ShadowBinary // additional lt/gt found elsewhere on PATH
+	Source     SourceInfo
+	Upstream   UpstreamInfo // freshness of the source repo's upstream remote-tracking ref
+	Daemon     DaemonInfo
+	Launchd    []LaunchdJob
 	Directives []RoleDirectiveStatus
-	Roster    []RosterFinding
+	Roster     []RosterFinding
 }
 
 // sha256File returns the hex-encoded sha256 of the file at path.

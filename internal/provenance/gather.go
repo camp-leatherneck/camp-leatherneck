@@ -23,6 +23,7 @@ func Gather(townRoot, sourceRoot string, allRoles []string) *Report {
 		}
 	}
 	r.Source = GatherSource(sourceRoot, ltCommit)
+	r.Upstream = GatherUpstream(sourceRoot, UpstreamRemoteName, UpstreamBranchName, UpstreamStaleAfter)
 	r.Daemon = GatherDaemon(ltRealPath)
 	r.Launchd = GatherLaunchd()
 	r.Directives = GatherDirectives(townRoot, allRoles)
@@ -88,6 +89,8 @@ func (r *Report) Warnings() []string {
 	if r.Source.Error == "" && !r.Source.WorkingTreeClean {
 		w = append(w, "source working tree at "+r.SourceRoot+" is not clean")
 	}
+
+	w = append(w, r.upstreamWarnings()...)
 
 	for _, j := range r.Launchd {
 		if j.ProgramExists && !j.Loaded {

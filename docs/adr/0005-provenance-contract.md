@@ -37,8 +37,11 @@ real path, sha256, embedded version/commit/build-time), shadowing (any
 `lt`/`gt` elsewhere on `PATH`, flagged only when its content differs from
 canonical — the exact check that would have caught the Homebrew `gastown`
 hazard in ADR 0003 before it became a live incident), source (commit
-ancestry and working-tree cleanliness against the actual repo), daemon
-(running, executable matches PATH binary), launchd (every
+ancestry and working-tree cleanliness against the actual repo), upstream
+(remote-tracking ref freshness for the source repo's configured upstream
+remote, added by ADR 0006 — never fetches, and never reports a
+commit-distance figure against a ref whose freshness is unknown or expired),
+daemon (running, executable matches PATH binary), launchd (every
 `com.campleatherneck.*` job, declared program exists, loaded state),
 directives (every role resolves per ADR 0004, with `dog`/`crew` correctly
 treated as directive-less by design rather than flagged missing), and
@@ -57,7 +60,10 @@ never been tested.
 
 - Any future provenance-relevant addition (a new launchd job, a new role,
   a new binary alias) should extend `internal/provenance`, not create a
-  fifth health command or a second lookup path.
+  fifth health command or a second lookup path. ADR 0006's upstream
+  remote-reference freshness dimension is this pattern already exercised:
+  zero further edits to `doctor.go`, the whole check added inside
+  `internal/provenance`.
 - `status`/`vitals`/`health` remain operational dashboards and are not
   extended for provenance reporting — `doctor` is the diagnostic surface.
 - The RTO and daemon-plist failures this ADR responds to are structurally

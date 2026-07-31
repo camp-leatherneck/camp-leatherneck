@@ -235,6 +235,22 @@ git merge upstream/main
 # conflicts anywhere a product-layer seam sits near upstream churn.
 ```
 
+**Added 2026-07-31 (later same day): `lt doctor` now checks this itself.**
+The certification Amendment above recorded, as one of four governance gaps
+this defect exposed, that "`lt doctor` does not verify remote-reference
+freshness" and that any future check "must fail closed ... or it reproduces
+exactly this defect in code instead of in a document." That gap is closed —
+see [`docs/adr/0006-upstream-freshness-check.md`](docs/adr/0006-upstream-freshness-check.md).
+`lt doctor` now reports whether `upstream/main`'s local ref is fresh, stale
+(older than this section's monthly-minimum cadence), never fetched, or
+missing entirely, and — the actual point of the control — it never emits a
+commit-distance number for any ref it can't first confirm is fresh. It
+still never fetches on its own; the warning it prints includes the exact
+`git fetch` command to run before trusting any distance claim again. This
+does not replace `hq-35iwf` (the tracked effort to actually close the
+777-commit gap) — it only makes it impossible for a stale ref to look like
+parity again.
+
 ## Questions?
 
 Open an issue for questions about contributing. We're happy to help!

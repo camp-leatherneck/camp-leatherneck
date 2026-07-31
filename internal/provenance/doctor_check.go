@@ -36,7 +36,7 @@ func NewCheck() *Check {
 	return &Check{
 		BaseCheck: doctor.BaseCheck{
 			CheckName:        "provenance",
-			CheckDescription: "Verify launchd declared program == running daemon == PATH lt == known commit (Constitution §7)",
+			CheckDescription: "Verify launchd declared program == running daemon == PATH lt == known commit, and upstream ref freshness (Constitution §7, ADR 0006)",
 			CheckCategory:    doctor.CategoryCore,
 		},
 	}
