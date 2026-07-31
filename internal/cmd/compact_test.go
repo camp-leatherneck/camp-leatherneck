@@ -1,11 +1,38 @@
 package cmd
 
 import (
+	"os"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/camp-leatherneck/camp-leatherneck/internal/beads"
 )
+
+// TestCleanOrphanedWispDepsQuery_CoversIssueParent is a regression guard for
+// the 2026-07-31 dangling-parent-ref fix (reaper anomaly report: 3171
+// dangling-parent wisps in hq). The original query only cleaned
+// wisp_dependencies rows whose parent was a missing *wisp* — never checked
+// the case where the parent is a missing *issue*, which is exactly what the
+// reaper's own anomaly-detection query (internal/reaper/reaper.go) has
+// always checked. A source-text check rather than a live-DB integration
+// test: cleanOrphanedWispDeps shells out via bd.Run("sql", ...), so a full
+// functional test needs a real initialized beads dir; this at least proves
+// the fix is present and catches a future narrowing of the query.
+func TestCleanOrphanedWispDepsQuery_CoversIssueParent(t *testing.T) {
+	data, err := os.ReadFile("compact.go")
+	if err != nil {
+		t.Fatalf("reading compact.go: %v", err)
+	}
+	src := string(data)
+	if !strings.Contains(src, "depends_on_issue_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM issues WHERE id = wisp_dependencies.depends_on_issue_id)") {
+		t.Fatal("cleanOrphanedWispDeps no longer checks for a missing parent issue — " +
+			"this reintroduces the dangling-parent-ref bug the reaper flagged 2026-07-31")
+	}
+	if !strings.Contains(src, "depends_on_wisp_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM wisps WHERE id = wisp_dependencies.depends_on_wisp_id)") {
+		t.Fatal("cleanOrphanedWispDeps no longer checks for a missing parent wisp")
+	}
+}
 
 func TestGetTTL(t *testing.T) {
 	ttls := defaultTTLs
