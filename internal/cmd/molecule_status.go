@@ -407,25 +407,13 @@ func runMoleculeStatus(cmd *cobra.Command, args []string) error {
 
 		// Query for hooked beads using the authoritative source: bead status + assignee.
 		// First try status=hooked (work that's been slung but not yet claimed)
-		hookedBeads, err := b.List(beads.ListOptions{
-			Status:   beads.StatusHooked,
-			Assignee: target,
-			Priority: -1,
-		})
-		if err != nil {
-			return nil
-		}
+		hookedBeads := listByAssigneeAnyForm(b, beads.StatusHooked, target)
 
 		// If no hooked beads found, also check in_progress beads assigned to this agent.
 		// This handles the case where work was claimed (status changed to in_progress)
 		// but the session was interrupted before completion. The hook should persist.
 		if len(hookedBeads) == 0 {
-			inProgressBeads, _ := b.List(beads.ListOptions{
-				Status:   "in_progress",
-				Assignee: target,
-				Priority: -1,
-			})
-			hookedBeads = inProgressBeads
+			hookedBeads = listByAssigneeAnyForm(b, "in_progress", target)
 		}
 
 		// For town-level roles (mayor, deacon), scan all rigs if nothing found locally
@@ -439,17 +427,9 @@ func runMoleculeStatus(cmd *cobra.Command, args []string) error {
 		// See: https://github.com/camp-leatherneck/camp-leatherneck/issues/1438
 		if len(hookedBeads) == 0 && !isTownLevelRole(target) && townRoot != "" {
 			townB := beads.New(filepath.Join(townRoot, ".beads"))
-			if townHooked, err := townB.List(beads.ListOptions{
-				Status:   beads.StatusHooked,
-				Assignee: target,
-				Priority: -1,
-			}); err == nil && len(townHooked) > 0 {
+			if townHooked := listByAssigneeAnyForm(townB, beads.StatusHooked, target); len(townHooked) > 0 {
 				hookedBeads = townHooked
-			} else if townInProgress, err := townB.List(beads.ListOptions{
-				Status:   "in_progress",
-				Assignee: target,
-				Priority: -1,
-			}); err == nil && len(townInProgress) > 0 {
+			} else if townInProgress := listByAssigneeAnyForm(townB, "in_progress", target); len(townInProgress) > 0 {
 				hookedBeads = townInProgress
 			}
 		}
@@ -1177,6 +1157,42 @@ func isTownLevelRole(agentID string) bool {
 		agentID == "deacon/boot" || agentID == "deacon-boot"
 }
 
+// assigneeIdentityVariants returns every persisted string form an agent's
+// bd Assignee field may use for target. Mayor and deacon are written
+// inconsistently across code paths: resolveSelfTarget (self-attach, e.g.
+// bare 'lt hook <bead-id>') persists a trailing slash ("mayor/", "deacon/"),
+// while the named-target sling path (session.AgentIdentity.Address(), e.g.
+// 'lt sling <bead> deacon') persists no slash ("mayor", "deacon"). An
+// Assignee query for only one form silently misses beads written via the
+// other path. See hq-kllvf.
+func assigneeIdentityVariants(target string) []string {
+	switch target {
+	case "mayor", "mayor/":
+		return []string{"mayor", "mayor/"}
+	case "deacon", "deacon/":
+		return []string{"deacon", "deacon/"}
+	default:
+		return []string{target}
+	}
+}
+
+// listByAssigneeAnyForm queries b for issues with the given status, trying
+// every persisted assignee-string variant of target (see
+// assigneeIdentityVariants) and returning the first non-empty match.
+func listByAssigneeAnyForm(b *beads.Beads, status, target string) []*beads.Issue {
+	for _, variant := range assigneeIdentityVariants(target) {
+		issues, err := b.List(beads.ListOptions{
+			Status:   status,
+			Assignee: variant,
+			Priority: -1,
+		})
+		if err == nil && len(issues) > 0 {
+			return issues
+		}
+	}
+	return nil
+}
+
 // extractMailSender extracts the sender from mail bead labels.
 // Mail beads have a "from:X" label containing the sender address.
 func extractMailSender(labels []string) string {
@@ -1215,30 +1231,12 @@ func scanAllRigsForHookedBeads(townRoot, target string) []*beads.Issue {
 
 		b := beads.New(rigBeadsDir)
 		// First check for hooked beads
-		hookedBeads, err := b.List(beads.ListOptions{
-			Status:   beads.StatusHooked,
-			Assignee: target,
-			Priority: -1,
-		})
-		if err != nil {
-			continue
-		}
-
-		if len(hookedBeads) > 0 {
+		if hookedBeads := listByAssigneeAnyForm(b, beads.StatusHooked, target); len(hookedBeads) > 0 {
 			return hookedBeads
 		}
 
 		// Also check for in_progress beads (work that was claimed but session interrupted)
-		inProgressBeads, err := b.List(beads.ListOptions{
-			Status:   "in_progress",
-			Assignee: target,
-			Priority: -1,
-		})
-		if err != nil {
-			continue
-		}
-
-		if len(inProgressBeads) > 0 {
+		if inProgressBeads := listByAssigneeAnyForm(b, "in_progress", target); len(inProgressBeads) > 0 {
 			return inProgressBeads
 		}
 	}

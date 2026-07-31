@@ -411,8 +411,11 @@ func runHook(_ *cobra.Command, args []string) error {
 		fmt.Printf("%s Work attached to hook (hooked bead)\n", style.Bold.Render("✓"))
 	}
 
-	// Update agent bead's hook_bead field (matches lt sling behavior)
-	// This ensures lt hook / lt mol status can find hooked work via the agent bead
+	// updateAgentHookBead is a no-op (hq-l6mm5): the agent bead's hook_bead
+	// field is not maintained. lt hook / lt mol status find hooked work by
+	// querying bead status+assignee directly (see lookupHookedWork), not via
+	// this field. Kept only so any external caller passing this signature
+	// doesn't break.
 	updateAgentHookBead(agentID, beadID, workDir, townBeadsDir)
 
 	if targetAgent != "" {
