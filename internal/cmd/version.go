@@ -1,8 +1,14 @@
 package cmd
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"io"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"runtime/debug"
 	"strings"
@@ -23,10 +29,34 @@ var (
 	// BuiltProperly is set to "1" by `make build`. If empty, the binary was built
 	// with raw `go build` and is likely unsigned (will be killed on macOS).
 	BuiltProperly = ""
+	// BuildTime is set by `make build`'s ldflags (BUILD_TIME := date -u ...).
+	// Was previously targeted by the Makefile's -X flag but never declared here,
+	// so every build silently discarded it — found and fixed as part of the
+	// Camp Leatherneck topology normalization (LT_IMPLEMENTATION_CONTRACT.md
+	// Phase 2 item 6: `lt version --json` must report build time).
+	BuildTime = ""
 )
 
 var versionVerbose bool
 var versionShort bool
+var versionJSON bool
+
+// versionInfo is the provenance record `lt version --json` emits.
+// Required by LT_IMPLEMENTATION_CONTRACT.md Phase 2 item 6, and consumed
+// as one input into `lt doctor`'s provenance report (Phase 3 / C2) —
+// added here, in the existing version command, rather than as a new
+// command surface.
+type versionInfo struct {
+	Version     string `json:"version"`
+	Commit      string `json:"commit"`
+	Branch      string `json:"branch,omitempty"`
+	Build       string `json:"build"`
+	Dirty       bool   `json:"dirty"`
+	BuildTime   string `json:"build_time,omitempty"`
+	InstallPath string `json:"install_path"`
+	SHA256      string `json:"sha256,omitempty"`
+	GoVersion   string `json:"go_version"`
+}
 
 var versionCmd = &cobra.Command{
 	Use:         "version",
@@ -36,8 +66,17 @@ var versionCmd = &cobra.Command{
 	Long: `Print the lt version, build type, git branch, and commit hash.
 
 Output includes the semantic version, whether this is a dev or release build,
-and the git revision the binary was built from (if available).`,
+and the git revision the binary was built from (if available).
+
+--json emits full provenance: commit, dirty flag, build time, the real path
+of the running executable, and its sha256 — the data lt doctor uses to
+answer "is this the binary I think it is?".`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if versionJSON {
+			runVersionJSON()
+			return
+		}
+
 		if versionShort {
 			fmt.Printf("%s-%s\n", Version, Build)
 			return
@@ -61,10 +100,58 @@ and the git revision the binary was built from (if available).`,
 	},
 }
 
+func runVersionJSON() {
+	info := buildVersionInfo()
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	_ = enc.Encode(info)
+}
+
+// buildVersionInfo is the pure (no I/O to stdout) half of `lt version --json`,
+// separated out so it's testable without capturing process stdout.
+func buildVersionInfo() versionInfo {
+	info := versionInfo{
+		Version:   Version,
+		Commit:    resolveCommitHash(),
+		Branch:    resolveBranch(),
+		Build:     Build,
+		Dirty:     strings.Contains(Version, "-dirty"),
+		BuildTime: BuildTime,
+		GoVersion: runtime.Version(),
+	}
+
+	if exe, err := os.Executable(); err == nil {
+		if resolved, err := filepath.EvalSymlinks(exe); err == nil {
+			info.InstallPath = resolved
+		} else {
+			info.InstallPath = exe
+		}
+		if sum, err := sha256File(info.InstallPath); err == nil {
+			info.SHA256 = sum
+		}
+	}
+
+	return info
+}
+
+func sha256File(path string) (string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+	h := sha256.New()
+	if _, err := io.Copy(h, f); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(h.Sum(nil)), nil
+}
+
 func init() {
 	rootCmd.AddCommand(versionCmd)
 	versionCmd.Flags().BoolVarP(&versionVerbose, "verbose", "v", false, "Show extended version info including timestamp")
 	versionCmd.Flags().BoolVar(&versionShort, "short", false, "Output only the version number (e.g., 0.5.0-362)")
+	versionCmd.Flags().BoolVar(&versionJSON, "json", false, "Output full provenance as JSON: commit, dirty flag, build time, install path, sha256")
 
 	// Pass the build-time commit to the version package for stale binary checks
 	if Commit != "" {
