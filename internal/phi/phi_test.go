@@ -82,6 +82,18 @@ func TestClassify_ExplicitNone_NoSignals_Allows(t *testing.T) {
 	}
 }
 
+func TestClassify_MetaDiscussionOfPHIPolicy_DoesNotFalsePositive(t *testing.T) {
+	// Regression: caught live 2026-07-31 during Phase 4 smoke testing. A
+	// bare "phi" keyword in the old default policy matched this exact
+	// title and incorrectly classified routine governance/testing work
+	// about the PHI guard itself as phi_system_related.
+	item := WorkItem{Title: "TEST: PHI guard live smoke test — safe to delete"}
+	d := Classify(item, DefaultPolicy())
+	if d.Classification != NonPHI || !d.Allowed {
+		t.Fatalf("got %+v, want allowed NonPHI — meta-discussion of PHI policy is not PHI-bearing work", d)
+	}
+}
+
 func TestClassify_NoLabelsNoSignals_DefaultsToAllowedNonPHI(t *testing.T) {
 	// The overwhelming majority of ordinary engineering beads carry no
 	// phi:* label at all. This must not block, or the guard becomes

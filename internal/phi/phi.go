@@ -108,9 +108,18 @@ func DefaultPolicy() Policy {
 		SensitiveKeywords: []string{
 			"open dental", "opendental", "od adapter", "ehr adapter",
 			"patient record", "patient data", "patient chart",
-			"protected health information", "phi ", "hipaa",
+			"protected health information", "hipaa",
 			"divergent", "dental intelligence",
 		},
+		// Deliberately NOT included: a bare "phi" keyword. It's too broad —
+		// it fires on any meta-discussion of PHI policy itself (governance
+		// docs, ADRs, code review of this very package, this test suite),
+		// which is not PHI-bearing work and would make routine governance
+		// work about PHI trigger the guard it's describing. Caught live
+		// during Phase 4 smoke testing (2026-07-31): a bead titled "...PHI
+		// guard..." false-positived. The more specific keywords above
+		// (hipaa, protected health information, patient record, etc.)
+		// carry the same signal with far less noise.
 		SensitivePathIndicators: []string{
 			"open_dental_client", "adapters/ehr", "/patients", "/patient/",
 			"audit_logs", "portal/images", "portal_images",
