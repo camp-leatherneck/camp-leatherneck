@@ -95,14 +95,34 @@ install: check-up-to-date build
 	@mkdir -p $(INSTALL_DIR)
 	@rm -f $(INSTALL_DIR)/$(BINARY)
 	@cp $(BUILD_DIR)/$(BINARY) $(INSTALL_DIR)/$(BINARY)
+	@# gt is a generated deprecation shim on the same binary — never a
+	@# hand-maintained copy, so it cannot drift from lt. See internal/cli
+	@# IsInvokedAsGT / internal/cmd Execute() for the argv[0] detection.
+	@ln -sf $(INSTALL_DIR)/$(BINARY) $(INSTALL_DIR)/gt
 	@# Nuke any stale go-install binaries that shadow the canonical location
-	@for bad in $(HOME)/go/bin/$(BINARY) $(HOME)/bin/$(BINARY); do \
+	@for bad in $(HOME)/go/bin/$(BINARY) $(HOME)/bin/$(BINARY) $(HOME)/go/bin/gt $(HOME)/bin/gt; do \
 		if [ -f "$$bad" ]; then \
 			echo "Removing stale $$bad (use make install, not go install)"; \
 			rm -f "$$bad"; \
 		fi; \
 	done
-	@echo "Installed $(BINARY) to $(INSTALL_DIR)/$(BINARY)"
+	@# Warn (do not silently delete) on a foreign lt/gt in /opt/homebrew/bin —
+	@# a Homebrew-managed file there should be removed via `brew`, not `rm`,
+	@# or Homebrew's own bookkeeping goes stale. This is the check that
+	@# catches "two products fighting over the name gt" (Homebrew gastown vs
+	@# this build) instead of silently coexisting with it.
+	@for name in lt gt; do \
+		f="/opt/homebrew/bin/$$name"; \
+		if [ -e "$$f" ] || [ -L "$$f" ]; then \
+			resolved=$$(readlink -f "$$f" 2>/dev/null || greadlink -f "$$f" 2>/dev/null || echo ""); \
+			if [ "$$resolved" != "$(INSTALL_DIR)/$(BINARY)" ]; then \
+				echo "WARNING: /opt/homebrew/bin/$$name does not resolve to $(INSTALL_DIR)/$(BINARY) (resolves to: $${resolved:-unresolvable})"; \
+				echo "  This is a shadowing binary. If it is a Homebrew formula (e.g. upstream gastown),"; \
+				echo "  remove it with 'brew uninstall <formula>', not manual deletion."; \
+			fi; \
+		fi; \
+	done
+	@echo "Installed $(BINARY) to $(INSTALL_DIR)/$(BINARY) (gt -> same binary)"
 	@# Restart daemon so it picks up the new binary.
 	@# A stale daemon is a recurring source of bugs (wrong session prefixes, etc.)
 	@if $(INSTALL_DIR)/$(BINARY) daemon status >/dev/null 2>&1; then \
@@ -126,14 +146,25 @@ safe-install: check-up-to-date check-forward-only build
 	@# Atomic-ish replace: copy to temp then move (move is atomic on same filesystem)
 	@cp $(BUILD_DIR)/$(BINARY) $(INSTALL_DIR)/$(BINARY).new
 	@mv $(INSTALL_DIR)/$(BINARY).new $(INSTALL_DIR)/$(BINARY)
+	@# gt is a generated deprecation shim on the same binary — see install target.
+	@ln -sf $(INSTALL_DIR)/$(BINARY) $(INSTALL_DIR)/gt
 	@# Nuke any stale go-install binaries that shadow the canonical location
-	@for bad in $(HOME)/go/bin/$(BINARY) $(HOME)/bin/$(BINARY); do \
+	@for bad in $(HOME)/go/bin/$(BINARY) $(HOME)/bin/$(BINARY) $(HOME)/go/bin/gt $(HOME)/bin/gt; do \
 		if [ -f "$$bad" ]; then \
 			echo "Removing stale $$bad (use make install, not go install)"; \
 			rm -f "$$bad"; \
 		fi; \
 	done
-	@echo "Installed $(BINARY) to $(INSTALL_DIR)/$(BINARY) (daemon NOT restarted)"
+	@for name in lt gt; do \
+		f="/opt/homebrew/bin/$$name"; \
+		if [ -e "$$f" ] || [ -L "$$f" ]; then \
+			resolved=$$(readlink -f "$$f" 2>/dev/null || greadlink -f "$$f" 2>/dev/null || echo ""); \
+			if [ "$$resolved" != "$(INSTALL_DIR)/$(BINARY)" ]; then \
+				echo "WARNING: /opt/homebrew/bin/$$name does not resolve to $(INSTALL_DIR)/$(BINARY) (resolves to: $${resolved:-unresolvable})"; \
+			fi; \
+		fi; \
+	done
+	@echo "Installed $(BINARY) to $(INSTALL_DIR)/$(BINARY) (gt -> same binary; daemon NOT restarted)"
 	@echo "Sessions will pick up new binary on next cycle."
 
 # check-version-tag: Verify that if HEAD is tagged vX.Y.Z, the Version constant

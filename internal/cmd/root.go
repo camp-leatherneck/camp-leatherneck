@@ -287,9 +287,19 @@ func checkStaleBinaryWarning() {
 	}
 }
 
+// gtDeprecationNotice is printed once, to stderr only, when the binary is
+// invoked via its "gt" shim name. Must never touch stdout — plugins and
+// scripts parse --json output from it (see gt rig list --json, gt escalate,
+// etc.), and a stdout deprecation line would corrupt that.
+const gtDeprecationNotice = "gt: deprecated name for lt (same binary, same commit) — use `lt` going forward\n"
+
 // Execute runs the root command and returns an exit code.
 // The caller (main) should call os.Exit with this code.
 func Execute() int {
+	if cli.IsInvokedAsGT() {
+		fmt.Fprint(os.Stderr, gtDeprecationNotice)
+	}
+
 	ctx := context.Background()
 	provider, err := telemetry.Init(ctx, "gastown", Version)
 	if err != nil {
