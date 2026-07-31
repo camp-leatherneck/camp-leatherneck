@@ -508,6 +508,20 @@ func runHookShow(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("listing hooked beads: %w", err)
 	}
 
+	// Also check wisps table — runSlingFormula creates ephemeral wisps when
+	// dispatching formulas without a base bead (e.g. lt sling mol-dog-reaper deacon/dogs).
+	// The issues-table query above misses these. (hq-n1wd)
+	if len(hookedBeads) == 0 {
+		if hookedWisps, wErr := b.List(beads.ListOptions{
+			Ephemeral: true,
+			Status:    beads.StatusHooked,
+			Assignee:  target,
+			Priority:  -1,
+		}); wErr == nil && len(hookedWisps) > 0 {
+			hookedBeads = hookedWisps
+		}
+	}
+
 	// If nothing found in local beads, also check town beads for hooked convoys.
 	// Convoys (hq-cv-*) are stored in town beads (~/gt/.beads) and any agent
 	// can hook them for convoy-driver mode.

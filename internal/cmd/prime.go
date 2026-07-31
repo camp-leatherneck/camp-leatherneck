@@ -744,6 +744,20 @@ func findAgentWorkOnce(ctx RoleContext, agentID string) (*beads.Issue, error) {
 		return nil, fmt.Errorf("querying hooked beads: %w", err)
 	}
 
+	// Also check wisps table — runSlingFormula creates ephemeral wisps when dispatching
+	// formulas without a base bead (e.g. lt sling mol-dog-reaper deacon/dogs). The
+	// issues-table query above misses these. (hq-n1wd)
+	if len(hookedBeads) == 0 {
+		if hookedWisps, wErr := b.List(beads.ListOptions{
+			Ephemeral: true,
+			Status:    beads.StatusHooked,
+			Assignee:  agentID,
+			Priority:  -1,
+		}); wErr == nil && len(hookedWisps) > 0 {
+			hookedBeads = hookedWisps
+		}
+	}
+
 	// Fall back to in_progress beads (session interrupted before completion)
 	if len(hookedBeads) == 0 {
 		inProgressBeads, err := b.List(beads.ListOptions{
