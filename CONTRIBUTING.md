@@ -165,6 +165,52 @@ for the full workflow. One guardrail to know about:
   of [#3459](https://github.com/steveyegge/gastown/issues/3459). Run it locally
   after bumping if you want to catch drift before pushing the tag.
 
+## Camp Leatherneck: Upstream Merge Policy
+
+This repository is `camp-leatherneck/camp-leatherneck`, a productized
+downstream distribution of this project (`steveyegge/gastown` is the
+`upstream` remote) — see
+[`docs/adr/0001-productized-downstream-distribution.md`](docs/adr/0001-productized-downstream-distribution.md)
+and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full reasoning.
+This section records the policy that keeps upstream merges cheap, per
+[`CAMP_LEATHERNECK_ARCHITECTURE_CONSTITUTION.md`](../ai-powerhouse/projects/camp-leatherneck/architecture/CAMP_LEATHERNECK_ARCHITECTURE_CONSTITUTION.md) §8
+(governing document, not part of this repo).
+
+**Near-upstream — minimize divergence, merge freely, never rename:**
+`internal/polecat/`, beads/molecules machinery, `internal/dolt/`, mail,
+worktree and merge flow, daemon, hooks, patrols/dogs,
+`cmd/gt-proxy-server`, `cmd/gt-proxy-client`, and files like
+`internal/cmd/doctor.go` that upstream actively maintains.
+
+**Intentionally divergent — the product layer:** `cmd/lt/`,
+`internal/config/directives.go`, `internal/assets/` (directive templates,
+scripts), `internal/phi/`, `internal/provenance/`, `internal/roster/`,
+routing/runtime config, `README`, `CHANGELOG`, `docs/`, `Makefile`
+naming, the Homebrew tap, `install.sh`.
+
+**The rule that keeps merges cheap:** no file renames, package renames, or
+symbol renames in near-upstream areas — ever. Renames are the dominant
+cause of merge conflict, because git must re-detect the mapping on every
+subsequent merge. New product-layer logic goes in new files; a
+near-upstream file that needs product-layer behavior gets the smallest
+possible seam (see ADR 0005 for a worked example — one import and one
+function call added to `doctor.go`, not a refactor).
+
+**Cadence:** fetch and merge `upstream/main` on a regular schedule
+(monthly minimum, opportunistically sooner for a notable upstream fix).
+Because the product layer never touches upstream paths, this stays a
+fast, low-conflict operation — parity was exact (0 commits behind) as of
+2026-07-31. Letting it lapse for months converts a cheap habit into an
+expensive project.
+
+```bash
+git fetch upstream
+git merge upstream/main
+# Expect conflicts, if any, only in README.md, NOTICE, embedded directive
+# templates, or other display-string overrides — never in near-upstream
+# engine code.
+```
+
 ## Questions?
 
 Open an issue for questions about contributing. We're happy to help!
