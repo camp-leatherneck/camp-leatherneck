@@ -1,19 +1,19 @@
 #!/bin/bash
 # rto.sh — RTO (Radio Telephone Operator) sitrep generator
-# Part of the Camp Leatherneck Marine overlay.
+# Part of the Camp Leatherneck Marine overlay on Gastown.
 # Regenerates ~/Desktop/sitrep.md from town state.
 #
 # Scheduled via launchd (~/Library/LaunchAgents/com.campleatherneck.rto.plist)
-# or callable directly: bash ~/lt/scripts/rto.sh
+# or callable directly: bash ~/gt/scripts/rto.sh
 #
-# RTO persona: see ~/lt/directives/rto.md
+# RTO persona: see ~/gt/directives/rto.md
 # Roster: ~/Desktop/camp_leatherneck_roster.csv
 
 set -u  # not -e — we want the script to always produce a sitrep, even on partial failure
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$HOME/go/bin:$PATH"
 
-SITREP_FILE="$HOME/Desktop/sitrep.md"
+SITREP_FILE="$HOME/gt/sitrep.md"
 TMP_FILE="$(mktemp -t sitrep)"
 TS="$(date '+%Y-%m-%d %H:%M')"
 NEXT_TS="$(date -v+2M '+%H:%M' 2>/dev/null || date -d '+2 minutes' '+%H:%M' 2>/dev/null || echo "auto")"
@@ -119,7 +119,7 @@ fi
 
     echo "---"
     echo "Last update: ${TS}  |  Next auto-refresh: ${NEXT_TS}"
-    echo "Source: \`~/lt/scripts/rto.sh\` (RTO — see \`~/lt/directives/rto.md\`)"
+    echo "Source: \`~/gt/scripts/rto.sh\` (RTO — see \`~/gt/directives/rto.md\`)"
     echo "Roster: \`~/Desktop/camp_leatherneck_roster.csv\`"
 } > "$TMP_FILE"
 
