@@ -1288,7 +1288,12 @@ func (c *DefaultBranchExistsCheck) Run(ctx *CheckContext) *CheckResult {
 	}
 
 	ref := fmt.Sprintf("refs/remotes/origin/%s", cfg.DefaultBranch)
-	cmd := exec.Command("git", "-C", bareRepoPath, "rev-parse", "--verify", ref)
+	// --git-dir, not -C: bare repos under safe.bareRepository=explicit (git's
+	// CVE-2022-39253 mitigation) reject `-C <bare-repo>` outright, regardless
+	// of whether the ref exists, which reads identically to "ref not found"
+	// unless the exit is inspected. See internal/git/git.go's configureRefspec
+	// for the same --git-dir convention already used elsewhere in this codebase.
+	cmd := exec.Command("git", "--git-dir", bareRepoPath, "rev-parse", "--verify", ref)
 	if err := cmd.Run(); err != nil {
 		return &CheckResult{
 			Name:    c.Name(),
@@ -1374,7 +1379,8 @@ func (c *DefaultBranchAllRigsCheck) Run(ctx *CheckContext) *CheckResult {
 		}
 
 		ref := fmt.Sprintf("refs/remotes/origin/%s", cfg.DefaultBranch)
-		cmd := exec.Command("git", "-C", bareRepoPath, "rev-parse", "--verify", ref)
+		// --git-dir, not -C: see the identical fix + comment in DefaultBranchExistsCheck above.
+		cmd := exec.Command("git", "--git-dir", bareRepoPath, "rev-parse", "--verify", ref)
 		if err := cmd.Run(); err != nil {
 			errors = append(errors, fmt.Sprintf("%s: default_branch %q not found on remote", entry.Name(), cfg.DefaultBranch))
 		}

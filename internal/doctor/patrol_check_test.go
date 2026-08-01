@@ -335,6 +335,39 @@ func TestCheckStuckWispsDolt_ErrorOnMissingBd(t *testing.T) {
 	}
 }
 
+// TestCheckStuckWispsDolt_StderrWarningDoesNotCorruptCSV is the direct
+// regression test for a real production failure: `bd sql --csv` writes
+// advisory warnings (e.g. ".beads has permissions 0755, recommended 0700")
+// to stderr. checkStuckWispsDolt previously used CombinedOutput(), which
+// interleaves that warning line ahead of the CSV header — csv.Reader locks
+// its expected field count to the first record, so a 1-field warning line
+// followed by a 4-field header made every record fail to parse, surfacing
+// as "csv parse: record on line 2: wrong number of fields" with zero wisps
+// actually stuck. checkStuckWispsDolt must succeed cleanly regardless of
+// what bd writes to stderr.
+func TestCheckStuckWispsDolt_StderrWarningDoesNotCorruptCSV(t *testing.T) {
+	binDir := t.TempDir()
+	script := `#!/bin/sh
+echo 'Warning: .beads has permissions 0755 (recommended: 0700). Run: chmod 700 .beads' >&2
+echo 'id,title,status,updated_at'
+exit 0
+`
+	if err := os.WriteFile(filepath.Join(binDir, "bd"), []byte(script), 0755); err != nil {
+		t.Fatalf("write mock bd: %v", err)
+	}
+	t.Setenv("PATH", binDir+string(os.PathListSeparator)+os.Getenv("PATH"))
+
+	rigDir := t.TempDir()
+	check := NewPatrolNotStuckCheck()
+	wisps, err := check.checkStuckWispsDolt(rigDir, "testrig")
+	if err != nil {
+		t.Fatalf("expected stderr-only warning to be ignored, got error: %v", err)
+	}
+	if len(wisps) != 0 {
+		t.Errorf("expected no stuck wisps (header-only CSV), got %v", wisps)
+	}
+}
+
 func TestPatrolNotStuckCheck_Run_DoltFailureReportsError(t *testing.T) {
 	// When Dolt fails for a rig, the check should report the error in details
 	// rather than silently returning OK.

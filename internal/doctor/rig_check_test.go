@@ -2,6 +2,7 @@ package doctor
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -508,6 +509,96 @@ func TestDefaultBranchExistsCheck_NotFixable(t *testing.T) {
 	check := NewDefaultBranchExistsCheck()
 	if check.CanFix() {
 		t.Error("DefaultBranchExistsCheck should not be fixable")
+	}
+}
+
+// runGitOrFatal runs git in dir, failing the test on error.
+func runGitOrFatal(t *testing.T, dir string, args ...string) string {
+	t.Helper()
+	cmd := exec.Command("git", args...)
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(),
+		"GIT_AUTHOR_NAME=test", "GIT_AUTHOR_EMAIL=test@test",
+		"GIT_COMMITTER_NAME=test", "GIT_COMMITTER_EMAIL=test@test",
+	)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("git %v: %v\n%s", args, err, out)
+	}
+	return strings.TrimSpace(string(out))
+}
+
+// TestDefaultBranchExistsCheck_SafeBareRepositoryExplicit_StillFindsRef is the
+// direct regression test for the false-positive this check produced in
+// production: a real bare mirror with refs/remotes/origin/main genuinely
+// present was reported as "default_branch not found on remote" solely
+// because `git -C <bare-repo> ...` is rejected outright under
+// safe.bareRepository=explicit (git's CVE-2022-39253 mitigation, common in
+// current git installs) — regardless of whether the ref exists. The fix
+// (--git-dir instead of -C) must find the ref under that exact git config.
+func TestDefaultBranchExistsCheck_SafeBareRepositoryExplicit_StillFindsRef(t *testing.T) {
+	if _, err := exec.LookPath("git"); err != nil {
+		t.Skip("git not available")
+	}
+
+	tmpDir := t.TempDir()
+	rigName := "testrig"
+	rigDir := filepath.Join(tmpDir, rigName)
+	if err := os.MkdirAll(rigDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(rigDir, "config.json"), []byte(`{"default_branch":"main"}`), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	// Build a real bare repo with refs/remotes/origin/main actually present,
+	// mirroring how Camp Leatherneck's own bare mirrors are populated
+	// (internal/git/git.go's configureRefspec fetches into refs/remotes/origin/*).
+	srcDir := filepath.Join(tmpDir, "src")
+	if err := os.MkdirAll(srcDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	runGitOrFatal(t, srcDir, "init", "-q", "-b", "main")
+	if err := os.WriteFile(filepath.Join(srcDir, "f.txt"), []byte("v1"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	runGitOrFatal(t, srcDir, "add", "f.txt")
+	runGitOrFatal(t, srcDir, "commit", "-q", "-m", "first")
+
+	// This machine's own ambient git config may already have
+	// safe.bareRepository=explicit set (that's the real-world condition this
+	// test exists to cover) — trust our own freshly-created fixture repo
+	// explicitly for these setup steps, same as the production fix does via
+	// --git-dir. Only the assertions below run under the simulated config.
+	bareRepoPath := filepath.Join(rigDir, ".repo.git")
+	runGitOrFatal(t, tmpDir, "-c", "safe.bareRepository=all", "clone", "-q", "--bare", srcDir, bareRepoPath)
+	sha := runGitOrFatal(t, bareRepoPath, "-c", "safe.bareRepository=all", "rev-parse", "main")
+	runGitOrFatal(t, bareRepoPath, "-c", "safe.bareRepository=all", "update-ref", "refs/remotes/origin/main", sha)
+
+	// Simulate a git installation with safe.bareRepository=explicit — this is
+	// what made the original bug reproduce: `-C` on a bare repo is rejected
+	// before git even looks at whether the ref exists.
+	globalConfig := filepath.Join(tmpDir, "gitconfig-explicit")
+	if err := os.WriteFile(globalConfig, []byte("[safe]\n\tbareRepository = explicit\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("GIT_CONFIG_GLOBAL", globalConfig)
+	t.Setenv("GIT_CONFIG_SYSTEM", "/dev/null")
+
+	// Sanity: prove the OLD command (`-C`) really does fail under this config,
+	// so this test is actually exercising the reported scenario.
+	oldCmd := exec.Command("git", "-C", bareRepoPath, "rev-parse", "--verify", "refs/remotes/origin/main")
+	oldCmd.Env = append(os.Environ(), "GIT_CONFIG_GLOBAL="+globalConfig, "GIT_CONFIG_SYSTEM=/dev/null")
+	if err := oldCmd.Run(); err == nil {
+		t.Fatal("expected `git -C <bare>` to fail under safe.bareRepository=explicit, but it succeeded — fixture does not reproduce the bug")
+	}
+
+	check := NewDefaultBranchExistsCheck()
+	ctx := &CheckContext{TownRoot: tmpDir, RigName: rigName}
+
+	result := check.Run(ctx)
+	if result.Status != StatusOK {
+		t.Fatalf("expected StatusOK (ref genuinely exists) even under safe.bareRepository=explicit, got %v: %s\ndetails: %v", result.Status, result.Message, result.Details)
 	}
 }
 

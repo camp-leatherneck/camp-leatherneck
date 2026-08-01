@@ -309,7 +309,13 @@ const stuckWispsQuery = `SELECT id, title, status, updated_at FROM issues WHERE 
 func (c *PatrolNotStuckCheck) checkStuckWispsDolt(rigPath string, rigName string) ([]string, error) {
 	cmd := exec.Command("bd", "sql", "--csv", stuckWispsQuery) //nolint:gosec // G204: query is a constant
 	cmd.Dir = rigPath
-	output, err := cmd.CombinedOutput()
+	// stdout only: bd writes advisory warnings (e.g. ".beads has permissions
+	// 0755, recommended 0700") to stderr. CombinedOutput() interleaved that
+	// warning line ahead of the CSV header, giving it 1 field where the CSV
+	// has 4 — csv.Reader treats the first record's width as authoritative and
+	// every subsequent record fails to parse, surfacing as a false "stuck
+	// wisp" detection failure with no wisps actually stuck.
+	output, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("bd sql: %w", err)
 	}
