@@ -81,6 +81,57 @@ func createValidSettings(t *testing.T, path string) {
 	}
 }
 
+// createValidPolecatSettings creates a settings file matching the real
+// polecat Stop hook template (internal/hooks/config.go's DefaultOverrides,
+// "polecats" entry: `lt tap polecat-stop-check`, not `lt costs record`).
+// Polecats deliberately get this different Stop hook (the idle-polecat
+// safety net, gas-lob) instead of the generic cost-recording hook every
+// other role gets.
+func createValidPolecatSettings(t *testing.T, path string) {
+	t.Helper()
+
+	settings := map[string]any{
+		"enabledPlugins": []string{"plugin1"},
+		"hooks": map[string]any{
+			"SessionStart": []any{
+				map[string]any{
+					"matcher": "**",
+					"hooks": []any{
+						map[string]any{
+							"type":    "command",
+							"command": "/usr/local/bin/lt prime --hook",
+						},
+					},
+				},
+			},
+			"Stop": []any{
+				map[string]any{
+					"matcher": "",
+					"hooks": []any{
+						map[string]any{
+							"type":    "command",
+							"command": "lt tap polecat-stop-check",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	data, err := json.MarshalIndent(settings, "", "  ")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := os.WriteFile(path, data, 0644); err != nil {
+		t.Fatal(err)
+	}
+}
+
 // createStaleSettings creates a settings file missing required elements.
 func createStaleSettings(t *testing.T, path string, missingElements ...string) {
 	t.Helper()
@@ -252,8 +303,10 @@ func TestClaudeSettingsCheck_ValidPolecatSettings(t *testing.T) {
 
 	// Create valid polecat settings in correct location (polecats/.claude/settings.json)
 	// Settings are now shared at the polecats parent directory, passed via --settings flag.
+	// Uses the REAL polecat Stop hook (lt tap polecat-stop-check), not the
+	// generic costs-record one — see createValidPolecatSettings.
 	pcSettings := filepath.Join(tmpDir, rigName, "polecats", ".claude", "settings.json")
-	createValidSettings(t, pcSettings)
+	createValidPolecatSettings(t, pcSettings)
 
 	check := NewClaudeSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
@@ -262,6 +315,73 @@ func TestClaudeSettingsCheck_ValidPolecatSettings(t *testing.T) {
 
 	if result.Status != StatusOK {
 		t.Errorf("expected StatusOK for valid polecat settings, got %v: %s", result.Status, result.Message)
+	}
+}
+
+// TestClaudeSettingsCheck_PolecatCostsRecordPattern_NotRequired is the direct
+// regression test for a real production false positive: every polecat
+// settings.json regenerated from the CURRENT, correct template (via this
+// check's own Fix(), via `lt up --restore`, or via the hooks-sync check) was
+// immediately reported stale again, because checkSettings hardcoded "costs
+// record" as required in every role's Stop hook. Polecats deliberately get a
+// different Stop hook (internal/hooks/config.go's DefaultOverrides
+// "polecats" entry: `lt tap polecat-stop-check`, the idle-polecat safety
+// net, gas-lob) — not an omission. A polecat settings.json using that real,
+// documented hook must be StatusOK.
+func TestClaudeSettingsCheck_PolecatCostsRecordPattern_NotRequired(t *testing.T) {
+	tmpDir := t.TempDir()
+	rigName := "testrig"
+
+	pcSettings := filepath.Join(tmpDir, rigName, "polecats", ".claude", "settings.json")
+	createValidPolecatSettings(t, pcSettings)
+
+	check := NewClaudeSettingsCheck()
+	ctx := &CheckContext{TownRoot: tmpDir}
+	result := check.Run(ctx)
+
+	if result.Status != StatusOK {
+		t.Fatalf("polecat settings with the real polecat-stop-check Stop hook should be valid, got %v: %s (details: %v)",
+			result.Status, result.Message, result.Details)
+	}
+}
+
+// TestClaudeSettingsCheck_NonPolecatRole_StillRequiresCostsRecord confirms the
+// fix is scoped to polecats only — every other role must still have "costs
+// record" in its Stop hook; a bare polecat-stop-check-style hook elsewhere
+// should still be flagged stale.
+func TestClaudeSettingsCheck_NonPolecatRole_StillRequiresCostsRecord(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	mayorSettings := filepath.Join(tmpDir, "mayor", ".claude", "settings.json")
+	settings := map[string]any{
+		"enabledPlugins": []string{"plugin1"},
+		"hooks": map[string]any{
+			"SessionStart": []any{
+				map[string]any{"matcher": "**", "hooks": []any{
+					map[string]any{"type": "command", "command": "/usr/local/bin/lt prime --hook"},
+				}},
+			},
+			"Stop": []any{
+				map[string]any{"matcher": "", "hooks": []any{
+					map[string]any{"type": "command", "command": "lt tap polecat-stop-check"},
+				}},
+			},
+		},
+	}
+	if err := os.MkdirAll(filepath.Dir(mayorSettings), 0755); err != nil {
+		t.Fatal(err)
+	}
+	data, _ := json.MarshalIndent(settings, "", "  ")
+	if err := os.WriteFile(mayorSettings, data, 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	check := NewClaudeSettingsCheck()
+	ctx := &CheckContext{TownRoot: tmpDir}
+	result := check.Run(ctx)
+
+	if result.Status == StatusOK {
+		t.Error("expected mayor settings without costs record to still be flagged stale — the fix must be scoped to polecats only")
 	}
 }
 
